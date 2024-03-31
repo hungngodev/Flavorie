@@ -35,7 +35,6 @@ app.use('*', (req, res) => {
   res.status(404).json({ msg: 'not found' });
 });
 
-
 const port = process.env.PORT || 5100;
 
 try {

@@ -7,9 +7,9 @@
     "setup-project": "npm i && cd client && npm i",
     "setup-production-app": "npm i && cd client && npm i && npm run build ",
     "build": "npx tsc",
-    "server": "nodemon src/index.ts",
+    "server": "nodemon --watch 'src/**/*' -e ts --exec \"node --no-warnings --loader ts-node/esm ./src/index.ts\" ",
     "client": "cd client && npm run dev",
-    "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""
+    "dev": "concurrently --kill-others-on-fail  \"npm run server\" \"npm run client\""
   },
   "keywords": [],
   "author": "",
