@@ -8,6 +8,10 @@ import mongoose from 'mongoose';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import morgan from 'morgan';
+import authRouter from '@/routes/authRouter';
+import userRouter from '@/routes/userRouter';
+import mealRouter from '@/routes/mealRouter';
+import ingredientRouter from '@/routes/ingredientsRouter';
 
 dotenv.config();
 const app = express();
@@ -27,9 +31,14 @@ app.get('/', (req, res) => {
   res.send('Hello World');
 });
 
-app.get('/api/v1/test', (req, res) => {
+app.get('/api/test', (req, res) => {
   res.json({ msg: 'test route' });
 });
+
+app.use('/api/auth', authRouter);
+app.use('/api/user', userRouter);
+app.use('/api/meal', mealRouter);
+app.use('/api/ingredient', ingredientRouter);
 
 app.use('*', (req, res) => {
   res.status(404).json({ msg: 'not found' });

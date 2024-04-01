@@ -24,7 +24,11 @@
     "importsNotUsedAsValues": "remove",
     "outDir": "out/",
     "sourceMap": true,
-    "allowJs": true
+    "allowJs": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
   "ts-node": {
     "esm": true
