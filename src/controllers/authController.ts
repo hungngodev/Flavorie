@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import User from '@/models/UserModel';
+import User from '@/models/UserModel.ts';
 
 export const register = async (req: Request, res: Response) => {
     res.send('register');

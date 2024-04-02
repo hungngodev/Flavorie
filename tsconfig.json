@@ -22,6 +22,8 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "importsNotUsedAsValues": "remove",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
     "outDir": "out/",
     "sourceMap": true,
     "allowJs": true,

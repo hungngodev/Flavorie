@@ -1,6 +1,6 @@
 import { Router } from 'express';
 const router = Router();
-import { getAllMeals } from '@/controllers/mealController';
+import { getAllMeals } from '../controllers/mealController.ts';
 
 
 

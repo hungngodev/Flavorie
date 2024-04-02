@@ -1,6 +1,6 @@
 import { Router } from 'express';
 const router = Router();
-import { getCurrentUser, updateUser } from '@/controllers/userController';
+import { getCurrentUser, updateUser } from '../controllers/userController.ts';
 
 
 

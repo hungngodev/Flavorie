@@ -8,10 +8,10 @@ import mongoose from 'mongoose';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import morgan from 'morgan';
-import authRouter from '@/routes/authRouter';
-import userRouter from '@/routes/userRouter';
-import mealRouter from '@/routes/mealRouter';
-import ingredientRouter from '@/routes/ingredientsRouter';
+import authRouter from './routes/authRouter.ts';
+import ingredientRouter from './routes/ingredientRouter.ts';
+import mealRouter from './routes/mealRouter.ts';
+import userRouter from './routes/userRouter.ts';
 
 dotenv.config();
 const app = express();

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 const router = Router();
-import { getAllIngredients } from '@/controllers/ingredientsController';
+import { getAllIngredients } from '../controllers/ingredientsController.ts';
 
 
 
