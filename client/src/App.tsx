@@ -23,13 +23,17 @@ const router = createBrowserRouter([
       },
       {
         path: "register",
-        element: <div> Your components</div>,
+        element: <div> Register</div>,
       },
       {
         path: "login",
         element: <div> Your components</div>,
       },
     ],
+  },
+  {
+    path: "/dashboard",
+    element: <div> Your dashboared</div>,
   },
 ]);
 
