@@ -1,10 +1,8 @@
 import {
-  Box,
   Button,
   ChakraProvider,
   Flex,
   FormControl,
-  FormLabel,
   Heading,
   Input,
   Link,
