@@ -1,7 +1,6 @@
 import jwt, { Secret, SignOptions } from 'jsonwebtoken';
-import { ObjectId } from 'mongoose';
-import { Schema } from 'mongoose';
-
+import dotenv from 'dotenv';
+dotenv.config();
 
 const secret: Secret = process.env.JWT_SECRET || '';
 const expireIn: string | number | undefined = process.env.JWT_EXPIRES_IN;

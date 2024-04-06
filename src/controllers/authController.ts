@@ -1,20 +1,14 @@
-import { StatusCodes } from 'http-status-codes';
-import User from '../models/UserModel.js';
-import { comparePassword, hashPassword } from '../utils/passwordUtils.ts';
-import { UnauthenticatedError } from '../errors/customErrors.ts';
-import { createJWT } from '../utils/tokenUtils.ts';
 import { Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
+import User from '../models/UserModel.ts';
+import { checkLogin, createUser } from '../services/userServices.ts';
+
 
 export const register = async (req: Request, res: Response) => {
     const isFirstAccount = (await User.countDocuments()) === 0;
-    (req.body as any).role = isFirstAccount ? 'admin' : 'user';
+    (req.body as any).role = 'user';
 
-    const hashedPassword = await hashPassword(req.body.password);
-    req.body.password = hashedPassword;
-
-    const user = await User.create(req.body);
-    const token = createJWT({ userId: user._id.toString(), role: user.role });
-
+    const token = await createUser(req.body);
     const oneDay = 1000 * 60 * 60 * 24;
 
     res.cookie('token', token, {
@@ -25,17 +19,7 @@ export const register = async (req: Request, res: Response) => {
     res.status(StatusCodes.CREATED).json({ msg: 'user created' });
 };
 export const login = async (req: Request, res: Response) => {
-    const user = await User.findOne({ email: req.body.email });
-
-    const isValidUser = user;
-
-    if (!isValidUser) throw new UnauthenticatedError('Not Found');
-
-    const isValidPassword = (await comparePassword(req.body.password, user.password ?? ''));
-
-    if (!isValidPassword) throw new UnauthenticatedError('invalid credentials');
-
-    const token = createJWT({ userId: user._id.toString(), role: user.role });
+    const token = await checkLogin(req.body);
 
     const oneDay = 1000 * 60 * 60 * 24;
 
