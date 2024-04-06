@@ -32,6 +32,10 @@ const router = createBrowserRouter([
       },
     ],
   },
+  {
+    path: "/dashboard",
+    element: <div> Your dashboared</div>,
+  },
 ]);
 
 function App() {
