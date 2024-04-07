@@ -10,7 +10,8 @@ import {
   FormErrorMessage,
 } from "@chakra-ui/react";
 import {useForm, SubmitHandler} from "react-hook-form";
-
+import customFetch from "../utils/customFetch";
+import { redirect } from "react-router-dom";
 interface FormFields {
   username:string,
   email:string,
@@ -20,9 +21,12 @@ interface FormFields {
 const Register: React.FC = () => {
   const {register, handleSubmit, formState : {errors, isSubmitting}} = useForm<FormFields>();
 
-  const onSubmit : SubmitHandler<FormFields> = (data) => {
+  const onSubmit : SubmitHandler<FormFields> = async (data) => {
     //! submit logic added later
-    console.log(JSON.stringify(data))
+    // send data to back end and redirect to app
+    // redirect("/")
+    const data2 = await customFetch.get("/test")
+    console.log(JSON.stringify(data2))
     console.log(errors)
   }
   const minLengthErrorMessage = {

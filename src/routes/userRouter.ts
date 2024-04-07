@@ -1,10 +1,13 @@
 import { Router } from 'express';
+import {
+    getCurrentUser
+} from '../controllers/userController.js';
+import { updateUser } from '../controllers/userController.js';
+
+
 const router = Router();
-import { getCurrentUser, updateUser } from '../controllers/userController.ts';
 
+router.get('/current-user', getCurrentUser);
 
-
-router.get('/user/info', getCurrentUser);
-router.post('/user/update', updateUser);
 
 export default router;
