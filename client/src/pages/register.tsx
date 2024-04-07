@@ -127,9 +127,9 @@ const Register: React.FC = () => {
               </FormErrorMessage>
               
           </FormControl>
-          <Button width="100%" colorScheme="teal" type="submit"> isLoading={isSubmitting}
-                Login
-            </Button>
+          <Button width="100%" colorScheme="teal" type="submit" isLoading={isSubmitting}> 
+            Sign Up
+          </Button>
             </VStack>
           </form>
           <Link textAlign="center" href="/login">
