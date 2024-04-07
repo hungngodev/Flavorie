@@ -12,6 +12,8 @@ import authRouter from './routes/authRouter.ts';
 import ingredientRouter from './routes/ingredientRouter.ts';
 import mealRouter from './routes/mealRouter.ts';
 import userRouter from './routes/userRouter.ts';
+import { authenticateUser } from './middleware/authMiddleware.ts';
+import cors from 'cors';
 
 dotenv.config();
 const app = express();
@@ -22,8 +24,11 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 app.use(express.static(path.resolve(__dirname, './client/dist')));
+
+app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
 app.use(mongoSanitize());
 
@@ -36,7 +41,7 @@ app.get('/api/test', (req, res) => {
 });
 
 app.use('/api/auth', authRouter);
-app.use('/api/user', userRouter);
+app.use('/api/user', authenticateUser, userRouter);
 app.use('/api/meal', mealRouter);
 app.use('/api/ingredient', ingredientRouter);
 
@@ -56,3 +61,4 @@ try {
   console.log(error);
   process.exit(1);
 }
+console.log('server started');

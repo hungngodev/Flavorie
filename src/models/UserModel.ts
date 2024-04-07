@@ -1,8 +1,31 @@
 import mongoose from 'mongoose';
-
-const UserSchema = new mongoose.Schema({
-    name: String,
-    email: String,
+import bcrypt from 'bcrypt';
+export interface User {
+    name: string;
+    email: string;
+    password: string;
+    lastName: string;
+    location: string;
+    role: string;
+    avatar: string;
+    avatarPublicId: string;
+    preferences: string[];
+    allergy: string[];
+    leftOver: string[];
+    mealCooking: string[];
+    statistic: string[];
+}
+const UserSchema = new mongoose.Schema<User>({
+    name: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+    },
     password: String,
     lastName: {
         type: String,
@@ -48,4 +71,11 @@ UserSchema.methods.toJSON = function () {
     return obj;
 };
 
-export default mongoose.model('User', UserSchema);
+UserSchema.pre('save', async function (next) {
+    const user = this;
+    if (user.isModified('password')) {
+        user.password = await bcrypt.hash(user.password, 8);
+    }
+    next();
+});
+export default mongoose.model<User>('User', UserSchema);

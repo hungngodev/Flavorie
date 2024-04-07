@@ -1,12 +1,18 @@
-import {
-    BadRequestError,
-    NotFoundError,
-    UnauthorizedError,
-} from '@/errors/customErrors.js';
-import mongoose from 'mongoose';
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
+import z from 'zod';
+import { BadRequestError } from '../errors/customErrors.ts';
 
+export const logInData = z.object({
+    email: z.string().email(),
+    password: z.string().min(6),
+});
 export const validateLoginInput = (req: Request, res: Response, next: NextFunction) => {
-    //do something
-    next();
+    try {
+        logInData.parse(req.body);
+        next();
+    }
+    catch (error) {
+        throw new BadRequestError('Invalid input');
+    }
+
 }

@@ -1,8 +1,6 @@
 // import { StatusCodes } from 'http-status-codes';
 // import { Request, Response } from 'express';
 import axios, { AxiosHeaders } from 'axios';
-import { MealRequest, MealResponse } from '@/models/Meals';
-import { gzip } from 'zlib';
 
 // export const getAllMeals = async (req: Request, res: Response) => {
 //     res.send('get all meals');
