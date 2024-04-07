@@ -34,3 +34,12 @@ export class UnauthorizedError extends Error {
         this.statusCode = StatusCodes.FORBIDDEN;
     }
 }
+export class UserCreationError extends Error {
+    statusCode: number; // Add the statusCode property
+    constructor(message: string) {
+        super(message);
+        this.name = 'UserCreationError';
+        this.statusCode = StatusCodes.CONFLICT;
+    }
+}
+

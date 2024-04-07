@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { login, logout, register } from '../controllers/authController.ts';
 
 import rateLimiter from 'express-rate-limit';
+import { validateLoginInput } from '../middleware/validateMiddleware.ts';
 
 const router = Router();
 
@@ -12,7 +13,7 @@ const apiLimiter = rateLimiter({
 });
 
 router.post('/register', apiLimiter, register);
-router.post('/login', apiLimiter, login);
+router.post('/login', apiLimiter, validateLoginInput, login);
 router.get('/logout', logout);
 
 export default router;

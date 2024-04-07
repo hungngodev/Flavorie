@@ -1,8 +1,22 @@
-import { StatusCodes } from 'http-status-codes';
 import { Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
+import { NotFoundError } from '../errors/customErrors.ts';
+import User from '../models/UserModel.ts';
+
 export const getCurrentUser = async (req: Request, res: Response) => {
-    res.send('get current user');
+    const user = await User.findOne({ _id: req.user.userId });
+    if (user) {
+        const userWithoutPassword = user.toJSON();
+        res.status(StatusCodes.OK).send({ user: userWithoutPassword });
+    } else {
+        throw new NotFoundError('User not found');
+    }
 };
-export const updateUser = async (_req: Request, res: Response) => {
-    res.send('update user');
+
+export const updateUser = async (req: Request, res: Response) => {
+    const newUser = { ...req.body };
+    delete newUser.password;
+    delete newUser.role;
+    const updatedUser = await User.findByIdAndUpdate(req.user.userId, newUser);
+    res.status(StatusCodes.OK).send({ msg: 'update user' });
 };
