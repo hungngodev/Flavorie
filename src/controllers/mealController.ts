@@ -7,7 +7,7 @@ import { gzip } from 'zlib';
 // export const getAllMeals = async (req: Request, res: Response) => {
 //     res.send('get all meals');
 // };
-// const HUNGGING_FACE_ENDPOINT="https://api.spoonacular.com/recipes/findByIngredients"
+
 export const getAllMeals = async (ingredients: string[]) => {
     try {
         const params = new URLSearchParams({
@@ -17,7 +17,7 @@ export const getAllMeals = async (ingredients: string[]) => {
         });
 
         const response = await axios.get(`${process.env.spoonacular_API_ENDPOINT}?${params.toString()}`);
-        // console.log(response.)
+        console.log(response.data)
         return response.data;
     } catch(error) {
         console.log('Error calling API: ', error)
