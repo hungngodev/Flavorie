@@ -8,7 +8,7 @@ export const getAllMealsHelper = async (ingredients: string[]) => {
         const params = new URLSearchParams({
             ingredients: ingredients.join(','),
             apiKey: `${process.env.spoonacular_API_KEY}`,
-            number: '5'
+            number: '100'
         });
 
         const response = await axios.get(`${process.env.spoonacular_API_ENDPOIN + "/recipes/findByIngredients"}?${params.toString()}`);
