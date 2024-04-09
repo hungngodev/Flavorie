@@ -9,10 +9,12 @@ import mongoose from "mongoose";
 import morgan from "morgan";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
+import { authenticateUser } from "./middleware/authMiddleware.ts";
 import authRouter from "./routes/authRouter.ts";
 import ingredientRouter from "./routes/ingredientRouter.ts";
 import mealRouter from "./routes/mealRouter.ts";
 import userRouter from "./routes/userRouter.ts";
+
 dotenv.config();
 const app = express();
 
@@ -26,6 +28,7 @@ app.use(express.static(path.resolve(__dirname, "./client/dist")));
 app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
 app.use(mongoSanitize());
 
@@ -38,7 +41,7 @@ app.get("/api/test", (req, res) => {
 });
 
 app.use("/api/auth", authRouter);
-app.use("/api/user", userRouter);
+app.use("/api/user", authenticateUser, userRouter);
 app.use("/api/meal", mealRouter);
 app.use("/api/ingredient", ingredientRouter);
 
@@ -49,7 +52,7 @@ app.use("*", (req, res) => {
 const port = process.env.PORT || 5100;
 
 try {
-  await mongoose.connect(process.env.MONGO_URL ?? "");
+  await mongoose.connect(process.env.MONGODB_URL ?? "");
   app.listen(port, () => {
     console.log(`server running on PORT ${port}...`);
   });

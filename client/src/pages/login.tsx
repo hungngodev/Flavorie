@@ -8,6 +8,7 @@ import {
   Input,
   Link,
   VStack,
+  FormErrorMessage,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -18,6 +19,10 @@ interface FormFields {
   password: string;
 }
 
+interface FormFields{
+  username : string,
+  password : string,
+}
 const Login: React.FC = () => {
   const requiredErrorMessage = {
     username: "You need a username to login",
@@ -64,6 +69,7 @@ const Login: React.FC = () => {
         <VStack width="100%" marginInline="auto" spacing={8}>
           <Heading textAlign="center">Welcome back</Heading>
           <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <VStack spacing={6}>
               <FormControl isInvalid={errors.username ? true : false}>
                 <Input
@@ -108,7 +114,7 @@ const Login: React.FC = () => {
                 </FormErrorMessage>
               </FormControl>
               <Link textAlign="left" href="#" alignSelf="flex-start">
-                Forgot your password?
+                  Forgot your password?
               </Link>
               <Button
                 width="100%"

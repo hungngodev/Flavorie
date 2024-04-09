@@ -8,6 +8,7 @@ import {
   Input,
   Link,
   VStack,
+  FormErrorMessage,
 } from "@chakra-ui/react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { redirect } from "react-router-dom";
@@ -75,6 +76,7 @@ const Register: React.FC = () => {
   return (
     <ChakraProvider>
       <Flex height="100vh" alignItems="center" justifyContent="center">
+        <VStack marginInline="auto" spacing={8}>
         <VStack marginInline="auto" spacing={8}>
           <Heading textAlign="center">
             Welcome to <span style={{ color: "teal" }}>Flavorie!</span>
@@ -176,6 +178,7 @@ const Register: React.FC = () => {
                 Sign Up
               </Button>
             </VStack>
+          </form>
           </form>
           <Link textAlign="center" href="/login">
             Already have an account?{" "}
