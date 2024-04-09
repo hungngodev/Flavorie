@@ -8,50 +8,47 @@ import {
   Input,
   Link,
   VStack,
-  FormErrorMessage,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { redirect } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import customFetch from "../utils/customFetch";
 interface FormFields {
-  username: string;
+  email: string;
   password: string;
 }
 
-interface FormFields{
-  username : string,
-  password : string,
+interface APIData {
+  email: string;
+  password: string;
 }
 const Login: React.FC = () => {
+  const navigate = useNavigate();
   const requiredErrorMessage = {
-    username: "You need a username to login",
+    email: "You need a email to login",
     password: "You need a password to login",
   };
   const minLengthErrorMessage = {
-    username: "Your username should have at least 4 characters",
+    email: "Your email should have at least 4 characters",
     password: "Your password should have at least 8 characters",
   };
 
-  const userNotFoundedMessage = "Username or password did not match";
+  const userNotFoundedMessage = "Email or password did not match";
   const [userNotFounded, setUserNotFounded] = useState<string>("");
 
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
     try {
-      const currentUser = { username: data.username, password: data.password };
-      const response = await customFetch.get("/auth/login");
-      const returnedUser = {
-        username: response.data.username,
-        password: response.data.password,
+      const checkUser: APIData = {
+        email: data.email,
+        password: data.password,
       };
-      if (returnedUser == currentUser) {
-        setUserNotFounded("");
-        redirect("/");
-      } else {
-        setUserNotFounded(userNotFoundedMessage);
-        return;
-      }
+      const checkLogin = await customFetch.post("/auth/login", checkUser, {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      });
+      setUserNotFounded("");
+      navigate("/");
     } catch (error) {
+      setUserNotFounded(userNotFoundedMessage);
       console.log(error);
       return;
     }
@@ -69,27 +66,26 @@ const Login: React.FC = () => {
         <VStack width="100%" marginInline="auto" spacing={8}>
           <Heading textAlign="center">Welcome back</Heading>
           <form onSubmit={handleSubmit(onSubmit)}>
-          <form onSubmit={handleSubmit(onSubmit)}>
             <VStack spacing={6}>
-              <FormControl isInvalid={errors.username ? true : false}>
+              <FormControl isInvalid={errors.email ? true : false}>
                 <Input
-                  {...register("username", {
+                  {...register("email", {
                     required: {
                       value: true,
-                      message: requiredErrorMessage["username"],
+                      message: requiredErrorMessage["email"],
                     },
                     minLength: {
                       value: 4,
-                      message: minLengthErrorMessage["username"],
+                      message: minLengthErrorMessage["email"],
                     },
                   })}
                   size="lg"
-                  type="username"
-                  placeholder="Enter username"
+                  type="email"
+                  placeholder="Enter email"
                   isRequired
                 />
                 <FormErrorMessage>
-                  {errors.username && errors.username.message}
+                  {errors.email && errors.email.message}
                 </FormErrorMessage>
               </FormControl>
               <FormControl isInvalid={errors.password ? true : false}>
@@ -114,7 +110,7 @@ const Login: React.FC = () => {
                 </FormErrorMessage>
               </FormControl>
               <Link textAlign="left" href="#" alignSelf="flex-start">
-                  Forgot your password?
+                Forgot your password?
               </Link>
               <Button
                 width="100%"

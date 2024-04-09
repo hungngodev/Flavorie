@@ -1,3 +1,4 @@
+"use client";
 import {
   Button,
   ChakraProvider,
@@ -8,10 +9,11 @@ import {
   Input,
   Link,
   VStack,
-  FormErrorMessage,
 } from "@chakra-ui/react";
+
+import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { redirect } from "react-router-dom";
+import { redirect, useNavigate } from "react-router-dom";
 import customFetch from "../utils/customFetch";
 interface FormFields {
   username: string;
@@ -26,6 +28,8 @@ interface APIData {
 }
 
 const Register: React.FC = () => {
+  const navigate = useNavigate();
+  const [APIError, setAPIError] = useState<string>("");
   const {
     register,
     handleSubmit,
@@ -40,22 +44,20 @@ const Register: React.FC = () => {
         email: FormData.email,
         password: FormData.password,
       };
-      console.log(newUserData);
+      console.log(newUserData.email, newUserData.name, newUserData.password);
       const NewUserRequest = await customFetch.post(
         "/auth/register",
-        {
-          name: "FormData.username",
-          email: "FormData@gmail.com",
-          password: "FormData.password",
-        },
+        newUserData,
         {
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
         },
       );
-      // const test = await customFetch.get("/test");
-      // console.log(test.data);
-      // redirect("/");
+      // // const test = await customFetch.get("/test");
+      // // console.log(test.data);
+      setAPIError("");
+      navigate("/");
     } catch (error) {
+      setAPIError("Invalid login");
       console.log("this is error");
       console.log(error);
       return;
@@ -76,7 +78,6 @@ const Register: React.FC = () => {
   return (
     <ChakraProvider>
       <Flex height="100vh" alignItems="center" justifyContent="center">
-        <VStack marginInline="auto" spacing={8}>
         <VStack marginInline="auto" spacing={8}>
           <Heading textAlign="center">
             Welcome to <span style={{ color: "teal" }}>Flavorie!</span>
@@ -177,8 +178,8 @@ const Register: React.FC = () => {
               >
                 Sign Up
               </Button>
+              {APIError && <FormErrorMessage>{APIError}</FormErrorMessage>}
             </VStack>
-          </form>
           </form>
           <Link textAlign="center" href="/login">
             Already have an account?{" "}
