@@ -9,7 +9,6 @@ import {
   Link,
   VStack,
 } from "@chakra-ui/react";
-import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { redirect } from "react-router-dom";
 import customFetch from "../utils/customFetch";
@@ -24,38 +23,41 @@ interface APIData {
   email: string;
   password: string;
 }
+
 const Register: React.FC = () => {
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    watch,
   } = useForm<FormFields>();
 
   const onSubmit: SubmitHandler<FormFields> = async (FormData) => {
-    // send data to back end and redirect to app
-    // redirect("/")
-    const newUserData: APIData = {
-      name: FormData.username,
-      email: FormData.email,
-      password: FormData.password,
-    };
-    console.log(newUserData);
-    let NewUserRequest;
     try {
+      const newUserData: APIData = {
+        name: FormData.username,
+        email: FormData.email,
+        password: FormData.password,
+      };
+      console.log(newUserData);
       const NewUserRequest = await customFetch.post(
         "/auth/register",
-        newUserData,
+        {
+          name: "FormData.username",
+          email: "FormData@gmail.com",
+          password: "FormData.password",
+        },
         {
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
         },
       );
-      console.log(JSON.stringify(NewUserRequest.data));
+      // const test = await customFetch.get("/test");
+      // console.log(test.data);
+      // redirect("/");
     } catch (error) {
       console.log("this is error");
       console.log(error);
       return;
-    } finally {
-      redirect("/");
     }
   };
   const minLengthErrorMessage = {
@@ -78,7 +80,7 @@ const Register: React.FC = () => {
             Welcome to <span style={{ color: "teal" }}>Flavorie!</span>
           </Heading>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <VStack spacing={6}>
+            <VStack spacing={4}>
               <FormControl isInvalid={errors.username ? true : false}>
                 <Input
                   {...register("username", {
@@ -148,6 +150,11 @@ const Register: React.FC = () => {
                     minLength: {
                       value: 8,
                       message: minLengthErrorMessage["reEnterPassword"],
+                    },
+                    validate: (val: string) => {
+                      if (watch("password") != val) {
+                        return "You must re-enter your password correctly";
+                      }
                     },
                   })}
                   size="lg"

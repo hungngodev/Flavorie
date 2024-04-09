@@ -9,19 +9,16 @@ import {
   Link,
   VStack,
 } from "@chakra-ui/react";
+import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-
+import { redirect } from "react-router-dom";
+import customFetch from "../utils/customFetch";
 interface FormFields {
   username: string;
   password: string;
 }
-const Login: React.FC = () => {
-  const onSubmit: SubmitHandler<FormFields> = (data) => {
-    //! submit logic added later
-    console.log(JSON.stringify(data));
-    console.log(errors);
-  };
 
+const Login: React.FC = () => {
   const requiredErrorMessage = {
     username: "You need a username to login",
     password: "You need a password to login",
@@ -30,11 +27,37 @@ const Login: React.FC = () => {
     username: "Your username should have at least 4 characters",
     password: "Your password should have at least 8 characters",
   };
+
+  const userNotFoundedMessage = "Username or password did not match";
+  const [userNotFounded, setUserNotFounded] = useState<string>("");
+
+  const onSubmit: SubmitHandler<FormFields> = async (data) => {
+    try {
+      const currentUser = { username: data.username, password: data.password };
+      const response = await customFetch.get("/auth/login");
+      const returnedUser = {
+        username: response.data.username,
+        password: response.data.password,
+      };
+      if (returnedUser == currentUser) {
+        setUserNotFounded("");
+        redirect("/");
+      } else {
+        setUserNotFounded(userNotFoundedMessage);
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  };
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<FormFields>();
+
   return (
     <ChakraProvider>
       <Flex height="100vh" alignItems="center" justifyContent="center">
@@ -95,6 +118,9 @@ const Login: React.FC = () => {
               >
                 Login
               </Button>
+              {userNotFounded && (
+                <FormErrorMessage> userNotFounded</FormErrorMessage>
+              )}
             </VStack>
           </form>
           <Link textAlign="center" href="/register">
