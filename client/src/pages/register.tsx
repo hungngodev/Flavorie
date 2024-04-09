@@ -12,22 +12,52 @@ import {
 import {useForm, SubmitHandler} from "react-hook-form";
 import customFetch from "../utils/customFetch";
 import { redirect } from "react-router-dom";
+import { useEffect } from "react";
 interface FormFields {
   username:string,
   email:string,
   password:string,
   reEnterPassword:string,
 }
+interface Data{
+  name:string,
+  email:string,
+  password:string,
+}
 const Register: React.FC = () => {
   const {register, handleSubmit, formState : {errors, isSubmitting}} = useForm<FormFields>();
 
+  // useEffect(()=>{
+  //   const onSubmit = async () => {
+  //     //! submit logic added later
+  //     // send data to back end and redirect to app
+  //     // redirect("/")
+  //     const data2 = await customFetch.get("/test")
+  //     console.log(JSON.stringify(data2))
+  //     console.log(errors)
+  //   }
+  //   onSubmit()
+  // }, [])
   const onSubmit : SubmitHandler<FormFields> = async (data) => {
-    //! submit logic added later
     // send data to back end and redirect to app
     // redirect("/")
-    const data2 = await customFetch.get("/test")
-    console.log(JSON.stringify(data2))
-    console.log(errors)
+    
+    try{
+      const data2 = await customFetch.post("/auth/register",{
+        name: "abc",
+        email:"abc@gmail.com",
+        password:"abcd1234",
+      }, {
+          headers: {"Content-Type": "application/x-www-form-urlencoded"}, 
+      })
+    }
+    catch (error){
+      console.log(error)
+    }
+    // finally{
+    //   console.log(JSON.stringify(data2))
+    //   console.log(errors)
+    // }
   }
   const minLengthErrorMessage = {
     username: "Your username should have at least 4 characters",
