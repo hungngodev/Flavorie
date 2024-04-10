@@ -13,8 +13,9 @@ import {
 
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { redirect, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import customFetch from "../utils/customFetch";
+
 interface FormFields {
   username: string;
   email: string;
@@ -29,7 +30,7 @@ interface APIData {
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
-  const [APIError, setAPIError] = useState<string>("");
+  const [existedUserError, setExistedUserError] = useState<boolean>(false);
   const {
     register,
     handleSubmit,
@@ -44,7 +45,6 @@ const Register: React.FC = () => {
         email: FormData.email,
         password: FormData.password,
       };
-      console.log(newUserData.email, newUserData.name, newUserData.password);
       const NewUserRequest = await customFetch.post(
         "/auth/register",
         newUserData,
@@ -54,12 +54,12 @@ const Register: React.FC = () => {
       );
       // // const test = await customFetch.get("/test");
       // // console.log(test.data);
-      setAPIError("");
+      setExistedUserError(false);
       navigate("/");
-    } catch (error) {
-      setAPIError("Invalid login");
-      console.log("this is error");
-      console.log(error);
+    } catch (error: any) {
+      if (error.response.status === 409) {
+        setExistedUserError(true);
+      }
       return;
     }
   };
@@ -84,7 +84,9 @@ const Register: React.FC = () => {
           </Heading>
           <form onSubmit={handleSubmit(onSubmit)}>
             <VStack spacing={4}>
-              <FormControl isInvalid={errors.username ? true : false}>
+              <FormControl
+                isInvalid={errors.username || existedUserError ? true : false}
+              >
                 <Input
                   {...register("username", {
                     minLength: {
@@ -102,7 +104,8 @@ const Register: React.FC = () => {
                   isRequired
                 />
                 <FormErrorMessage>
-                  {errors.username && errors.username.message}
+                  {(errors.username && errors.username.message) ||
+                    (existedUserError && "User already existed")}
                 </FormErrorMessage>
               </FormControl>
               <FormControl isInvalid={errors.email ? true : false}>
@@ -112,11 +115,17 @@ const Register: React.FC = () => {
                       value: true,
                       message: requiredErrorMessage["email"],
                     },
+                    pattern: {
+                      // regex for email validation
+                      value:
+                        /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/,
+                      message: "You need to login with a valid email",
+                    },
                   })}
                   size="lg"
                   type="email"
-                  placeholder="Enter email"
                   isRequired
+                  placeholder="Enter email"
                 />
                 <FormErrorMessage>
                   {errors.email && errors.email.message}
@@ -178,7 +187,6 @@ const Register: React.FC = () => {
               >
                 Sign Up
               </Button>
-              {APIError && <FormErrorMessage>{APIError}</FormErrorMessage>}
             </VStack>
           </form>
           <Link textAlign="center" href="/login">

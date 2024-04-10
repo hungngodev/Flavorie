@@ -13,6 +13,7 @@ import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import customFetch from "../utils/customFetch";
+
 interface FormFields {
   email: string;
   password: string;
@@ -33,8 +34,7 @@ const Login: React.FC = () => {
     password: "Your password should have at least 8 characters",
   };
 
-  const userNotFoundedMessage = "Email or password did not match";
-  const [userNotFounded, setUserNotFounded] = useState<string>("");
+  const [userNotFounded, setUserNotFounded] = useState<boolean>(false);
 
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
     try {
@@ -45,11 +45,13 @@ const Login: React.FC = () => {
       const checkLogin = await customFetch.post("/auth/login", checkUser, {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
       });
-      setUserNotFounded("");
+
+      setUserNotFounded(false);
       navigate("/");
-    } catch (error) {
-      setUserNotFounded(userNotFoundedMessage);
-      console.log(error);
+    } catch (error: any) {
+      if (error || (error.response && error.response.status === 404)) {
+        setUserNotFounded(true);
+      }
       return;
     }
   };
@@ -67,7 +69,9 @@ const Login: React.FC = () => {
           <Heading textAlign="center">Welcome back</Heading>
           <form onSubmit={handleSubmit(onSubmit)}>
             <VStack spacing={6}>
-              <FormControl isInvalid={errors.email ? true : false}>
+              <FormControl
+                isInvalid={errors.email || userNotFounded ? true : false}
+              >
                 <Input
                   {...register("email", {
                     required: {
@@ -78,14 +82,21 @@ const Login: React.FC = () => {
                       value: 4,
                       message: minLengthErrorMessage["email"],
                     },
+                    pattern: {
+                      // regex for email validation
+                      value:
+                        /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/,
+                      message: "You need to login with a valid email",
+                    },
                   })}
                   size="lg"
                   type="email"
-                  placeholder="Enter email"
                   isRequired
+                  placeholder="Enter email"
                 />
                 <FormErrorMessage>
-                  {errors.email && errors.email.message}
+                  {(errors.email && errors.email.message) ||
+                    (userNotFounded && "Email or password did not match")}
                 </FormErrorMessage>
               </FormControl>
               <FormControl isInvalid={errors.password ? true : false}>
@@ -102,8 +113,8 @@ const Login: React.FC = () => {
                   })}
                   size="lg"
                   type="password"
-                  placeholder="Enter password"
                   isRequired
+                  placeholder="Enter password"
                 />
                 <FormErrorMessage>
                   {errors.password && errors.password.message}
@@ -120,9 +131,6 @@ const Login: React.FC = () => {
               >
                 Login
               </Button>
-              {userNotFounded && (
-                <FormErrorMessage> userNotFounded</FormErrorMessage>
-              )}
             </VStack>
           </form>
           <Link textAlign="center" href="/register">
