@@ -12,6 +12,7 @@ const theme = extendBaseTheme({
     Button,
   },
 });
+
 const router = createBrowserRouter([
   {
     path: "/",

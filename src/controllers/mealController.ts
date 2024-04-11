@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import axios, { AxiosHeaders } from 'axios';
 import { ServerError } from '../errors/customErrors.ts';
-
+import { EndPoint } from '../utils/spoonEndPoint.ts';
 
 export const getAllMealsHelper = async (ingredients: string[]) => {
     try {
@@ -11,7 +11,7 @@ export const getAllMealsHelper = async (ingredients: string[]) => {
             number: '100'
         });
 
-        const response = await axios.get(`${process.env.spoonacular_API_ENDPOIN + "/recipes/findByIngredients"}?${params.toString()}`);
+        const response = await axios.get(`${process.env.spoonacular_API_ENDPOIN + EndPoint.FIND_RECIPES_BY_INGREDIENTS}?${params.toString()}`);
         console.log(response.data)
         return response.data;
     } catch (error) {
