@@ -1,9 +1,5 @@
-import {
-  ChakraBaseProvider,
-  theme as chakraTheme,
-  extendBaseTheme,
-} from "@chakra-ui/react";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { ChakraBaseProvider, theme as chakraTheme, extendBaseTheme } from '@chakra-ui/react';
+import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
 
 const { Button } = chakraTheme.components;
 
@@ -15,25 +11,25 @@ const theme = extendBaseTheme({
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <div> Your components </div>,
+    path: '/',
+    element: <Outlet />,
     children: [
       {
         index: true,
         element: <div> Your components</div>,
       },
       {
-        path: "register",
+        path: 'register',
         element: <div> Register</div>,
       },
       {
-        path: "login",
+        path: 'login',
         element: <div> Your components</div>,
       },
     ],
   },
   {
-    path: "/dashboard",
+    path: '/dashboard',
     element: <div> Your dashboared</div>,
   },
 ]);
