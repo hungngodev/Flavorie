@@ -4,7 +4,7 @@ import { getAllIngredients } from '../controllers/ingredientsController.ts';
 
 
 
-router.get('/ingredients', getAllIngredients);
+router.get('/', getAllIngredients);
 
 
 export default router;
