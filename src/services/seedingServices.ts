@@ -1,22 +1,9 @@
 import dotenv from 'dotenv';
-import Ingredients from '../models/Ingredients';
-import { getAllIngredientsAPI, getIngredientByIdAPI } from './spoonacularServices';
+import Ingredients from '../models/Ingredients.ts';
+import { getAllIngredientsAPI, getIngredientByIdAPI } from '../services/spoonacularServices.ts';
 
-if (process.env.NODE_ENV !== "production") {
-    dotenv.config();//remember if it does not work 
-}
 dotenv.config();
 import mongoose from 'mongoose';
-
-mongoose.connect(process.env.MONGODB_URL || '', {
-});
-
-const db = mongoose.connection;
-
-db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", () => {
-    console.log("Database connected");
-});
 
 const meatIngredients: string[] = [
     "beef", "chicken", "pork", "lamb", "fish", "shrimp", "bacon", "sausage", "ham", "turkey",
@@ -68,12 +55,26 @@ const fruitIngredients: string[] = [
 ];
 
 const seedInformation = async () => {
+    try {
+        await mongoose.connect(process.env.MONGODB_URL || '', {});
+
+        const db = mongoose.connection;
+
+        db.on("error", console.error.bind(console, "connection error:"));
+        db.once("open", () => {
+            console.log("Database connected");
+        });
+
+    }
+    catch (error) {
+        console.log(error);
+    }
     const data = await getAllIngredientsAPI([], []);
     const result = data.results;
     result.forEach(async (ingredient: any) => {
         const { id } = ingredient;
         const IngredientInformation = await getIngredientByIdAPI(id);
-        const newIngredient = new Ingredients(IngredientInformation);
+        const newIngredient = new Ingredients({ _id: id, ...IngredientInformation });
         await newIngredient.save();
     });
 

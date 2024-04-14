@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { ServerError } from '../errors/customErrors.ts';
+import dotenv from 'dotenv';
+dotenv.config();
 
 export const EndPoint = {
     FIND_RECIPES_BY_INGREDIENTS: '/recipes/findByIngredients',
