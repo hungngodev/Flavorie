@@ -1,7 +1,59 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 
-const IngredientSchema = new mongoose.Schema({
-    _id: Number,
+export interface Ingredient extends mongoose.Document {
+    id: number;
+    cagetory: string;
+    original: string;
+    originalName: string;
+    name: string;
+    amount: number;
+    unit: string;
+    unitShort: string;
+    unitLong: string;
+    possibleUnits: string[];
+    estimatedCost: {
+        value: number;
+        unit: string;
+    };
+    consistency: string;
+    shoppingListUnits: string[];
+    aisle: string;
+    image: string;
+    meta: string[];
+    nutrition: {
+        nutrients: {
+            name: string;
+            amount: number;
+            unit: string;
+            percentOfDailyNeeds: number;
+        }[];
+        properties: {
+            name: string;
+            amount: number;
+            unit: string;
+        }[];
+        flavonoids: {
+            name: string;
+            amount: number;
+            unit: string;
+        }[];
+        caloricBreakdown: {
+            percentProtein: number;
+            percentFat: number;
+            percentCarbs: number;
+        };
+        weightPerServing: {
+            amount: number;
+            unit: string;
+        };
+    };
+    categoryPath: string[];
+    relevance: Types.DocumentArray<Ingredient>;
+}
+type IngredientModel = mongoose.Model<Ingredient>;
+const IngredientSchema = new mongoose.Schema<Ingredient, IngredientModel>({
+    id: Number,
+    cagetory: String,
     original: String,
     originalName: String,
     name: String,
@@ -46,6 +98,10 @@ const IngredientSchema = new mongoose.Schema({
             unit: String
         }
     },
-    categoryPath: [String]
+    categoryPath: [String],
+    relevance: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Ingredient'
+    }],
 })
-export default mongoose.model('Ingredient', IngredientSchema)
+export default mongoose.model<Ingredient, IngredientModel>('Ingredient', IngredientSchema)

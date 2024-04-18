@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
-export interface User {
+export interface User extends mongoose.Document {
     name: string;
     email: string;
     password: string;
@@ -11,11 +11,13 @@ export interface User {
     avatarPublicId: string;
     preferences: string[];
     allergy: string[];
+    diet: string;
     leftOver: string[];
     mealCooking: string[];
     statistic: string[];
 }
-const UserSchema = new mongoose.Schema<User>({
+type UserModel = mongoose.Model<User>;
+const UserSchema = new mongoose.Schema<User, UserModel>({
     name: {
         type: String,
         required: true,
@@ -51,6 +53,10 @@ const UserSchema = new mongoose.Schema<User>({
         type: [String],
         default: [],
     },
+    diet: {
+        type: String,
+        default: 'none',
+    },
     leftOver: {
         type: [String],
         default: [],
@@ -78,4 +84,4 @@ UserSchema.pre('save', async function (next) {
     }
     next();
 });
-export default mongoose.model<User>('User', UserSchema);
+export default mongoose.model<User, UserModel>('User', UserSchema);

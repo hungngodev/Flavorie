@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
-import Ingredients from '../models/Ingredients.ts';
-import { getAllIngredientsAPI, getIngredientByIdAPI } from '../services/spoonacularServices.ts';
-
+import Ingredients, { Ingredient } from '../models/Ingredients.ts';
+import { getAllIngredientsAPI, getIngredientByIdAPI, addIngredient } from '../services/spoonacularServices.ts';
+import Progress from '../models/ProgressSeed.ts';
 dotenv.config();
 import mongoose from 'mongoose';
 
@@ -28,6 +28,7 @@ const dairyIngredients: string[] = [
     "parmesan", "provolone", "swiss cheese", "brie", "camembert", "gouda",
     "havarti", "monterey jack", "pepper jack", "queso blanco", "romano"
 ];
+
 const sauceIngredients: string[] = [
     "tomato sauce", "barbecue sauce", "soy sauce", "hot sauce", "mayonnaise",
     "mustard", "ketchup", "ranch dressing", "vinaigrette", "pesto sauce",
@@ -37,6 +38,7 @@ const sauceIngredients: string[] = [
     "tartar sauce", "sour cream sauce", "chili sauce", "curry sauce",
     "cranberry sauce", "honey mustard sauce", "balsamic glaze"
 ];
+
 const grainIngredients: string[] = [
     "rice", "pasta", "bread", "quinoa", "barley", "oats", "couscous",
     "bulgur", "farro", "millet", "cornmeal", "wheat flour", "breadcrumbs",
@@ -45,6 +47,7 @@ const grainIngredients: string[] = [
     "coconut flour", "almond flour", "chia seeds", "flaxseeds", "poppy seeds",
     "sesame seeds", "sunflower seeds", "pumpkin seeds"
 ];
+
 const fruitIngredients: string[] = [
     "apples", "bananas", "oranges", "grapes", "strawberries", "blueberries",
     "raspberries", "blackberries", "kiwi", "mango", "pineapple", "watermelon",
@@ -53,6 +56,22 @@ const fruitIngredients: string[] = [
     "dates", "passion fruit", "guava", "lychee", "dragon fruit", "star fruit",
     "persimmons", "papaya", "cranberries", "gooseberries", "elderberries"
 ];
+
+const nutIngredients: string[] = [
+    "almonds", "walnuts", "cashews", "peanuts", "pecans", "pistachios",
+    "macadamia nuts", "hazelnuts", "chestnuts", "brazil nuts", "pine nuts",
+    "sesame seeds", "sunflower seeds", "pumpkin seeds", "flaxseeds", "chia seeds",
+    "poppy seeds", "pepitas", "quinoa", "coconut", "nut butter"
+];
+export const IngredientObject = {
+    meat: meatIngredients,
+    vegetable: vegetableIngredients,
+    dairy: dairyIngredients,
+    sauce: sauceIngredients,
+    grain: grainIngredients,
+    fruit: fruitIngredients,
+    nut: nutIngredients,
+}
 
 const seedInformation = async () => {
     try {
@@ -64,22 +83,33 @@ const seedInformation = async () => {
         db.once("open", () => {
             console.log("Database connected");
         });
-
+        let progress = await Progress.findOne({});
+        if (!progress) {
+            progress = new Progress({ currentCagetory: 'meat', currentIndex: 0, name: "spoonacular" });
+        }
+        await progress.save();
     }
     catch (error) {
         console.log(error);
     }
-    const data = await getAllIngredientsAPI([], []);
-    const result = data.results;
-    result.forEach(async (ingredient: any) => {
-        const { id } = ingredient;
-        const IngredientInformation = await getIngredientByIdAPI(id);
-        const newIngredient = new Ingredients({ _id: id, ...IngredientInformation });
-        await newIngredient.save();
-    });
-
+    await getIngredientByIdAPI('beef');
+    // const data = await getAllIngredientsAPI([], [], 'meat');
+    // const result = data.results;
+    // for (let i = 0; i < 1; i++) {
+    //     const { id, children } = result[i];
+    //     const parentIngredient = await addIngredient(result[i], id);
+    //     for (let j = 0; j < 3; j++) {
+    //         const childIngredient = await addIngredient(children[j], children[j].id);
+    //         await childIngredient.save();
+    //         parentIngredient.relevance.push(childIngredient);
+    //     }
+    //     await parentIngredient.save();
+    // }
+    // const ingredients = await Ingredients.findById("661d7d3778971335621c021d");
+    // console.log(ingredients);
+    // console.log(await ingredients?.populate<{ relevance: Ingredient }>('relevance'));
 }
 
 seedInformation().then(() => {
     mongoose.connection.close();
-})
+})         
