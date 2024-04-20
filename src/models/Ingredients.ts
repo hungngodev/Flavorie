@@ -2,7 +2,7 @@ import mongoose, { Types } from "mongoose";
 
 export interface Ingredient extends mongoose.Document {
     id: number;
-    cagetory: string;
+    myCagetory: string;
     original: string;
     originalName: string;
     name: string;
@@ -47,13 +47,15 @@ export interface Ingredient extends mongoose.Document {
             unit: string;
         };
     };
+    allergy: string[];
+    diet: string[];
     categoryPath: string[];
     relevance: Types.DocumentArray<Ingredient>;
 }
 type IngredientModel = mongoose.Model<Ingredient>;
 const IngredientSchema = new mongoose.Schema<Ingredient, IngredientModel>({
     id: Number,
-    cagetory: String,
+    myCagetory: String,
     original: String,
     originalName: String,
     name: String,
@@ -98,6 +100,8 @@ const IngredientSchema = new mongoose.Schema<Ingredient, IngredientModel>({
             unit: String
         }
     },
+    allergy: [String],
+    diet: [String],
     categoryPath: [String],
     relevance: [{
         type: mongoose.Schema.Types.ObjectId,

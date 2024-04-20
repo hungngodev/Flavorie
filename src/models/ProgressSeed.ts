@@ -2,8 +2,10 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 export interface Progress extends mongoose.Document {
     name: string;
-    currentCagetory: string;
-    currentIndex: number;
+    currentCagetory: number;
+    queryIndex: number;
+    parentIndex: number;
+    childIndex: number;
 }
 type ProgressModel = mongoose.Model<Progress>;
 const ProgressSchema = new mongoose.Schema<Progress, ProgressModel>({
@@ -12,13 +14,23 @@ const ProgressSchema = new mongoose.Schema<Progress, ProgressModel>({
         required: true,
     },
     currentCagetory: {
-        type: String,
-        required: true,
-    },
-    currentIndex: {
         type: Number,
         required: true,
     },
+    queryIndex: {
+        type: Number,
+        required: true,
+    },
+    parentIndex: {
+        type: Number,
+        required: true,
+    },
+    childIndex: {
+        type: Number,
+        required: true,
+    },
+}, {
+    timestamps: true,
 });
 
 

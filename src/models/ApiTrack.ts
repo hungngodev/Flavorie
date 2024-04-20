@@ -6,6 +6,7 @@ export interface ApiTrack extends mongoose.Document {
     currentKey: number;
     createdAt: Date;
     updatedAt: Date;
+    callPerMin: number;
 }
 type ApiTrackModel = mongoose.Model<ApiTrack>;
 const ApiTrackSchema = new mongoose.Schema<ApiTrack, ApiTrackModel>({
@@ -18,6 +19,10 @@ const ApiTrackSchema = new mongoose.Schema<ApiTrack, ApiTrackModel>({
         required: true,
     },
     currentKey: {
+        type: Number,
+        required: true,
+    },
+    callPerMin: {
         type: Number,
         required: true,
     },
