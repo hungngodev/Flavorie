@@ -1,5 +1,7 @@
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import bcrypt from 'bcrypt';
+import { Ingredient } from './IngredientsModel.ts';
+import { Meal } from './MealModel.ts';
 export interface User extends mongoose.Document {
     name: string;
     email: string;
@@ -12,8 +14,9 @@ export interface User extends mongoose.Document {
     preferences: string[];
     allergy: string[];
     diet: string;
-    leftOver: string[];
-    mealCooking: string[];
+    leftOver: Types.DocumentArray<Ingredient>;
+    mealCooking: Types.DocumentArray<Meal>;
+    cart: Types.DocumentArray<Ingredient>;
     statistic: string[];
 }
 type UserModel = mongoose.Model<User>;
@@ -44,7 +47,6 @@ const UserSchema = new mongoose.Schema<User, UserModel>({
     },
     avatar: String,
     avatarPublicId: String,
-
     preferences: {
         type: [String],
         default: [],
@@ -57,14 +59,18 @@ const UserSchema = new mongoose.Schema<User, UserModel>({
         type: String,
         default: 'none',
     },
-    leftOver: {
-        type: [String],
-        default: [],
-    },
-    mealCooking: {
-        type: [String],
-        default: [],
-    },
+    leftOver: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Ingredient'
+    }],
+    mealCooking: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Meal'
+    }],
+    cart: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Ingredient'
+    }],
     statistic: {
         type: [String],
         default: [],

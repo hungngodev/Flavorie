@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { ServerError } from '../errors/customErrors.ts';
-import Ingredients from '../models/Ingredients.ts';
-import ApiTrack from '../models/ApiTrack.ts';
+import { ServerError } from '../../errors/customErrors.ts';
+import Ingredients from '../../models/IngredientsModel.ts';
+import ApiTrack from '../../models/ApiTrack.ts';
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -2268,6 +2268,7 @@ export const baseCall = async (url: string, query: Record<string, any>, devAPIke
     if (callPerMin > rate && Math.abs(Number(new Date().getTime()) - Number(SpoonacularTrack.updatedAt)) < 60000) {
         throw new ServerError('API rate limit reached');
     }
+
     SpoonacularTrack.usageCount = usageCount + 1;
     SpoonacularTrack.currentKey = currentKey;
     SpoonacularTrack.callPerMin = callPerMin + 1;

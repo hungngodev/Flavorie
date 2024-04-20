@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
-import Ingredients, { Ingredient } from '../models/Ingredients.ts';
-import { getAllIngredientsAPI, getIngredientByIdAPI, addIngredient } from '../services/spoonacularServices.ts';
+import Ingredients, { Ingredient } from '../models/IngredientsModel.ts';
+import { getAllIngredientsAPI, getIngredientByIdAPI, addIngredient } from './spoonacular/spoonacularServices.ts';
 import { ServerError } from '../errors/customErrors.ts';
 import Progress from '../models/ProgressSeed.ts';
 import mongoose from 'mongoose';

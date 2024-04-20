@@ -11,5 +11,7 @@ export async function getDietAndAllergy(req: Request, res: Response, next: NextF
             diet.push(thisUser.diet);
         }
     }
+    req.body.allergy = allergy;
+    req.body.diet = diet;
     next();
 }
