@@ -17,7 +17,6 @@ import theme from "../style/theme.tsx";
 //import { capsFirst } from "../utils/index.tsx";
 import ChakraCarousel from "./ChakraCarousel.tsx";
 
-
 interface Dishes {
     image: string;
     title: string;
@@ -58,13 +57,13 @@ const dishes: Dishes[] = [
 ];
 
 function ImageSlide(): JSX.Element {
-    // const [data, setData] = useState<Post[]>([]);
+  // const [data, setData] = useState<Post[]>([]);
 
-    // useEffect(() => {
-    //     fetch("https://jsonplaceholder.typicode.com/posts/")
-    //     .then((res) => res.json())
-    //     .then((res: Post[]) => setData(res));
-    // }, []);
+  // useEffect(() => {
+  //     fetch("https://jsonplaceholder.typicode.com/posts/")
+  //     .then((res) => res.json())
+  //     .then((res: Post[]) => setData(res));
+  // }, []);
 
     return (
         <ChakraProvider theme={extendTheme(theme)}>
@@ -72,12 +71,12 @@ function ImageSlide(): JSX.Element {
             py={8}
             px={0}
             maxW={{
-                base: "100%",
-                sm: "35rem",
-                md: "43.75rem",
-                lg: "57.5rem",
-                xl: "75rem",
-                xxl: "87.5rem",
+            base: "100%",
+            sm: "35rem",
+            md: "43.75rem",
+            lg: "57.5rem",
+            xl: "75rem",
+            xxl: "87.5rem",
             }}
         >
             <ChakraCarousel gap={32}>
@@ -94,7 +93,11 @@ function ImageSlide(): JSX.Element {
                 flex={1}
                 p={5}
                 >
-                <img src={dish.image} alt={dish.title} style={{ maxWidth: "100%", borderRadius: "8px"}} />
+                <img
+                    src={dish.image}
+                    alt={dish.title}
+                    style={{ maxWidth: "100%", borderRadius: "8px" }}
+                />
                 <VStack mt={4} mb={4}>
                     <Heading
                     fontSize={{ base: "xl", md: "2xl" }}
@@ -109,8 +112,8 @@ function ImageSlide(): JSX.Element {
                 <Flex justifyContent="space-between">
                     <HStack spacing={2}>
                     <Text w="full">{dish.description}</Text>
-                    </HStack>
-                    {/* <Button
+                </HStack>
+                {/* <Button
                     onClick={() => alert(`Post ${post.id - 5} clicked`)}
                     colorScheme="green"
                     fontWeight="bold"
