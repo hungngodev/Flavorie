@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import {
   Button,
   ChakraProvider,
@@ -9,12 +9,15 @@ import {
   Input,
   Link,
   VStack,
-} from "@chakra-ui/react";
+} from '@chakra-ui/react';
 
-import { useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import customFetch from "../utils/customFetch";
+import { useEffect, useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { RiUserFollowLine } from 'react-icons/ri';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useAuth } from '../hooks';
+import customFetch from '../utils/customFetch';
 
 interface FormFields {
   username: string;
@@ -30,6 +33,14 @@ interface APIData {
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
+  const auth = useAuth();
+  useEffect(() => {
+    if (auth.currentUser.status === 'authenticated') {
+      toast.warn('You already have an account!', { position: 'top-right', icon: <RiUserFollowLine /> });
+      navigate('/');
+    }
+  }, [auth.currentUser.status]);
+
   const [existedUserError, setExistedUserError] = useState<boolean>(false);
   const {
     register,
@@ -45,17 +56,16 @@ const Register: React.FC = () => {
         email: FormData.email,
         password: FormData.password,
       };
-      const NewUserRequest = await customFetch.post(
-        "/auth/register",
-        newUserData,
-        {
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        },
-      );
+      const NewUserRequest = await customFetch.post('/auth/register', newUserData, {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      });
       // // const test = await customFetch.get("/test");
       // // console.log(test.data);
-      setExistedUserError(false);
-      navigate("/");
+      if (NewUserRequest.status === 201) {
+        toast.error('User is already registered!', { position: 'top-right', icon: <RiUserFollowLine /> });
+        setExistedUserError(false);
+        navigate('/');
+      }
     } catch (error: any) {
       if (error.response.status === 409) {
         setExistedUserError(true);
@@ -64,38 +74,35 @@ const Register: React.FC = () => {
     }
   };
   const minLengthErrorMessage = {
-    username: "Your username should have at least 4 characters",
-    password: "Your password should have at least 8 characters",
-    reEnterPassword:
-      "You need to re-enter your password with at least 8 characters",
+    username: 'Your username should have at least 4 characters',
+    password: 'Your password should have at least 8 characters',
+    reEnterPassword: 'You need to re-enter your password with at least 8 characters',
   };
   const requiredErrorMessage = {
-    username: "You need a username to register",
-    email: "You need an email to register",
-    password: "You need a password to register",
-    reEnterPassword: "You need to re-enter your password correctly to register",
+    username: 'You need a username to register',
+    email: 'You need an email to register',
+    password: 'You need a password to register',
+    reEnterPassword: 'You need to re-enter your password correctly to register',
   };
   return (
     <ChakraProvider>
       <Flex height="100vh" alignItems="center" justifyContent="center">
         <VStack marginInline="auto" spacing={8}>
           <Heading textAlign="center">
-            Welcome to <span style={{ color: "teal" }}>Flavorie!</span>
+            Welcome to <span style={{ color: 'teal' }}>Flavorie!</span>
           </Heading>
           <form onSubmit={handleSubmit(onSubmit)}>
             <VStack spacing={4}>
-              <FormControl
-                isInvalid={errors.username || existedUserError ? true : false}
-              >
+              <FormControl isInvalid={errors.username || existedUserError ? true : false}>
                 <Input
-                  {...register("username", {
+                  {...register('username', {
                     minLength: {
                       value: 4,
-                      message: minLengthErrorMessage["username"],
+                      message: minLengthErrorMessage['username'],
                     },
                     required: {
                       value: true,
-                      message: requiredErrorMessage["username"],
+                      message: requiredErrorMessage['username'],
                     },
                   })}
                   size="lg"
@@ -104,22 +111,20 @@ const Register: React.FC = () => {
                   isRequired
                 />
                 <FormErrorMessage>
-                  {(errors.username && errors.username.message) ||
-                    (existedUserError && "User already existed")}
+                  {(errors.username && errors.username.message) || (existedUserError && 'User already existed')}
                 </FormErrorMessage>
               </FormControl>
               <FormControl isInvalid={errors.email ? true : false}>
                 <Input
-                  {...register("email", {
+                  {...register('email', {
                     required: {
                       value: true,
-                      message: requiredErrorMessage["email"],
+                      message: requiredErrorMessage['email'],
                     },
                     pattern: {
                       // regex for email validation
-                      value:
-                        /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/,
-                      message: "You need to login with a valid email",
+                      value: /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/,
+                      message: 'You need to login with a valid email',
                     },
                   })}
                   size="lg"
@@ -127,20 +132,18 @@ const Register: React.FC = () => {
                   isRequired
                   placeholder="Enter email"
                 />
-                <FormErrorMessage>
-                  {errors.email && errors.email.message}
-                </FormErrorMessage>
+                <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
               </FormControl>
               <FormControl isInvalid={errors.password ? true : false}>
                 <Input
-                  {...register("password", {
+                  {...register('password', {
                     required: {
                       value: true,
-                      message: requiredErrorMessage["password"],
+                      message: requiredErrorMessage['password'],
                     },
                     minLength: {
                       value: 8,
-                      message: minLengthErrorMessage["password"],
+                      message: minLengthErrorMessage['password'],
                     },
                   })}
                   size="lg"
@@ -148,24 +151,22 @@ const Register: React.FC = () => {
                   placeholder="Enter password"
                   isRequired
                 />
-                <FormErrorMessage>
-                  {errors.password && errors.password.message}
-                </FormErrorMessage>
+                <FormErrorMessage>{errors.password && errors.password.message}</FormErrorMessage>
               </FormControl>
               <FormControl isInvalid={errors.reEnterPassword ? true : false}>
                 <Input
-                  {...register("reEnterPassword", {
+                  {...register('reEnterPassword', {
                     required: {
                       value: true,
-                      message: requiredErrorMessage["reEnterPassword"],
+                      message: requiredErrorMessage['reEnterPassword'],
                     },
                     minLength: {
                       value: 8,
-                      message: minLengthErrorMessage["reEnterPassword"],
+                      message: minLengthErrorMessage['reEnterPassword'],
                     },
                     validate: (val: string) => {
-                      if (watch("password") != val) {
-                        return "You must re-enter your password correctly";
+                      if (watch('password') != val) {
+                        return 'You must re-enter your password correctly';
                       }
                     },
                   })}
@@ -174,9 +175,7 @@ const Register: React.FC = () => {
                   placeholder="Re-enter password"
                   isRequired
                 />
-                <FormErrorMessage>
-                  {errors.reEnterPassword && errors.reEnterPassword.message}
-                </FormErrorMessage>
+                <FormErrorMessage>{errors.reEnterPassword && errors.reEnterPassword.message}</FormErrorMessage>
               </FormControl>
               <Button
                 width="100%"
@@ -190,8 +189,7 @@ const Register: React.FC = () => {
             </VStack>
           </form>
           <Link textAlign="center" href="/login">
-            Already have an account?{" "}
-            <span style={{ color: "teal" }}>Sign in!</span>
+            Already have an account? <span style={{ color: 'teal' }}>Sign in!</span>
           </Link>
         </VStack>
       </Flex>

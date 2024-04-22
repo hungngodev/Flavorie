@@ -10,12 +10,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
+    "@iconscout/unicons": "^4.0.8",
     "axios": "^1.6.8",
     "framer-motion": "^11.0.24",
-    "react-hook-form": "^7.51.2"
+    "react-hook-form": "^7.51.2",
+    "react-icons": "^5.1.0",
+    "react-toastify": "^10.0.5"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
