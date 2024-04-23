@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import User from "../models/UserModel";
+import User from "../models/UserModel.ts";
 
 export async function getDietAndAllergy(req: Request, res: Response, next: NextFunction) {
     const allergy = [];

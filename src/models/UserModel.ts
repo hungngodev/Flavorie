@@ -10,6 +10,7 @@ export interface User extends mongoose.Document {
     location: string;
     role: string;
     avatar: string;
+    avatarFileName: string;
     avatarPublicId: string;
     preferences: string[];
     allergy: string[];
@@ -46,6 +47,7 @@ const UserSchema = new mongoose.Schema<User, UserModel>({
         default: 'user',
     },
     avatar: String,
+    avatarFileName: String,
     avatarPublicId: String,
     preferences: {
         type: [String],

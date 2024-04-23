@@ -18,7 +18,13 @@ export const updateUser = async (req: Request, res: Response) => {
     if (!updatedUser) {
         throw new NotFoundError('User not found');
     }
-    updatedUser.avatar = req.body.cloudinaryUrls[0];
+    console.dir(req.files)
+    if (req.files) {
+        const files = req.files as Express.Multer.File[];
+        updatedUser.avatar = files[0].path;
+        updatedUser.avatarFileName = files[0].filename;
+    }
     await updatedUser.save();
     res.status(StatusCodes.OK).send({ msg: 'update user' });
 };
+

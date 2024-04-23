@@ -1,68 +1,28 @@
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import dotenv from 'dotenv';
 
-import dotenv from "dotenv"
-import multer, { Multer } from 'multer';
-import {
-    v2 as cloudinary, UploadApiResponse,
-    UploadApiErrorResponse
-} from 'cloudinary';
-import { Request, Response, NextFunction } from 'express';
-import sharp from 'sharp';
-import { BadRequestError, ServerError } from "src/errors/customErrors";
-
-
-dotenv.config();
-
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_NAME || '',
-    api_key: process.env.CLOUDINARY_API_KEY || '',
-    api_secret: process.env.CLOUDINARY_SECRET || '',
-});
-
-interface CloudinaryFile extends Express.Multer.File {
-    buffer: Buffer;
+if (process.env.NODE_ENV !== "production") {
+    dotenv.config();
 }
 
-const storage = multer.memoryStorage();
-export const upload: Multer = multer({ storage: storage });
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME || '',
+    api_key: process.env.CLOUDINARY_KEY || '',
+    api_secret: process.env.CLOUDINARY_SECRET || ''
+});
 
-export const uploadToCloudinary = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const files: CloudinaryFile[] = req.files as CloudinaryFile[];
-        if (!files || files.length === 0) {
-            const cloudinaryUrls: string[] = [];
-            for (const file of files) {
-
-                const resizedBuffer: Buffer = await sharp(file.buffer)
-                    .resize({ width: 800, height: 600 })
-                    .toBuffer();
-
-                const uploadStream = cloudinary.uploader.upload_stream(
-                    {
-                        resource_type: 'auto',
-                        folder: process.env.CLOUDINARY_FOLDER,
-                    } as any,
-                    (err: UploadApiErrorResponse | undefined, result: UploadApiResponse | undefined) => {
-                        if (err) {
-                            console.error('Cloudinary upload error:', err);
-                            return next(err);
-                        }
-                        if (!result) {
-                            console.error('Cloudinary upload error: Result is undefined');
-                            return next(new Error('Cloudinary upload result is undefined'));
-                        }
-                        cloudinaryUrls.push(result.secure_url);
-
-                        if (cloudinaryUrls.length === files.length) {
-                            req.body.cloudinaryUrls = cloudinaryUrls;
-                            next();
-                        }
-                    }
-                );
-                uploadStream.end(resizedBuffer);
-            }
+const storage = new CloudinaryStorage({
+    cloudinary,
+    params: async (req, file) => {
+        return {
+            folder: process.env.CLOUDINARY_FOLDER || '',
+            allowedFormats: ['jpeg', 'png', 'jpg']
         }
-    } catch (error) {
-        console.error('Error in uploadToCloudinary middleware:', error);
-        next(new ServerError('Error in uploadToCloudinary middleware'));
     }
+});
+
+export {
+    cloudinary,
+    storage
 };

@@ -56,6 +56,7 @@ const catchErrorSeedAPI = async (error: any): Promise<void> => {
         if (error.message === 'API limit reached') {
             console.log('API limit reached');
             await saveProgress();
+            await mongoose.connection.close();
             process.exit();
         }
         if (error.message === 'API rate limit reached') {

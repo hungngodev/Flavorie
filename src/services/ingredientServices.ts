@@ -1,5 +1,5 @@
-import Ingredients from "../models/IngredientsModel";
-import { Ingredient } from "../models/IngredientsModel";
+import Ingredients from "../models/IngredientsModel.ts";
+import { Ingredient } from "../models/IngredientsModel.ts";
 
 export async function getIngredientWithName(ingredientName: string) {
     return await Ingredients.find({
