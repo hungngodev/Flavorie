@@ -1,12 +1,8 @@
-import {
-  ChakraBaseProvider,
-  theme as chakraTheme,
-  extendBaseTheme,
-} from "@chakra-ui/react";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { ChakraBaseProvider, theme as chakraTheme, extendBaseTheme } from '@chakra-ui/react';
+import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
 //import ChakraCarousel from "./pages/ChakraCarousel";
-// import SlideShow from "./pages/slideShow";
 import ImageSlide from "./components/ImageSlide";
+
 
 const { Button } = chakraTheme.components;
 
@@ -17,8 +13,8 @@ const theme = extendBaseTheme({
 });
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <ImageSlide />,
+    path: '/',
+    element: <div> Your components </div>,
     children: [
       {
         index: true,
@@ -35,7 +31,7 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/dashboard",
+    path: '/dashboard',
     element: <div> Your dashboared</div>,
   },
 ]);
