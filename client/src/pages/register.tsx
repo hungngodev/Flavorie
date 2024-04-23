@@ -62,9 +62,13 @@ const Register: React.FC = () => {
       // // const test = await customFetch.get("/test");
       // // console.log(test.data);
       if (NewUserRequest.status === 201) {
-        toast.error('User is already registered!', { position: 'top-right', icon: <RiUserFollowLine /> });
+        toast.success(`Welcome to Flavorie ${newUserData.name}!`, {
+          position: 'top-right',
+          icon: <RiUserFollowLine />,
+        });
         setExistedUserError(false);
         navigate('/');
+        auth.setUser();
       }
     } catch (error: any) {
       if (error.response.status === 409) {

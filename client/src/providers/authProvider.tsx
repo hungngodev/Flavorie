@@ -15,12 +15,14 @@ const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ children }: A
   const logout = async () => {
     await setCurrentUser({ username: '', email: '', status: 'unauthenticated' });
   };
+  const setUser = async () => {
+    const getUser = await customFetch.get('/user/current-user');
+    console.dir(getUser.data);
+
+    setCurrentUser({ username: getUser.data.user.name, email: getUser.data.user.email, status: 'authenticated' });
+  };
+
   useEffect(() => {
-    const setUser = async () => {
-      const getUser = await customFetch.get('/user/current-user');
-      // console.dir(getUser.data);
-      setCurrentUser({ username: getUser.data.user.name, email: getUser.data.user.email, status: 'authenticated' });
-    };
     try {
       setUser();
     } catch (error) {
@@ -28,7 +30,7 @@ const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ children }: A
       console.log(error);
     }
   }, []);
-  return <AuthContext.Provider value={{ currentUser, logout }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ currentUser, logout, setUser }}>{children}</AuthContext.Provider>;
 };
 
 export default AuthContextProvider;

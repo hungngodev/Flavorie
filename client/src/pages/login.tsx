@@ -55,13 +55,14 @@ const Login: React.FC = () => {
         email: data.email,
         password: data.password,
       };
-      const checkLoginRequest = await customFetch.post('/auth/login', checkUser, {
+      const LoginRequest = await customFetch.post('/auth/login', checkUser, {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       });
-      if (checkLoginRequest.status === 200) {
+      if (LoginRequest.status === 200) {
         toast.success('You have successfully logged in !'), { position: 'top-right', icon: <CiCircleCheck /> };
         setUserNotFounded(false);
         navigate('/');
+        auth.setUser();
       }
     } catch (error: any) {
       if (error.response && error.response.status === 404) {
