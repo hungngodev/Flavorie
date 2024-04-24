@@ -20,7 +20,6 @@
     "axios": "^1.6.8",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
-    "cloudinary": "^2.2.0",
     "concurrently": "^8.2.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
