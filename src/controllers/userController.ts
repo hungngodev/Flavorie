@@ -14,9 +14,17 @@ export const getCurrentUser = async (req: Request, res: Response) => {
 };
 
 export const updateUser = async (req: Request, res: Response) => {
-    const newUser = { ...req.body };
-    delete newUser.password;
-    delete newUser.role;
-    const updatedUser = await User.findByIdAndUpdate(req.user.userId, newUser);
+    const updatedUser = await User.findById(req.user.userId);
+    if (!updatedUser) {
+        throw new NotFoundError('User not found');
+    }
+    console.dir(req.files)
+    if (req.files) {
+        const files = req.files as Express.Multer.File[];
+        updatedUser.avatar = files[0].path;
+        updatedUser.avatarFileName = files[0].filename;
+    }
+    await updatedUser.save();
     res.status(StatusCodes.OK).send({ msg: 'update user' });
 };
+
