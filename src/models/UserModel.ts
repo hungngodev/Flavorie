@@ -53,14 +53,16 @@ const UserSchema = new mongoose.Schema<User, UserModel>({
         type: [String],
         default: [],
     },
-    allergy: {
-        type: [String],
-        default: [],
-    },
-    diet: {
+    allergy: [{
         type: String,
-        default: 'none',
-    },
+        enum: ["Dairy", "Egg", "Gluten", "Grain", "Peanut", "Seafood", "Sesame", "Shellfish", "Soy", "Sulfite", "Tree Nut", "Wheat"],
+    }],
+    diet: [
+        {
+            type: String,
+            enum: ["Gluten Free", "Ketogenic", "Vegetarian", "Lacto-Vegetarian", "Ovo-Vegetarian", "Vegan", "Pescetarian", "Paleo", "Primal", "Whole30", "Low FODMAP"],
+        }
+    ],
     leftOver: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Ingredient'

@@ -24,15 +24,14 @@ db.once("open", () => {
 let progress = await Progress.findOne({ name: "spoonacular" });
 if (!progress) {
     progress = new Progress({ currentCagetory: 0, queryIndex: 0, childIndex: 0, parentIndex: 0, name: "spoonacular" });
+    await progress.save();
+    console.log("Progress created");
 }
-await progress.save();
-progress = await Progress.findOne({ name: "spoonacular" });
 
 if (!progress) {
     throw new ServerError('Progress not found');
 }
 let { currentCagetory, queryIndex, childIndex, parentIndex } = progress;
-
 async function saveProgress() {
     if (progress) {
         progress.currentCagetory = currentCagetory;
@@ -70,18 +69,28 @@ const tryCatchBlock = async (fn: any) => {
         await fn();
     } catch (error) {
         await catchErrorSeedAPI(error);
+        if (!(error instanceof ServerError)) {
+            console.log(error);
+            console.log("Error occured")
+            await saveProgress();
+            await mongoose.connection.close();
+            process.exit();
+        }
     }
 }
 const seedInformation = async () => {
+    console.log("Seeding started");
     if (progress) {
         while (currentCagetory < keys.length) {
+            console.log(`Current category: ${keys[currentCagetory]}`)
             const currentSearch = IngredientBank[keys[currentCagetory] as keyof typeof IngredientBank];
             while (queryIndex < currentSearch.length) {
-                let data: any;
                 await tryCatchBlock(async () => {
-                    data = await getAllIngredientsAPI([], [], currentSearch[queryIndex]);
+                    console.log(`Query ${queryIndex} of ${keys[currentCagetory]}`);
+                    let data = await getAllIngredientsAPI([], [], currentSearch[queryIndex]);
                     if (data) {
                         while (parentIndex < data.results.length) {
+                            console.log(`Parent ${parentIndex} of query ${queryIndex} of ${keys[currentCagetory]}`);
                             await tryCatchBlock(async () => {
                                 const { id, children } = data.results[parentIndex];
                                 const parentIngredient = await addIngredient(keys[currentCagetory], id);
@@ -92,11 +101,11 @@ const seedInformation = async () => {
                                         parentIngredient.relevance.push(childIngredient);
                                     });
                                     childIndex++;
-                                    console.log(`-----------------Child ${childIndex} of parent ${parentIndex} of query ${queryIndex} completed`);
+                                    console.log(`-----------------Child ${childIndex} of parent ${parentIndex} of query ${queryIndex} completed of ${keys[currentCagetory]}`);
                                 }
                                 await parentIngredient.save();
                             });
-                            console.log(`---------Parent ${parentIndex} of query ${queryIndex} completed`)
+                            console.log(`---------Parent ${parentIndex} of query ${queryIndex} completed of ${keys[currentCagetory]}`)
                             childIndex = 0;
                             parentIndex++;
                         }
@@ -115,7 +124,7 @@ const seedInformation = async () => {
         await saveProgress();
     }
 }
-seedInformation().then(() => {
-    console.log("Seeding completed");
-    mongoose.connection.close();
-});
+await seedInformation();
+await mongoose.connection.close();
+console.log("Seeding completed");
+process.exit();
