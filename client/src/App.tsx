@@ -1,6 +1,8 @@
 import { ChakraBaseProvider, theme as chakraTheme, extendBaseTheme } from '@chakra-ui/react';
-import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
-
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import HomeLayout from './layouts/homeLayout';
+import { Login, Main, Register } from './pages/index';
+import AuthContextProvider from './providers/authProvider';
 const { Button } = chakraTheme.components;
 
 const theme = extendBaseTheme({
@@ -12,32 +14,38 @@ const theme = extendBaseTheme({
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Outlet />,
+    element: (
+      <HomeLayout>
+        <></>
+      </HomeLayout>
+    ),
     children: [
       {
         index: true,
-        element: <div> Your components</div>,
+        element: <Main />,
       },
       {
         path: 'register',
-        element: <div> Register</div>,
+        element: <Register />,
       },
       {
         path: 'login',
-        element: <div> Your components</div>,
+        element: <Login />,
       },
     ],
   },
   {
     path: '/dashboard',
-    element: <div> Your dashboared</div>,
+    element: <div> Your dashboard</div>,
   },
 ]);
 
 function App() {
   return (
     <ChakraBaseProvider theme={theme}>
-      <RouterProvider router={router} />
+      <AuthContextProvider>
+        <RouterProvider router={router} />
+      </AuthContextProvider>
     </ChakraBaseProvider>
   );
 }
