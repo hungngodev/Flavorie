@@ -15,6 +15,7 @@ const theme = extendBaseTheme({
 const router = createBrowserRouter([
   {
     path: '/',
+    element: <HomeLayout />,
     children: [
       {
         index: true,
@@ -28,12 +29,6 @@ const router = createBrowserRouter([
         path: 'login',
         element: <Login />,
       },
-    ],
-  },
-  {
-    path: '/',
-    element: <HomeLayout />,
-    children: [
       {
         path: 'ingredients',
         element: <div> this is ingredient page</div>,

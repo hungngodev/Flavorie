@@ -6,8 +6,9 @@ import { Navbar } from '../components';
 const HomeLayout: React.FC = () => {
   return (
     <main>
-      <Navbar></Navbar>
-      <Outlet />
+      <Navbar>
+        <Outlet />
+      </Navbar>
     </main>
   );
 };

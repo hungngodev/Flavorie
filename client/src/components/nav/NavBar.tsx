@@ -1,6 +1,4 @@
-'use client';
-
-import { Box, useBreakpointValue } from '@chakra-ui/react';
+import { Box, useBreakpointValue, useColorModeValue } from '@chakra-ui/react';
 import { DesktopNav } from './DesktopNav';
 import { MobileNav } from './MobileNav';
 export interface NavItem {
@@ -37,14 +35,28 @@ const NAV_ITEMS: Array<NavItem> = [
   },
 ];
 
-export default function NavBar() {
+export default function NavBar({ children }: { children: React.ReactNode }) {
   const NavtoRender = useBreakpointValue({
     base: <MobileNav NavItems={NAV_ITEMS} />,
     md: <DesktopNav NavItems={NAV_ITEMS} />,
   });
   return (
-    <Box position="sticky" top="0">
-      {NavtoRender}
+    <Box>
+      <Box
+        position="sticky"
+        top="0"
+        bg={useColorModeValue('white', 'gray.800')}
+        color={useColorModeValue('gray.600', 'white')}
+        minH={'60px'}
+        py={{ base: 2 }}
+        px={{ base: 4 }}
+        borderBottom={1}
+        borderStyle={'solid'}
+        borderColor={useColorModeValue('gray.200', 'gray.900')}
+      >
+        {NavtoRender}
+      </Box>
+      <Box overflowY={'hidden'}>{children}</Box>
     </Box>
   );
 }
