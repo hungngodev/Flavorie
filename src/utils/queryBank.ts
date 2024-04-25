@@ -98,6 +98,9 @@ export const powderIngredients: string[] = [
     "wheat bran", "bran flakes", "oat bran", "rice bran", "wheat germ oil",
     "flaxseed oil", "coconut oil", "olive oil", "avocado oil", "safflower oil"
 ];
+
+
+
 export const IngredientBank = {
     meat: meatIngredients,
     vegetable: vegetableIngredients,

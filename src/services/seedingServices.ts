@@ -1,11 +1,12 @@
 import dotenv from 'dotenv';
 import Ingredients, { Ingredient } from '../models/IngredientsModel.ts';
 import { getAllIngredientsAPI, getIngredientByIdAPI, addIngredient } from './spoonacular/spoonacularServices.ts';
-import { ServerError } from '../errors/customErrors.ts';
+import { NotFoundError, ServerError } from '../errors/customErrors.ts';
 import Progress from '../models/ProgressSeed.ts';
 import mongoose from 'mongoose';
 import { IngredientBank } from '../utils/queryBank.ts';
 import { error } from 'console';
+import { AxiosError } from 'axios';
 
 dotenv.config();
 
@@ -62,12 +63,15 @@ const catchErrorSeedAPI = async (error: any): Promise<void> => {
             console.log('Rate limit reached')
             await rateWait(60000);
         }
+        else if (error instanceof NotFoundError) {
+            console.log('Not found error');
+        }
         else {
-            console.log(error);
+
+            console.dir(error);
             console.log("Error occured")
             await saveProgress();
             await mongoose.connection.close();
-            process.exit();
         }
     }
 }
@@ -86,7 +90,7 @@ const seedInformation = async () => {
             const currentSearch = IngredientBank[keys[currentCagetory] as keyof typeof IngredientBank];
             while (queryIndex < currentSearch.length) {
                 await tryCatchBlock(async () => {
-                    console.log(`Query ${queryIndex} of ${keys[currentCagetory]}`);
+                    console.log(`Query ${queryIndex} of ${keys[currentCagetory]} -> ${currentSearch[queryIndex]}`);
                     let data = await getAllIngredientsAPI([], [], currentSearch[queryIndex]);
                     if (data) {
                         while (parentIndex < data.results.length) {

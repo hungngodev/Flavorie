@@ -1,5 +1,5 @@
-import axios from 'axios';
-import { ServerError } from '../../errors/customErrors.ts';
+import axios, { AxiosError } from 'axios';
+import { ServerError, NotFoundError } from '../../errors/customErrors.ts';
 import Ingredients from '../../models/IngredientsModel.ts';
 import ApiTrack from '../../models/ApiTrack.ts';
 
@@ -78,7 +78,12 @@ export const baseCall = async (url: string, query: Record<string, any>, devAPIke
         return response.data;
 
     } catch (error) {
-        throw new ServerError(`${error}`);
+        if (error instanceof AxiosError) {
+            throw new NotFoundError(`Error: ${error.response?.data}`);
+        }
+        else {
+            throw new ServerError(`Error: ${error}`);
+        }
     }
 }
 
@@ -270,3 +275,4 @@ const recipeSortingOptions: string[] = [
     "sugar",
     "zinc"
 ];
+
