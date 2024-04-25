@@ -16,10 +16,13 @@
     "@emotion/styled": "^11.11.5",
     "@iconscout/unicons": "^4.0.8",
     "axios": "^1.6.8",
-    "framer-motion": "^11.0.24",
+    "clsx": "^2.1.1",
+    "framer-motion": "^11.1.7",
+    "lottie-react": "^2.4.0",
     "react-hook-form": "^7.51.2",
     "react-icons": "^5.1.0",
-    "react-toastify": "^10.0.5"
+    "react-toastify": "^10.0.5",
+    "tailwind-merge": "^2.3.0"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
