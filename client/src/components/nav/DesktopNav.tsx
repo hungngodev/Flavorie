@@ -132,7 +132,7 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
                 bg: 'pink.300',
               }}
             >
-              Log Out
+              Sign Out
             </Button>
           )}
         </Stack>
