@@ -62,6 +62,13 @@ const catchErrorSeedAPI = async (error: any): Promise<void> => {
             console.log('Rate limit reached')
             await rateWait(60000);
         }
+        else {
+            console.log(error);
+            console.log("Error occured")
+            await saveProgress();
+            await mongoose.connection.close();
+            process.exit();
+        }
     }
 }
 const tryCatchBlock = async (fn: any) => {
@@ -69,13 +76,6 @@ const tryCatchBlock = async (fn: any) => {
         await fn();
     } catch (error) {
         await catchErrorSeedAPI(error);
-        if (!(error instanceof ServerError)) {
-            console.log(error);
-            console.log("Error occured")
-            await saveProgress();
-            await mongoose.connection.close();
-            process.exit();
-        }
     }
 }
 const seedInformation = async () => {

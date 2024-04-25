@@ -37,7 +37,7 @@ export const baseCall = async (url: string, query: Record<string, any>, devAPIke
     if (!SpoonacularTrack) {
         SpoonacularTrack = new ApiTrack({ serviceName: 'Spoonacular', usageCount: 0, currentKey: 0, callPerMin: 0, updatedAt: new Date(), lastMinute: new Date() });
     }
-    let { usageCount, currentKey, callPerMin } = SpoonacularTrack;
+    let { usageCount, currentKey, callPerMin, lastMinute } = SpoonacularTrack;
 
     const maxCall = (process.env.spoonacular_max_call ? parseInt(process.env.spoonacular_max_call) : 130) - 1;
     const numberOfKey = (process.env.spoonacular_total_key ? parseInt(process.env.spoonacular_total_key) : 5);
@@ -47,9 +47,9 @@ export const baseCall = async (url: string, query: Record<string, any>, devAPIke
         usageCount = 0;
         currentKey = 0;
     }
-    if (Math.abs(Number(new Date().getTime()) - Number(SpoonacularTrack.lastMinute)) > 60000) {
+    if (Math.abs(Number(new Date().getTime()) - Number(lastMinute)) > 60000) {
         callPerMin = 0;
-        SpoonacularTrack.lastMinute = new Date();
+        lastMinute = new Date();
     }
     if (usageCount > maxCall && currentKey < numberOfKey) {
         currentKey++;
@@ -58,13 +58,14 @@ export const baseCall = async (url: string, query: Record<string, any>, devAPIke
     if (usageCount > maxCall && currentKey >= numberOfKey - 1) {
         throw new ServerError('API limit reached');
     }
-    if (callPerMin > rate && Math.abs(Number(new Date().getTime()) - Number(SpoonacularTrack.lastMinute)) < 60000) {
+    if (callPerMin > rate && Math.abs(Number(new Date().getTime()) - Number(lastMinute)) < 60000) {
         throw new ServerError('API rate limit reached');
     }
 
     SpoonacularTrack.usageCount = usageCount + 1;
     SpoonacularTrack.currentKey = currentKey;
     SpoonacularTrack.callPerMin = callPerMin + 1;
+    SpoonacularTrack.lastMinute = lastMinute;
     await SpoonacularTrack.save();
 
     try {
