@@ -46,7 +46,6 @@ const Main: React.FC = () => {
   return (
     <div>
       {auth.currentUser.username && <h1>Welcome {auth.currentUser.username}</h1>}
-      <div>haihih</div>
       <div className="flex flex-col overflow-hidden">
         <ContainerScroll
           titleComponent={

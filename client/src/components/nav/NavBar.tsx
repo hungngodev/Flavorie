@@ -18,22 +18,22 @@ const NAV_ITEMS: Array<NavItem> = [
       {
         label: 'Fridge',
         subLabel: 'your leftover foods',
-        href: '#',
+        href: '/',
       },
       {
         label: 'Market',
         subLabel: 'prepare your shopping list',
-        href: '#',
+        href: '/ingredients',
       },
     ],
   },
   {
     label: 'Meals',
-    href: '#',
+    href: '/meals',
   },
   {
     label: 'Community',
-    href: '#',
+    href: '/community',
   },
 ];
 
