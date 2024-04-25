@@ -9,6 +9,7 @@ import {
   Link,
   VStack,
 } from '@chakra-ui/react';
+import { AxiosError } from 'axios';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { CiCircleCheck } from 'react-icons/ci';
@@ -36,7 +37,7 @@ const Login: React.FC = () => {
       toast.warn('You are already logged in!', { position: 'top-right', icon: <RiUserFollowLine /> });
       navigate('/');
     }
-  }, [auth.currentUser.status]);
+  }, [auth.currentUser.status, navigate]);
 
   const requiredErrorMessage = {
     email: 'You need a email to login',
@@ -64,8 +65,8 @@ const Login: React.FC = () => {
         navigate('/');
         auth.setUser();
       }
-    } catch (error: any) {
-      if (error.response && error.response.status === 404) {
+    } catch (error) {
+      if (error instanceof AxiosError && error.response && error.response.status === 404) {
         toast.error('Make sure your email and password is correct!', { position: 'top-right', icon: <FaUserXmark /> });
         setUserNotFounded(true);
       }
