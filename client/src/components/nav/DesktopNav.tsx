@@ -32,95 +32,78 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
 
   return (
     <>
-      <Box position="sticky" top="0">
-        <Flex
-          bg={useColorModeValue('white', 'gray.800')}
-          color={useColorModeValue('gray.600', 'white')}
-          minH={'60px'}
-          py={{ base: 2 }}
-          px={{ base: 4 }}
-          borderBottom={1}
-          borderStyle={'solid'}
-          borderColor={useColorModeValue('gray.200', 'gray.900')}
-          align={'center'}
-          justifyContent={'space-between'}
-          gap={4}
-        >
-          <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
-            <Text
-              textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
-              fontFamily={'heading'}
-              color={useColorModeValue('gray.800', 'white')}
-              as="b"
-            >
-              Flavorie
-            </Text>
-            <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
-              <Stack direction={'row'} spacing={4}>
-                {NavItems.map((navItem) => (
-                  <Box key={navItem.label}>
-                    <Popover trigger={'hover'} placement={'bottom-start'}>
-                      <PopoverTrigger>
-                        <Box
-                          as="a"
-                          p={2}
-                          href={navItem.href ?? '#'}
-                          fontSize={'sm'}
-                          fontWeight={500}
-                          color={linkColor}
-                          _hover={{
-                            textDecoration: 'none',
-                            color: linkHoverColor,
-                          }}
-                        >
-                          {navItem.label}
-                        </Box>
-                      </PopoverTrigger>
+      <Flex
+        bg={useColorModeValue('white', 'gray.800')}
+        color={useColorModeValue('gray.600', 'white')}
+        minH={'60px'}
+        py={{ base: 2 }}
+        px={{ base: 4 }}
+        borderBottom={1}
+        borderStyle={'solid'}
+        borderColor={useColorModeValue('gray.200', 'gray.900')}
+        align={'center'}
+        justifyContent={'space-between'}
+        gap={4}
+      >
+        <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
+          <Text
+            textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
+            fontFamily={'heading'}
+            color={useColorModeValue('gray.800', 'white')}
+            as="b"
+          >
+            Flavorie
+          </Text>
+          <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
+            <Stack direction={'row'} spacing={4}>
+              {NavItems.map((navItem) => (
+                <Box key={navItem.label}>
+                  <Popover trigger={'hover'} placement={'bottom-start'}>
+                    <PopoverTrigger>
+                      <Box
+                        as="a"
+                        p={2}
+                        href={navItem.href ?? '#'}
+                        fontSize={'sm'}
+                        fontWeight={500}
+                        color={linkColor}
+                        _hover={{
+                          textDecoration: 'none',
+                          color: linkHoverColor,
+                        }}
+                      >
+                        {navItem.label}
+                      </Box>
+                    </PopoverTrigger>
 
-                      {navItem.children && (
-                        <PopoverContent
-                          border={0}
-                          boxShadow={'xl'}
-                          bg={popoverContentBgColor}
-                          p={4}
-                          rounded={'xl'}
-                          minW={'sm'}
-                        >
-                          <Stack>
-                            {navItem.children.map((child) => (
-                              <DesktopSubNav key={child.label} {...child} />
-                            ))}
-                          </Stack>
-                        </PopoverContent>
-                      )}
-                    </Popover>
-                  </Box>
-                ))}
-              </Stack>
-            </Flex>
+                    {navItem.children && (
+                      <PopoverContent
+                        border={0}
+                        boxShadow={'xl'}
+                        bg={popoverContentBgColor}
+                        p={4}
+                        rounded={'xl'}
+                        minW={'sm'}
+                      >
+                        <Stack>
+                          {navItem.children.map((child) => (
+                            <DesktopSubNav key={child.label} {...child} />
+                          ))}
+                        </Stack>
+                      </PopoverContent>
+                    )}
+                  </Popover>
+                </Box>
+              ))}
+            </Stack>
           </Flex>
-          <Stack flex={{ base: 2, md: 0 }} justify={'flex-end'} direction={'row'} spacing={6}>
-            {auth.currentUser.status !== 'authenticated' ? (
-              <>
-                <Button as={'a'} fontSize={'sm'} fontWeight={400} variant={'link'} href={'/login'}>
-                  Sign In
-                </Button>
-                <Button
-                  as={'a'}
-                  display={{ base: 'none', md: 'inline-flex' }}
-                  fontSize={'sm'}
-                  fontWeight={600}
-                  color={'white'}
-                  bg={'pink.400'}
-                  href={'/register'}
-                  _hover={{
-                    bg: 'pink.300',
-                  }}
-                >
-                  Sign Up
-                </Button>
-              </>
-            ) : (
+        </Flex>
+        <Stack flex={{ base: 2, md: 0 }} justify={'flex-end'} direction={'row'} spacing={6}>
+          {auth.currentUser.status !== 'authenticated' ? (
+            <>
+              <Button as={'a'} fontSize={'sm'} fontWeight={400} variant={'link'} href={'/login'}>
+                Sign In
+              </Button>
               <Button
                 as={'a'}
                 display={{ base: 'none', md: 'inline-flex' }}
@@ -128,27 +111,42 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
                 fontWeight={600}
                 color={'white'}
                 bg={'pink.400'}
-                onClick={auth.logout}
+                href={'/register'}
                 _hover={{
                   bg: 'pink.300',
                 }}
               >
-                Log Out
+                Sign Up
               </Button>
-            )}
-          </Stack>
-          <Menu>
-            <MenuButton as={Button} rounded={'full'} variant={'link'} cursor={'pointer'} minW={0}>
-              <Avatar size={'sm'} height="50px" src={logo} />
-            </MenuButton>
-            <MenuList>
-              <MenuItem>Profile</MenuItem>
-              <MenuDivider />
-              <MenuItem>Sign out</MenuItem>
-            </MenuList>
-          </Menu>
-        </Flex>
-      </Box>
+            </>
+          ) : (
+            <Button
+              as={'a'}
+              display={{ base: 'none', md: 'inline-flex' }}
+              fontSize={'sm'}
+              fontWeight={600}
+              color={'white'}
+              bg={'pink.400'}
+              onClick={auth.logout}
+              _hover={{
+                bg: 'pink.300',
+              }}
+            >
+              Log Out
+            </Button>
+          )}
+        </Stack>
+        <Menu>
+          <MenuButton as={Button} rounded={'full'} variant={'link'} cursor={'pointer'} minW={0}>
+            <Avatar size={'sm'} height="50px" src={logo} />
+          </MenuButton>
+          <MenuList>
+            <MenuItem>Profile</MenuItem>
+            <MenuDivider />
+            <MenuItem>Sign out</MenuItem>
+          </MenuList>
+        </Menu>
+      </Flex>
     </>
   );
 };

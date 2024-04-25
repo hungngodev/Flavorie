@@ -1,9 +1,8 @@
 'use client';
 
-import { useBreakpointValue } from '@chakra-ui/react';
+import { Box, useBreakpointValue } from '@chakra-ui/react';
 import { DesktopNav } from './DesktopNav';
 import { MobileNav } from './MobileNav';
-
 export interface NavItem {
   label: string;
   subLabel?: string;
@@ -43,5 +42,9 @@ export default function NavBar() {
     base: <MobileNav NavItems={NAV_ITEMS} />,
     md: <DesktopNav NavItems={NAV_ITEMS} />,
   });
-  return NavtoRender;
+  return (
+    <Box position="sticky" top="0">
+      {NavtoRender}
+    </Box>
+  );
 }
