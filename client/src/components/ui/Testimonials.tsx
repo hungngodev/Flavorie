@@ -1,6 +1,5 @@
-'use client';
-
 import { Avatar, Box, Container, Flex, Heading, Stack, Text, useColorModeValue } from '@chakra-ui/react';
+import Hero from './Hero';
 
 interface Props {
   children: React.ReactNode;
@@ -84,8 +83,7 @@ export default function WithSpeechBubbles() {
     <Box bg={useColorModeValue('gray.100', 'gray.700')}>
       <Container maxW={'7xl'} py={16} as={Stack} spacing={12}>
         <Stack spacing={0} align={'center'}>
-          <Heading>Our Clients Speak</Heading>
-          <Text>We have been working with clients around the world</Text>
+          <Hero title="" boldTitle="Our Client Speak" />
         </Stack>
         <Stack direction={{ base: 'column', md: 'row' }} spacing={{ base: 10, md: 4, lg: 10 }}>
           <Testimonial>

@@ -1,9 +1,9 @@
-import { Box, Button, Container, Heading, Icon, Stack, Text, createIcon, useColorModeValue } from '@chakra-ui/react';
+import { Box, Button, Container, Icon, Stack, Text, createIcon, useColorModeValue } from '@chakra-ui/react';
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import Lottie from 'lottie-react';
 import React from 'react';
 import { Cooking, Ingredient, LiveVideo, Scanning, Sharing } from '../assets/animations';
-import { ContainerScroll, StickyScrollReveal, Testimonials, WavyBackground } from '../components';
+import { ContainerScroll, Hero, StickyScrollReveal, Testimonials, WavyBackground } from '../components';
 
 const content = [
   {
@@ -70,24 +70,15 @@ const Main: React.FC = () => {
       target: containerRef,
     }).scrollYProgress,
   );
-  const translate = useTransform(scrollYProgress, [0, 1], [50, 300]);
+  const translate = useTransform(scrollYProgress, [0, 1], [-50, -300]);
   return (
-    <div className="flex  flex-col">
+    <div className="flex flex-col">
       <Box as={motion.div} style={{ translateY: translate }}>
         <WavyBackground backgroundFill="white">
           <Container maxW={'3xl'}>
             <Stack as={Box} textAlign={'center'} spacing={{ base: 8, md: 14 }} py={{ base: 20, md: 36 }}>
-              <Heading fontWeight={600} fontSize={{ base: '2xl', sm: '4xl', md: '6xl' }} lineHeight={'110%'}>
-                Planning your meal <br />
-                <Text as={'span'} color={'green.400'}>
-                  so you don't have to
-                </Text>
-              </Heading>
-              <Text color={'black'}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed neque elit, tristique placerat feugiat ac,
-                facilisis vitae arcu. Proin eget egestas augue. Praesent ut sem nec arcu pellentesque aliquet. Duis
-                dapibus diam vel metus tempus vulputate.
-              </Text>
+              <Hero title="Welcome to " boldTitle="Flavorie" />
+              <Text color={'black'}>We plan your meal so you don't have to!</Text>
               <Stack direction={'column'} spacing={3} align={'center'} alignSelf={'center'} position={'relative'}>
                 <Button
                   colorScheme={'green'}
@@ -128,25 +119,14 @@ const Main: React.FC = () => {
           </Container>
         </WavyBackground>
       </Box>
-      <div className="snap-start">
-        <ContainerScroll
-          titleComponent={
-            <Heading
-              fontWeight={600}
-              fontSize={{ base: '2xl', sm: '4xl', md: '6xl' }}
-              lineHeight={'110%'}
-              textAlign={'center'}
-            >
-              <Text as={'span'} color={'green.400'}>
-                Our Features
-              </Text>
-            </Heading>
-          }
-        >
+      <div>
+        <ContainerScroll titleComponent={<Hero title="" boldTitle="Our features" />}>
           <StickyScrollReveal content={content} />
         </ContainerScroll>
       </div>
-      <Testimonials />
+      <Box as={motion.div} style={{ translateY: translate }}>
+        <Testimonials />
+      </Box>
     </div>
   );
 };
