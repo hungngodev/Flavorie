@@ -31,7 +31,22 @@ const router = createBrowserRouter([
       },
       {
         path: 'ingredients',
-        element: <div> this is ingredient page</div>,
+        element: (
+          <div>
+            {' '}
+            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
+            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
+            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
+            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
+            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
+            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
+            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
+            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
+            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
+            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
+            this is ingredient page
+          </div>
+        ),
       },
       {
         path: 'meals',

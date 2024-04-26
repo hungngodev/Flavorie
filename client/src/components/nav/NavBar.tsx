@@ -35,28 +35,27 @@ const NAV_ITEMS: Array<NavItem> = [
   },
 ];
 
-export default function NavBar({ children }: { children: React.ReactNode }) {
+export default function NavBar() {
   const NavtoRender = useBreakpointValue({
     base: <MobileNav NavItems={NAV_ITEMS} />,
     md: <DesktopNav NavItems={NAV_ITEMS} />,
   });
   return (
-    <Box>
-      <Box
-        position="sticky"
-        top="0"
-        bg={useColorModeValue('white', 'gray.800')}
-        color={useColorModeValue('gray.600', 'white')}
-        minH={'60px'}
-        py={{ base: 2 }}
-        px={{ base: 4 }}
-        borderBottom={1}
-        borderStyle={'solid'}
-        borderColor={useColorModeValue('gray.200', 'gray.900')}
-      >
-        {NavtoRender}
-      </Box>
-      <Box overflowY={'hidden'}>{children}</Box>
+    <Box
+      position="sticky"
+      top="0"
+      zIndex={19}
+      width={'100%'}
+      bg={useColorModeValue('green.200', 'gray.800')}
+      color={useColorModeValue('gray.600', 'white')}
+      minH={'60px'}
+      py={{ base: 2 }}
+      px={{ base: 4 }}
+      borderBottom={1}
+      borderStyle={'solid'}
+      borderColor={useColorModeValue('gray.200', 'gray.900')}
+    >
+      {NavtoRender}
     </Box>
   );
 }
