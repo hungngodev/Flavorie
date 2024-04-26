@@ -2,7 +2,7 @@ import { ChakraBaseProvider, theme as chakraTheme, extendBaseTheme } from '@chak
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
 import HomeLayout from './layouts/homeLayout';
-import { Login, Main, Register } from './pages/index';
+import { Ingredient, Login, Main, Meal, Register } from './pages/index';
 import AuthProvider from './providers/authProvider';
 const { Button } = chakraTheme.components;
 
@@ -50,11 +50,11 @@ const router = createBrowserRouter([
       },
       {
         path: 'meals',
-        element: <div> this is meals page</div>,
+        element: <Meal />,
       },
       {
         path: 'community',
-        element: <div> this is community page</div>,
+        element: <Ingredient />,
       },
     ],
   },

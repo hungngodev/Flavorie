@@ -72,7 +72,7 @@ const Main: React.FC = () => {
   );
   const translate = useTransform(scrollYProgress, [0, 1], [-50, -300]);
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col overflow-hidden">
       <Box as={motion.div} style={{ translateY: translate }}>
         <WavyBackground backgroundFill="white">
           <Container maxW={'3xl'}>
