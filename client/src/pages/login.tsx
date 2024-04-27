@@ -17,7 +17,7 @@ import { FaUserXmark } from 'react-icons/fa6';
 import { RiUserFollowLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useAuth } from '../hooks/';
+import { useAuth } from '../hooks';
 import customFetch from '../utils/customFetch';
 interface FormFields {
   email: string;

@@ -1,8 +1,9 @@
 import { ChakraBaseProvider, theme as chakraTheme, extendBaseTheme } from '@chakra-ui/react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { Slide, ToastContainer } from 'react-toastify';
 import HomeLayout from './layouts/homeLayout';
-import { Login, Main, Register } from './pages/index';
-import AuthContextProvider from './providers/authProvider';
+import { Ingredient, Login, Main, Meal, Register } from './pages/index';
+import AuthProvider from './providers/authProvider';
 const { Button } = chakraTheme.components;
 
 const theme = extendBaseTheme({
@@ -28,20 +29,44 @@ const router = createBrowserRouter([
         path: 'login',
         element: <Login />,
       },
+      {
+        path: 'ingredients',
+        element: (
+          <div>
+            {' '}
+            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
+            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
+            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
+            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
+            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
+            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
+            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
+            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
+            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
+            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
+            this is ingredient page
+          </div>
+        ),
+      },
+      {
+        path: 'meals',
+        element: <Meal />,
+      },
+      {
+        path: 'community',
+        element: <Ingredient />,
+      },
     ],
-  },
-  {
-    path: '/dashboard',
-    element: <div> Your dashboard</div>,
   },
 ]);
 
 function App() {
   return (
     <ChakraBaseProvider theme={theme}>
-      <AuthContextProvider>
+      <AuthProvider>
         <RouterProvider router={router} />
-      </AuthContextProvider>
+        <ToastContainer autoClose={5000} limit={3} transition={Slide} />
+      </AuthProvider>
     </ChakraBaseProvider>
   );
 }

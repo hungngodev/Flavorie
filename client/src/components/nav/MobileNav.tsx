@@ -16,37 +16,29 @@ import { useAuth } from '../../hooks';
 import { NavItem } from './NavBar';
 
 export const MobileNav = ({ NavItems }: { NavItems: NavItem[] }) => {
-  NavItems = [
-    ...NavItems,
-    {
-      label: 'Your Account',
-      children: [
-        {
-          label: 'Profile',
-          href: '#',
-        },
-        {
-          label: 'Sign out',
-          href: '#',
-        },
-      ],
-    },
-  ];
   const auth = useAuth();
+  if (auth.currentUser.status === 'authenticated') {
+    NavItems = [
+      ...NavItems,
+      {
+        label: 'Your Account',
+        children: [
+          {
+            label: 'Profile',
+            href: '#',
+          },
+          {
+            label: 'Sign out',
+            href: '#',
+          },
+        ],
+      },
+    ];
+  }
   const { isOpen, onToggle } = useDisclosure();
   return (
     <>
-      <Grid
-        bg={useColorModeValue('white', 'gray.800')}
-        color={useColorModeValue('gray.600', 'white')}
-        minH={'60px'}
-        py={{ base: 2 }}
-        px={{ base: 4 }}
-        borderBottom={1}
-        borderStyle={'solid'}
-        borderColor={useColorModeValue('gray.200', 'gray.900')}
-        templateColumns={'repeat(12, 1fr)'}
-      >
+      <Grid templateColumns={'repeat(12, 1fr)'}>
         <GridItem colSpan={3} flex={{ base: 1, md: 'auto' }} ml={{ base: -2 }} display={{ base: 'flex', md: 'none' }}>
           <IconButton
             onClick={onToggle}
