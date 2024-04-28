@@ -3,7 +3,10 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
 import HomeLayout from './layouts/homeLayout';
 import { Ingredient, Login, Main, Meal, Register } from './pages/index';
-import AuthProvider from './providers/authProvider';
+import AuthProvider from './providers/authProvider';//import ChakraCarousel from "./pages/ChakraCarousel";
+import ImageSlide from "./components/ImageSlide";
+
+
 const { Button } = chakraTheme.components;
 
 const theme = extendBaseTheme({
