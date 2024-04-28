@@ -1,6 +1,17 @@
 import { Flex, HStack, VStack } from '@chakra-ui/react';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { Hero, IngredientCard } from '../components';
+
 function Ingredient() {
+  const { register, control, handleSubmit, reset, watch } = useForm({
+    defaultValues: {
+      cart: [],
+    },
+  });
+  const { fields, append, prepend, remove, swap, move, insert, replace } = useFieldArray({
+    control,
+    name: 'cart',
+  });
   return (
     <Flex width={'100%'} height="100%" direction={'column'} justify={'center'} alignItems={'center'}>
       <Hero title="" boldTitle="Market" />
@@ -24,6 +35,27 @@ function Ingredient() {
           </VStack>
         ))}
       </HStack>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <ul>
+          {fields.map((item, index) => {
+            return (
+              <li key={item.id}>
+                <input {...register(`test.${index}.firstName`, { required: true })} />
+
+                <Controller
+                  render={({ field }) => <input {...field} />}
+                  name={`test.${index}.lastName`}
+                  control={control}
+                />
+                <button type="button" onClick={() => remove(index)}>
+                  Delete
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+        <input type="submit" />
+      </form>
     </Flex>
   );
 }
