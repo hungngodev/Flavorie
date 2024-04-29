@@ -9,8 +9,12 @@ import {
     Heading,
     Image,
     Stack, 
-    Text
+    Text,
+    ChakraProvider,
+    extendTheme
     } from '@chakra-ui/react';
+import theme from "../style/theme.tsx";
+import { capsFirst } from "../utils/index.tsx";
 
 interface ImageCardProps {
     imageProps: {
@@ -25,7 +29,8 @@ interface ImageCardProps {
 
 const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
     return (
-        <Card maxW='sm' boxShadow='md' borderRadius='md' p={5}>
+        <ChakraProvider theme={extendTheme(theme)}>
+        <Card maxW='sm' boxShadow='md' borderRadius='md' p={2}>
             <CardBody>
                 <Image
                 src={imageProps.src}
@@ -37,23 +42,24 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
                     <Text w="full">
                         {imageProps.description}
                     </Text>
-                    <Text color='blue600' fontSize='2xl'>
+                    <Text color='blue.350' fontSize='28'>
                         {imageProps.price}
                     </Text>
                 </Stack>
             </CardBody>
-            <Divider borderColor='gray.200' />
+            <Divider borderColor='black.200' />
             <CardFooter>
                 <ButtonGroup>
-                    <Button variant='outline' colorScheme='gray' bg='white'>
+                    <Button variant='solid' colorScheme='blue' fontWeight='bold'>
                         See more
                     </Button>
-                    <Button variant='ghost' colorScheme='gray'>
+                    <Button variant='outline' colorScheme='blue' fontWeight='bold'>
                         Like
                     </Button>
                 </ButtonGroup>
             </CardFooter>
         </Card>
+        </ChakraProvider>
     );
 };
 
