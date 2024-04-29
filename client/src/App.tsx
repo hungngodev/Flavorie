@@ -3,7 +3,6 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
 import HomeLayout from './layouts/homeLayout';
 import { Ingredient, Login, Main, Meal, Register } from './pages/index';
-import AuthProvider from './providers/authProvider';
 const { Button } = chakraTheme.components;
 
 const theme = extendBaseTheme({
@@ -48,10 +47,8 @@ const router = createBrowserRouter([
 function App() {
   return (
     <ChakraBaseProvider theme={theme}>
-      <AuthProvider>
-        <RouterProvider router={router} />
-        <ToastContainer autoClose={5000} limit={3} transition={Slide} />
-      </AuthProvider>
+      <RouterProvider router={router} />
+      <ToastContainer autoClose={5000} limit={3} transition={Slide} />
     </ChakraBaseProvider>
   );
 }

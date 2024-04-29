@@ -5,15 +5,16 @@ type CardProps = {
   imgLink: string;
   title: string;
   category?: string;
+  height?: string;
   onClick?: () => void;
 };
-function Card({ imgLink, title, onClick }: CardProps) {
+function Card({ imgLink, title, height, onClick }: CardProps) {
   return (
     <Flex alignItems="center" minWidth={'100%'} gap={2} justifyContent="center">
       <Flex direction="column" w={'full'} justifyContent="end" alignItems="center" mx="auto">
         <Box
           bg="gray.300"
-          h={'12vw'}
+          h={height}
           w="full"
           rounded="xl"
           shadow="md"
@@ -23,33 +24,19 @@ function Card({ imgLink, title, onClick }: CardProps) {
             backgroundImage: `url(${imgLink})`,
           }}
         ></Box>
-        <Box
-          w={{
-            base: 10,
-            md: '10vw',
-          }}
-          bg="white"
+        <chakra.h4
+          textAlign="center"
+          fontWeight="bold"
+          fontSize={'xs'}
+          textTransform="uppercase"
+          color="gray.800"
           _dark={{
-            bg: 'gray.800',
+            color: 'white',
           }}
-          shadow="lg"
-          rounded="lg"
-          overflow="hidden"
+          letterSpacing={1}
         >
-          <chakra.h4
-            textAlign="center"
-            fontWeight="bold"
-            fontSize={'xs'}
-            textTransform="uppercase"
-            color="gray.800"
-            _dark={{
-              color: 'white',
-            }}
-            letterSpacing={1}
-          >
-            {title}
-          </chakra.h4>
-        </Box>
+          {title}
+        </chakra.h4>
       </Flex>
       <Flex direction={'column'} gap={4}>
         <IconButton
@@ -60,14 +47,7 @@ function Card({ imgLink, title, onClick }: CardProps) {
           icon={<AddIcon />}
           onClick={onClick}
         />
-        <IconButton
-          colorScheme="teal"
-          aria-label="Call Sage"
-          fontSize="15px"
-          size={'xs'}
-          icon={<InfoOutlineIcon />}
-          onClick={onClick}
-        />
+        <IconButton colorScheme="teal" aria-label="Call Sage" fontSize="15px" size={'xs'} icon={<InfoOutlineIcon />} />
       </Flex>
     </Flex>
   );
