@@ -1,4 +1,4 @@
-import { DeleteIcon } from '@chakra-ui/icons';
+import { ChevronLeftIcon, ChevronRightIcon, DeleteIcon } from '@chakra-ui/icons';
 import {
   Button,
   Flex,
@@ -25,11 +25,11 @@ type CartData = {
     name: string;
     image: string;
     category: string;
-    quantity: number;
+    quantity: string;
   }[];
 };
 function Ingredient() {
-  const { control, handleSubmit } = useForm<CartData>({
+  const { control, handleSubmit, watch, setValue } = useForm<CartData>({
     defaultValues: {
       cart: [],
     },
@@ -38,22 +38,29 @@ function Ingredient() {
     control,
     name: 'cart',
   });
-  const cartRef = React.useRef<LottieRefCurrentProps>(null);
+  const currentCart = watch('cart');
+  const lottieCartRef = React.useRef<LottieRefCurrentProps>(null);
+  const scrollCartRef = React.useRef<HTMLDivElement>(null);
 
+  function scroll(direction: 'left' | 'right', distance: number) {
+    if (scrollCartRef.current) {
+      if (direction === 'left') scrollCartRef.current.scrollLeft -= distance;
+      else scrollCartRef.current.scrollLeft += distance;
+    }
+  }
   const onSubmit = (data: CartData) => console.log('data', data);
   return (
     <Flex width={'100%'} height="100%" direction={'column'} gap={4} justifyContent={'center'} alignItems={'center'}>
       <Hero title="" boldTitle="Market" />
       <HStack spacing={20} overflowX={'auto'} width={'90%'} height={'fit'} marginBottom={'1vh'}>
         {mockData.map((category, index) => (
-          <VStack flexShrink={0}>
+          <VStack flexShrink={0} key={index}>
             <Button variant={'link'} colorScheme={categoryColor[category.categoryName as keyof typeof categoryColor]}>
               <Heading as="h1" size="4xl" noOfLines={1} fontSize={'2rem'}>
                 {category.categoryName}
               </Heading>
             </Button>
             <VStack
-              key={index}
               spacing={4}
               overflowY={'auto'}
               overflowX={'hidden'}
@@ -70,14 +77,20 @@ function Ingredient() {
                   category={result.ingredients[0].category}
                   height="12vh"
                   onClick={() => {
-                    append({
-                      id: result.ingredients[0].id,
-                      name: result.ingredients[0].name,
-                      image: result.ingredients[0].image,
-                      category: result.ingredients[0].category,
-                      quantity: 1,
-                    });
-                    cartRef.current?.playSegments([150, 185]);
+                    if (currentCart.some((item) => item.id === result.ingredients[0].id)) {
+                      const index = currentCart.findIndex((item) => item.id === result.ingredients[0].id);
+                      const currentQuantity = parseInt(currentCart[index].quantity);
+                      setValue(`cart.${index}.quantity`, (currentQuantity + 1).toString());
+                    } else
+                      append({
+                        id: result.ingredients[0].id,
+                        name: result.ingredients[0].name,
+                        image: result.ingredients[0].image,
+                        category: result.ingredients[0].category,
+                        quantity: '1',
+                      });
+
+                    lottieCartRef.current?.playSegments([150, 185]);
                   }}
                 />
               ))}
@@ -98,11 +111,26 @@ function Ingredient() {
           onClick={(e) => {
             e.preventDefault();
             handleSubmit(onSubmit)();
-            cartRef.current?.playSegments([0, 135]);
+            lottieCartRef.current?.playSegments([0, 135]);
           }}
         >
-          <Lottie animationData={Cart} style={{ height: 100 }} loop={false} autoPlay={false} lottieRef={cartRef} />
+          <Lottie
+            animationData={Cart}
+            style={{ height: 100 }}
+            loop={false}
+            autoPlay={false}
+            lottieRef={lottieCartRef}
+          />
         </button>
+        <IconButton
+          icon={<ChevronLeftIcon />}
+          aria-label="left"
+          onClick={() => scroll('left', 100)}
+          variant="solid"
+          colorScheme="blue"
+          size="xs"
+          height="50%"
+        />
         <form onSubmit={handleSubmit(onSubmit)}>
           <HStack
             spacing={8}
@@ -111,6 +139,7 @@ function Ingredient() {
             width={'60vw'}
             height={'full'}
             justifyContent={'start'}
+            ref={scrollCartRef}
           >
             {fields.map((item, index) => {
               return (
@@ -120,8 +149,15 @@ function Ingredient() {
                     <Controller
                       render={({ field: { ref, ...restField } }) => (
                         <HStack spacing={4}>
-                          <NumberInput allowMouseWheel {...restField} max={50}>
-                            <NumberInputField ref={ref} name={restField.name} />
+                          <NumberInput
+                            allowMouseWheel
+                            {...restField}
+                            min={0}
+                            max={50}
+                            format={(n) => (typeof n === 'string' ? parseInt(n) : n)}
+                            inputMode={'numeric'}
+                          >
+                            <NumberInputField ref={ref} name={restField.name} type="number" />
                             <NumberInputStepper flexDir={'row'}>
                               <NumberIncrementStepper />
                               <NumberDecrementStepper />
@@ -152,6 +188,15 @@ function Ingredient() {
             })}
           </HStack>
         </form>
+        <IconButton
+          icon={<ChevronRightIcon />}
+          aria-label="right"
+          onClick={() => scroll('right', 100)}
+          variant="solid"
+          colorScheme="blue"
+          size="xs"
+          height="50%"
+        />
       </Flex>
     </Flex>
   );
@@ -160,861 +205,74 @@ function Ingredient() {
 export default Ingredient;
 
 const categoryColor = {
-  Meat: 'red',
-  Vegetables: 'green',
-  Fruits: 'yellow',
-  Dairy: 'blue',
-  Grains: 'purple',
-  Spices: 'orange',
+  Category1: 'red',
+  Category2: 'blue',
+  Category3: 'green',
+  Category4: 'yellow',
+  Category5: 'orange',
+  Category6: 'purple',
+  Category7: 'pink',
+  Category8: 'cyan',
+  Category9: 'teal',
+  Category10: 'gray',
+  Category11: 'black',
 };
 
-const mockData = [
-  {
-    categoryName: 'Meat',
-    numberOfQueryKeys: 2,
-    totalNumberOfIngredients: 5,
-    results: [
-      {
-        queryKey: 'Beef',
-        ingredients: [
-          {
-            id: '1',
-            name: 'Beef',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '2',
-            name: 'Beef',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      // More results...
-    ],
-  },
-  {
-    categoryName: 'Vegetables',
-    numberOfQueryKeys: 2,
-    totalNumberOfIngredients: 5,
-    results: [
-      {
-        queryKey: 'Beef',
-        ingredients: [
-          {
-            id: '1',
-            name: 'Beef',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '2',
-            name: 'Beef',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      // More results...
-    ],
-  },
-  {
-    categoryName: 'Fruits',
-    numberOfQueryKeys: 2,
-    totalNumberOfIngredients: 5,
-    results: [
-      {
-        queryKey: 'Beef',
-        ingredients: [
-          {
-            id: '1',
-            name: 'Beef',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '2',
-            name: 'Beef',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      // More results...
-    ],
-  },
-  {
-    categoryName: 'Dairy',
-    numberOfQueryKeys: 2,
-    totalNumberOfIngredients: 5,
-    results: [
-      {
-        queryKey: 'Beef',
-        ingredients: [
-          {
-            id: '1',
-            name: 'Beef',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '2',
-            name: 'Beef',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      // More results...
-    ],
-  },
-  {
-    categoryName: 'Grains',
-    numberOfQueryKeys: 2,
-    totalNumberOfIngredients: 5,
-    results: [
-      {
-        queryKey: 'Beef',
-        ingredients: [
-          {
-            id: '1',
-            name: 'Beef',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '2',
-            name: 'Beef',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      // More results...
-    ],
-  },
-  {
-    categoryName: 'Spices',
-    numberOfQueryKeys: 2,
-    totalNumberOfIngredients: 5,
-    results: [
-      {
-        queryKey: 'Beef',
-        ingredients: [
-          {
-            id: '1',
-            name: 'Beef',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '2',
-            name: 'Beef',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      // More results...
-    ],
-  },
-  {
-    categoryName: 'Meat',
-    numberOfQueryKeys: 2,
-    totalNumberOfIngredients: 5,
-    results: [
-      {
-        queryKey: 'Beef',
-        ingredients: [
-          {
-            id: '1',
-            name: 'Beef',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '2',
-            name: 'Beef',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      {
-        queryKey: 'Chicken',
-        ingredients: [
-          {
-            id: '3',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-          {
-            id: '4',
-            name: 'Chicken',
-            image: 'https://source.unsplash.com/random',
-            category: 'Meat',
-          },
-        ],
-      },
-      // More results...
-    ],
-  },
+interface Ingredient {
+  id: string;
+  name: string;
+  image: string;
+  category: string;
+}
 
-  {
-    categoryName: 'Vegetables',
-    numberOfQueryKeys: 1,
-    totalNumberOfIngredients: 3,
-    results: [
-      {
-        queryKey: 'Carrot',
-        ingredients: [
-          {
-            id: '5',
-            name: 'Carrot',
-            image: 'https://source.unsplash.com/random',
-            category: 'Vegetables',
-          },
-          {
-            id: '6',
-            name: 'Carrot',
-            image: 'https://example.com/carrot2.jpg',
-            category: 'Vegetables',
-          },
-        ],
-      },
-      {
-        queryKey: 'Carrot',
-        ingredients: [
-          {
-            id: '5',
-            name: 'Carrot',
-            image: 'https://source.unsplash.com/random',
-            category: 'Vegetables',
-          },
-          {
-            id: '6',
-            name: 'Carrot',
-            image: 'https://example.com/carrot2.jpg',
-            category: 'Vegetables',
-          },
-        ],
-      },
-      {
-        queryKey: 'Carrot',
-        ingredients: [
-          {
-            id: '5',
-            name: 'Carrot',
-            image: 'https://source.unsplash.com/random',
-            category: 'Vegetables',
-          },
-          {
-            id: '6',
-            name: 'Carrot',
-            image: 'https://example.com/carrot2.jpg',
-            category: 'Vegetables',
-          },
-        ],
-      },
-      {
-        queryKey: 'Carrot',
-        ingredients: [
-          {
-            id: '5',
-            name: 'Carrot',
-            image: 'https://source.unsplash.com/random',
-            category: 'Vegetables',
-          },
-          {
-            id: '6',
-            name: 'Carrot',
-            image: 'https://example.com/carrot2.jpg',
-            category: 'Vegetables',
-          },
-        ],
-      },
-      // More results...
-    ],
-  },
-  // More categories...
-];
+interface Result {
+  queryKey: string;
+  ingredients: Ingredient[];
+}
+
+interface Category {
+  categoryName: string;
+  numberOfQueryKeys: number;
+  totalNumberOfIngredients: number;
+  results: Result[];
+}
+
+function generateMockData(
+  numCategories: number,
+  numQueriesPerCategory: number,
+  numIngredientsPerQuery: number,
+): Category[] {
+  const mockData: Category[] = [];
+
+  for (let i = 1; i <= numCategories; i++) {
+    const category: Category = {
+      categoryName: `Category${i}`,
+      numberOfQueryKeys: numQueriesPerCategory,
+      totalNumberOfIngredients: numQueriesPerCategory * numIngredientsPerQuery,
+      results: [],
+    };
+
+    for (let j = 1; j <= numQueriesPerCategory; j++) {
+      const queryKey = `Query ${j}`;
+      const ingredients: Ingredient[] = [];
+
+      for (let k = 1; k <= numIngredientsPerQuery; k++) {
+        const ingredient: Ingredient = {
+          id: `${(j - 1) * numIngredientsPerQuery + k + i} `,
+          name: `Ingredient ${(j - 1) * numIngredientsPerQuery + k}`,
+          image: `https://source.unsplash.com/random/${Math.random()}`,
+          category: `Category ${i}`,
+        };
+        ingredients.push(ingredient);
+      }
+
+      category.results.push({ queryKey, ingredients });
+    }
+
+    mockData.push(category);
+  }
+
+  return mockData;
+}
+
+const mockData: Category[] = generateMockData(10, 10, 10);
