@@ -9,6 +9,7 @@
     "build": "npx tsc",
     "server": "nodemon --watch 'src/**/*' -e ts --exec \"node --no-warnings --loader ts-node/esm ./src/index.ts\" ",
     "client": "cd client && npm run dev",
+    "scan-receipts": "cd scan-receipts && python app.py",
     "dev": "concurrently --kill-others-on-fail  \"npm run server\" \"npm run client\""
   },
   "keywords": [],
