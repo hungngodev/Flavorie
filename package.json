@@ -5,11 +5,11 @@
   "type": "module",
   "scripts": {
     "setup-project": "npm i && cd client && npm i",
-    "setup-production-app": "npm i && cd client && npm i && npm run build ",
+    "setup-production-app": "npm i && cd client && npm i && npm run build && cd scan-receipts && pip install -r requirements.txt ",
     "build": "npx tsc",
     "server": "nodemon --watch 'src/**/*' -e ts --exec \"node --no-warnings --loader ts-node/esm ./src/index.ts\" ",
     "client": "cd client && npm run dev",
-    "scan-receipts": "cd scan-receipts && pip install -r requirements.txt && python app.py",
+    "scan-receipts": "cd scan-receipts && python app.py",
     "dev": "concurrently --kill-others-on-fail  \"npm run server\" \"npm run client\""
   },
   "keywords": [],
