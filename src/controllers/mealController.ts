@@ -1,24 +1,20 @@
-// import { StatusCodes } from 'http-status-codes';
-// import { Request, Response } from 'express';
+import { Request, Response } from 'express';
 import axios, { AxiosHeaders } from 'axios';
+import { ServerError, BadRequestError } from '../errors/customErrors.ts';
+import { getAllMealsAPI } from '../services/spoonacular/spoonacularServices.ts';
+import { StatusCodes } from 'http-status-codes';
 
-// export const getAllMeals = async (req: Request, res: Response) => {
-//     res.send('get all meals');
-// };
-
-export const getAllMeals = async (ingredients: string[]) => {
-    try {
-        const params = new URLSearchParams({
-          ingredients: ingredients.join(','),
-          apiKey: `${process.env.spoonacular_API_KEY}`,
-          number: '5'
-        });
-
-        const response = await axios.get(`${process.env.spoonacular_API_ENDPOINT}?${params.toString()}`);
-        console.log(response.data)
-        return response.data;
-    } catch(error) {
-        console.log('Error calling API: ', error)
-        throw error;
+export const getAllMeals = async (req: Request, res: Response) => {
+    const { ingredients } = req.query;
+    if (!ingredients || typeof ingredients !== 'string') {
+        throw new BadRequestError('Please provide a list of ingredients');
+    } else {
+        try {
+            const recipes = await getAllMealsAPI(ingredients.split(','))
+            return res.json(recipes).status(StatusCodes.OK)
+        } catch (error) {
+            // return res.status(500).json({ message: `${error}` })
+            throw new ServerError(`${error}`)
+        }
     }
-};
+}
