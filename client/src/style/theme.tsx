@@ -41,6 +41,16 @@ const theme = {
         d400: "#FFFFFF",
         d700: "#080C0D",
         },
+        blue: {
+        100: "#6CB4EE",
+        200: "#2a52be",
+        250: "#0066b2",
+        300: "#0039a6",
+        350: "#034694",
+        400: "#00308F",
+        500: "#002D62",
+        600: "#002244",  
+        }, 
         black: {
         50: "#36454F",
         100: "#353935",
@@ -74,7 +84,6 @@ const theme = {
         },
         Button: {
         baseStyle: {
-            textTransform: "uppercase",
             letterSpacing: "widest",
             fontWeight: "normal",
             userSelect: "none",
