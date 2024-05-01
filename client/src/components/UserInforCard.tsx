@@ -84,3 +84,24 @@ const UserCard: React.FC<UserProps> = ({ userInfoProps }) => {
 };
 
 export default UserCard;
+
+// Instruction to use
+
+// copy this prop to function App in App.tsx
+// const userInfoProps = {
+//     avatar: {
+//             src: "../public/images/1989-Taylors-Version.webp",
+//             username: "Taylor Swift",
+//         },
+//         email: "taylorswift@gmail.com",
+//         phone: "+1 (202) 444 1989",
+//         address: {
+//             city: "Nashville",
+//             state: "Tennessee",
+//             country: "USA",
+//             zipcode: "37208",
+//         },
+// }
+
+// copy this line in return in App.tsx 
+//<UserCard userInfoProps={userInfoProps} />
