@@ -1,11 +1,23 @@
 import { StatusCodes } from 'http-status-codes';
 
+interface CustomError extends Error {
+    statusCode: number;
+}
 export class NotFoundError extends Error {
     statusCode: number; // Add the statusCode property
     constructor(message: string) {
         super(message);
         this.name = 'NotFoundError';
         this.statusCode = StatusCodes.NOT_FOUND;
+    }
+}
+
+export class ServerError extends Error {
+    statusCode: number; // Add the statusCode property
+    constructor(message: string) {
+        super(message);
+        this.name = 'ServerError';
+        this.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
     }
 }
 export class BadRequestError extends Error {
