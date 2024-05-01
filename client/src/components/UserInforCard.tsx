@@ -2,11 +2,9 @@ import React from "react";
 import {
     Avatar,
     Box,
-    Button,
     Card,
     CardHeader,
     CardBody,
-    CardFooter,
     ChakraProvider,
     Divider,
     extendTheme,
@@ -14,7 +12,6 @@ import {
     IconButton,
     Heading,
     HStack,
-    Stack,
     Text,
 } from '@chakra-ui/react';
 import { EditIcon } from '@chakra-ui/icons'
