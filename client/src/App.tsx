@@ -3,6 +3,7 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
 import HomeLayout from './layouts/homeLayout';
 import { Ingredient, Login, Main, Meal, Register } from './pages/index';
+
 const { Button } = chakraTheme.components;
 
 const theme = extendBaseTheme({
