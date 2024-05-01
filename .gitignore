@@ -1,5 +1,6 @@
 node_modules
 .env
+.venv
 out
 .DS_Store
 package-lock.json
