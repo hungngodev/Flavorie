@@ -12,7 +12,8 @@ export const vegetableIngredients: string[] = [
     "mushrooms", "zucchini", "cucumber", "lettuce", "cabbage", "celery", "asparagus",
     "green beans", "eggplant", "corn", "peas", "radishes", "sweet potatoes",
     "artichokes", "cauliflower", "brussels sprouts", "kale", "squash", "okra",
-    "turnips", "bok choy", "chard", "bean sprouts", "chives", "garlic", "ginger", "shallots", "scallions", "water chestnuts", "beets", "fennel", "leeks", "rutabaga", "endive", "collard greens", "arugula",
+    "turnips", "bok choy", "chard", "bean sprouts", "chives", "garlic", "ginger", "shallots", "scallions", "water chestnuts", "beets", "fennel",
+    "leeks", "rutabaga", "endive", "collard greens", "arugula",
 ];
 
 export const dairyIngredients: string[] = [
