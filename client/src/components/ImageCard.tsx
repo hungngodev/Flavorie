@@ -66,3 +66,16 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
 export default ImageCard;
 
 
+// Instruction to use
+
+// copy this prop to function App in App.tsx
+// const imageProps = {
+  //   src: "../public/images/baked-brie-with-roasted-mushrooms.webp",
+  //   alt: "Baked brie with roasted mushroom",
+  //   description: "Baked brie cheese with roasted mushroom on top.",
+  //   borderRadius: '8px',
+  //   price: '$4.8'
+  // }
+
+// copy this line in return in App.tsx 
+//<ImageCard imageProps={imageProps} />
