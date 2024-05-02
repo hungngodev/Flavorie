@@ -3,8 +3,10 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
 import HomeLayout from './layouts/homeLayout';
 import { Ingredient, Login, Main, Meal, Register } from './pages/index';
-import AuthProvider from './providers/authProvider';//import ImageSlide from "./components/ImageSlide";
+import AuthProvider from './providers/authProvider';//import ChakraCarousel from "./pages/ChakraCarousel";
+import ImageSlide from "./components/ImageSlide";
 import ImageCard from './components/ImageCard';
+import UserCard from './components/UserInforCard';
 
 const { Button } = chakraTheme.components;
 
@@ -64,19 +66,14 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  const imageProps = {
-    src: "../public/images/baked-brie-with-roasted-mushrooms.webp",
-    alt: "Baked brie with roasted mushroom",
-    description: "Baked brie cheese with roasted mushroom on top.",
-    borderRadius: '8px',
-    price: '$4.8'
-  }
+
   return (
     <ChakraBaseProvider theme={theme}>
+      <RouterProvider router={router} />
       <AuthProvider>
         <RouterProvider router={router} />
         <ToastContainer autoClose={5000} limit={3} transition={Slide} />
-      </AuthProvider> 
+      </AuthProvider>
     </ChakraBaseProvider>
   );
 }
