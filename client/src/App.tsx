@@ -1,16 +1,9 @@
-import { ChakraBaseProvider, theme as chakraTheme, extendBaseTheme } from '@chakra-ui/react';
+import { ChakraBaseProvider, extendTheme } from '@chakra-ui/react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
 import HomeLayout from './layouts/homeLayout';
 import { Ingredient, Login, Main, Meal, Register } from './pages/index';
-
-const { Button } = chakraTheme.components;
-
-const theme = extendBaseTheme({
-  components: {
-    Button,
-  },
-});
+import theme from './style/theme';
 
 const router = createBrowserRouter([
   {
@@ -47,7 +40,7 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <ChakraBaseProvider theme={theme}>
+    <ChakraBaseProvider theme={extendTheme(theme)}>
       <RouterProvider router={router} />
       <ToastContainer autoClose={5000} limit={3} transition={Slide} />
     </ChakraBaseProvider>
