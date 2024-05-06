@@ -9,7 +9,7 @@ type IngredientsMainProps = {
 
 export function IngredientsMain({ addFunction, data }: IngredientsMainProps) {
   return (
-    <HStack spacing={20} overflowX={'auto'} width={'95%'} height={'fit'} marginBottom={'1vh'}>
+    <VStack spacing={20} overflowY={'auto'} width={'95%'} height={'fit'} marginBottom={'1vh'}>
       {data.map((category, index) => (
         <VStack flexShrink={0} key={index}>
           <Button variant={'link'} colorScheme={category.color}>
@@ -17,14 +17,7 @@ export function IngredientsMain({ addFunction, data }: IngredientsMainProps) {
               {category.categoryName}
             </Heading>
           </Button>
-          <VStack
-            spacing={4}
-            overflowY={'auto'}
-            overflowX={'hidden'}
-            flexShrink={0}
-            height={'53vh'}
-            className="no-scroll-bar snap-y"
-          >
+          <HStack spacing={4} overflowY={'hidden'} overflowX={'auto'} flexShrink={0} className="no-scroll-bar snap-y">
             {category.results.map((result, index) => (
               <IngredientCard
                 key={result.ingredients[0].id + index}
@@ -37,10 +30,10 @@ export function IngredientsMain({ addFunction, data }: IngredientsMainProps) {
                 }}
               />
             ))}
-          </VStack>
+          </HStack>
         </VStack>
       ))}
-    </HStack>
+    </VStack>
   );
 }
 

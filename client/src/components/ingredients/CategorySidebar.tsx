@@ -41,7 +41,7 @@ export function SidebarItem({ icon, text, active, alert, onClickF, index = 0 }: 
       onClick={onClickF}
     >
       {icon}
-      <span className={`h-6 overflow-hidden transition-all ${expanded ? 'ml-3 w-20' : 'w-0'}`}>{text}</span>
+      <span className={`h-6 overflow-hidden transition-all ${expanded ? 'w-21 ml-3' : 'w-0'}`}>{text}</span>
       {alert && (
         <div
           className={`absolute right-2 h-2 w-2 rounded bg-accent-foreground hover:animate-pulse ${expanded ? 'top-0' : 'left-1 top-0'}`}
