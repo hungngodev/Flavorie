@@ -1,7 +1,7 @@
 import { ChakraBaseProvider, extendTheme } from '@chakra-ui/react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
-import HomeLayout from './layouts/homeLayout';
+import HomeLayout from './layouts/HomeLayout';
 import { Ingredient, Login, Main, Meal, Register } from './pages/index';
 import theme from './style/theme';
 

@@ -1,4 +1,3 @@
-import { Box } from '@chakra-ui/react';
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
@@ -10,9 +9,7 @@ const HomeLayout: React.FC = () => {
     <main>
       <AuthProvider>
         <Navbar />
-        <Box as="section">
-          <Outlet />
-        </Box>
+        <Outlet />
       </AuthProvider>
     </main>
   );

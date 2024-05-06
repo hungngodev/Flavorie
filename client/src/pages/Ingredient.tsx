@@ -51,7 +51,7 @@ function Ingredient() {
   }
   const onSubmit = (data: CartData) => console.log('data', data);
   return (
-    <OuterLayer width="300">
+    <OuterLayer fridgeWidth="300">
       <Flex width="100%" height="100%" direction={'column'} gap={4} justifyContent={'center'} alignItems={'center'}>
         <Hero title="" boldTitle="Market" />
         <HStack spacing={20} overflowX={'auto'} width={'90%'} height={'fit'} marginBottom={'1vh'}>
