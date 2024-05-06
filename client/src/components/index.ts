@@ -5,4 +5,6 @@ export { default as WavyBackground } from './ui/WavyBackGround';
 export { default as Testimonials } from './ui/Testimonials';
 export { default as Hero } from './ui/Hero';
 export { default as IngredientCard } from './ingredients/Card';
-export { default as OuterLayer } from './ingredients/OuterLayer';
+export { default as IngredientsMain } from './ingredients/IngredientsMain';
+export { default as CategorySidebar } from './ingredients/CategorySidebar';
+export { default as Cart } from './ingredients/Cart';

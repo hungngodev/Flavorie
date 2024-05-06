@@ -41,16 +41,16 @@ export function SidebarItem({ icon, text, active, alert, onClickF, index = 0 }: 
       onClick={onClickF}
     >
       {icon}
-      <span className={`h-6 overflow-hidden transition-all ${expanded ? 'ml-3 w-52' : 'w-0'}`}>{text}</span>
+      <span className={`h-6 overflow-hidden transition-all ${expanded ? 'ml-3 w-20' : 'w-0'}`}>{text}</span>
       {alert && (
         <div
-          className={`bg-accent-foreground absolute right-2 h-2 w-2 rounded hover:animate-pulse ${expanded ? 'top-0' : 'left-1 top-0'}`}
+          className={`absolute right-2 h-2 w-2 rounded bg-accent-foreground hover:animate-pulse ${expanded ? 'top-0' : 'left-1 top-0'}`}
         ></div>
       )}
 
       {!expanded && (
         <motion.div
-          className={`text-md border-1 bg-popover text-secondary-foreground invisible absolute left-full ml-1 w-min -translate-x-3 text-nowrap rounded-md opacity-20 transition-all group-hover:visible group-hover:translate-x-0 group-hover:opacity-100`}
+          className={`text-md border-1 invisible absolute left-full ml-1 w-min -translate-x-3 text-nowrap rounded-md  text-secondary-foreground opacity-20 transition-all group-hover:visible group-hover:translate-x-0 group-hover:opacity-100`}
         >
           {text}
         </motion.div>
@@ -127,11 +127,11 @@ const Sidebar: FC<SidebarProps> = ({ expanded, setExpanded }: SidebarProps) => {
 
   return (
     <SidebarContext.Provider value={{ expanded }}>
-      <div className={`border-black-400  relative z-10 flex h-full w-min  flex-col  border-r shadow-sm`}>
-        <button onClick={setExpanded} className="hover:bg-secondary cursor-pointer  rounded-lg p-1.5 ">
+      <div className={`space-between bg relative z-10 flex h-full w-min flex-col border-r shadow-sm`}>
+        <button onClick={setExpanded} className="cursor-pointer rounded-lg  p-1.5 hover:bg-secondary ">
           <ChevronFirst className={`${expanded ? '' : 'rotate-180'} ml-4 transition-all duration-500 `} />
         </button>
-        <ul className="flex-1 px-3">
+        <ul className="flex h-full w-full  flex-col justify-around px-3">
           {mainNav.map((item, index) => (
             <SidebarItem key={index} {...item} />
           ))}
