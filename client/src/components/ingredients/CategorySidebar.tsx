@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
-import { Calendar, ChevronFirst, Flag, Home, Layers, LayoutDashboard, StickyNote } from 'lucide-react';
+import { ChevronFirst } from 'lucide-react';
 import { FC, ReactNode, createContext, useContext } from 'react';
+import { Link } from 'react-router-dom';
 
 type SidebarItemProps = {
   icon: ReactNode;
@@ -13,7 +14,7 @@ type SidebarItemProps = {
 };
 
 type SidebarProps = {
-  category?: string[];
+  categories?: SidebarItemProps[];
   expanded: boolean;
   setExpanded: () => void;
 };
@@ -24,107 +25,68 @@ type SidebarContextProps = {
 
 const SidebarContext = createContext<SidebarContextProps | undefined>(undefined);
 
-export function SidebarItem({ icon, text, active, alert, onClickF, index = 0 }: SidebarItemProps): JSX.Element {
+export function SidebarItem({ icon, text, active, alert, onClickF, index = 0, link }: SidebarItemProps): JSX.Element {
   const { expanded } = useContext(SidebarContext) as SidebarContextProps;
   return (
-    <motion.li
-      initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{
-        type: 'spring',
-        stiffness: 260,
-        damping: 20,
-        delay: 0.002 + index / 40,
-      }}
-      key={index}
-      className={`group relative my-1 flex w-min cursor-pointer  items-center rounded-md px-3 py-2 font-medium  transition-colors ${active ? 'bg-accent text-accent-foreground' : 'bg-background text-secondary-foreground  hover:bg-secondary'}`}
-      onClick={onClickF}
-    >
-      {icon}
-      <span className={`h-6 overflow-hidden transition-all ${expanded ? 'w-21 ml-3' : 'w-0'}`}>{text}</span>
-      {alert && (
-        <div
-          className={`absolute right-2 h-2 w-2 rounded bg-accent-foreground hover:animate-pulse ${expanded ? 'top-0' : 'left-1 top-0'}`}
-        ></div>
-      )}
-
-      {!expanded && (
-        <motion.div
-          className={`text-md border-1 invisible absolute left-full ml-1 w-min -translate-x-3 text-nowrap rounded-md  text-secondary-foreground opacity-20 transition-all group-hover:visible group-hover:translate-x-0 group-hover:opacity-100`}
+    <Link to={onClickF ? '' : link}>
+      <motion.li
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{
+          type: 'spring',
+          stiffness: 260,
+          damping: 20,
+          delay: 0.002 + index / 40,
+        }}
+        key={index}
+        className={`group relative my-1 flex w-min cursor-pointer  items-center rounded-md px-3 py-2 font-medium  transition-colors ${active ? 'bg-accent text-accent-foreground' : 'bg-background text-secondary-foreground  hover:bg-secondary'}`}
+        onClick={onClickF}
+      >
+        {icon}
+        <motion.span
+          className={`text-md ml-3 h-6 overflow-hidden  font-medium`}
+          variants={{
+            expanded: {
+              width: '6rem',
+              marginLeft: '1rem',
+              opacity: 1,
+              scale: 1,
+            },
+            collapsed: {
+              width: 0,
+              marginLeft: 0,
+              opacity: 0,
+              scale: 0,
+            },
+          }}
+          transition={{
+            width: { duration: 0.2 },
+            opacity: { duration: 0.1, delay: 0.052 + index / 30 },
+            scale: { duration: 0.15, delay: 0.002 + index / 30 },
+          }}
+          animate={expanded ? 'expanded' : 'collapsed'}
         >
           {text}
-        </motion.div>
-      )}
-    </motion.li>
+        </motion.span>
+        {alert && (
+          <div
+            className={`absolute right-2 h-2 w-2 rounded bg-accent-foreground transition-all hover:animate-pulse ${expanded ? 'top-0' : 'left-1 top-0'}`}
+          ></div>
+        )}
+
+        {!expanded && (
+          <motion.div
+            className={`text-md border-1 invisible absolute left-full ml-1 w-min -translate-x-3 text-nowrap rounded-md  text-secondary-foreground opacity-20 transition-all group-hover:visible group-hover:translate-x-0 group-hover:opacity-100`}
+          >
+            {text}
+          </motion.div>
+        )}
+      </motion.li>
+    </Link>
   );
 }
-const Sidebar: FC<SidebarProps> = ({ expanded, setExpanded }: SidebarProps) => {
-  const mainNav = [
-    {
-      index: 1,
-      icon: <Home size={20} />,
-      text: 'Meats',
-      alert: true,
-      link: '',
-    },
-    {
-      index: 2,
-      icon: <LayoutDashboard size={20} />,
-      text: 'Vegetables',
-      active: true,
-      link: '',
-    },
-    {
-      index: 3,
-      icon: <StickyNote size={20} />,
-      text: 'Fruits',
-      alert: true,
-      link: '',
-    },
-    {
-      index: 4,
-      icon: <Calendar size={20} />,
-      text: 'Nuts',
-      link: '',
-    },
-    {
-      index: 5,
-      icon: <Layers size={20} />,
-      text: 'Spices',
-      link: '',
-    },
-    {
-      index: 6,
-      icon: <Flag size={20} />,
-      text: 'Dairy',
-      link: '',
-    },
-    {
-      index: 7,
-      icon: <Flag size={20} />,
-      text: 'Bakery',
-      link: '',
-    },
-    {
-      index: 8,
-      icon: <Flag size={20} />,
-      text: 'Beverages',
-      link: '',
-    },
-    {
-      index: 9,
-      icon: <Flag size={20} />,
-      text: 'Frozen',
-      link: '',
-    },
-    {
-      index: 10,
-      icon: <Flag size={20} />,
-      text: 'Others',
-      link: '',
-    },
-  ];
-
+const Sidebar: FC<SidebarProps> = ({ categories, expanded, setExpanded }: SidebarProps) => {
+  const mainNav = categories || [];
   return (
     <SidebarContext.Provider value={{ expanded }}>
       <div className={`space-between bg relative z-10 flex h-full w-min flex-col border-r shadow-sm`}>

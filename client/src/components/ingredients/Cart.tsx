@@ -84,7 +84,7 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
       </HStack>
 
       <form>
-        <VStack spacing={8} width={'110%'} height={'60vh'} overflowY={'auto'} overflowX={'hidden'}>
+        <VStack spacing={8} width={'110%'} height={'70vh'} overflowY={'auto'} overflowX={'hidden'}>
           {fields.map((item, index) => {
             return (
               <HStack width={'100%'} spacing={4} key={index} minWidth={'3rem'} flexShrink={0}>

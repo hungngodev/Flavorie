@@ -1,5 +1,5 @@
 import { ChakraBaseProvider, extendTheme } from '@chakra-ui/react';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
 import HomeLayout from './layouts/HomeLayout';
 import { Ingredient, Login, Main, Meal, Register } from './pages/index';
@@ -24,7 +24,17 @@ const router = createBrowserRouter([
       },
       {
         path: 'ingredients',
-        element: <Ingredient />,
+        element: <Outlet />,
+        children: [
+          {
+            index: true,
+            element: <Ingredient />,
+          },
+          {
+            path: ':category',
+            element: <Ingredient />,
+          },
+        ],
       },
       {
         path: 'meals',

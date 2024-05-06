@@ -6,16 +6,17 @@ type CardProps = {
   title: string;
   category?: string;
   height?: string;
+  width?: string;
   onClick?: () => void;
 };
-function Card({ imgLink, title, height, onClick }: CardProps) {
+function Card({ imgLink, title, height, width, onClick }: CardProps) {
   return (
-    <Flex alignItems="center" minWidth={'100%'} gap={2} justifyContent="center">
+    <Flex alignItems="center" gap={5} justifyContent="center">
       <Flex direction="column" w={'full'} justifyContent="end" alignItems="center" mx="auto">
         <Box
           bg="gray.300"
           h={height}
-          w="full"
+          w={width}
           rounded="xl"
           shadow="md"
           bgSize="cover"

@@ -1,9 +1,10 @@
 import { Box, Flex, IconButton, useDisclosure } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { LottieRefCurrentProps } from 'lottie-react';
-import { Refrigerator } from 'lucide-react';
+import { Calendar, Flag, Home, Layers, LayoutDashboard, Refrigerator, StickyNote } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
+import { useParams } from 'react-router-dom';
 import { Cart, CategorySidebar, IngredientsMain } from '../components';
 
 export type CartData = {
@@ -39,6 +40,82 @@ export type Category = {
 export type IngredientData = Category[];
 
 export default function OuterLayer() {
+  const { category } = useParams<{ category: string }>();
+  const categories = [
+    {
+      index: 1,
+      icon: <Home size={20} />,
+      text: 'Meats',
+      alert: true,
+      active: category === 'meats',
+      link: '/ingredients/meats',
+    },
+    {
+      index: 2,
+      icon: <LayoutDashboard size={20} />,
+      text: 'Vegetables',
+      active: category === 'vegetables',
+      link: '/ingredients/vegetables',
+    },
+    {
+      index: 3,
+      icon: <StickyNote size={20} />,
+      text: 'Fruits',
+      alert: true,
+      active: category === 'fruits',
+      link: '/ingredients/fruits',
+    },
+    {
+      index: 4,
+      icon: <Calendar size={20} />,
+      text: 'Nuts',
+      active: category === 'nuts',
+      link: '/ingredients/nuts',
+    },
+    {
+      index: 5,
+      icon: <Layers size={20} />,
+      text: 'Spices',
+      active: category === 'spices',
+      link: '/ingredients/spices',
+    },
+    {
+      index: 6,
+      icon: <Flag size={20} />,
+      text: 'Dairy',
+      active: category === 'dairy',
+      link: '/ingredients/dairy',
+    },
+    {
+      index: 7,
+      icon: <Flag size={20} />,
+      text: 'Bakery',
+      active: category === 'bakery',
+      link: '/ingredients/bakery',
+    },
+    {
+      index: 8,
+      icon: <Flag size={20} />,
+      text: 'Beverages',
+      active: category === 'beverages',
+      link: '/ingredients/beverages',
+    },
+    {
+      index: 9,
+      icon: <Flag size={20} />,
+      text: 'Frozen',
+      active: category === 'frozen',
+      link: '/ingredients/frozen',
+    },
+    {
+      index: 10,
+      icon: <Flag size={20} />,
+      text: 'Others',
+      active: category === 'others',
+      link: '/ingredients/others',
+    },
+  ];
+
   const fridgeWidth = '300';
   const { getButtonProps, getDisclosureProps, isOpen } = useDisclosure();
   const [hidden, setHidden] = useState(!isOpen);
@@ -98,22 +175,11 @@ export default function OuterLayer() {
         icon={<Refrigerator />}
       />
 
-      <CategorySidebar expanded={expanded} setExpanded={() => setExpanded((cur) => !cur)} />
-      <div className="relative z-0 h-full w-full overflow-auto">
-        <Box
-          height={'100%'}
-          as={motion.div}
-          onAnimationStart={() => {
-            setHidden(false);
-          }}
-          onAnimationComplete={() => {
-            setHidden(!isOpen);
-          }}
-        >
-          <Flex width="100%" height="100%" direction={'column'} gap={4} justifyContent={'center'} alignItems={'center'}>
-            <IngredientsMain data={mockData} addFunction={addFunction} />
-          </Flex>
-        </Box>
+      <CategorySidebar categories={categories} expanded={expanded} setExpanded={() => setExpanded((cur) => !cur)} />
+      <div className="relative z-0 h-full w-full overflow-auto transition-all">
+        <Flex width="100%" height="100%" direction={'column'} gap={4} justifyContent={'center'} alignItems={'center'}>
+          <IngredientsMain data={mockData} addFunction={addFunction} />
+        </Flex>
       </div>
       <motion.div
         {...getDisclosureProps()}
