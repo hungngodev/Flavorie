@@ -38,15 +38,14 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
     <Flex
       marginTop={'4vh'}
       alignItems={'center'}
-      width={'80%'}
+      width={'95%'}
       height={'full'}
       gap={10}
       border="2px solid"
       borderColor="black"
       flexDir={'column'}
       rounded={'xl'}
-      padding={4}
-      maxH={'80vh'}
+      maxH={'85vh'}
     >
       <HStack>
         <IconButton
@@ -85,10 +84,10 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
       </HStack>
 
       <form>
-        <VStack spacing={8} height={'50vh'} overflowY={'auto'} overflowX={'hidden'}>
+        <VStack spacing={8} width={'110%'} height={'60vh'} overflowY={'auto'} overflowX={'hidden'}>
           {fields.map((item, index) => {
             return (
-              <HStack spacing={4} key={index} minWidth={'3rem'} flexShrink={0}>
+              <HStack width={'100%'} spacing={4} key={index} minWidth={'3rem'} flexShrink={0}>
                 <Image src={item.image} alt={item.name} height={'10vh'} width={'9vh'} rounded={'xl'} />
                 <Flex direction={'column'} justifyContent={'center'} gap={2} width={'5vw'}>
                   <Controller
