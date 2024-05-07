@@ -1,4 +1,4 @@
-import { Box, Button, Container, Icon, Stack, Text, createIcon, useColorModeValue } from '@chakra-ui/react';
+import { Box, Button, Container, Flex, Icon, Stack, Text, createIcon, useColorModeValue } from '@chakra-ui/react';
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import Lottie from 'lottie-react';
 import React from 'react';
@@ -125,7 +125,9 @@ const Main: React.FC = () => {
         </ContainerScroll>
       </div>
       <Box as={motion.div} style={{ translateY: translate }}>
-        <Testimonials />
+        <Flex justifyContent={'center'} alignItems={'center'}>
+          <Testimonials />
+        </Flex>
       </Box>
     </div>
   );

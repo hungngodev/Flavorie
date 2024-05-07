@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { CiCircleCheck, CiLogin } from 'react-icons/ci';
+import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import AuthContext, { AuthContextType } from '../contexts/authContext';
 import customFetch from '../utils/customFetch';
@@ -13,6 +14,7 @@ const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ children }: A
     email: '',
     status: 'loading',
   });
+  const location = useLocation();
 
   const logout = async () => {
     try {
@@ -27,21 +29,27 @@ const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ children }: A
       toast.error('Error during logging out, please try later!', { position: 'top-right', icon: <CiLogin /> });
     }
   };
+
   const setUser = async () => {
-    const getUser = await customFetch.get('/user/current-user');
-    console.dir(getUser.data);
-
-    setCurrentUser({ username: getUser.data.user.name, email: getUser.data.user.email, status: 'authenticated' });
-  };
-
-  useEffect(() => {
     try {
-      setUser();
+      const getUser = await customFetch.get('/user/current-user');
+      setCurrentUser({ username: getUser.data.user.name, email: getUser.data.user.email, status: 'authenticated' });
     } catch (error) {
       setCurrentUser({ username: '', email: '', status: 'unauthenticated' });
       console.log(error);
     }
+  };
+
+  useEffect(() => {
+    const setIntervalId = setInterval(() => {
+      setUser();
+    }, 60000);
+    return () => clearInterval(setIntervalId);
   }, []);
+  useEffect(() => {
+    setUser();
+  }, [location]);
+
   return <AuthContext.Provider value={{ currentUser, logout, setUser }}>{children}</AuthContext.Provider>;
 };
 

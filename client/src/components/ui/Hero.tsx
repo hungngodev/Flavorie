@@ -7,7 +7,7 @@ type HeroProps = {
 export default function Hero({ title, boldTitle }: HeroProps) {
   return (
     <Heading fontWeight={600} fontSize={{ base: '2xl', sm: '4xl', md: '6xl' }} lineHeight={'110%'}>
-      {title} <br />
+      {title}
       <Text as={'span'} color={'green.400'}>
         {boldTitle}
       </Text>

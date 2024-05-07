@@ -3,14 +3,17 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import { Navbar } from '../components';
+import { AuthProvider } from '../providers';
 
 const HomeLayout: React.FC = () => {
   return (
     <main>
-      <Navbar />
-      <Box as="section">
-        <Outlet />
-      </Box>
+      <AuthProvider>
+        <Navbar />
+        <Box as={'section'} width="100%" height="90vh">
+          <Outlet />
+        </Box>
+      </AuthProvider>
     </main>
   );
 };
