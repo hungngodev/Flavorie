@@ -76,6 +76,11 @@ export const getMealByFilter = async (
       params: searchParam,
     });
 
+    if (size === 0) {
+      return [];
+    } else if (size && size > mealFilterRequest.data.meals.length) {
+      return mealFilterRequest.data.meals;
+    }
     return size
       ? mealFilterRequest.data.meals.slice(0, size)
       : mealFilterRequest.data.meals;
