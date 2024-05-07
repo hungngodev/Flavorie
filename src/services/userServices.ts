@@ -34,3 +34,25 @@ export async function checkLogin(userDocument: User): Promise<string> {
 
     return token;
 }
+
+type UserValueTypes = {
+    [K in keyof User]: User[K];
+}[keyof User];
+
+
+export async function modifyOrdinaryInfo(userId: string, reqInfo: User): Promise<void> {
+    let user = await UserModel.findById(userId);
+    if (!user) throw new UnauthenticatedError('User not found');
+    if (reqInfo.role !== 'admin') throw new UnauthenticatedError('Not Allowed');
+    if ("name" in reqInfo) user.name = reqInfo.name;
+    if ("email" in reqInfo) user.email = reqInfo.email;
+    if ("password" in reqInfo) user.password = await hashPassword(reqInfo.password);
+    if ("lastName" in reqInfo) user.lastName = reqInfo.lastName;
+    if ("location" in reqInfo) user.location = reqInfo.location;
+    if ("role" in reqInfo) user.role = reqInfo.role;
+    if ("avatarPublicId" in reqInfo) user.avatarPublicId = reqInfo.avatarPublicId;
+    if ("preferences" in reqInfo) user.preferences = reqInfo.preferences;
+    if ("allergy" in reqInfo) user.allergy = reqInfo.allergy;
+    if ("diet" in reqInfo) user.diet = reqInfo.diet;
+    await user.save();
+}

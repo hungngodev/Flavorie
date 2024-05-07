@@ -6,6 +6,7 @@ import { catchAsync } from '../utils/catchAsync.ts';
 import { getDietAndAllergy } from '../middleware/userMiddleware.ts';
 
 router.get('/', checkUser, catchAsync(getDietAndAllergy), catchAsync(getAllIngredients));
+router.get('/:id',)
 
 
 export default router;
