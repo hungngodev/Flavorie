@@ -2,7 +2,7 @@ import mongoose, { Types } from 'mongoose';
 import bcrypt from 'bcrypt';
 import { Ingredient } from './IngredientsModel.ts';
 import { Meal } from './MealModel.ts';
-export interface User extends mongoose.Document {
+export interface User {
     name: string;
     email: string;
     password: string;
@@ -20,8 +20,9 @@ export interface User extends mongoose.Document {
     cart: Types.DocumentArray<Ingredient>;
     statistic: string[];
 }
-type UserModel = mongoose.Model<User>;
-const UserSchema = new mongoose.Schema<User, UserModel>({
+interface UserDocument extends User, mongoose.Document { };
+type UserModel = mongoose.Model<UserDocument>;
+const UserSchema = new mongoose.Schema<UserDocument, UserModel>({
     name: {
         type: String,
         required: true,
@@ -94,4 +95,4 @@ UserSchema.pre('save', async function (next) {
     }
     next();
 });
-export default mongoose.model<User, UserModel>('User', UserSchema);
+export default mongoose.model<UserDocument, UserModel>('User', UserSchema);
