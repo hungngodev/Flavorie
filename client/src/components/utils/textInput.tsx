@@ -6,7 +6,7 @@ interface TextInputProps extends React.ComponentPropsWithRef<'input'> {
   name?: string;
   id?: string;
   inputStyle?: 'outline' | 'unstyled' | 'flushed' | 'filled';
-  inputType?: 'text' | 'number' | 'email' | 'password' | 'search' | 'tel' | 'url';
+  inputType?: 'text' | 'email' | 'password' | 'search' | 'tel' | 'url';
   inputSize?: ResponsiveValue<string> | undefined;
   placeHolder?: string;
   errorText?: string;
