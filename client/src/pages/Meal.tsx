@@ -1,10 +1,5 @@
-import { TextInput } from '../components/index';
 function Meal() {
-  return (
-    <div>
-      <TextInput />
-    </div>
-  );
+  return <div>Meal</div>;
 }
 
 export default Meal;
