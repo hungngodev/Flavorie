@@ -1,7 +1,15 @@
-import { Input, InputGroup, InputLeftElement, InputRightElement, ResponsiveValue } from '@chakra-ui/react';
+import {
+  FormControlProps,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  InputRightElement,
+  ResponsiveValue,
+} from '@chakra-ui/react';
 import React from 'react';
 
-import { FormControl, FormErrorMessage, FormHelperText, VStack } from '@chakra-ui/react';
+import { FormControl, FormErrorMessage, FormHelperText } from '@chakra-ui/react';
+
 interface TextInputProps extends React.ComponentPropsWithRef<'input'> {
   name?: string;
   id?: string;
@@ -24,6 +32,7 @@ interface TextInputProps extends React.ComponentPropsWithRef<'input'> {
     | undefined;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  props?: Omit<FormControlProps, 'isInvalid' | 'isDisabled' | 'size'>;
 }
 
 const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
@@ -32,8 +41,8 @@ const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
       name,
       id,
       inputSize,
-      inputStyle,
-      inputType,
+      inputStyle = 'outline',
+      inputType = 'text',
       placeHolder,
       errorText,
       helperText,
@@ -45,33 +54,35 @@ const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
       errorColor,
       isValid = true,
       isDisabled,
-      space,
+      ...props
     },
     forwardedRef,
   ) => {
     return (
-      <FormControl isInvalid={!isValid} isDisabled={isDisabled}>
-        <InputGroup>
-          <VStack spacing={space}>
-            {leftElement && <InputLeftElement children={leftElement} />}
-            {rightElement && <InputRightElement children={rightElement} />}
-            <Input
-              focusBorderColor={focusColor ?? 'green.500'}
-              errorBorderColor={errorColor ?? 'red.500'}
-              name={name}
-              id={id}
-              type={inputType ?? 'text'}
-              size={inputSize ?? 'md'}
-              variant={inputStyle ?? 'outline'}
-              placeholder={placeHolder}
-              onChange={onChange}
-              onFocus={onFocus}
-              ref={forwardedRef}
-            />
-            {helperText && <FormHelperText>{helperText}</FormHelperText>}
-            {!isValid && <FormErrorMessage>{errorText ?? 'Invalid input'}</FormErrorMessage>}
-          </VStack>
+      <FormControl isInvalid={!isValid} isDisabled={isDisabled} {...props} size="auto">
+        {helperText && <FormHelperText display="block">{helperText}</FormHelperText>}
+        <InputGroup height="100%">
+          {leftElement && <InputLeftElement>{leftElement}</InputLeftElement>}
+          {rightElement && <InputRightElement>{rightElement}</InputRightElement>}
+          <Input
+            focusBorderColor={focusColor ?? 'green.500'}
+            errorBorderColor={errorColor ?? 'red.500'}
+            name={name}
+            id={id}
+            type={inputType ?? 'text'}
+            size={inputSize}
+            variant={inputStyle ?? 'outline'}
+            placeholder={placeHolder}
+            onChange={onChange}
+            onFocus={onFocus}
+            ref={forwardedRef}
+            as="input"
+            height={inputSize ? undefined : '100%'}
+            width="100%"
+          />
         </InputGroup>
+
+        {!isValid && <FormErrorMessage display="block">{errorText ?? 'Invalid input'}</FormErrorMessage>}
       </FormControl>
     );
   },
