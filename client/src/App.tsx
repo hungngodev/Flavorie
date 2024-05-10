@@ -1,64 +1,66 @@
-import {
-  ChakraBaseProvider,
-  theme as chakraTheme,
-  extendBaseTheme,
-} from "@chakra-ui/react";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import { validateRegisterInput } from "/Users/vynguyen/Documents/VSCode/Flavorie/src/middleware/validateRegis.ts";
+import { ChakraBaseProvider, extendTheme } from '@chakra-ui/react';
+import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { Slide, ToastContainer } from 'react-toastify';
+import HomeLayout from './layouts/HomeLayout';
+import { Ingredient, Login, Main, Meal, Register } from './pages/index';
+import theme from './style/theme';
 
 const { Button } = chakraTheme.components;
-
-const sampleRegis = {
-  username: "Sophie",
-  email: "sophie.abc@gmail.com",
-  password: "12345678",
-  reEnterPassword: "12345678",
-};
 
 const theme = extendBaseTheme({
   components: {
     Button,
   },
 });
+
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <div> Your components </div>,
+    path: '/',
+    element: <HomeLayout />,
     children: [
       {
         index: true,
-        element: <div> Your components</div>,
+        element: <Main />,
       },
       {
-        path: "register",
-        element: <div> Register</div>,
+        path: 'register',
+        element: <Register />,
       },
       {
-        path: "login",
-        element: <div> Your components</div>,
+        path: 'login',
+        element: <Login />,
+      },
+      {
+        path: 'ingredients',
+        element: <Outlet />,
+        children: [
+          {
+            index: true,
+            element: <Ingredient />,
+          },
+          {
+            path: ':category',
+            element: <Ingredient />,
+          },
+        ],
+      },
+      {
+        path: 'meals',
+        element: <Meal />,
+      },
+      {
+        path: 'community',
+        element: <div>Community</div>,
       },
     ],
-  },
-  {
-    path: "/dashboard",
-    element: <div> Your dashboared</div>,
   },
 ]);
 
 function App() {
-  try {
-    validateRegisterInput.parse(sampleRegis);
-    console.log("Register data is ok");
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error("Registration data is invalid:", error.message);
-    } else {
-      console.error("Unknown error occurred:", error);
-    }
-  }
   return (
-    <ChakraBaseProvider theme={theme}>
+    <ChakraBaseProvider theme={extendTheme(theme)}>
       <RouterProvider router={router} />
+      <ToastContainer autoClose={5000} limit={3} transition={Slide} />
     </ChakraBaseProvider>
   );
 }

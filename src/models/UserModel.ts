@@ -1,5 +1,7 @@
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import bcrypt from 'bcrypt';
+import { Ingredient } from './IngredientsModel.ts';
+import { Meal } from './MealModel.ts';
 export interface User {
     name: string;
     email: string;
@@ -8,14 +10,19 @@ export interface User {
     location: string;
     role: string;
     avatar: string;
+    avatarFileName: string;
     avatarPublicId: string;
     preferences: string[];
     allergy: string[];
-    leftOver: string[];
-    mealCooking: string[];
+    diet: string;
+    leftOver: Types.DocumentArray<Ingredient>;
+    mealCooking: Types.DocumentArray<Meal>;
+    cart: Types.DocumentArray<Ingredient>;
     statistic: string[];
 }
-const UserSchema = new mongoose.Schema<User>({
+interface UserDocument extends User, mongoose.Document { };
+type UserModel = mongoose.Model<UserDocument>;
+const UserSchema = new mongoose.Schema<UserDocument, UserModel>({
     name: {
         type: String,
         required: true,
@@ -41,24 +48,34 @@ const UserSchema = new mongoose.Schema<User>({
         default: 'user',
     },
     avatar: String,
+    avatarFileName: String,
     avatarPublicId: String,
-
     preferences: {
         type: [String],
         default: [],
     },
-    allergy: {
-        type: [String],
-        default: [],
-    },
-    leftOver: {
-        type: [String],
-        default: [],
-    },
-    mealCooking: {
-        type: [String],
-        default: [],
-    },
+    allergy: [{
+        type: String,
+        enum: ["Dairy", "Egg", "Gluten", "Grain", "Peanut", "Seafood", "Sesame", "Shellfish", "Soy", "Sulfite", "Tree Nut", "Wheat"],
+    }],
+    diet: [
+        {
+            type: String,
+            enum: ["Gluten Free", "Ketogenic", "Vegetarian", "Lacto-Vegetarian", "Ovo-Vegetarian", "Vegan", "Pescetarian", "Paleo", "Primal", "Whole30", "Low FODMAP"],
+        }
+    ],
+    leftOver: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Ingredient'
+    }],
+    mealCooking: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Meal'
+    }],
+    cart: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Ingredient'
+    }],
     statistic: {
         type: [String],
         default: [],
@@ -78,4 +95,4 @@ UserSchema.pre('save', async function (next) {
     }
     next();
 });
-export default mongoose.model<User>('User', UserSchema);
+export default mongoose.model<UserDocument, UserModel>('User', UserSchema);
