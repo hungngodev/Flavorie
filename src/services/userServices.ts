@@ -56,3 +56,13 @@ export async function modifyOrdinaryInfo(userId: string, reqInfo: User): Promise
     if ("diet" in reqInfo) user.diet = reqInfo.diet;
     await user.save();
 }
+
+
+export async function modifyLeftOver(userId: string, reqInfo: User): Promise<void> {
+    let user = await UserModel.findById(userId);
+    if (!user) throw new UnauthenticatedError('User not found');
+    for (let i = 0; i < reqInfo.leftOver.length; i++) {
+        user.leftOver.push(reqInfo.leftOver[i]);
+    }
+    await user.save();
+}
