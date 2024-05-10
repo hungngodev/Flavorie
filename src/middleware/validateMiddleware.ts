@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import z from 'zod';
 import { BadRequestError } from '../errors/customErrors.ts';
 
+// login
 export const logInData = z.object({
     email: z.string().email(),
     password: z.string().min(6),
@@ -17,6 +18,7 @@ export const validateLoginInput = (req: Request, res: Response, next: NextFuncti
 
 }
 
+// register
 export const registerData = z.object({
     username: z.string().min(4),
     email: z.string().email(),
@@ -42,25 +44,25 @@ export const validateRegisterInput = (
         } 
 };
 
-// mock data
-const sampleRegis = {
-    username: "Sophie",
-    email: "sophie.abc@gmail.com",
-    password: "12345678",
-    reEnterPassword: "12345605",
-};
+// mock data for register
+// const sampleRegis = {
+//     username: "Sophie",
+//     email: "sophie.abc@gmail.com",
+//     password: "12345678",
+//     reEnterPassword: "12345605",
+// };
 
-console.log(sampleRegis);
-const mockRequest = { body: sampleRegis } as Request;
-const mockResponse = {} as Response;
-const mockNext: NextFunction = (error?: any) => {
-    if (error) {
-        console.error("Error caught in validateRegisterInput:", error);
-        return; 
-    }
-    console.log('Registration successful'); 
-};
+// console.log(sampleRegis);
+// const mockRequest = { body: sampleRegis } as Request;
+// const mockResponse = {} as Response;
+// const mockNext: NextFunction = (error?: any) => {
+//     if (error) {
+//         console.error("Error caught in validateRegisterInput:", error);
+//         return; 
+//     }
+//     console.log('Registration successful'); 
+// };
 
-validateRegisterInput(mockRequest, mockResponse, mockNext);
+// validateRegisterInput(mockRequest, mockResponse, mockNext);
 
 
