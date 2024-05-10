@@ -1,7 +1,9 @@
+import { create } from "domain";
 import { get } from "http";
+import IngredientModel from "../../models/IngredientsModel.ts";
+import User from "../../models/UserModel.ts";
 import { Areas, Categories, Ingredients } from "./data.ts";
 import { filterParamType } from "./type";
-
 // get a random key from a data array
 export const getRandomKey = (givenData: string[]): string => {
   const randomIndex = Math.floor(Math.random() * givenData.length);
@@ -46,21 +48,29 @@ export const getQueryParameter = (filter: filterParamType): string | null => {
   return queryParam;
 };
 
-// check if a key exists in a data array of a filter
-export const getFilteredValue = (
-  filter: filterParamType,
-  filterValue: string | "random",
-): string | null => {
-  let resultCategory = null;
-  const data = getDataFromParam(filter);
+// populte a mock User document with 10 Ingredients document in the leftOver field
+export const createLeftOverDocument = async () => {
+  const testUser = await User.create({
+    email: "leftoverTest@gmail.com",
+    name: "leftoverTest",
+    leftOver: [],
+  });
 
-  if (filterValue == "random") {
-    filterValue = getRandomKey(data);
+  const ingredientCheck = new Set<string>([]);
+  for (let i = 0; i < 4; i++) {
+    let ingredient = getRandomKey(Ingredients);
+    while (getRandomKey(Ingredients) in ingredientCheck) {
+      ingredient = getRandomKey(Ingredients);
+    }
+    const newIngredient = await IngredientModel.create({
+      id: i,
+      name: ingredient,
+    });
+    await User.updateOne(
+      { _id: testUser._id },
+      { $push: { leftOver: newIngredient._id } },
+    );
+    ingredientCheck.add(ingredient);
   }
-  if (!data.includes(filterValue)) {
-    resultCategory = null;
-  } else {
-    resultCategory = filterValue;
-  }
-  return resultCategory ?? null;
 };
+createLeftOverDocument();

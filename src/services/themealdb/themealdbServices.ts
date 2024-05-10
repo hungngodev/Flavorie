@@ -9,12 +9,7 @@ import {
   filterParamType,
   ingredientType,
 } from "./type.ts";
-import {
-  getDataFromParam,
-  getFilteredValue,
-  getQueryParameter,
-  getRandomKey,
-} from "./utils.ts";
+import { getDataFromParam, getQueryParameter, getRandomKey } from "./utils.ts";
 
 dotenv.config();
 

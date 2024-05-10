@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { BadRequestError, ServerError } from "../errors/customErrors.ts";
+import IngredientsModel from "../models/IngredientsModel.ts";
+import User from "../models/UserModel.ts";
 import { getAllMealsAPI } from "../services/spoonacular/spoonacularServices.ts";
 import { MainCategories } from "../services/themealdb/data.ts";
 import {
@@ -29,7 +31,7 @@ export const getRandomMealsUnauthenticated = async (
   res: Response,
 ) => {
   try {
-    const { size } = req.body;
+    const { size } = req.query;
     const queryRange = size ? parseInt(size.toString()) : 30;
 
     const response: { randomMeals: {}[] } = {
@@ -58,7 +60,7 @@ export const getRanDomMealsAuthenticated = async (
   res: Response,
 ) => {
   try {
-    const { mainSize, sideSize, dessertSize } = req.body;
+    const { mainSize, sideSize, dessertSize } = req.query;
     const mainRange = mainSize ? parseInt(mainSize.toString()) : 10;
     const sideRange = sideSize ? parseInt(sideSize.toString()) : 5;
     const dessertRange = dessertSize ? parseInt(dessertSize.toString()) : 5;
@@ -89,7 +91,21 @@ export const getRanDomMealsAuthenticated = async (
 
 export const getMealsFromLeftOver = async (req: Request, res: Response) => {
   try {
-    let { ingredients } = req.body;
+    const mockUser = await User.findOne({
+      name: "leftoverTest",
+      email: "leftoverTest@gmail.com",
+    });
+    if (!mockUser) {
+      throw new ServerError("Mock user not found");
+    }
+
+    let ingredients = [];
+    for (let i = 0; i < mockUser.leftOver.length; i++) {
+      const ingredient = await IngredientsModel.findOne({
+        _id: mockUser.leftOver[i],
+      });
+      ingredients.push(ingredient?.name);
+    }
 
     const response: { suggestedMeals: any } = {
       suggestedMeals: [],
