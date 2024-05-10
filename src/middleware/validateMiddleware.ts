@@ -39,7 +39,7 @@ export const validateRegisterInput = (
         next();
     } 
         catch (error) {
-        console.error("Error caught in validateRegisterInput:", error);
+            console.error("Error caught in validateRegisterInput:", error);
             throw new BadRequestError('Password does not match');
         } 
 };
@@ -49,7 +49,7 @@ export const validateRegisterInput = (
 //     username: "Sophie",
 //     email: "sophie.abc@gmail.com",
 //     password: "12345678",
-//     reEnterPassword: "12345605",
+//     reEnterPassword: "12345678",
 // };
 
 // console.log(sampleRegis);
