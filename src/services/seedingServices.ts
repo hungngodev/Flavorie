@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import Ingredients, { Ingredient } from '../models/IngredientsModel.ts';
-import { getAllIngredientsAPI, getIngredientByIdAPI, addIngredient } from './spoonacular/spoonacularServices.ts';
+import { getAllIngredientsAPI, getIngredientByIdAPI, findIngredientById } from './spoonacular/spoonacularServices.ts';
 import { NotFoundError, ServerError } from '../errors/customErrors.ts';
 import Progress from '../models/ProgressSeed.ts';
 import mongoose from 'mongoose';
@@ -97,10 +97,10 @@ const seedInformation = async () => {
                             console.log(`Parent ${parentIndex} of query ${queryIndex} of ${keys[currentCagetory]}`);
                             await tryCatchBlock(async () => {
                                 const { id, children } = data.results[parentIndex];
-                                const parentIngredient = await addIngredient(keys[currentCagetory], id);
+                                const parentIngredient = await findIngredientById(keys[currentCagetory], id);
                                 while (childIndex < children.length) {
                                     await tryCatchBlock(async () => {
-                                        const childIngredient = await addIngredient(keys[currentCagetory], children[childIndex].id);
+                                        const childIngredient = await findIngredientById(keys[currentCagetory], children[childIndex].id);
                                         await childIngredient.save();
                                         parentIngredient.relevance.push(childIngredient);
                                     });

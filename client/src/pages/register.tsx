@@ -10,7 +10,7 @@ import {
   Link,
   VStack,
 } from '@chakra-ui/react';
-
+import { AxiosError } from 'axios';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { RiUserFollowLine } from 'react-icons/ri';
@@ -39,7 +39,7 @@ const Register: React.FC = () => {
       toast.warn('You already have an account!', { position: 'top-right', icon: <RiUserFollowLine /> });
       navigate('/');
     }
-  }, [auth.currentUser.status]);
+  }, [auth.currentUser.status, navigate]);
 
   const [existedUserError, setExistedUserError] = useState<boolean>(false);
   const {
@@ -70,8 +70,8 @@ const Register: React.FC = () => {
         navigate('/');
         auth.setUser();
       }
-    } catch (error: any) {
-      if (error.response.status === 409) {
+    } catch (error) {
+      if (error instanceof AxiosError && error.response && error.response.status === 409) {
         setExistedUserError(true);
       }
       return;

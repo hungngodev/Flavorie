@@ -7,6 +7,7 @@ import { getIngredientWithName, getIngredientsWithCategory } from '../services/i
 import { IngredientBank } from '../utils/queryBank.ts';
 import { StatusCodes } from 'http-status-codes';
 import { Ingredient } from '../models/IngredientsModel.ts';
+import { findIngredientById } from '../services/spoonacular/spoonacularServices.ts';
 
 export const getAllIngredients = async (req: Request, res: Response) => {
     const allergy = [];
@@ -42,3 +43,8 @@ export const searchIngredients = async (req: Request, res: Response) => {
     res.json({ ingredients }).status(StatusCodes.OK);
 }
 
+export const getIndividualIngredient = async (req: Request, res: Response) => {
+    const ingredientId = req.params.ingredientId;
+    const ingredient = await findIngredientById('', parseInt(ingredientId));
+    res.json({ ingredient }).status(StatusCodes.OK);
+}

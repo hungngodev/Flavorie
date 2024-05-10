@@ -124,7 +124,7 @@ export const getRandomMealsAPI = async (includeTags?: string, excludeTags?: stri
     });
 }
 
-export const addIngredient = async (cagetory: string, id: Number) => {
+export const findIngredientById = async (cagetory: string, id: Number) => {
     const find = await Ingredients.findOne({ id: id });
     if (find) {
         return find;

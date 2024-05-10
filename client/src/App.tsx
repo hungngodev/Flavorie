@@ -1,15 +1,11 @@
-import { ChakraBaseProvider, theme as chakraTheme, extendBaseTheme } from '@chakra-ui/react';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { ChakraBaseProvider, extendTheme } from '@chakra-ui/react';
+import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
-import HomeLayout from './layouts/homeLayout';
+import HomeLayout from './layouts/HomeLayout';
 import { Ingredient, Login, Main, Meal, Register } from './pages/index';
-import AuthProvider from './providers/authProvider';//import ChakraCarousel from "./pages/ChakraCarousel";
-import ImageSlide from "./components/ImageSlide";
-import ImageCard from './components/ImageCard';
-import UserCard from './components/UserInforCard';
+import theme from './style/theme';
 
 const { Button } = chakraTheme.components;
-
 
 const theme = extendBaseTheme({
   components: {
@@ -36,22 +32,17 @@ const router = createBrowserRouter([
       },
       {
         path: 'ingredients',
-        element: (
-          <div>
-            {' '}
-            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
-            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
-            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
-            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
-            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
-            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
-            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
-            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
-            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
-            <div> this is ingredient page</div> <div> this is ingredient page</div> <div> this is ingredient page</div>{' '}
-            this is ingredient page
-          </div>
-        ),
+        element: <Outlet />,
+        children: [
+          {
+            index: true,
+            element: <Ingredient />,
+          },
+          {
+            path: ':category',
+            element: <Ingredient />,
+          },
+        ],
       },
       {
         path: 'meals',
@@ -59,21 +50,17 @@ const router = createBrowserRouter([
       },
       {
         path: 'community',
-        element: <Ingredient />,
+        element: <div>Community</div>,
       },
     ],
   },
 ]);
 
 function App() {
-
   return (
-    <ChakraBaseProvider theme={theme}>
+    <ChakraBaseProvider theme={extendTheme(theme)}>
       <RouterProvider router={router} />
-      <AuthProvider>
-        <RouterProvider router={router} />
-        <ToastContainer autoClose={5000} limit={3} transition={Slide} />
-      </AuthProvider>
+      <ToastContainer autoClose={5000} limit={3} transition={Slide} />
     </ChakraBaseProvider>
   );
 }

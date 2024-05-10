@@ -11,7 +11,6 @@
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.1.1",
-    "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
@@ -26,6 +25,7 @@
     "react-toastify": "^10.0.5",
     "simplex-noise": "^4.0.1",
     "tailwind-merge": "^2.3.0",
+    "zod": "^3.23.4",
     "react-webcam": "^7.2.0"
   },
   "devDependencies": {
