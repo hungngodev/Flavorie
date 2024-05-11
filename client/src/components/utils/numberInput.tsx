@@ -1,13 +1,13 @@
 import {
-  FormControl,
-  FormErrorMessage,
-  FormHelperText,
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput,
   NumberInputField,
   NumberInputStepper,
   ResponsiveValue,
+  Stack,
+  StyleProps,
+  Text,
 } from '@chakra-ui/react';
 import React from 'react';
 
@@ -23,10 +23,11 @@ interface NumberInputProps extends React.ComponentPropsWithRef<'input'> {
   allowScroll?: boolean;
   errorText?: string;
   helperText?: string;
-  isValid?: boolean;
+  isInvalid?: boolean;
   isDisabled?: boolean;
   focusColor?: string;
   errorColor?: string;
+  props?: StyleProps;
 }
 
 const InputNumber = React.forwardRef<HTMLInputElement, NumberInputProps>(
@@ -43,16 +44,17 @@ const InputNumber = React.forwardRef<HTMLInputElement, NumberInputProps>(
       allowScroll,
       errorText = 'Input invalid',
       helperText,
-      isValid = true,
+      isInvalid = false,
       isDisabled,
       focusColor,
       errorColor,
+      ...props
     },
     forwardedRef,
   ) => {
     return (
-      <FormControl isInvalid={!isValid} isDisabled={isDisabled}>
-        {helperText && <FormHelperText>{helperText}</FormHelperText>}
+      <Stack direction="column" width={props['width'] ?? 'full'}>
+        {helperText && <Text color="gray.500">{helperText}</Text>}
         <NumberInput
           allowMouseWheel={allowScroll}
           step={stepValue}
@@ -61,20 +63,23 @@ const InputNumber = React.forwardRef<HTMLInputElement, NumberInputProps>(
           min={minValue}
           max={maxValue}
           size={inputSize}
-          isInvalid={!isValid}
+          isInvalid={isInvalid}
           isDisabled={isDisabled}
           focusBorderColor={focusColor ?? 'green.400'}
           errorBorderColor={errorColor ?? 'red.400'}
+          color={props['color']}
+          width="full"
+          display="flex"
+          flexDirection="column"
         >
-          <NumberInputField onChange={onChange} onFocus={onFocus} ref={forwardedRef} />
+          <NumberInputField onChange={onChange} onFocus={onFocus} ref={forwardedRef} {...props} />
           <NumberInputStepper>
-            <NumberIncrementStepper />
-            <NumberDecrementStepper />
+            <NumberIncrementStepper color={props['color']} />
+            <NumberDecrementStepper color={props['color']} />
           </NumberInputStepper>
         </NumberInput>
-
-        {errorText && <FormErrorMessage>{errorText}</FormErrorMessage>}
-      </FormControl>
+        {isInvalid && <Text color="red.500">{errorText}</Text>}
+      </Stack>
     );
   },
 );
