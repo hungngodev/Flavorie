@@ -2,14 +2,30 @@ import React, { useEffect, useState } from "react";
 import {Box, Flex, IconButton, Input, InputGroup } from "@chakra-ui/react";
 import { SearchIcon } from "@chakra-ui/icons";
 
+function useDebounce<T>(value: T, delay: number): T {
+    const [debounceValue, setDebounceValue] = useState<T>(value);
+    useEffect (() => {
+        const timeOut = setTimeout(() => {
+            setDebounceValue(value)
+        }, delay)
+        return () => {
+            clearTimeout(timeOut)
+        }
+    }, [value, delay])
+    return debounceValue
+}
+
 const items = ["orange", "apple", "lemon"]
+
 export const SearchBar = () => {
     const [query, setQuery] = useState("")
     const [searchResult, setSearchResult] = useState<string[]>([])
+    const debounce = useDebounce(query, 1000)
+
     useEffect(() => {
         const results = items.filter(i => i.toLowerCase().includes(query))
         setSearchResult(results)
-    }, [query])
+    }, [debounce])
     return (
         <>
         <Flex align="center" justify="center">
@@ -33,7 +49,7 @@ export const SearchBar = () => {
                     </Flex>
             ))
         ): (
-            <div>No items found</div>
+            <Flex justify="center">No items found</Flex>
         )}
         </Box>
         </> 
