@@ -9,25 +9,29 @@ import {
   Link,
   VStack,
 } from '@chakra-ui/react';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { AxiosError } from 'axios';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { CiCircleCheck } from 'react-icons/ci';
 import { FaUserXmark } from 'react-icons/fa6';
 import { RiUserFollowLine } from 'react-icons/ri';
+import { TbFaceIdError } from 'react-icons/tb';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import * as z from 'zod';
 import { useAuth } from '../hooks';
 import customFetch from '../utils/customFetch';
-interface FormFields {
-  email: string;
-  password: string;
-}
 
-interface APIData {
-  email: string;
-  password: string;
-}
+const User = z
+  .object({
+    email: z.string().email({ message: 'Please enter a valid email' }),
+    password: z.string().min(8, { message: 'Please enter a password with 8 characters minimum' }),
+  })
+  .strict();
+const UserRequired = User.required({ email: true, password: true });
+type UserResponse = z.infer<typeof UserRequired>;
+
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const auth = useAuth();
@@ -39,37 +43,41 @@ const Login: React.FC = () => {
     }
   }, [auth.currentUser.status, navigate]);
 
-  const requiredErrorMessage = {
-    email: 'You need a email to login',
-    password: 'You need a password to login',
-  };
-  const minLengthErrorMessage = {
-    email: 'Your email should have at least 4 characters',
-    password: 'Your password should have at least 8 characters',
-  };
-
   const [userNotFounded, setUserNotFounded] = useState<boolean>(false);
 
-  const onSubmit: SubmitHandler<FormFields> = async (data) => {
+  const validateLogin: SubmitHandler<UserResponse> = async (data) => {
+    console.log(data);
     try {
-      const checkUser: APIData = {
+      const userResponse: UserResponse = {
         email: data.email,
         password: data.password,
       };
-      const LoginRequest = await customFetch.post('/auth/login', checkUser, {
+      const LoginRequest = await customFetch.post('/auth/login', userResponse, {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       });
+      console.log(LoginRequest);
       if (LoginRequest.status === 200) {
         toast.success('You have successfully logged in !'), { position: 'top-right', icon: <CiCircleCheck /> };
         setUserNotFounded(false);
         navigate('/');
         auth.setUser();
+      } else if (LoginRequest.status === 500) {
+        toast.error('Oops! Something went wrong, please try again!', {
+          position: 'top-right',
+          icon: <TbFaceIdError />,
+        });
+        setUserNotFounded(true);
       }
     } catch (error) {
       if (error instanceof AxiosError && error.response && error.response.status === 404) {
         toast.error('Make sure your email and password is correct!', { position: 'top-right', icon: <FaUserXmark /> });
-        setUserNotFounded(true);
+      } else {
+        toast.error('Oops! Something went wrong, please try again!', {
+          position: 'top-right',
+          icon: <TbFaceIdError />,
+        });
       }
+      setUserNotFounded(true);
       return;
     }
   };
@@ -78,61 +86,28 @@ const Login: React.FC = () => {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<FormFields>();
+  } = useForm<UserResponse>({
+    resolver: zodResolver(UserRequired),
+  });
 
   return (
     <ChakraProvider>
       <Flex height="100vh" alignItems="center" justifyContent="center">
         <VStack width="100%" marginInline="auto" spacing={8}>
-          <Heading textAlign="center">Welcome back</Heading>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <Heading textAlign="center" color="teal">
+            Welcome back
+          </Heading>
+          <form onSubmit={handleSubmit(validateLogin)} className="responsive-form">
             <VStack spacing={6}>
               <FormControl isInvalid={errors.email || userNotFounded ? true : false}>
-                <Input
-                  {...register('email', {
-                    required: {
-                      value: true,
-                      message: requiredErrorMessage['email'],
-                    },
-                    minLength: {
-                      value: 4,
-                      message: minLengthErrorMessage['email'],
-                    },
-                    pattern: {
-                      // regex for email validation
-                      value: /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/,
-                      message: 'You need to login with a valid email',
-                    },
-                  })}
-                  size="lg"
-                  type="email"
-                  isRequired
-                  placeholder="Enter email"
-                />
-                <FormErrorMessage>
-                  {(errors.email && errors.email.message) || (userNotFounded && 'Email or password did not match')}
-                </FormErrorMessage>
+                <Input {...register('email')} size="lg" type="email" placeholder="Enter your email" />
+                <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
               </FormControl>
-              <FormControl isInvalid={errors.password ? true : false}>
-                <Input
-                  {...register('password', {
-                    required: {
-                      value: true,
-                      message: requiredErrorMessage['password'],
-                    },
-                    minLength: {
-                      value: 8,
-                      message: minLengthErrorMessage['password'],
-                    },
-                  })}
-                  size="lg"
-                  type="password"
-                  isRequired
-                  placeholder="Enter password"
-                />
+              <FormControl isInvalid={errors.password || userNotFounded ? true : false}>
+                <Input {...register('password')} size="lg" type="password" placeholder="Enter password" />
                 <FormErrorMessage>{errors.password && errors.password.message}</FormErrorMessage>
               </FormControl>
-              <Link textAlign="left" href="#" alignSelf="flex-start">
+              <Link textAlign="left" href="#" alignSelf="flex-start" color="teal">
                 Forgot your password?
               </Link>
               <Button width="100%" colorScheme="teal" type="submit" isLoading={isSubmitting}>
