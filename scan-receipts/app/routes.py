@@ -1,13 +1,12 @@
-from flask import Flask, request, jsonify
+from flask import Blueprint, request, jsonify
 import re
 from PIL import Image
 import torch
 from transformers import DonutProcessor, VisionEncoderDecoderModel
-import json
 
-app = Flask(__name__)
-@app.route('/scan-receipts', methods= ['POST'])
+main = Blueprint('main', __name__)
 
+@main.route('/scan-receipts', methods=['POST'])
 
 def process_receipt():
     if 'receipt' not in request.files:
@@ -62,10 +61,3 @@ def post_process(data):
         item_quantity = item['item_quantity']
         structured_receipts['items'].append({'name': item_name, 'price': item_price, 'quantity': item_quantity})
     return structured_receipts
-
-    
-
-if __name__ == "__main__":
-    # image_path = '../test3.jpg'
-    # print(post_process(image_path))
-    app.run(port=5000, debug=True)
