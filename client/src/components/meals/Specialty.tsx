@@ -1,7 +1,8 @@
-import { Badge, Box, Button, Flex, Grid, Image } from '@chakra-ui/react';
+import { Badge, Box, Button, Flex, Grid, Image, Link } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 
 interface mockMeals {
+  id: string;
   image: string;
   title: string;
   tags: string[];
@@ -9,21 +10,25 @@ interface mockMeals {
 
 const mockMealData: mockMeals[] = [
   {
+    id: '1',
     image: 'https://www.themealdb.com/images/media/meals/wrpwuu1511786491.jpg',
     title: 'Ratatouille',
     tags: ['Stewed', 'Gluten-Free', 'Low-Calorie'],
   },
   {
+    id: '2',
     image: 'https://www.themealdb.com/images/media/meals/4er7mj1598733193.jpg',
     title: 'Koshari',
     tags: ['High-Protein', 'Vegetarian', 'Boiled'],
   },
   {
+    id: '3',
     image: 'https://www.themealdb.com/images/media/meals/yuwtuu1511295751.jpg',
     title: 'Lamb Tagine',
     tags: ['High-Protein', 'Gluten-Free', 'Slow-cooked'],
   },
   {
+    id: '4',
     image: 'https://www.thecocktaildb.com/images/media/drink/eg9i1d1487603469.jpg',
     title: 'Pineapple Gingerale Smoothie',
     tags: ['Gluten-Free', 'Dairy-Free', 'Summer Drink'],
@@ -64,11 +69,12 @@ export const Specialty = () => {
               <Badge borderRadius="full" px="4" py="2" colorScheme="teal" fontSize="lg" mb="4">
                 {meal.title}
               </Badge>
-              <Button borderRadius="full" px="4" py="2" colorScheme="teal" fontSize="lg" mb="4">
-                Cook now
-              </Button>
+              <Link href={meal.id}>
+                <Button borderRadius="full" px="4" py="2" colorScheme="teal" fontSize="lg" mb="4">
+                  Cook now
+                </Button>
+              </Link>
             </Grid>
-
             <Grid templateColumns="repeat(2, auto)" gap="2">
               {meal.tags?.map((tag, index) => (
                 <Badge key={index} borderRadius="full" px="4" py="2" variant="outline" colorScheme="blue">
