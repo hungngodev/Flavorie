@@ -1,5 +1,11 @@
+import { SearchBar } from "../components/ingredients/SearchBar";
+
 function Meal() {
-  return <div>Meal</div>;
+  return ( 
+    <SearchBar />
+      
+    
+  )
 }
 
 export default Meal;

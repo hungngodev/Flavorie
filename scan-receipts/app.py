@@ -62,7 +62,9 @@ def post_process(data):
         item_quantity = item['item_quantity']
         structured_receipts['items'].append({'name': item_name, 'price': item_price, 'quantity': item_quantity})
     return structured_receipts
+
     
+
 if __name__ == "__main__":
     # image_path = '../test3.jpg'
     # print(post_process(image_path))
