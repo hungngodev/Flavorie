@@ -1,5 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.tasks import use_model
+from PIL import Image
+
 
 main = Blueprint('main', __name__)
 
@@ -14,9 +16,11 @@ def process_receipt():
         return jsonify({"error": "No selected file"})
     try:
         img = Image.open(img_file.stream).convert('RGB')
-        output_model = use_model(img)
-        structured_data = post_process(output_model)
-        return jsonify(structured_data)
+        final_res = use_model(img)
+        return jsonify(final_res)
+        # output_model = use_model(img)
+        # structured_data = post_process(output_model)
+        # return jsonify(structured_data)
     except Exception as e:
         return jsonify({"error": str(e)})
 

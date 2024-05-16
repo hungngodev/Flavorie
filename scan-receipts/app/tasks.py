@@ -1,7 +1,7 @@
 import re
-from PIL import Image
 import torch
 from transformers import DonutProcessor, VisionEncoderDecoderModel
+from app.utils import post_process, match_ingredients
 
 def use_model(img):
     # img = Image.open(img_path).convert('RGB')
@@ -26,4 +26,9 @@ def use_model(img):
     sequence = processor.batch_decode(outputs.sequences)[0]
     sequence = sequence.replace(processor.tokenizer.eos_token, "").replace(processor.tokenizer.pad_token, "")
     sequence = re.sub(r"<.*?>", "", sequence, count=1).strip()  
-    return processor.token2json(sequence)
+    structured_data = processor.token2json(sequence)
+
+    structured_receipts = post_process(structured_data)
+
+    matched_items = match_ingredients(structured_receipts['items'])
+    return matched_items
