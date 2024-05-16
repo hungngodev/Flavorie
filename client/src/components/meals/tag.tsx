@@ -1,30 +1,25 @@
-import { Tag, TagCloseButton, TagLabel, TagLeftIcon, TagProps, TagRightIcon, TypographyProps } from '@chakra-ui/react';
-import React from 'react';
-import { MdNoMeals, MdOutlineBrunchDining } from 'react-icons/md';
-interface CustomTagProps {
-  label: string;
+import { Tag, TagCloseButton, TagLabel, TagLeftIcon, TagProps} from '@chakra-ui/react';
+import React, {useState} from 'react';
+import { PiFishSimple } from "react-icons/pi";
+
+export type Allergy = "Dairy" | "Egg" | "Gluten" | "Grain" | "Peanut" | "Seafood" | "Sesame" | "Shellfish" | "Soy" | "Sulfite" | "Tree Nut" | "Wheat";
+export type Diet = "Gluten Free" | "Ketogenic" | "Vegetarian" | "Lacto-Vegetarian" | "Ovo-Vegetarian" | "Vegan" | "Pescetarian" | "Paleo" | "Primal" | "Whole30" | "Low FODMAP"
+
+
+interface CustomTagProps extends TagProps {
+  type: Allergy | Diet
   props?: TagProps;
-  leftElement?: keyof JSX.IntrinsicElements | React.ComponentType<any>;
-  rightElement?: keyof JSX.IntrinsicElements | React.ComponentType<any>;
-  closeIcon?: keyof JSX.IntrinsicElements | React.ComponentType<any>;
   children?: React.ReactNode;
   canClose?: boolean;
   isOpen?: boolean;
-  fontSize?: TypographyProps['fontSize'];
   handleClose?: () => void;
   handleClick?: () => void;
-  type: 'allergy' | 'diet';
 }
 
 const CustomTag: React.FC<CustomTagProps> = React.forwardRef<HTMLSpanElement, CustomTagProps>(
   (
     {
-      label,
-      leftElement,
-      rightElement,
-      closeIcon,
       canClose = false,
-      isOpen = true,
       handleClose,
       handleClick,
       fontSize = 'md',
@@ -36,41 +31,37 @@ const CustomTag: React.FC<CustomTagProps> = React.forwardRef<HTMLSpanElement, Cu
   ) => {
     const colorScheme = {
       allergy: {
-        background: 'red.300',
-        text: 'gray.100',
-        icon: MdNoMeals,
+        background: 'red.200',
+        text: 'red.800',
       },
       diet: {
-        background: 'green.400',
-        text: 'gray.100',
-        icon: MdOutlineBrunchDining,
+        background: 'orange.200',
+        text: 'orange.800',
       },
     };
-
-    // Determine the left icon
-    const LeftIcon = leftElement || colorScheme[type]['icon'];
-
+    const allergyTypes: Allergy[] = ["Dairy", "Egg", "Gluten", "Grain", "Peanut", "Seafood", "Sesame", "Shellfish", "Soy", "Sulfite", "Tree Nut", "Wheat"];
+    const dietTypes: Diet[] = ["Gluten Free", "Ketogenic", "Vegetarian", "Lacto-Vegetarian", "Ovo-Vegetarian", "Vegan", "Pescetarian", "Paleo", "Primal", "Whole30", "Low FODMAP"];
+    const [isOpen, setOpen] = useState<boolean>(true);
+    const defaultClose = () =>  {setOpen(!isOpen); console.log("clicked")};
     return (
       <>
         {isOpen && (
-          <Tag
+            <Tag
             {...props}
             ref={ref}
             onClick={handleClick}
-            fontSize={fontSize}
             boxShadow="md"
-            p="2"
-            rounded="md"
+            borderRadius="full"
             fontWeight="bold"
-            bgColor={colorScheme[type]['background']}
-            color={colorScheme[type]['text']}
+            bgColor={allergyTypes.includes(type as Allergy) ? colorScheme['allergy']['background'] : colorScheme['diet']['background']}
+            color={dietTypes.includes(type as Diet) ? colorScheme['diet']['text'] : colorScheme['allergy']['text']}
+            pl="2"
+            pr="3"
           >
-            {children}
-            {LeftIcon && <TagLeftIcon textAlign="left" as={LeftIcon} />}
-            <TagLabel px="1rem">{label}</TagLabel>
-            {rightElement && <TagRightIcon as={rightElement} />}
-            {canClose && <TagCloseButton onClick={handleClose} as={closeIcon} />}
-          </Tag>
+          <TagLeftIcon as={PiFishSimple} backgroundColor="gray.50" borderRadius="full" boxSize="2.25rem" border="1px" borderWidth="0.5rem" borderColor="gray.50"/> 
+          <TagLabel py="4" minWidth="4rem" fontSize="lg">{type}</TagLabel>
+          {canClose && <TagCloseButton onClick={handleClose ?? defaultClose} />}
+        </Tag>
         )}
       </>
     );
