@@ -30,7 +30,6 @@ def post_process(data):
 MODEL_PATH = os.path.join(os.path.dirname(__file__), '../models/cc.en.300.bin')
 if MODEL_PATH:
     ft_model = fasttext.load_model(MODEL_PATH)
-
 else:
     fasttext.util.download_model('en', if_exists='ignore')
 
@@ -59,14 +58,17 @@ ingredient_names = [ingredient['name'] for ingredient in file]
 
 ingredient_oid = {ingredient['name']: ingredient['_id']['$oid'] for ingredient in file}
 
+
 # Build ANNOY index
-annoy_index = AnnoyIndex(300, 'angular')
+annoy_index = AnnoyIndex(ft_model.get_dimension(), 'angular')
 
 for i, ingredient in enumerate(file):
     name = ingredient['name']
     name_emb = ft_model.get_sentence_vector(preprocess(name))
     annoy_index.add_item(i, name_emb)
 annoy_index.build(50)
+# annoy_index.save('ingredient_idx.ann')
+# annoy_index.load('ingredient_idx.ann')
 
 def match_ingredients(items):
     matched_items = []
@@ -74,8 +76,8 @@ def match_ingredients(items):
         item_name = item['name']
         processed_item_name = preprocess(item_name)
         item_embedding = ft_model.get_sentence_vector(processed_item_name)
-        # Get idx of 10 similar items
-        similar_idx = annoy_index.get_nns_by_vector(item_embedding, 15)
+        # Get idx of 20 similar items
+        similar_idx = annoy_index.get_nns_by_vector(item_embedding, 20)
         # print(similar_idx)
 
         # calculate cosine similarities of potential items and sort
