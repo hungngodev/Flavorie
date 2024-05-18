@@ -10,122 +10,180 @@ import {
   NumberInputStepper,
   Text,
   VStack,
+  Divider,
+  IconButton
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useState } from 'react';
-import { Controller, useFieldArray, useForm } from 'react-hook-form';
-import { LuTrash } from 'react-icons/lu';
+import { Controller, useFieldArray, useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
-import { mockReceipts } from './mockReceipt';
+import { Trash, Focus } from 'lucide-react';
 
-const pricingSchema = z.string().refine(
-  (val) => {
-    const pattern = /^\$\d+\.\d{2}$/;
-    const isValidFormat = pattern.test(val);
 
-    const price = parseFloat(val.slice(1));
-    const isValidPrice = price >= 0.01;
 
-    return isValidFormat && isValidPrice;
-  },
-  { message: 'Expected price format of $x.xx, with a minimum price of $0.01' },
-);
-const quantitySchema = z.string().refine(
-  (val) => {
-    const price = parseInt(val);
-    return price >= 1;
-  },
-  { message: 'You should have at least one product' },
-);
 
 const Receipt = z
   .object({
     name: z.string(),
-    price: pricingSchema,
-    quantity: quantitySchema,
+    quantity: z.number().min(0, { message: 'Quantity should be positive' }),
+    price: z.coerce.number().min(0, { message: 'Receipt price should be positive' }),
   })
-  .strict();
+  .strict()
+  .required({ name: true, quantity: true, price: true });
 
-const ReceiptRequired = Receipt.required({ name: true, price: true, quantity: true });
-type ReceiptType = z.infer<typeof ReceiptRequired>;
+const ReceiptField = z.object({
+  receipts: z.array(Receipt.required()),
+});
+
+type ReceiptFieldType = z.infer<typeof ReceiptField>;
 
 const ReceiptForm: React.FC = () => {
-  const { control, handleSubmit } = useForm({
-    resolver: zodResolver(ReceiptRequired),
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(ReceiptField),
     defaultValues: {
-      receipts: [{ name: '', price: '', quantity: '' }], // the receipts field is an array of objects
+      receipts: [{ name: '', quantity: 0, price: 0.0 }], // the receipts field is an array of objects
     },
   });
 
+  const watchField = watch('receipts');
+  
+
   const { fields, append, remove } = useFieldArray({
-    control: control, // hook the field array to react hook form
-    name: 'receipts', // name of the field that is an array in the form
+    control: control,
+    name: 'receipts',
   });
-
-  const submitReceipts = (data: any) => {
-    console.log(data);
+  const [receipts, setReceipts] = useState<ReceiptFieldType>({ receipts: [{ name: '', quantity: 0, price: 0.0 }] });
+  const submitReceipts: SubmitHandler<ReceiptFieldType> = (receipts) => {
+    setReceipts(receipts);
+    console.log(receipts);
   };
-  const [receipts, setReceipts] = useState<ReceiptType[]>(mockReceipts.receipts);
-
   return (
-    <form onSubmit={handleSubmit(submitReceipts)}>
-      <HStack width="100%" justify="between">
-        <VStack spacing={4} justifySelf="start">
-          {fields.map((field, index) => (
-            <HStack key={field.id}>
-              <Controller
-                render={({ field: { ref, ...fieldProps } }) => <Input {...fieldProps} ref={ref} />}
-                control={control}
-                name={`receipts.${index}.name`}
-              />
-              <Controller
-                render={({ field: { ref, ...fieldProps } }) => (
-                  <NumberInput>
-                    <NumberInputField {...fieldProps} ref={ref} />
+    <form
+      onSubmit={handleSubmit(submitReceipts)}
+      style={{ gap: "1.25rem", overflow:"auto", height:"100dvh", display: 'flex', paddingBlock: '2.75rem', paddingInline: "2rem", justifyContent: 'space-evenly', width:"100%", backgroundColor:"#F7FAFC", flexWrap:"wrap"}}
+    >
+      <VStack flex={4} backgroundColor="whiteAlpha.700" spacing={4} alignItems="flex-start" justifySelf="start" boxShadow='base' height="fit-content"  rounded='md' paddingBlock={3} paddingInline={6}>
+        <Heading fontSize="3xl" color="teal" fontWeight="semibold" alignSelf="start" >
+          Items
+        </Heading>
+        {fields.map((field, index) => (
+
+        <VStack width="100%">
+          <Divider width="100%" borderColor="gray.500"/>
+          <HStack key={field.id} width="100%" justifyContent="space-between" paddingBlock={4}>
+          <VStack gap={4}>
+            <Controller
+              control={control}
+              name={`receipts.${index}.name`}
+              render={({ field: { ref, ...fieldProps } }) => (<VStack width="100%" alignItems="start">
+                <Text>Name</Text>
+                <Input borderRadius="md" paddingX="0.95em" {...fieldProps} placeholder="Enter your item" variant="flushed" />
+              </VStack>)}
+            />
+
+            <HStack maxWidth="65%" alignSelf="start">
+            <Controller
+              control={control}
+              name={`receipts.${index}.quantity`}
+              render={({ field: { onChange, ...fieldProps } }) => (
+                <VStack alignItems="start">
+                  <Text>Quantity</Text>
+                  <NumberInput
+                  {...fieldProps}
+                  min={0}
+                  keepWithinRange={true}
+                  onChange={(valueNumber) => onChange(Number(valueNumber))}
+                  borderRadius="md"
+                  color="blackAlpha.600"
+                  >
+                    <NumberInputField {...fieldProps}  />
                     <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
+                      <NumberIncrementStepper border="none" />
+                      <NumberDecrementStepper border="none"  />
                     </NumberInputStepper>
                   </NumberInput>
-                )}
-                control={control}
-                name={`receipts.${index}.quantity`}
-              />
-              <Controller
-                render={({ field: { ref, ...fieldProps } }) => (
-                  <NumberInput>
-                    <NumberInputField {...fieldProps} ref={ref} />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
-                )}
-                control={control}
-                name={`receipts.${index}.price`}
-              />
-              <Button onClick={() => remove(index)}>
-                <LuTrash />
-              </Button>
-            </HStack>
-          ))}
-          <Button onClick={() => append({ name: '', quantity: '1', price: '0.00' })}>Add new receipt</Button>
-        </VStack>
-        <VStack spacing={4} justifySelf="end">
-          <Heading>Order summary</Heading>
-          <HStack justifyContent="between">
-            <Text>Total items</Text>
-            <Text>{0}</Text>
-          </HStack>
-          <HStack justifyContent="between">
-            <Text>Total price</Text>
-            <Text>$12.25</Text>
-          </HStack>
-          <Button type="submit" onClick={handleSubmit(submitReceipts)}>
-            Submit changes
-          </Button>
-        </VStack>
+          
+                </VStack>
+            )}
+          />
+      <Controller
+        control={control}
+        name={`receipts.${index}.price`}
+        render={({ field: { onChange, ...fieldProps } }) => (
+          <VStack alignItems="start">
+            <Text>Price</Text>
+            <NumberInput
+            precision={2}
+            step={0.01}
+            min={0.0}
+            keepWithinRange={true}
+            onChange={(valueNumber) => onChange(Number(valueNumber))} 
+            borderRadius="md"
+            color="blackAlpha.600"
+            {...fieldProps}
+            
+          >
+            <NumberInputField  {...fieldProps}/>
+            <NumberInputStepper>
+              <NumberIncrementStepper border="none"  />
+              <NumberDecrementStepper border="none" />
+            </NumberInputStepper>
+          </NumberInput>
+          </VStack>
+        )}
+      />
       </HStack>
+          </VStack>
+          <VStack alignSelf="stretch" justifyContent="space-between">
+        <Text fontSize="xl" fontWeight="semibold" color="blackAlpha.700">${(watchField[index].price * watchField[index].quantity).toFixed(2) || 0}</Text>
+        <Button color="blackAlpha.600" letterSpacing="-0.005em" fontWeight="semibold" leftIcon={<Trash/>} onClick={()=>{remove(index)}} variant="ghost">
+           Delete
+        </Button>
+          </VStack>
+        </HStack>
+        </VStack>
+        ))}
+
+        <Button colorScheme="teal" letterSpacing="-0.005em" fontWeight="semibold" onClick={() => append({ name: '', quantity: 0, price: 0.0 })}>Add new receipt</Button>
+      </VStack>
+
+
+      <VStack backgroundColor="whiteAlpha.700" spacing={6} alignItems="start" position="sticky" top={0} boxShadow='base' rounded="md" height="fit-content" paddingBlock={6} paddingInline={8} flex={1}>
+        <Heading fontSize="2xl" color="teal" fontWeight="semibold" >Order summary</Heading>
+        <Divider/>
+        <VStack width="100%">
+          <HStack width="100%" justifyContent="space-between" >
+            <Text fontWeight="semibold" color="blackAlpha.700">Total items</Text>
+            <Text color="blackAlpha.600">{fields.length}</Text>
+          </HStack>
+          <HStack justifyContent="space-between" width="100%">
+          <Text fontWeight="semibold" color="blackAlpha.700">Total price</Text>
+          <Text color="blackAlpha.600">
+            $ {parseFloat(
+              watchField
+                .reduce((accumulator, field) => {
+                  return accumulator + field.price * field.quantity;
+                }, 0)
+                .toFixed(2),
+            )}
+          </Text>
+        </HStack>
+        </VStack>
+        <Divider/>
+        <VStack width="100%">
+        <Button letterSpacing="-0.005em" fontWeight="semibold" width= "100%" type="submit" colorScheme='teal'>
+          Submit changes
+        </Button>
+        <Button letterSpacing="-0.005em" fontWeight="semibold" width="100%" leftIcon={<Focus />} variant="outline">
+          Return to scanner
+        </Button>
+        </VStack>
+      </VStack>
     </form>
   );
 };
