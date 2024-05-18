@@ -31,11 +31,14 @@ const Receipt = z
   .strict()
   .required({ name: true, quantity: true, price: true });
 
+
 const ReceiptField = z.object({
   receipts: z.array(Receipt.required()),
 });
 
+
 type ReceiptFieldType = z.infer<typeof ReceiptField>;
+
 
 const ReceiptForm: React.FC = () => {
   const {
@@ -50,8 +53,10 @@ const ReceiptForm: React.FC = () => {
     },
   });
 
+
   const watchField = watch('receipts');
-  
+ 
+
 
   const { fields, append, remove } = useFieldArray({
     control: control,
@@ -67,11 +72,12 @@ const ReceiptForm: React.FC = () => {
       onSubmit={handleSubmit(submitReceipts)}
       style={{ gap: "1.25rem", overflow:"auto", height:"100dvh", display: 'flex', paddingBlock: '2.75rem', paddingInline: "2rem", justifyContent: 'space-evenly', width:"100%", backgroundColor:"#F7FAFC", flexWrap:"wrap"}}
     >
-      <VStack flex={4} backgroundColor="whiteAlpha.700" spacing={4} alignItems="flex-start" justifySelf="start" boxShadow='base' height="fit-content"  rounded='md' paddingBlock={3} paddingInline={6}>
+      <VStack flex={4} backgroundColor="whiteAlpha.700" spacing={2} alignItems="flex-start" justifySelf="start" boxShadow='base' height="fit-content"  rounded='md' paddingBlock={3} paddingInline={6}>
         <Heading fontSize="3xl" color="teal" fontWeight="semibold" alignSelf="start" >
           Items
         </Heading>
         {fields.map((field, index) => (
+
 
         <VStack width="100%">
           <Divider width="100%" borderColor="gray.500"/>
@@ -85,6 +91,7 @@ const ReceiptForm: React.FC = () => {
                 <Input borderRadius="md" paddingX="0.95em" {...fieldProps} placeholder="Enter your item" variant="flushed" />
               </VStack>)}
             />
+
 
             <HStack maxWidth="65%" alignSelf="start">
             <Controller
@@ -107,7 +114,7 @@ const ReceiptForm: React.FC = () => {
                       <NumberDecrementStepper border="none"  />
                     </NumberInputStepper>
                   </NumberInput>
-          
+         
                 </VStack>
             )}
           />
@@ -122,11 +129,11 @@ const ReceiptForm: React.FC = () => {
             step={0.01}
             min={0.0}
             keepWithinRange={true}
-            onChange={(valueNumber) => onChange(Number(valueNumber))} 
+            onChange={(valueNumber) => onChange(Number(valueNumber))}
             borderRadius="md"
             color="blackAlpha.600"
             {...fieldProps}
-            
+           
           >
             <NumberInputField  {...fieldProps}/>
             <NumberInputStepper>
@@ -149,8 +156,11 @@ const ReceiptForm: React.FC = () => {
         </VStack>
         ))}
 
+
         <Button colorScheme="teal" letterSpacing="-0.005em" fontWeight="semibold" onClick={() => append({ name: '', quantity: 0, price: 0.0 })}>Add new receipt</Button>
       </VStack>
+
+
 
 
       <VStack backgroundColor="whiteAlpha.700" spacing={6} alignItems="start" position="sticky" top={0} boxShadow='base' rounded="md" height="fit-content" paddingBlock={6} paddingInline={8} flex={1}>
@@ -188,3 +198,6 @@ const ReceiptForm: React.FC = () => {
   );
 };
 export default ReceiptForm;
+
+
+
