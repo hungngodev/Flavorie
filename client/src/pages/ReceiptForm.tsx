@@ -17,46 +17,7 @@ import React, { useState } from 'react';
 import { Controller, useFieldArray, useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 import { Trash, Focus } from 'lucide-react';
-
-
-const mockReceipts = {
-  "message": "Image processed successfully",
-      "data": {
-      "items": [
-          {
-              "name": "Lorem ipsum",
-              "price": "$9.20",
-              "quantity": "1"
-          },
-          {
-              "name": "Lorem ipsum dolor sit",
-              "price": "$19.20",
-              "quantity": "1"
-          },
-          {
-              "name": "Lorem ipsum dolor sit amet",
-              "price": "$15.00",
-              "quantity": "1"
-          },
-          {
-              "name": "Lorem ipsum",
-              "price": "$15.00",
-              "quantity": "1"
-          },
-          {
-              "name": "Lorem ipsum dolor sit",
-              "price": "$15.00",
-              "quantity": "1"
-          },
-          {
-              "name": "Lorem ipsum",
-              "price": "$19.20",
-              "quantity": "1"
-          }
-      ],
-          "total": "$107.60"
-  }
-};
+import { mockReceipts } from "./MockReceipt.ts"
 
 const Receipt = z
   .object({
