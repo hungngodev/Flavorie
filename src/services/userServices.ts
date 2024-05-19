@@ -13,17 +13,15 @@ export async function createUser(userDocument: User): Promise<string> {
 
     const user = await UserModel.create(userDocument);
     const token = createJWT({ userId: user._id.toString(), role: user.role });
-
     return token;
 }
 
 
-export async function checkLogin(userDocument: User): Promise<string> {
+export async function authenticateCheck(userDocument: User): Promise<string> {
     const { email, password } = userDocument;
     if (!email || !password) throw new UnauthenticatedError('Email and Password are required');
 
     const user = await UserModel.findOne({ email: email });
-
     const isValidUser = user;
     if (!isValidUser) throw new UnauthenticatedError('Not Found');
     const isValidPassword = await comparePassword(password, user.password);
@@ -31,7 +29,6 @@ export async function checkLogin(userDocument: User): Promise<string> {
     if (!isValidPassword) throw new UnauthenticatedError('invalid credentials');
 
     const token = createJWT({ userId: user._id.toString(), role: user.role });
-
     return token;
 }
 

@@ -69,6 +69,7 @@ const UserSchema = new mongoose.Schema<UserDocument, UserModel>({
             enum: ["Gluten Free", "Ketogenic", "Vegetarian", "Lacto-Vegetarian", "Ovo-Vegetarian", "Vegan", "Pescetarian", "Paleo", "Primal", "Whole30", "Low FODMAP"],
         }
     ],
+    //https://mongoosejs.com/docs/api/map.html
     leftOver: [
         {
             ingredient: {

@@ -4,6 +4,7 @@ node_modules
 out
 .DS_Store
 package-lock.json
+flavorie.ingredients.json
 
 
 logs
