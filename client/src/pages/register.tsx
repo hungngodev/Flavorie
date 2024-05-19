@@ -59,8 +59,6 @@ const Register: React.FC = () => {
       const NewUserRequest = await customFetch.post('/auth/register', newUserData, {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       });
-      // // const test = await customFetch.get("/test");
-      // // console.log(test.data);
       if (NewUserRequest.status === 201) {
         toast.success(`Welcome to Flavorie ${newUserData.name}!`, {
           position: 'top-right',
@@ -68,7 +66,6 @@ const Register: React.FC = () => {
         });
         setExistedUserError(false);
         navigate('/');
-        auth.setUser();
       }
     } catch (error) {
       if (error instanceof AxiosError && error.response && error.response.status === 409) {

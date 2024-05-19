@@ -63,7 +63,6 @@ const Login: React.FC = () => {
         toast.success('You have successfully logged in !'), { position: 'top-right', icon: <CiCircleCheck /> };
         setUserNotFounded(false);
         navigate('/');
-        auth.setUser();
       }
     } catch (error) {
       if (error instanceof AxiosError && error.response && error.response.status === 404) {
