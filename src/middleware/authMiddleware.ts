@@ -23,12 +23,13 @@ export const authenticateUser = (req: Request, res: Response, next: NextFunction
     if (!token) throw new UnauthenticatedError('authentication invalid');
 
     try {
-        const { userId, role } = verifyJWT(token);
+        const { userId, role, ...res } = verifyJWT(token);
+        console.log(userId, role, res);
         const testUser = userId === '64b2c07ccac2efc972ab0eca';
         req.user = { userId, role, testUser };
         next();
     } catch (error) {
-        throw new UnauthenticatedError('authentication invalid');
+        throw new UnauthenticatedError('Authentication invalid');
     }
 };
 
@@ -36,11 +37,10 @@ export const checkUser = (req: Request, res: Response, next: NextFunction) => {
     const { token } = req.cookies;
     if (!token) {
         try {
-            const { userId, role } = verifyJWT(token);
+            const { userId, role, ...res } = verifyJWT(token);
             const testUser = userId === '64b2c07ccac2efc972ab0eca';
             req.user = { userId, role, testUser };
         } catch (error) {
-
         }
     };
     next();
