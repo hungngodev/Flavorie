@@ -18,11 +18,51 @@ import { Controller, useFieldArray, useForm, SubmitHandler } from 'react-hook-fo
 import { z } from 'zod';
 import { Trash, Focus } from 'lucide-react';
 
+
+const mockReceipts = {
+  "message": "Image processed successfully",
+      "data": {
+      "items": [
+          {
+              "name": "Lorem ipsum",
+              "price": "$9.20",
+              "quantity": "1"
+          },
+          {
+              "name": "Lorem ipsum dolor sit",
+              "price": "$19.20",
+              "quantity": "1"
+          },
+          {
+              "name": "Lorem ipsum dolor sit amet",
+              "price": "$15.00",
+              "quantity": "1"
+          },
+          {
+              "name": "Lorem ipsum",
+              "price": "$15.00",
+              "quantity": "1"
+          },
+          {
+              "name": "Lorem ipsum dolor sit",
+              "price": "$15.00",
+              "quantity": "1"
+          },
+          {
+              "name": "Lorem ipsum",
+              "price": "$19.20",
+              "quantity": "1"
+          }
+      ],
+          "total": "$107.60"
+  }
+};
+
 const Receipt = z
   .object({
     name: z.string(),
-    quantity: z.number().min(0, { message: 'Quantity should be positive' }),
-    price: z.coerce.number().min(0, { message: 'Receipt price should be positive' }),
+    quantity: z.coerce.string(),
+    price: z.coerce.string(),
   })
   .strict()
   .required({ name: true, quantity: true, price: true });
@@ -34,6 +74,13 @@ const ReceiptField = z.object({
 type ReceiptFieldType = z.infer<typeof ReceiptField>;
 
 const ReceiptForm: React.FC = () => {
+  const [receipts, setReceipts] = useState<ReceiptFieldType>({
+    receipts: mockReceipts.data.items?.map((item) => ({
+      name: item.name,
+      quantity: item.quantity.toString(),
+      price: item.price.replace('$', ''),
+    })) ?? [{ name: 'test', quantity:"0", price:"0.0" }],
+  });
   const {
     control,
     handleSubmit,
@@ -42,7 +89,10 @@ const ReceiptForm: React.FC = () => {
   } = useForm({
     resolver: zodResolver(ReceiptField),
     defaultValues: {
-      receipts: [{ name: '', quantity: 0, price: 0.0 }],
+      receipts:
+        receipts.receipts.length > 0
+          ? receipts.receipts
+          : [{ name: '', quantity: "0", price: "0.0" }],
     },
   });
 
@@ -53,7 +103,7 @@ const ReceiptForm: React.FC = () => {
     name: 'receipts',
   });
 
-  const [receipts, setReceipts] = useState<ReceiptFieldType>({ receipts: [{ name: '', quantity: 0, price: 0.0 }] });
+  
 
   const submitReceipts: SubmitHandler<ReceiptFieldType> = (receipts) => {
     setReceipts(receipts);
@@ -147,7 +197,7 @@ const ReceiptForm: React.FC = () => {
                 </HStack>
               </VStack>
               <VStack alignSelf="stretch" justifyContent="space-between">
-                <Text fontSize="xl" fontWeight="semibold" color="blackAlpha.700">${(watchField[index].price * watchField[index].quantity).toFixed(2) || 0}</Text>
+                <Text fontSize="xl" fontWeight="semibold" color="blackAlpha.700">${(parseFloat(watchField[index].price) * parseFloat(watchField[index].quantity)).toFixed(2) || 0}</Text>
                 <Button color="blackAlpha.600" letterSpacing="-0.005em" fontWeight="semibold" leftIcon={<Trash />} onClick={() => { remove(index) }} variant="ghost">
                   Delete
                 </Button>
@@ -155,7 +205,7 @@ const ReceiptForm: React.FC = () => {
             </HStack>
           </VStack>
         ))}
-        <Button colorScheme="teal" letterSpacing="-0.005em" fontWeight="semibold" onClick={() => append({ name: '', quantity: 0, price: 0.0 })}>Add new receipt</Button>
+        <Button colorScheme="teal" letterSpacing="-0.005em" fontWeight="semibold" onClick={() => append({ name: '', quantity: "0", price: "0.0" })}>Add new receipt</Button>
       </VStack>
       <VStack backgroundColor="whiteAlpha.700" spacing={6} alignItems="start" position="sticky" top={0} boxShadow='base' rounded="md" height="fit-content" paddingBlock={6} paddingInline={8} flex={1}>
         <Heading fontSize="2xl" color="teal" fontWeight="semibold">Order summary</Heading>
@@ -171,7 +221,7 @@ const ReceiptForm: React.FC = () => {
               $ {parseFloat(
                 watchField
                   .reduce((accumulator, field) => {
-                    return accumulator + field.price * field.quantity;
+                    return accumulator + parseFloat(field.price) * parseFloat(field.quantity);
                   }, 0)
                   .toFixed(2),
               )}
