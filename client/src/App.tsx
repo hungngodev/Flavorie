@@ -1,17 +1,17 @@
 import { ChakraBaseProvider, extendTheme } from '@chakra-ui/react';
 import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
-import HomeLayout from './layouts/homeLayout';
-import { Ingredient, Login, Main, Meal, ReceiptForm, Register } from './pages/index';
-import { theme } from './style/theme';
+import HomeLayout from './layouts/HomeLayout.tsx';
+import { Ingredient, Login, Main, Meal, Register } from './pages/index';
+import theme from './style/theme';
 
-// const { Button } = chakraTheme.components;
+const { Button } = chakraTheme.components;
 
-// const theme = extendBaseTheme({
-//   components: {
-//     Button,
-//   },
-// });
+const theme = extendBaseTheme({
+  components: {
+    Button,
+  },
+});
 
 const router = createBrowserRouter([
   {
@@ -53,10 +53,6 @@ const router = createBrowserRouter([
         element: <div>Community</div>,
       },
     ],
-  },
-  {
-    path: 'receipts',
-    element: <ReceiptForm />,
   },
 ]);
 

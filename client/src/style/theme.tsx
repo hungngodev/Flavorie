@@ -1,4 +1,4 @@
-export const theme = {
+const theme = {
   colors: {
     base: {
       50: '#eceff1',
