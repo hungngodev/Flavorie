@@ -28,4 +28,3 @@ export const updateUser = async (req: Request, res: Response) => {
     await updatedUser.save();
     res.status(StatusCodes.OK).send({ msg: 'update user' });
 };
-
