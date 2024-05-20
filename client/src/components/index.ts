@@ -7,6 +7,6 @@ export { default as Hero } from './ui/Hero';
 export { default as StickyScrollReveal } from './ui/StickyScrollReveal';
 export { default as Testimonials } from './ui/Testimonials';
 export { default as WavyBackground } from './ui/WavyBackGround';
-export { default as ContainerScroll } from './ui/containerScrollAnimation';
+export { default as ContainerScroll } from './ui/ContainerScrollAnimation';
 export { default as InputNumber } from './utils/numberInput';
 export { default as InputText } from './utils/textInput';

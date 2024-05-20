@@ -10,9 +10,10 @@ interface MealTypeProps {
 
 interface Meal {
     title: string;
+    description: string;
     image: string;
     category: string;
-    price: string;
+    // price: string;
     infoLink: string;
 }
 
@@ -43,11 +44,15 @@ export function ListofMeals({ Type, meals }: MealTypeProps) {
         });
     }, []);
 
+    const truncateDescription = (description: string): string => {
+        return description.length > 60 ? `${description.substring(0, 60)}...` : description;
+    };
+
     const scrollRefs = useRef<(HTMLDivElement | null)[]>([]);
     return (
-        <VStack spacing={18} width={'fit'} height={'fit'} marginTop={'2vh'} marginBottom={'5vh'} alignItems="center">
+        <VStack spacing={4} width={'fit'} height={'fit'} marginTop={'1vh'} marginBottom={'2vh'} alignItems="center">
             <Button variant={'outline'}>
-                <Heading size="lg">{Type}</Heading>
+            <Heading size="md">{Type}</Heading>
             </Button>
             <HStack width={'100%'} justifyContent={'center'} alignItems={'center'}>
             <IconButton
@@ -58,7 +63,7 @@ export function ListofMeals({ Type, meals }: MealTypeProps) {
                 colorScheme="blue"
                 size="xs"
                 height="50%"
-                marginLeft={'5vh'}
+                marginLeft={'2vh'}
             />
             <HStack
                 spacing={4}
@@ -70,14 +75,15 @@ export function ListofMeals({ Type, meals }: MealTypeProps) {
                 justifyContent="flex-start"
             >
                 {meals.map((meal, index) => (
-                <Box key={index} flexShrink={0}>
+                <Box key={index} flexShrink={0} width={'38vh'}>
                     {' '}
                     <ImageCard
                     imageProps={{
                         src: meal.image,
                         title: meal.title,
+                        description: truncateDescription(meal.description),
                         category: meal.category,
-                        price: meal.price,
+                        // price: meal.price,
                         infoLink: meal.infoLink,
                     }}
                     />
@@ -92,7 +98,7 @@ export function ListofMeals({ Type, meals }: MealTypeProps) {
                 colorScheme="blue"
                 size="xs"
                 height="50%"
-                marginRight={'5vh'}
+                marginRight={'2vh'}
             />
             </HStack>
         </VStack>

@@ -2,9 +2,10 @@ import ListofMeals from '../components/meals/ListofMeals';
 
 interface Meal {
   title: string;
+  description: string;
   image: string;
   category: string;
-  price: string;
+  // price: string;
   infoLink: string;
 }
 interface MealType {
@@ -30,9 +31,10 @@ function generateMockData(
     for (let k = 1; k <= numMealPerType; k++) {
       const meal: Meal = {
         title: `Meal ${k + (i - 1) * numMealPerType}`,
+        description: 'Description of each meal will be truncated to less or equal to fifty charaters',
         image: `https://source.unsplash.com/random/600x400${Math.random()}`,
         category: `Category${i}`,
-        price: '$',
+        // price: '$',
         infoLink: 'https://www.google.com',
       };
       mockData[categoryKey].meals.push(meal)

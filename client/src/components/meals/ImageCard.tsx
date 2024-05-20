@@ -16,9 +16,9 @@ interface ImageCardProps {
   imageProps: {
     src: string;
     title: string;
+    description: string;
     borderRadius?: string;
     category: string;
-    price: string;
     infoLink: string;
   };
 }
@@ -29,26 +29,26 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
   };
 
   return (
-    <Card maxW="sm" boxShadow="md" borderRadius="md" p={2} variant={'outline'}>
+    <Card maxW="sm" boxShadow="md" borderRadius="md" variant={'outline'}>
       <CardBody>
         <Image
           src={imageProps.src}
           borderRadius={imageProps.borderRadius || 'lg'}
-          width="600px"
-          height="400px"
+          width="300px"
+          height="150px"
           objectFit="cover"
         />
-        <Stack mt="6" spacing="3">
-          <Heading size="lg" fontSize="22" fontWeight="bold">
+        <Stack mt="2" spacing="1">
+          <Heading size="lg" fontSize="20" fontWeight="bold">
             {imageProps.title}
           </Heading>
-          {/* <Text w="full">{imageProps.description}</Text> */}
-          <Text color="blue.350" fontSize="28">
+          <Text w="full">{imageProps.description}</Text>
+          {/* <Text color="blue.350" fontSize="28">
             {imageProps.price}
-          </Text>
+          </Text> */}
         </Stack>
       </CardBody>
-      <Divider borderColor="black.200" />
+      <Divider borderColor="base.200" />
       <CardFooter>
         <ButtonGroup>
           <Button variant="solid" colorScheme="blue" fontWeight="bold" onClick={handleSeeMore}>
