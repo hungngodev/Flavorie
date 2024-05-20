@@ -15,5 +15,7 @@ router.route('/current-user')
     .get(authenticateUser, catchAsync(getCurrentUser))
     .patch(authenticateUser, upload.array('images'), catchAsync(updateUser));
 
-
+router.route('/cart')
+    .get(authenticateUser, catchAsync(getCurrentUser))
+    .patch(authenticateUser, catchAsync(updateUser));
 export default router;

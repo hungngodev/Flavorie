@@ -2,6 +2,7 @@ import mongoose, { Types } from 'mongoose';
 import bcrypt from 'bcrypt';
 import { Ingredient } from './IngredientsModel.ts';
 import { Meal } from './MealModel.ts';
+
 export interface User {
     name: string;
     email: string;
@@ -15,18 +16,10 @@ export interface User {
     preferences: string[];
     allergy: string[];
     diet: string;
-    leftOver: [
-        {
-            ingredient: Types.ObjectId;
-            quantity: number;
-        }
-    ]
-    mealCooking: Types.DocumentArray<Meal>;
-    cart: Types.DocumentArray<Ingredient>;
     statistic: string[];
 }
 interface UserDocument extends User, mongoose.Document { };
-type UserModel = mongoose.Model<UserDocument>;
+export type UserModel = mongoose.Model<UserDocument>;
 const UserSchema = new mongoose.Schema<UserDocument, UserModel>({
     name: {
         type: String,
@@ -69,31 +62,6 @@ const UserSchema = new mongoose.Schema<UserDocument, UserModel>({
             enum: ["Gluten Free", "Ketogenic", "Vegetarian", "Lacto-Vegetarian", "Ovo-Vegetarian", "Vegan", "Pescetarian", "Paleo", "Primal", "Whole30", "Low FODMAP"],
         }
     ],
-    //https://mongoosejs.com/docs/api/map.html
-    leftOver: [
-        {
-            ingredient: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Ingredient',
-            },
-            quantity: {
-                type: Number,
-                required: true,
-            },
-            unit: {
-                type: String,
-                required: true,
-            }
-        }
-    ],
-    mealCooking: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Meal'
-    }],
-    cart: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Ingredient'
-    }],
     statistic: {
         type: [String],
         default: [],
@@ -113,4 +81,6 @@ UserSchema.pre('save', async function (next) {
     }
     next();
 });
+
+
 export default mongoose.model<UserDocument, UserModel>('User', UserSchema);

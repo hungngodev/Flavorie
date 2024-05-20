@@ -1,14 +1,13 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { NotFoundError } from '../errors/customErrors.ts';
-import { modifyOrdinaryInfo } from '../services/userServices.ts';
+import { modifyOrdinaryInfo, getUserById } from '../services/userServices.ts';
 import User from '../models/UserModel.ts';
 
 export const getCurrentUser = async (req: Request, res: Response) => {
-    const user = await User.findOne({ _id: req.user.userId });
+    const user = await getUserById(req.user.userId);
     if (user) {
-        const userWithoutPassword = user.toJSON();
-        res.status(StatusCodes.OK).send({ user: userWithoutPassword });
+        res.status(StatusCodes.OK).send({ user });
     } else {
         throw new NotFoundError('User not found');
     }
@@ -28,3 +27,4 @@ export const updateUser = async (req: Request, res: Response) => {
     await updatedUser.save();
     res.status(StatusCodes.OK).send({ msg: 'update user' });
 };
+

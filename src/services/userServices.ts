@@ -2,6 +2,7 @@ import UserModel, { User } from "../models/UserModel.ts";
 import { hashPassword, comparePassword } from "../utils/passwordUtils.ts";
 import { UnauthenticatedError, UserCreationError } from '../errors/customErrors.ts';
 import { createJWT } from '../utils/tokenUtils.ts';
+import ItemModel, { Item } from "../models/Item.ts";
 
 export async function createUser(userDocument: User): Promise<string> {
     const { email, name } = userDocument;
@@ -32,10 +33,21 @@ export async function authenticateCheck(userDocument: User): Promise<string> {
     return token;
 }
 
-type UserValueTypes = {
-    [K in keyof User]: User[K];
-}[keyof User];
-
+export async function getUserById(userId: string): Promise<User> {
+    const user = await UserModel.findById(userId).populate([
+        {
+            path: 'leftOver',
+            populate: {
+                path: 'ingredients',
+                model: 'Ingredient'
+            }
+        },
+        { path: 'mealCooking' },
+        { path: 'cart' },
+    ]);
+    if (!user) throw new UnauthenticatedError('User not found');
+    return user;
+}
 
 export async function modifyOrdinaryInfo(userId: string, reqInfo: User): Promise<void> {
     let user = await UserModel.findById(userId);
@@ -54,12 +66,7 @@ export async function modifyOrdinaryInfo(userId: string, reqInfo: User): Promise
     await user.save();
 }
 
-
-export async function modifyLeftOver(userId: string, reqInfo: User): Promise<void> {
-    let user = await UserModel.findById(userId);
-    if (!user) throw new UnauthenticatedError('User not found');
-    for (let i = 0; i < reqInfo.leftOver.length; i++) {
-        user.leftOver.push(reqInfo.leftOver[i]);
-    }
-    await user.save();
+export async function getCart(userId: string): Promise<Item[]> {
+    const cart = await ItemModel.find({ userId: userId, type: 'cart' });
+    return cart;
 }
