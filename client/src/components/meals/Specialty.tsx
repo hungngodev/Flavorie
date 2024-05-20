@@ -1,6 +1,6 @@
 import { Badge, Box, Button, Flex, Grid, Image, Link } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-
+import { motion } from 'framer-motion';
 interface mockMeals {
   id: string;
   image: string;
@@ -62,15 +62,20 @@ export const Specialty = () => {
           What's special today?
         </Button>
       ) : (
-        <Flex direction={{ base: 'column', md: 'row' }} alignItems="center" justifyContent="center">
-          <Image src={meal.image} alt={meal.title} boxSize="200px" borderRadius="full" mb={{ base: '4', md: '0' }} />
+        <motion.div
+        initial={{opacity: 0, scale: 0.8}}
+        animate={{opacity: 1, scale: 1}}
+        transition={{duration: 0.5, ease: "easeOut"}}
+        >
+          <Flex direction={{ base: 'column', md: 'row' }} alignItems="center" justifyContent="center">
+          <Image src={meal.image} alt={meal.title} boxSize="100px" borderRadius="full" mb={{ base: '4', md: '0' }} />
           <Box ml={{ md: '4' }} textAlign="left">
             <Grid templateColumns="repeat(2, auto)" gap="2">
-              <Badge textAlign="center" borderRadius="full" px="4" py="2" colorScheme="teal" fontSize="lg" mb="4">
+              <Badge textAlign="center" borderRadius="full" px="4" py="2" colorScheme="teal" fontSize="md" mb="4">
                 {meal.title}
               </Badge>
               <Link href={meal.id}>
-                <Button textAlign="center" borderRadius="full" px="4" py="2" colorScheme="teal" fontSize="lg" mb="4">
+                <Button textAlign="center" borderRadius="full" px="4" py="2" colorScheme="teal" fontSize="md" mb="4">
                   Cook now
                 </Button>
               </Link>
@@ -84,6 +89,8 @@ export const Specialty = () => {
             </Grid>
           </Box>
         </Flex>
+        </motion.div>
+        
       )}
     </Box>
   );
