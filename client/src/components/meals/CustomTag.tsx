@@ -11,6 +11,7 @@ export type Diet = "Gluten Free" | "Ketogenic" | "Vegetarian" | "Lacto-Vegetaria
 export const allergyTypes: Allergy[] = ["Dairy", "Egg", "Gluten", "Grain", "Peanut", "Seafood", "Sesame", "Shellfish", "Soy", "Sulfite", "Tree Nut", "Wheat"];
 export const dietTypes: Diet[] = ["Gluten Free", "Ketogenic", "Vegetarian", "Lacto-Vegetarian", "Ovo-Vegetarian", "Vegan", "Pescetarian", "Paleo", "Primal", "Whole30", "Low FODMAP"];
 
+
 type AllergyIcons = Record<Allergy | Diet, React.ComponentType>;
 
 const Icons: AllergyIcons = {
@@ -82,7 +83,6 @@ const CustomTag: React.FC<CustomTagProps> = React.forwardRef<HTMLSpanElement, Cu
             <Tag
             {...props}
             ref={ref}
-            onClick={handleClick}
             boxShadow="md"
             borderRadius="full"
             fontWeight="bold"
@@ -91,6 +91,7 @@ const CustomTag: React.FC<CustomTagProps> = React.forwardRef<HTMLSpanElement, Cu
             pl="1"
             pr="3"
             width="max-content"
+            onClick={handleClick}
           >
           <TagLeftIcon as={Icons[type] ?? Salad} backgroundColor="gray.50" borderRadius="full" boxSize="2.25rem" border="1px" borderWidth="0.5rem" borderColor="gray.50"/> 
           <TagLabel py="3" width="fit-content" fontSize="md" whiteSpace='nowrap'>{type}</TagLabel>
