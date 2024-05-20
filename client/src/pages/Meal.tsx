@@ -1,10 +1,12 @@
 import { SearchBar } from "../components/ingredients/SearchBar";
+import { Specialty } from "../components/meals/Specialty";
 
 function Meal() {
-  return ( 
+  return (
+    <>
+    <Specialty />
     <SearchBar />
-      
-    
+    </>  
   )
 }
 
