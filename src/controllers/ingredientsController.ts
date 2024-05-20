@@ -3,11 +3,12 @@ import { getAllIngredientsAPI } from '../services/spoonacular/spoonacularService
 import { ServerError } from '../errors/customErrors.ts';
 import Ingredients from '../models/IngredientsModel.ts';
 import User from '../models/UserModel.ts';
-import { getIngredientWithName, getIngredientsWithCategory } from '../services/ingredientServices.ts';
+import { classifyIngredient, getIngredientWithName, getIngredientsWithCategory } from '../services/ingredientServices.ts';
 import { IngredientBank } from '../utils/queryBank.ts';
 import { StatusCodes } from 'http-status-codes';
 import { Ingredient } from '../models/IngredientsModel.ts';
 import { findIngredientById } from '../services/spoonacular/spoonacularServices.ts';
+import { error } from 'console';
 
 export const getAllIngredients = async (req: Request, res: Response) => {
     const allergy = [];
@@ -21,18 +22,31 @@ export const getAllIngredients = async (req: Request, res: Response) => {
             leftOver.push(...thisUser.leftOver);
         }
     }
-    const cagetory = Object.keys(IngredientBank);
-    let ingredients = [];
-    for (let i = 0; i < cagetory.length; i++) {
-        const category = cagetory[i];
-        const ingredientsInCategory = await getIngredientsWithCategory(category);
-        ingredients.push({
-            category,
-            ingredients: ingredientsInCategory
-        });
+    // const cagetory = Object.keys(IngredientBank);
+    // let ingredients = [];
+    // for (let i = 0; i < cagetory.length; i++) {
+    //     const category = cagetory[i];
+    //     const ingredientsInCategory = await getIngredientsWithCategory(category);
+    //     ingredients.push({
+    //         category,
+    //         ingredients: ingredientsInCategory
+    //     });
+    // }
+    try{
+        const classifiedIngredients = await classifyIngredient()
+        res.status(StatusCodes.OK).json({
+            classifiedIngredients: classifiedIngredients,
+            allergy,
+            diet,
+            leftOver
+        })
+    }
+    catch(e){
+        console.error('Error classifying ingredients:', e)
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new ServerError('Failed to classify ingredients'))
     }
 
-    res.json({ ingredients, allergy, diet, leftOver }).status(StatusCodes.OK);
+    // res.json({ ingredients, allergy, diet, leftOver }).status(StatusCodes.OK);
 }
 
 export const searchIngredients = async (req: Request, res: Response) => {
@@ -48,3 +62,5 @@ export const getIndividualIngredient = async (req: Request, res: Response) => {
     const ingredient = await findIngredientById('', parseInt(ingredientId));
     res.json({ ingredient }).status(StatusCodes.OK);
 }
+
+
