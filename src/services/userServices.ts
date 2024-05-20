@@ -33,22 +33,6 @@ export async function authenticateCheck(userDocument: User): Promise<string> {
     return token;
 }
 
-export async function getUserById(userId: string): Promise<User> {
-    const user = await UserModel.findById(userId).populate([
-        {
-            path: 'leftOver',
-            populate: {
-                path: 'ingredients',
-                model: 'Ingredient'
-            }
-        },
-        { path: 'mealCooking' },
-        { path: 'cart' },
-    ]);
-    if (!user) throw new UnauthenticatedError('User not found');
-    return user;
-}
-
 export async function modifyOrdinaryInfo(userId: string, reqInfo: User): Promise<void> {
     let user = await UserModel.findById(userId);
     if (!user) throw new UnauthenticatedError('User not found');
@@ -66,7 +50,21 @@ export async function modifyOrdinaryInfo(userId: string, reqInfo: User): Promise
     await user.save();
 }
 
-export async function getCart(userId: string): Promise<Item[]> {
-    const cart = await ItemModel.find({ userId: userId, type: 'cart' });
-    return cart;
+
+export async function getUserItems(userId: string, type: string): Promise<Item[]> {
+    const items = await ItemModel.find({ userId: userId, type: type }).populate('itemId');
+    return items;
+}
+
+export async function modifyUserItems(userId: string, items: Item[], type: string): Promise<void> {
+    for (let item of items) {
+        let existingItem = await ItemModel.findOne({ userId: userId, itemId: item.itemId, type: type });
+        if (existingItem) {
+            existingItem.quantity = item.quantity;
+            existingItem.unit = item.unit;
+            await existingItem.save();
+        } else {
+            await ItemModel.create({ ...item, userId: userId, type: type });
+        }
+    }
 }
