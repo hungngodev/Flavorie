@@ -33,6 +33,10 @@ const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ children }: A
   const setUser = async () => {
     try {
       const getUser = await customFetch.get('/user/current-user');
+      if (getUser.data.msg === 'Unauthorized') {
+        setCurrentUser({ username: '', email: '', status: 'unauthenticated' });
+        return;
+      }
       setCurrentUser({ username: getUser.data.user.name, email: getUser.data.user.email, status: 'authenticated' });
     } catch (error) {
       setCurrentUser({ username: '', email: '', status: 'unauthenticated' });

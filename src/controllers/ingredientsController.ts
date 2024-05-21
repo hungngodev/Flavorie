@@ -11,6 +11,7 @@ import { findIngredientById } from '../services/spoonacular/spoonacularServices.
 import { error } from 'console';
 
 export const getAllIngredients = async (req: Request, res: Response) => {
+    const { category } = req.query;
     const allergy = [];
     const diet = [];
     if (req.user) {
@@ -23,7 +24,7 @@ export const getAllIngredients = async (req: Request, res: Response) => {
     try {
         const classifiedIngredients = await classifyIngredient()
         res.status(StatusCodes.OK).json({
-            classifiedIngredients: classifiedIngredients,
+            category: category !== '/' ? classifiedIngredients.filter((SubCategory) => SubCategory.categoryName === category) : classifiedIngredients,
             allergy,
             diet,
         })

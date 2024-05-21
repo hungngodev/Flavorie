@@ -42,7 +42,7 @@ app.get("/api/test", (req, res) => {
 });
 
 app.use("/api/auth", authRouter);
-app.use("/api/user", authenticateUser, userRouter);
+app.use("/api/user", userRouter);
 app.use("/api/meal", mealRouter);
 app.use("/api/ingredient", ingredientRouter);
 app.use("/api", receiptScanRouter)

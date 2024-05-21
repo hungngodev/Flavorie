@@ -3,7 +3,7 @@ import {
     getCurrentUser
 } from '../controllers/userController.js';
 import { updateUser, updateCart, updateLeftOver, getCart, getLeftOver } from '../controllers/userController.js';
-import { authenticateUser } from '../middleware/authMiddleware.js';
+import { authenticateUser, checkUser } from '../middleware/authMiddleware.js';
 import { catchAsync } from '../utils/catchAsync.js';
 import { storage } from '../services/cloudinary/cloudinaryServices.ts';
 import multer from 'multer';
@@ -12,7 +12,7 @@ const upload = multer({ storage });
 const router = Router();
 
 router.route('/current-user')
-    .get(authenticateUser, catchAsync(getCurrentUser))
+    .get(checkUser, catchAsync(getCurrentUser))
     .patch(authenticateUser, upload.array('images'), catchAsync(updateUser));
 
 router.route('/cart')

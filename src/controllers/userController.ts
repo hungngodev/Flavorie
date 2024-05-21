@@ -5,6 +5,7 @@ import UserModel from '../models/UserModel.ts';
 import { getUserItems, modifyOrdinaryInfo, modifyUserItems } from '../services/userServices.ts';
 
 export const getCurrentUser = async (req: Request, res: Response) => {
+    if (!req.user) { res.status(StatusCodes.OK).send({ msg: 'Unauthorized' }); return; }
     const user = await UserModel.findById(req.user.userId);
     if (user) {
         res.status(StatusCodes.OK).send({ user });

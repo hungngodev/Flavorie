@@ -1,5 +1,6 @@
 import { ChakraBaseProvider, extendTheme } from '@chakra-ui/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
 import HomeLayout from './layouts/HomeLayout.tsx';
@@ -36,15 +37,16 @@ const router = createBrowserRouter([
       {
         path: 'ingredients',
         element: <Outlet />,
-        loader: ingredientsLoader(queryClient),
         children: [
           {
             index: true,
             element: <Ingredient />,
+            loader: ingredientsLoader(queryClient),
           },
           {
             path: ':category',
             element: <Ingredient />,
+            loader: ingredientsLoader(queryClient),
           },
         ],
       },
@@ -66,6 +68,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
         <ToastContainer autoClose={5000} limit={3} transition={Slide} />
+        <ReactQueryDevtools />
       </QueryClientProvider>
     </ChakraBaseProvider>
   );

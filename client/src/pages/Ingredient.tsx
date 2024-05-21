@@ -1,5 +1,5 @@
 import { Box, Flex, IconButton, useDisclosure } from '@chakra-ui/react';
-import { QueryClient } from '@tanstack/react-query';
+import { QueryClient, useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { LottieRefCurrentProps } from 'lottie-react';
 import { Calendar, Flag, Home, Layers, LayoutDashboard, Refrigerator, StickyNote } from 'lucide-react';
@@ -9,19 +9,26 @@ import { useParams } from 'react-router-dom';
 import { Cart, CategorySidebar, IngredientsMain } from '../components';
 import customFetch from '../utils/customFetch';
 
-const allIngredientsQuery = () => {
+const allIngredientsQuery = (category: string) => {
   return {
-    queryKey: ['ingredients'],
+    queryKey: ['ingredients', category],
     queryFn: async () => {
-      const data = await customFetch('/ingredients');
+      const data = await customFetch('/ingredient', {
+        params: {
+          category: category,
+        },
+      });
       return data;
     },
   };
 };
-export const loader = (queryClient: QueryClient) => async () => {
-  await queryClient.prefetchQuery(allIngredientsQuery());
-  return {};
-};
+
+export const loader =
+  (queryClient: QueryClient) =>
+  async ({ params }: { params: { category: string } }) => {
+    await queryClient.prefetchQuery(allIngredientsQuery(params.category));
+    return null;
+  };
 
 export type CartData = {
   cart: {
@@ -53,10 +60,11 @@ export type Category = {
   color: string;
 };
 
-export type IngredientData = Category[];
-
 export default function OuterLayer() {
   const { category } = useParams<{ category: string }>();
+  const { data: queryData } = useQuery(allIngredientsQuery(category ?? ''));
+  const ingredientData = queryData?.data.category[0];
+
   const categories = [
     {
       index: 1,
@@ -145,12 +153,11 @@ export default function OuterLayer() {
       link: '/ingredients/sweet',
     },
   ];
-  const ingredientData = customFetch('/ingredients');
-  console.log('ingredientData', ingredientData);
   const fridgeWidth = '300';
   const { getButtonProps, getDisclosureProps, isOpen } = useDisclosure();
   const [hidden, setHidden] = useState(!isOpen);
   const [expanded, setExpanded] = useState(false);
+
   const { control, handleSubmit, watch, setValue } = useForm<CartData>({
     defaultValues: {
       cart: [],
@@ -209,7 +216,7 @@ export default function OuterLayer() {
       <CategorySidebar categories={categories} expanded={expanded} setExpanded={() => setExpanded((cur) => !cur)} />
       <div className="relative z-0 h-full w-full overflow-auto transition-all">
         <Flex width="100%" height="100%" direction={'column'} gap={4} justifyContent={'center'} alignItems={'center'}>
-          <IngredientsMain data={mockData} addFunction={addFunction} />
+          <IngredientsMain data={ingredientData} addFunction={addFunction} />
         </Flex>
       </div>
       <motion.div
@@ -240,58 +247,3 @@ export default function OuterLayer() {
     </Box>
   );
 }
-
-const categoryColor = {
-  Category1: 'red',
-  Category2: 'blue',
-  Category3: 'green',
-  Category4: 'yellow',
-  Category5: 'orange',
-  Category6: 'purple',
-  Category7: 'pink',
-  Category8: 'cyan',
-  Category9: 'teal',
-  Category10: 'gray',
-  Category11: 'black',
-};
-
-function generateMockData(
-  numCategories: number,
-  numQueriesPerCategory: number,
-  numIngredientsPerQuery: number,
-): Category[] {
-  const mockData: Category[] = [];
-
-  for (let i = 1; i <= numCategories; i++) {
-    const category: Category = {
-      categoryName: `Category${i}`,
-      numberOfQueryKeys: numQueriesPerCategory,
-      totalNumberOfIngredients: numQueriesPerCategory * numIngredientsPerQuery,
-      results: [],
-      color: categoryColor[`Category${i}` as keyof typeof categoryColor],
-    };
-
-    for (let j = 1; j <= numQueriesPerCategory; j++) {
-      const queryKey = `Query ${j}`;
-      const ingredients: Ingredient[] = [];
-
-      for (let k = 1; k <= numIngredientsPerQuery; k++) {
-        const ingredient: Ingredient = {
-          id: `${(j - 1) * numIngredientsPerQuery + k + i} `,
-          name: `Ingredient ${(j - 1) * numIngredientsPerQuery + k}`,
-          image: `https://source.unsplash.com/random/${Math.random()}`,
-          category: `Category ${i}`,
-        };
-        ingredients.push(ingredient);
-      }
-
-      category.results.push({ queryKey, ingredients });
-    }
-
-    mockData.push(category);
-  }
-
-  return mockData;
-}
-
-const mockData: Category[] = generateMockData(10, 10, 10);
