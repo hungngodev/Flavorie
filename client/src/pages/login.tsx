@@ -58,16 +58,22 @@ const Login: React.FC = () => {
       const LoginRequest = await customFetch.post('/auth/login', checkUser, {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       });
+      console.dir(LoginRequest);
       if (LoginRequest.status === 200) {
         toast.success('You have successfully logged in !'), { position: 'top-right', icon: <CiCircleCheck /> };
         setUserNotFounded(false);
         navigate('/');
       }
     } catch (error) {
-      if (error instanceof AxiosError && error.response && error.response.status === 404) {
-        toast.error('Make sure your email and password is correct!', { position: 'top-right', icon: <FaUserXmark /> });
+      if (error instanceof AxiosError && error.response) {
+        toast.error(`Make sure your email and password is correct!: ${error.response.statusText} `, {
+          position: 'top-right',
+          icon: <FaUserXmark />,
+        });
         setUserNotFounded(true);
       }
+      console.dir(error);
+
       return;
     }
   };
