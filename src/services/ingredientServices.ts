@@ -43,12 +43,11 @@ export async function classifyIngredient() {
         }
 
         for (const key of queryKeys) {
-
             const ingredients = await Ingredients.aggregate([
                 {
                     $match: {
                         originalName: { $regex: key, $options: 'i' },
-                        relevance: { $exists: true, $not: { $size: 0 } }
+                        relevance: { $exists: true, }
                     }
                 },
                 {
@@ -60,11 +59,11 @@ export async function classifyIngredient() {
             ])
 
             categoryResults.totalNumberOfIngredients += ingredients.length
-
+            if (ingredients.length === 0) continue;
             categoryResults.results.push({
                 queryKey: key,
                 ingredients: ingredients.map(ingredient => ({
-                    id: ingredient.id,
+                    id: ingredient._id.toString(),
                     name: ingredient.name,
                     image: "https://img.spoonacular.com/ingredients_100x100/" + ingredient.image,
                     category: ingredient.categoryPath

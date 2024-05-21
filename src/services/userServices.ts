@@ -1,9 +1,8 @@
-import UserModel, { User } from "../models/UserModel.ts";
-import { hashPassword, comparePassword } from "../utils/passwordUtils.ts";
-import { UnauthenticatedError, UserCreationError } from '../errors/customErrors.ts';
-import { createJWT } from '../utils/tokenUtils.ts';
-import ItemModel, { Item } from "../models/Item.ts";
+import { NotFoundError, UnauthenticatedError, UserCreationError } from '../errors/customErrors.ts';
 import { Ingredient } from "../models/IngredientsModel.ts";
+import ItemModel, { Item } from "../models/Item.ts";
+import UserModel, { User } from "../models/UserModel.ts";
+import { comparePassword, hashPassword } from "../utils/passwordUtils.ts";
 
 interface UserItem extends Omit<Item, 'itemId'> {
     itemId: Ingredient;
@@ -15,11 +14,10 @@ export async function createUser(userDocument: User): Promise<string> {
 
     const isEmailExist = await UserModel.findOne({ email: email });
     const isNameExist = await UserModel.findOne({ name: name });
-    if (isEmailExist || isNameExist) throw new UserCreationError('User already exists');
+    if (isEmailExist) throw new UserCreationError('User already exists');
 
     const user = await UserModel.create(userDocument);
-    const token = createJWT({ userId: user._id.toString(), role: user.role });
-    return token;
+    return user._id.toString();
 }
 
 
@@ -29,13 +27,12 @@ export async function authenticateCheck(userDocument: User): Promise<string> {
 
     const user = await UserModel.findOne({ email: email });
     const isValidUser = user;
-    if (!isValidUser) throw new UnauthenticatedError('Not Found');
+    if (!isValidUser) throw new NotFoundError('User not found');
     const isValidPassword = await comparePassword(password, user.password);
 
     if (!isValidPassword) throw new UnauthenticatedError('invalid credentials');
 
-    const token = createJWT({ userId: user._id.toString(), role: user.role });
-    return token;
+    return user._id.toString();
 }
 
 export async function modifyOrdinaryInfo(userId: string, reqInfo: User): Promise<void> {
