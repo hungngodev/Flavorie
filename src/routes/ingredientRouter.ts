@@ -7,6 +7,6 @@ import { getDietAndAllergy } from '../middleware/userMiddleware.ts';
 
 router.get('/', checkUser, catchAsync(getDietAndAllergy), catchAsync(getAllIngredients));
 router.get('/:id',)
-
+// router.get('/ingredients/:categoryName',)
 
 export default router;
