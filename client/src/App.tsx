@@ -4,7 +4,7 @@ import { Slide, ToastContainer } from 'react-toastify';
 import HomeLayout from './layouts/HomeLayout.tsx';
 import { Ingredient, Login, Main, Meal, Register } from './pages/index';
 import theme from './style/theme';
-
+import ImageScan from './components/ingredients/ImageScan.tsx';
 
 // const { Button } = chakraTheme.components;
 
@@ -60,6 +60,7 @@ const router = createBrowserRouter([
 function App() {
   return (
     <ChakraBaseProvider theme={extendTheme(theme)}>
+      {/* <ImageScan /> */}
       <RouterProvider router={router} />
       <ToastContainer autoClose={5000} limit={3} transition={Slide} />
     </ChakraBaseProvider>
