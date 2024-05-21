@@ -1,13 +1,18 @@
 import { Box, Flex, IconButton, useDisclosure } from '@chakra-ui/react';
 import { QueryClient, useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
+import { waveform } from 'ldrs';
 import { LottieRefCurrentProps } from 'lottie-react';
 import { Calendar, Flag, Home, Layers, LayoutDashboard, Refrigerator, StickyNote } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
+import { Params, useParams } from 'react-router-dom';
 import { Cart, CategorySidebar, IngredientsMain } from '../components';
 import customFetch from '../utils/customFetch';
+
+waveform.register();
+
+// Default values shown
 
 const allIngredientsQuery = (category: string) => {
   return {
@@ -25,8 +30,8 @@ const allIngredientsQuery = (category: string) => {
 
 export const loader =
   (queryClient: QueryClient) =>
-  async ({ params }: { params: { category: string } }) => {
-    await queryClient.prefetchQuery(allIngredientsQuery(params.category));
+  async ({ params }: { params: Params }) => {
+    queryClient.ensureQueryData(allIngredientsQuery(params.category ?? ''));
     return null;
   };
 
@@ -62,7 +67,7 @@ export type Category = {
 
 export default function OuterLayer() {
   const { category } = useParams<{ category: string }>();
-  const { data: queryData } = useQuery(allIngredientsQuery(category ?? ''));
+  const { data: queryData, status } = useQuery(allIngredientsQuery(category ?? ''));
   const ingredientData = queryData?.data.category[0];
 
   const categories = [
@@ -168,17 +173,17 @@ export default function OuterLayer() {
     name: 'cart',
   });
   const currentCart = watch('cart');
-  const addFunction = (ingredientData: SubCategory) => {
-    if (currentCart.some((item) => item.id === ingredientData.ingredients[0].id)) {
-      const index = currentCart.findIndex((item) => item.id === ingredientData.ingredients[0].id);
+  const addFunction = (ingredientData: Ingredient) => {
+    if (currentCart.some((item) => item.id === ingredientData.id)) {
+      const index = currentCart.findIndex((item) => item.id === ingredientData.id);
       const currentQuantity = parseInt(currentCart[index].quantity);
       setValue(`cart.${index}.quantity`, (currentQuantity + 1).toString());
     } else
       append({
-        id: ingredientData.ingredients[0].id,
-        name: ingredientData.ingredients[0].name,
-        image: ingredientData.ingredients[0].image,
-        category: ingredientData.ingredients[0].category,
+        id: ingredientData.id,
+        name: ingredientData.name,
+        image: ingredientData.image,
+        category: ingredientData.category,
         quantity: '1',
       });
     lottieCartRef.current?.playSegments([150, 185]);
@@ -216,7 +221,11 @@ export default function OuterLayer() {
       <CategorySidebar categories={categories} expanded={expanded} setExpanded={() => setExpanded((cur) => !cur)} />
       <div className="relative z-0 h-full w-full overflow-auto transition-all">
         <Flex width="100%" height="100%" direction={'column'} gap={4} justifyContent={'center'} alignItems={'center'}>
-          <IngredientsMain data={ingredientData} addFunction={addFunction} />
+          {status === 'pending' ? (
+            <l-waveform size="100" stroke="3.5" speed="1" color="black"></l-waveform>
+          ) : (
+            <IngredientsMain data={ingredientData} addFunction={addFunction} />
+          )}
         </Flex>
       </div>
       <motion.div

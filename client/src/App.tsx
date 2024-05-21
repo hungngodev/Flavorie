@@ -40,8 +40,7 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <Ingredient />,
-            loader: ingredientsLoader(queryClient),
+            element: <div>HIHIH</div>,
           },
           {
             path: ':category',
