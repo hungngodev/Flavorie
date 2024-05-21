@@ -7,7 +7,7 @@ const CustomWebcam: React.FC = () => {
     const [imgSrc, setImgSrc] = useState<string | null>(null);
     const [message, setMessage] = useState<string | null>(null);
 
-    // capture function
+    // capture photo
     const capture = useCallback(() => {
         if (webcamRef.current) {
         const imageSrc = webcamRef.current.getScreenshot();
@@ -22,6 +22,7 @@ const CustomWebcam: React.FC = () => {
         setMessage(null);
     };
 
+    // submit photo
     const submit = () => {
         if (imgSrc) {
             setMessage('Sucessfully submitted');
@@ -34,8 +35,8 @@ const CustomWebcam: React.FC = () => {
                 <img src={imgSrc} alt="webcam" />
             ): (
                 <Webcam 
-                    height={600} 
-                    width={600} 
+                    height={800} 
+                    width={800} 
                     ref={webcamRef} 
                     screenshotFormat="image/jpeg"
                     screenshotQuality={0.9} 
