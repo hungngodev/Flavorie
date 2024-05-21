@@ -3,6 +3,11 @@ import { hashPassword, comparePassword } from "../utils/passwordUtils.ts";
 import { UnauthenticatedError, UserCreationError } from '../errors/customErrors.ts';
 import { createJWT } from '../utils/tokenUtils.ts';
 import ItemModel, { Item } from "../models/Item.ts";
+import { Ingredient } from "../models/IngredientsModel.ts";
+
+interface UserItem extends Omit<Item, 'itemId'> {
+    itemId: Ingredient;
+}
 
 export async function createUser(userDocument: User): Promise<string> {
     const { email, name } = userDocument;
@@ -51,8 +56,12 @@ export async function modifyOrdinaryInfo(userId: string, reqInfo: User): Promise
 }
 
 
-export async function getUserItems(userId: string, type: string): Promise<Item[]> {
-    const items = await ItemModel.find({ userId: userId, type: type }).populate('itemId');
+export async function getUserItems(userId: string, type: string): Promise<UserItem[]> {
+    const items = await ItemModel.find({ userId: userId, type: type }).populate<
+        {
+            itemId: Ingredient
+        }
+    >('itemId');
     return items;
 }
 

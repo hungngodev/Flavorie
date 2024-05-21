@@ -1,4 +1,5 @@
 import { Box, Flex, IconButton, useDisclosure } from '@chakra-ui/react';
+import { QueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { LottieRefCurrentProps } from 'lottie-react';
 import { Calendar, Flag, Home, Layers, LayoutDashboard, Refrigerator, StickyNote } from 'lucide-react';
@@ -6,6 +7,21 @@ import { useRef, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { Cart, CategorySidebar, IngredientsMain } from '../components';
+import customFetch from '../utils/customFetch';
+
+const allIngredientsQuery = () => {
+  return {
+    queryKey: ['ingredients'],
+    queryFn: async () => {
+      const data = await customFetch('/ingredients');
+      return data;
+    },
+  };
+};
+export const loader = (queryClient: QueryClient) => async () => {
+  await queryClient.prefetchQuery(allIngredientsQuery());
+  return {};
+};
 
 export type CartData = {
   cart: {
@@ -47,75 +63,90 @@ export default function OuterLayer() {
       icon: <Home size={20} />,
       text: 'Meats',
       alert: true,
-      active: category === 'meats',
-      link: '/ingredients/meats',
+      active: category === 'meat',
+      link: '/ingredients/meat',
     },
     {
       index: 2,
       icon: <LayoutDashboard size={20} />,
       text: 'Vegetables',
-      active: category === 'vegetables',
-      link: '/ingredients/vegetables',
+      active: category === 'vegetable',
+      link: '/ingredients/vegetable',
     },
     {
       index: 3,
-      icon: <StickyNote size={20} />,
-      text: 'Fruits',
-      alert: true,
-      active: category === 'fruits',
-      link: '/ingredients/fruits',
-    },
-    {
-      index: 4,
-      icon: <Calendar size={20} />,
-      text: 'Nuts',
-      active: category === 'nuts',
-      link: '/ingredients/nuts',
-    },
-    {
-      index: 5,
-      icon: <Layers size={20} />,
-      text: 'Spices',
-      active: category === 'spices',
-      link: '/ingredients/spices',
-    },
-    {
-      index: 6,
       icon: <Flag size={20} />,
       text: 'Dairy',
       active: category === 'dairy',
       link: '/ingredients/dairy',
     },
     {
-      index: 7,
+      index: 4,
       icon: <Flag size={20} />,
-      text: 'Bakery',
-      active: category === 'bakery',
-      link: '/ingredients/bakery',
+      text: 'Sauce',
+      active: category === 'sauce',
+      link: '/ingredients/sauce',
+    },
+    {
+      index: 5,
+      icon: <Flag size={20} />,
+      text: 'Grain',
+      active: category === 'grain',
+      link: '/ingredients/grain',
+    },
+    {
+      index: 6,
+      icon: <StickyNote size={20} />,
+      text: 'Fruits',
+      alert: true,
+      active: category === 'fruit',
+      link: '/ingredients/fruit',
+    },
+    {
+      index: 7,
+      icon: <Calendar size={20} />,
+      text: 'Nuts',
+      active: category === 'nut',
+      link: '/ingredients/nut',
     },
     {
       index: 8,
       icon: <Flag size={20} />,
-      text: 'Beverages',
-      active: category === 'beverages',
-      link: '/ingredients/beverages',
+      text: 'Egg',
+      active: category === 'egg',
+      link: '/ingredients/egg',
     },
     {
       index: 9,
       icon: <Flag size={20} />,
-      text: 'Frozen',
-      active: category === 'frozen',
-      link: '/ingredients/frozen',
+      text: 'Seafoods',
+      active: category === 'seafood',
+      link: '/ingredients/seafood',
     },
     {
       index: 10,
       icon: <Flag size={20} />,
-      text: 'Others',
-      active: category === 'others',
-      link: '/ingredients/others',
+      text: 'Powders',
+      active: category === 'powder',
+      link: '/ingredients/powder',
+    },
+    {
+      index: 11,
+      icon: <Layers size={20} />,
+      text: 'Spices',
+      active: category === 'spice',
+      link: '/ingredients/spice',
+    },
+    {
+      index: 12,
+      icon: <Flag size={20} />,
+      text: 'Sweets',
+      active: category === 'sweet',
+      link: '/ingredients/sweet',
     },
   ];
-
+  const ingredientData = customFetch('/ingredients');
+  console.log('ingredientData', ingredientData);
   const fridgeWidth = '300';
   const { getButtonProps, getDisclosureProps, isOpen } = useDisclosure();
   const [hidden, setHidden] = useState(!isOpen);

@@ -30,9 +30,9 @@ type CategoryResults = {
     totalNumberOfIngredients: number,
     results: QueryResults[]
 }
-export async function classifyIngredient(){
+export async function classifyIngredient() {
     const outputs: CategoryResults[] = []
-    for (const category in IngredientBank){
+    for (const category in IngredientBank) {
         const queryKeys = IngredientBank[category as keyof typeof IngredientBank]
         const categoryResults: CategoryResults = {
             categoryName: category,
@@ -41,34 +41,30 @@ export async function classifyIngredient(){
             results: []
         }
 
-        for (const key of queryKeys){
-            // const ingredients = await Ingredients.find({
-            //     originalName: { $regex: key, $options: 'i'},
-            //     relevance: { $exists: true, $not:{$size: 0}}
-            // }).sort()
+        for (const key of queryKeys) {
 
             const ingredients = await Ingredients.aggregate([
                 {
-                $match: {
-                    originalName: {$regex: key, $options: 'i'},
-                    relevance: { $exists: true, $not: {$size: 0}}
+                    $match: {
+                        originalName: { $regex: key, $options: 'i' },
+                        relevance: { $exists: true, $not: { $size: 0 } }
+                    }
+                },
+                {
+                    $addFields: { relevance_count: { $size: "$relevance" } }
+                },
+                {
+                    $sort: { relevance_count: -1 }
                 }
-            }, 
-            {
-                $addFields: {relevance_count: {$size: "$relevance"}}
-            }, 
-            {
-               $sort: {relevance_count: -1} 
-            }
             ])
 
             categoryResults.totalNumberOfIngredients += ingredients.length
-            
+
             categoryResults.results.push({
                 queryKey: key,
                 ingredients: ingredients.map(ingredient => ({
                     name: ingredient.name,
-                    image: ingredient.image, 
+                    image: "https://img.spoonacular.com/ingredients_100x100/" + ingredient.image,
                     category: ingredient.categoryPath
                 }))
             })

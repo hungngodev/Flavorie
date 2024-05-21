@@ -36,7 +36,6 @@ const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ children }: A
       setCurrentUser({ username: getUser.data.user.name, email: getUser.data.user.email, status: 'authenticated' });
     } catch (error) {
       setCurrentUser({ username: '', email: '', status: 'unauthenticated' });
-      console.log(error);
     }
   };
 

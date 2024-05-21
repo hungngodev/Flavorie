@@ -10,7 +10,7 @@ function createCookie(token: string, res: Response) {
   res.cookie("token", token, {
     httpOnly: true,
     expires: new Date(Date.now() + oneDay),
-    secure: process.env.NODE_ENV === "production",
+
   });
 }
 export const register = async (req: Request, res: Response) => {

@@ -13,35 +13,22 @@ import { error } from 'console';
 export const getAllIngredients = async (req: Request, res: Response) => {
     const allergy = [];
     const diet = [];
-    const leftOver = [];
     if (req.user) {
         const thisUser = await User.findOne({ _id: req.user.userId }).populate<{}>('leftOver');
         if (thisUser) {
             allergy.push(...thisUser.allergy);
             diet.push(thisUser.diet);
-            leftOver.push(...thisUser.leftOver);
         }
     }
-    // const cagetory = Object.keys(IngredientBank);
-    // let ingredients = [];
-    // for (let i = 0; i < cagetory.length; i++) {
-    //     const category = cagetory[i];
-    //     const ingredientsInCategory = await getIngredientsWithCategory(category);
-    //     ingredients.push({
-    //         category,
-    //         ingredients: ingredientsInCategory
-    //     });
-    // }
-    try{
+    try {
         const classifiedIngredients = await classifyIngredient()
         res.status(StatusCodes.OK).json({
             classifiedIngredients: classifiedIngredients,
             allergy,
             diet,
-            leftOver
         })
     }
-    catch(e){
+    catch (e) {
         console.error('Error classifying ingredients:', e)
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new ServerError('Failed to classify ingredients'))
     }

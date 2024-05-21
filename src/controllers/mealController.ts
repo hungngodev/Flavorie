@@ -1,5 +1,7 @@
+import { Ingredient } from './../models/IngredientsModel';
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
+import { getUserItems } from "../services/userServices.ts";
 import { BadRequestError, ServerError } from "../errors/customErrors.ts";
 import IngredientsModel from "../models/IngredientsModel.ts";
 import User from "../models/UserModel.ts";
@@ -99,20 +101,15 @@ export const getMealsFromLeftOver = async (req: Request, res: Response) => {
       throw new ServerError("Mock user not found");
     }
 
-    let ingredients = [];
-    for (let i = 0; i < mockUser.leftOver.length; i++) {
-      const ingredient = await IngredientsModel.findOne({
-        _id: mockUser.leftOver[i],
-      });
-      ingredients.push(ingredient?.name);
-    }
+    const ingredients = await getUserItems(mockUser._id, "leftOver");
+
 
     const response: { suggestedMeals: any } = {
       suggestedMeals: [],
     };
 
     for (const ingredient of ingredients) {
-      const mealList = await getMealByFilter("ingredient", ingredient);
+      const mealList = await getMealByFilter("ingredient", ingredient.itemId.name);
       response.suggestedMeals.push(mealList);
     }
 
