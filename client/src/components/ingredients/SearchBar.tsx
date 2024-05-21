@@ -28,7 +28,7 @@ export const SearchBar = () => {
     }, [debounce])
     return (
         <>
-        <Flex align="center" justify="center">
+        <Flex align="center" justify="center" padding="1.5">
             <InputGroup borderRadius={5} size="md" maxWidth="1000px">
             <Input 
             pr="4.5rem"

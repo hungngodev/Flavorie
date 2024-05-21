@@ -18,7 +18,7 @@
     "@motionone/utils": "^10.17.0",
     "axios": "^1.6.8",
     "clsx": "^2.1.1",
-    "framer-motion": "^11.1.7",
+    "framer-motion": "^11.2.4",
     "lodash": "^4.17.21",
     "lottie-react": "^2.4.0",
     "react-hook-form": "^7.51.2",
