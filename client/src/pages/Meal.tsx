@@ -1,13 +1,14 @@
-import { SearchBar } from "../components/ingredients/SearchBar";
-import { Specialty } from "../components/meals/Specialty";
+import { Flex } from '@chakra-ui/react';
+import { SearchBar } from '../components/ingredients/SearchBar';
+import { Specialty } from '../components/meals/Specialty';
 
 function Meal() {
   return (
-    <>
-    <Specialty />
-    <SearchBar />
-    </>  
-  )
+    <Flex>
+      <Specialty />
+      <SearchBar />
+    </Flex>
+  );
 }
 
 export default Meal;
