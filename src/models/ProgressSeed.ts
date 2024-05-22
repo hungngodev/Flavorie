@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
 export interface Progress extends mongoose.Document {
     name: string;
     currentCagetory: number;

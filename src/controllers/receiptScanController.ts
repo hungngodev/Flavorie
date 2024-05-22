@@ -1,23 +1,21 @@
-import { storage } from "../services/cloudinary/cloudinaryServices.ts"
-import multer from "multer";
-import { Request, Response } from "express";
 import axios from "axios";
+import { Request, Response } from "express";
 import FormData from "form-data";
-import path from "path";
-import fs from "fs"
+import multer from "multer";
+import { storage } from "../services/cloudinary/cloudinaryServices.ts";
 
-const upload = multer({storage})
+const upload = multer({ storage })
 
 const FLASK_SERVICE_URL = 'http://127.0.0.1:5000/scan-receipts'
 
 const processReceipt = async (req: Request, res: Response) => {
-    if (!req.file){
+    if (!req.file) {
         return res.status(400).send('No image uploaded.')
     }
 
     const imageUrl = req.file.path
     try {
-        const imageResponse = await axios.get(imageUrl, {responseType: 'arraybuffer'});
+        const imageResponse = await axios.get(imageUrl, { responseType: 'arraybuffer' });
         const formData = new FormData();
         formData.append('receipt', imageResponse.data, {
             filename: req.file.originalname,
@@ -38,4 +36,4 @@ const processReceipt = async (req: Request, res: Response) => {
         return res.status(500).send("Failed to process image")
     }
 }
-export {upload, processReceipt}
+export { processReceipt, upload };

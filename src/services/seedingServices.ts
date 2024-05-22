@@ -91,7 +91,7 @@ const seedInformation = async () => {
             while (queryIndex < currentSearch.length) {
                 await tryCatchBlock(async () => {
                     console.log(`Query ${queryIndex} of ${keys[currentCagetory]} -> ${currentSearch[queryIndex]}`);
-                    let data = await getAllIngredientsAPI([], [], currentSearch[queryIndex]);
+                    let data = await getAllIngredientsAPI([], [], currentSearch[queryIndex], 100);
                     if (data) {
                         while (parentIndex < data.results.length) {
                             console.log(`Parent ${parentIndex} of query ${queryIndex} of ${keys[currentCagetory]}`);

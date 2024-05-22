@@ -6,8 +6,8 @@ import { getAllMealsByIngredientsAPI, getMealByIdAPI, getRandomMealsAPI } from "
 import { MainCategories } from "../services/themealdb/data.ts";
 import {
   getMealByFilter,
-  getRandomMeal,
   getMealById,
+  getRandomMeal,
 } from "../services/themealdb/themealdbServices.ts";
 import { getRandomKey } from "../services/themealdb/utils.ts";
 

@@ -1,14 +1,9 @@
 import { Request, Response } from 'express';
-import { getAllIngredientsAPI } from '../services/spoonacular/spoonacularServices.ts';
-import { ServerError } from '../errors/customErrors.ts';
-import Ingredients from '../models/IngredientModel.ts';
-import User from '../models/UserModel.ts';
-import { classifyIngredient, getIngredientWithName, getIngredientsWithCategory } from '../services/ingredientServices.ts';
-import { IngredientBank } from '../utils/queryBank.ts';
 import { StatusCodes } from 'http-status-codes';
-import { Ingredient } from '../models/IngredientModel.ts';
-import { findIngredientById } from '../services/spoonacular/spoonacularServices.ts';
-import { error } from 'console';
+import { ServerError } from '../errors/customErrors.ts';
+import User from '../models/UserModel.ts';
+import { classifyIngredient } from '../services/ingredientServices.ts';
+import { findIngredientById, getAllIngredientsAPI } from '../services/spoonacular/spoonacularServices.ts';
 
 export const getAllIngredients = async (req: Request, res: Response) => {
     const { category } = req.query;
@@ -41,7 +36,7 @@ export const searchIngredients = async (req: Request, res: Response) => {
     const ingredientName = req.query.ingredientName as string;
     let { allergy, diet } = req.body;
     if (!allergy || !diet) allergy = diet = [];
-    const ingredients = await getAllIngredientsAPI(allergy, diet, ingredientName);
+    const ingredients = await getAllIngredientsAPI(allergy, diet, ingredientName, 50);
     res.json({ ingredients }).status(StatusCodes.OK);
 }
 
