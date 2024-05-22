@@ -20,6 +20,7 @@ import {
   useBreakpointValue,
   useColorModeValue,
 } from '@chakra-ui/react';
+import { Link } from 'react-router-dom';
 import logo from '../../assets/logo.svg';
 import { useAuth } from '../../hooks';
 import { NavItem } from './NavBar';
@@ -49,9 +50,7 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
                   <Popover trigger={'hover'} placement={'bottom-start'}>
                     <PopoverTrigger>
                       <Box
-                        as="a"
                         p={2}
-                        href={navItem.href ?? '#'}
                         fontSize={'sm'}
                         fontWeight={500}
                         color={linkColor}
@@ -60,7 +59,7 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
                           color: linkHoverColor,
                         }}
                       >
-                        {navItem.label}
+                        <Link to={navItem.href ?? '#'}>{navItem.label}</Link>
                       </Box>
                     </PopoverTrigger>
 
@@ -89,27 +88,24 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
         <Stack flex={{ base: 2, md: 0 }} justify={'flex-end'} direction={'row'} spacing={6}>
           {auth.currentUser.status !== 'authenticated' ? (
             <>
-              <Button as={'a'} fontSize={'sm'} fontWeight={400} variant={'link'} href={'/login'}>
-                Sign In
+              <Button fontSize={'sm'} fontWeight={400} variant={'link'}>
+                <Link to="/login">Sign In</Link>
               </Button>
               <Button
-                as={'a'}
                 display={{ base: 'none', md: 'inline-flex' }}
                 fontSize={'sm'}
                 fontWeight={600}
                 color={'white'}
                 bg={'pink.400'}
-                href={'/register'}
                 _hover={{
                   bg: 'pink.300',
                 }}
               >
-                Sign Up
+                <Link to="/register">Sign Up</Link>
               </Button>
             </>
           ) : (
             <Button
-              as={'a'}
               display={{ base: 'none', md: 'inline-flex' }}
               fontSize={'sm'}
               fontWeight={600}
@@ -130,9 +126,11 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
               <Avatar size={'sm'} height="50px" src={logo} />
             </MenuButton>
             <MenuList>
-              <MenuItem>Profile</MenuItem>
+              <MenuItem>
+                <Link to="/profile">Profile</Link>
+              </MenuItem>
               <MenuDivider />
-              <MenuItem>Sign out</MenuItem>
+              <MenuItem>Setting</MenuItem>
             </MenuList>
           </Menu>
         )}

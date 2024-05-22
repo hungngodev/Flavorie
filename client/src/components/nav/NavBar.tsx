@@ -21,7 +21,7 @@ const NAV_ITEMS: Array<NavItem> = [
       {
         label: 'Market',
         subLabel: 'prepare your shopping list',
-        href: '/ingredients',
+        href: '/ingredients/meat',
       },
     ],
   },

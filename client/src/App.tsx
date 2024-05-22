@@ -4,7 +4,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
 import HomeLayout from './layouts/HomeLayout.tsx';
-import { Ingredient, Login, Main, Meal, Register } from './pages/index';
+import { Ingredient, Login, Main, Meal, Register, User } from './pages/index';
 
 import { loader as ingredientsLoader } from './pages/Ingredient.tsx';
 import theme from './style/theme';
@@ -56,6 +56,10 @@ const router = createBrowserRouter([
       {
         path: 'community',
         element: <div>Community</div>,
+      },
+      {
+        path: 'profile',
+        element: <User />,
       },
     ],
   },
