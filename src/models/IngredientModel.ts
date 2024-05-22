@@ -1,6 +1,7 @@
 import mongoose, { Types } from "mongoose";
 
 export interface Ingredient extends mongoose.Document {
+    _id: mongoose.Types.ObjectId;
     id: number;
     myCagetory: string;
     original: string;

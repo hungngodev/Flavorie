@@ -19,7 +19,7 @@ export async function getIngredientsWithCategory(category: string) {
 type QueryResults = {
     queryKey: string,
     ingredients: {
-        id: number,
+        id: string,
         name: string,
         image: string,
         category: string[]
@@ -62,7 +62,7 @@ export async function classifyIngredient() {
             if (ingredients.length === 0) continue;
             categoryResults.results.push({
                 queryKey: key,
-                ingredients: ingredients.map(ingredient => ({
+                ingredients: ingredients.map((ingredient: Ingredient) => ({
                     id: ingredient._id.toString(),
                     name: ingredient.name,
                     image: "https://img.spoonacular.com/ingredients_100x100/" + ingredient.image,
