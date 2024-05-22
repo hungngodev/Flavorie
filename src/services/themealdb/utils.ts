@@ -1,6 +1,6 @@
 import { create } from "domain";
 import { get } from "http";
-import IngredientModel from "../../models/IngredientsModel.ts";
+import IngredientModel from "../../models/IngredientModel.ts";
 import User from "../../models/UserModel.ts";
 import { Areas, Categories, Ingredients } from "./data.ts";
 import { filterParamType } from "./type";

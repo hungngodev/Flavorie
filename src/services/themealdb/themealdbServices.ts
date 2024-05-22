@@ -16,6 +16,7 @@ dotenv.config();
 export const Endpoint = {
   SINGLE_RANDOM: "/random.php",
   FILTER: "/filter.php",
+  ID: (id: string) => `/lookup.php?i=${id}`,
 };
 
 const baseFetch = axios.create({
@@ -83,3 +84,12 @@ export const getMealByFilter = async (
     console.log(`API call for meal by filter error : ${error}`);
   }
 };
+
+export const getMealById = async (id: string) => {
+  try {
+    const mealRequest = await baseFetch.get(Endpoint.ID(id));
+    return mealRequest.data.meals[0];
+  } catch (error) {
+    console.log(`API call for meal by id error : ${error}`);
+  }
+}

@@ -1,18 +1,14 @@
 import express from "express";
-import { check } from "express-validator";
 import {
-  getAllMeals,
-  getMealsFromLeftOver,
   getRanDomMealsAuthenticated,
   getRandomMealsUnauthenticated,
+  getAllMeals
 } from "../controllers/mealController.ts";
+import { getDietAndAllergy } from "../middleware/userMiddleware.ts";
 import { checkUser } from "../middleware/authMiddleware.ts";
 import { catchAsync } from "../utils/catchAsync.ts";
 const router = express.Router();
 
-router.get("/", checkUser, catchAsync(getAllMeals));
-router.get("/random-unauthenticated", getRandomMealsUnauthenticated);
-router.get("/random-authenticated", checkUser, getRanDomMealsAuthenticated);
-router.get("/left-over", getMealsFromLeftOver);
+router.get("/", checkUser, getDietAndAllergy, catchAsync(getAllMeals));
 
 export default router;

@@ -1,6 +1,6 @@
 import mongoose, { Types } from 'mongoose';
 import bcrypt from 'bcrypt';
-import { Ingredient } from './IngredientsModel.ts';
+import { Ingredient } from './IngredientModel.ts';
 import { Meal } from './MealModel.ts';
 
 export interface User {

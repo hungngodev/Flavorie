@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
 import { getAllIngredientsAPI } from '../services/spoonacular/spoonacularServices.ts';
 import { ServerError } from '../errors/customErrors.ts';
-import Ingredients from '../models/IngredientsModel.ts';
+import Ingredients from '../models/IngredientModel.ts';
 import User from '../models/UserModel.ts';
 import { classifyIngredient, getIngredientWithName, getIngredientsWithCategory } from '../services/ingredientServices.ts';
 import { IngredientBank } from '../utils/queryBank.ts';
 import { StatusCodes } from 'http-status-codes';
-import { Ingredient } from '../models/IngredientsModel.ts';
+import { Ingredient } from '../models/IngredientModel.ts';
 import { findIngredientById } from '../services/spoonacular/spoonacularServices.ts';
 import { error } from 'console';
 
@@ -15,7 +15,7 @@ export const getAllIngredients = async (req: Request, res: Response) => {
     const allergy = [];
     const diet = [];
     if (req.user) {
-        const thisUser = await User.findOne({ _id: req.user.userId }).populate<{}>('leftOver');
+        const thisUser = await User.findOne({ _id: req.user.userId });
         if (thisUser) {
             allergy.push(...thisUser.allergy);
             diet.push(thisUser.diet);

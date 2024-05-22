@@ -1,43 +1,38 @@
-import { Ingredient } from './../models/IngredientsModel';
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { getUserItems } from "../services/userServices.ts";
-import { BadRequestError, ServerError } from "../errors/customErrors.ts";
-import IngredientsModel from "../models/IngredientsModel.ts";
-import User from "../models/UserModel.ts";
-import { getAllMealsAPI } from "../services/spoonacular/spoonacularServices.ts";
+import { ServerError } from "../errors/customErrors.ts";
+import { Ingredient } from '../models/IngredientModel.ts';
+import { getAllMealsByIngredientsAPI, getMealByIdAPI, getRandomMealsAPI } from "../services/spoonacular/spoonacularServices.ts";
 import { MainCategories } from "../services/themealdb/data.ts";
 import {
   getMealByFilter,
   getRandomMeal,
+  getMealById,
 } from "../services/themealdb/themealdbServices.ts";
 import { getRandomKey } from "../services/themealdb/utils.ts";
-
-export const getAllMeals = async (req: Request, res: Response) => {
-  const { ingredients } = req.query;
-  if (!ingredients || typeof ingredients !== "string") {
-    throw new BadRequestError("Please provide a list of ingredients");
-  } else {
-    try {
-      const recipes = await getAllMealsAPI(ingredients.split(","));
-      return res.json(recipes).status(StatusCodes.OK);
-    } catch (error) {
-      // return res.status(500).json({ message: `${error}` })
-      throw new ServerError(`${error}`);
-    }
-  }
-};
 
 export const getRandomMealsUnauthenticated = async (
   req: Request,
   res: Response,
 ) => {
   try {
-    const { size } = req.query;
+    const { size, mainSize, sideSize, dessertSize, ingredients } = req.query;
     const queryRange = size ? parseInt(size.toString()) : 30;
+    const mainRange = mainSize ? parseInt(mainSize.toString()) : 10;
+    const sideRange = sideSize ? parseInt(sideSize.toString()) : 5;
+    const dessertRange = dessertSize ? parseInt(dessertSize.toString()) : 5;
 
-    const response: { randomMeals: {}[] } = {
+    const response: {
+      randomMeals: {}[], mainMeals: {}[];
+      sideMeals: {}[];
+      dessertMeals: {}[];
+      suggestedMeals: {}[];
+    } = {
       randomMeals: [],
+      mainMeals: [],
+      sideMeals: [],
+      dessertMeals: [],
+      suggestedMeals: [],
     };
     const uniqueCheck = new Set<string>([]);
 
@@ -50,29 +45,6 @@ export const getRandomMealsUnauthenticated = async (
       uniqueCheck.add(randomMeal.strMeal);
       response.randomMeals.push(randomMeal);
     }
-
-    return res.json(response).status(StatusCodes.OK);
-  } catch (error) {
-    throw new ServerError(`${error}`);
-  }
-};
-
-export const getRanDomMealsAuthenticated = async (
-  req: Request,
-  res: Response,
-) => {
-  try {
-    const { mainSize, sideSize, dessertSize } = req.query;
-    const mainRange = mainSize ? parseInt(mainSize.toString()) : 10;
-    const sideRange = sideSize ? parseInt(sideSize.toString()) : 5;
-    const dessertRange = dessertSize ? parseInt(dessertSize.toString()) : 5;
-
-    const response: {
-      mainMeals: {}[];
-      sideMeals: {}[];
-      dessertMeals: {}[];
-    } = { mainMeals: [], sideMeals: [], dessertMeals: [] };
-
     response.sideMeals = await getMealByFilter("category", "Side", sideRange);
     response.mainMeals = await getMealByFilter(
       "category",
@@ -84,37 +56,92 @@ export const getRanDomMealsAuthenticated = async (
       "Dessert",
       dessertRange,
     );
-
+    if (ingredients && Array.isArray(ingredients)) {
+      for (const ingredient of ingredients) {
+        const mealList = await getMealByFilter("ingredient", ingredient.toString());
+        response.suggestedMeals.push(mealList);
+      }
+    }
     return res.json(response).status(StatusCodes.OK);
   } catch (error) {
     throw new ServerError(`${error}`);
   }
 };
 
-export const getMealsFromLeftOver = async (req: Request, res: Response) => {
+export const getRanDomMealsAuthenticated = async (
+  req: Request,
+  res: Response,
+) => {
   try {
-    const mockUser = await User.findOne({
-      name: "leftoverTest",
-      email: "leftoverTest@gmail.com",
-    });
-    if (!mockUser) {
-      throw new ServerError("Mock user not found");
-    }
-
-    const ingredients = await getUserItems(mockUser._id, "leftOver");
-
-
-    const response: { suggestedMeals: any } = {
+    const { allergy, diet, leftOver } = req.body;
+    const queryAllergy = allergy.reduce((acc: string, curr: string) => `${acc},${curr}`, "");
+    const queryDiet = diet.reduce((acc: string, curr: string) => `${acc},${curr}`, "");
+    const response: {
+      randomMeals: {}[], mainMeals: {}[];
+      sideMeals: {}[];
+      dessertMeals: {}[];
+      suggestedMeals: {}[];
+    } = {
+      randomMeals: [],
+      mainMeals: [],
+      sideMeals: [],
+      dessertMeals: [],
       suggestedMeals: [],
     };
-
-    for (const ingredient of ingredients) {
-      const mealList = await getMealByFilter("ingredient", ingredient.itemId.name);
-      response.suggestedMeals.push(mealList);
-    }
-
-    res.json(response).status(StatusCodes.OK);
+    response.mainMeals = await getRandomMealsAPI(
+      queryDiet + ",main course",
+      queryAllergy, 30);
+    response.sideMeals = await getRandomMealsAPI(
+      queryDiet + ",side dish",
+      queryAllergy, 15);
+    response.dessertMeals = await getRandomMealsAPI(
+      queryDiet + ",dessert",
+      queryAllergy, 15);
+    response.suggestedMeals = await getAllMealsByIngredientsAPI(
+      leftOver.map((item: Ingredient) => item.name).join(","),
+      20,
+    )
+    //adding more meals of SPOONACULAR API
+    return res.json(response).status(StatusCodes.OK);
   } catch (error) {
     throw new ServerError(`${error}`);
   }
 };
+
+export const getAllMeals = async (req: Request, res: Response) => {
+  if (req.user) {
+    return getRanDomMealsAuthenticated(req, res);
+  }
+  return getRandomMealsUnauthenticated(req, res);
+}
+
+
+export const getIndividualMealUnauthenticated = async (req: Request, res: Response) => {
+  // get individual meal by id from themealdb
+  const { mealId } = req.params;
+  try {
+    const meal = getMealById(mealId);
+    return res.json(meal).status(StatusCodes.OK);
+  } catch (error) {
+    throw new ServerError(`${error}`);
+  }
+}
+
+export const getIndividualMealAuthenticated = async (req: Request, res: Response) => {
+  // get individual meal by id from spoonacular
+  const { mealId } = req.params;
+  try {
+    const meal = await getMealByIdAPI(mealId);
+    return res.json(meal).status(StatusCodes.OK);
+  } catch (error) {
+    throw new ServerError(`${error}`);
+  }
+
+}
+
+export const getIndividualMeal = async (req: Request, res: Response) => {
+  if (req.user) {
+    return getIndividualMealAuthenticated(req, res);
+  }
+  return getIndividualMealUnauthenticated(req, res);
+}

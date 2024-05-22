@@ -1,6 +1,6 @@
 import { NotFoundError, UnauthenticatedError, UserCreationError } from '../errors/customErrors.ts';
-import { Ingredient } from "../models/IngredientsModel.ts";
-import ItemModel, { Item } from "../models/Item.ts";
+import { Ingredient } from "../models/IngredientModel.ts";
+import ItemModel, { Item } from "../models/ItemModel.ts";
 import UserModel, { User } from "../models/UserModel.ts";
 import { comparePassword, hashPassword } from "../utils/passwordUtils.ts";
 

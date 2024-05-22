@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import Ingredients, { Ingredient } from '../models/IngredientsModel.ts';
+import Ingredients, { Ingredient } from '../models/IngredientModel.ts';
 import { getAllIngredientsAPI, getIngredientByIdAPI, findIngredientById } from './spoonacular/spoonacularServices.ts';
 import { NotFoundError, ServerError } from '../errors/customErrors.ts';
 import Progress from '../models/ProgressSeed.ts';

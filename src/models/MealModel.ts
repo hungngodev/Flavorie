@@ -1,5 +1,5 @@
 import mongoose, { Types } from "mongoose";
-import { Ingredient } from "./IngredientsModel.ts";
+import { Ingredient } from "./IngredientModel.ts";
 export interface Meal extends mongoose.Document {
     userId: mongoose.Types.ObjectId;
     title: string;
