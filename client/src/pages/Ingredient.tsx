@@ -248,7 +248,7 @@ function generateMockData(
         const ingredient: Ingredient = {
           id: `${(j - 1) * numIngredientsPerQuery + k + i} `,
           name: `Ingredient ${(j - 1) * numIngredientsPerQuery + k}`,
-          image: `https://source.unsplash.com/random/${Math.random()}`,
+          image: `https://source.unsplash.com/random/800x600/${Math.random()}`,
           category: `Category ${i}`,
         };
         ingredients.push(ingredient);
