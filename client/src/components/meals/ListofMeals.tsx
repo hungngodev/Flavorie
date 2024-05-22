@@ -50,11 +50,13 @@ export function ListofMeals({ Type, meals }: MealTypeProps) {
 
     const scrollRefs = useRef<(HTMLDivElement | null)[]>([]);
     return (
-        <VStack spacing={4} width={'fit'} height={'fit'} marginTop={'1vh'} marginBottom={'2vh'} alignItems="center">
-            <Button variant={'outline'}>
-            <Heading size="md">{Type}</Heading>
+        <VStack spacing={3} width={'fit'} height={'fit'} marginTop={'1vh'} marginBottom={'2vh'} alignItems="center">
+            <Button variant="unstyled">
+            <Heading size="lg" fontWeight="bold">
+                {Type}
+            </Heading>
             </Button>
-            <HStack width={'100%'} justifyContent={'center'} alignItems={'center'}>
+            <HStack width={'100%'} justifyContent={'center'} alignItems={'center'} marginTop={'1vh'}>
             <IconButton
                 icon={<ChevronLeftIcon />}
                 aria-label="left"
@@ -69,7 +71,7 @@ export function ListofMeals({ Type, meals }: MealTypeProps) {
                 spacing={4}
                 overflowY={'hidden'}
                 overflowX={'auto'}
-                width={'100%'}
+                width={'95%'}
                 ref={(el) => (scrollRefs.current[0] = el as HTMLDivElement)}
                 className="no-scroll-bar"
                 justifyContent="flex-start"
