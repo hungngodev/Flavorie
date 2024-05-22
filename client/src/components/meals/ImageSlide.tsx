@@ -4,13 +4,17 @@ import { Text as CharkaText, Container, Flex, HStack, Heading, VStack } from '@c
 import { ReactNode } from 'react';
 import ChakraCarousel from './ChakraCarousel.tsx';
 
-interface Dishes {
+interface Dish {
   image: string;
   title: string;
   description: string;
 }
 
-const dishes: Dishes[] = [
+type DishesProps {
+  dishes: Dish[];
+}
+
+const dishes: Dish[] = [
   {
     image: '../public/images/baked-brie-with-roasted-mushrooms.webp',
     title: 'Baked brie with roasted mushroom',
@@ -43,15 +47,7 @@ const dishes: Dishes[] = [
   },
 ];
 
-function ImageSlide(): ReactNode {
-  // const [data, setData] = useState<Post[]>([]);
-
-  // useEffect(() => {
-  //     fetch("https://jsonplaceholder.typicode.com/posts/")
-  //     .then((res) => res.json())
-  //     .then((res: Post[]) => setData(res));
-  // }, []);
-
+function ImageSlide({ dishes }: DishesProps): ReactNode {
   return (
     <Container
       py={8}
@@ -66,7 +62,7 @@ function ImageSlide(): ReactNode {
       }}
     >
       <ChakraCarousel gap={32}>
-        {dishes.map((dish: Dishes, index: number) => (
+        {dishes.map((dish: Dish, index: number) => (
           <Flex
             key={index}
             boxShadow="rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px"
@@ -90,15 +86,6 @@ function ImageSlide(): ReactNode {
               <HStack spacing={2}>
                 <CharkaText w="full">{dish.description}</CharkaText>
               </HStack>
-              {/* <Button
-                    onClick={() => alert(`Post ${post.id - 5} clicked`)}
-                    colorScheme="green"
-                    fontWeight="bold"
-                    color="gray.900"
-                    size="sm"
-                    >
-                    More
-                    </Button> */}
             </Flex>
           </Flex>
         ))}
