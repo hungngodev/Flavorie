@@ -11,13 +11,14 @@ import {
   Text,
   VStack,
   Divider,
+  Select,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useState } from 'react';
 import { Controller, useFieldArray, useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 import { Trash, Focus } from 'lucide-react';
-
+import { PenLine } from 'lucide-react';
 
 export type ReceiptType = {
   name: string;
@@ -31,6 +32,7 @@ export type MockReceiptType = {
     total: string
   }
 };
+export const mockSuggests = ["chicken", "chicken breast", "chicken egg", "chicken thigh", "chicken wing", "chicken liver", "chicken gizzard", "chicken heart", "chicken drumstick", "chicken neck", "chicken back", "chicken feet", "chicken skin", "chicken wing tip", "chicken wing drumette", "chicken wing flat"]
 export const mockReceipts: MockReceiptType = {
   "message": "Image processed successfully",
       "data": {
@@ -94,7 +96,9 @@ const ReceiptForm: React.FC = () => {
       price: item.price.replace('$', ''),
     })) ?? [{ name: 'test', quantity:"0", price:"0.0" }],
   });
-  const {
+
+  const [showSelect, setShowSelect] = useState<Array<boolean>>(new Array(receipts.length).fill(false));
+  const { 
     control,
     handleSubmit,
     watch,
@@ -144,20 +148,38 @@ const ReceiptForm: React.FC = () => {
           Items
         </Heading>
         {fields.map((field, index) => (
-          <VStack width="100%">
-            <Divider width="100%" borderColor="gray.500" />
-            <HStack key={field.id} width="100%" justifyContent="space-between" paddingBlock={4}>
-              <VStack gap={4}>
-                <Controller
+          <HStack width="100%" marginBlock={14}>
+            <VStack width="100%" alignItems="start">
+              <HStack>
+              <Controller
                   control={control}
                   name={`receipts.${index}.name`}
                   render={({ field: { ref, ...fieldProps } }) => (
-                    <VStack width="100%" alignItems="start">
+                    <VStack width="fit-content" alignItems="start">
                       <Text>Name</Text>
                       <Input borderRadius="md" paddingX="0.95em" {...fieldProps} placeholder="Enter your item" variant="flushed" />
                     </VStack>
                   )}
                 />
+              {
+                showSelect[index] && (
+                  <Controller 
+                control={control}
+                name={`receipts.${index}.name`}
+                render={({ field: { ...fieldProps } }) => (
+                  <VStack width="fit-content" alignItems="start">
+                    <Text>Suggestions</Text>
+                    <Select {...fieldProps} placeholder="Select item" variant="flushed">
+                    {mockSuggests.map((suggest, index) => (
+                      <option key={index} value={suggest}>{suggest}</option>
+                    ))}
+                  </Select>
+                  </VStack>
+                )}
+              />
+                )
+              }
+              </HStack>
                 <HStack maxWidth="65%" alignSelf="start">
                   <Controller
                     control={control}
@@ -208,29 +230,38 @@ const ReceiptForm: React.FC = () => {
                     )}
                   />
                 </HStack>
-              </VStack>
-              <VStack alignSelf="stretch" justifyContent="space-between">
-                <Text fontSize="xl" fontWeight="semibold" color="blackAlpha.700">${(parseFloat(watchField[index].price) * parseFloat(watchField[index].quantity)).toFixed(2) || 0}</Text>
-                <Button color="blackAlpha.600" letterSpacing="-0.005em" fontWeight="semibold" leftIcon={<Trash />} onClick={() => { remove(index) }} variant="ghost">
-                  Delete
-                </Button>
-              </VStack>
-            </HStack>
-          </VStack>
+            </VStack>
+            <VStack alignSelf="stretch" justifyContent="space-between">
+                <Text alignSelf="end" fontSize="xl" fontWeight="semibold" color="blackAlpha.900">${(parseFloat(watchField[index].price) * parseFloat(watchField[index].quantity)).toFixed(2) || 0}</Text>
+                <HStack>
+                  <Button color="blackAlpha.700" letterSpacing="-0.005em" fontWeight="semibold" leftIcon={<Trash />} onClick={() => { remove(index) }} variant="ghost">
+                    Delete
+                  </Button>
+                  <Button color="blackAlpha.700" letterSpacing="-0.005em" fontWeight="semibold" leftIcon={<PenLine  />} variant="ghost"  
+                  onClick={() => {
+                    setShowSelect((prevSelectedSuggestions) => prevSelectedSuggestions.map((selected, i) => i === index ? !selected : selected));
+                  }}>
+                    Update
+                  </Button>
+                </HStack>
+            </VStack>
+          </HStack>
         ))}
         <Button colorScheme="teal" letterSpacing="-0.005em" fontWeight="semibold" onClick={() => append({ name: '', quantity: "0", price: "0.0" })}>Add new receipt</Button>
       </VStack>
-      <VStack backgroundColor="whiteAlpha.700" spacing={6} alignItems="start" position="sticky" top={0} boxShadow='base' rounded="md" height="fit-content" paddingBlock={6} paddingInline={8} flex={1}>
+
+      {/* summary card */}
+      <VStack backgroundColor="whiteAlpha.700" spacing={6} alignItems="start" position="sticky" top={0} boxShadow='base' rounded="md" height="fit-content" paddingBlock={6} paddingInline={8} flex={1} minWidth="35%">
         <Heading fontSize="2xl" color="teal" fontWeight="semibold">Order summary</Heading>
         <Divider />
-        <VStack width="100%">
-          <HStack width="100%" justifyContent="space-between">
-            <Text fontWeight="semibold" color="blackAlpha.700">Total items</Text>
-            <Text color="blackAlpha.600">{fields.length}</Text>
-          </HStack>
-          <HStack justifyContent="space-between" width="100%">
-            <Text fontWeight="semibold" color="blackAlpha.700">Total price</Text>
-            <Text color="blackAlpha.600">
+       
+        <HStack width="100%" justifyContent="space-between">
+          <Text fontWeight="semibold" color="blackAlpha.700">Total items</Text>
+          <Text color="blackAlpha.600">{fields.length}</Text>
+        </HStack>
+        <HStack justifyContent="space-between" width="100%">
+          <Text fontWeight="semibold" color="blackAlpha.700">Total price</Text>
+          <Text color="blackAlpha.600">
               $ {parseFloat(
                 watchField
                   .reduce((accumulator, field) => {
@@ -238,18 +269,17 @@ const ReceiptForm: React.FC = () => {
                   }, 0)
                   .toFixed(2),
               )}
-            </Text>
-          </HStack>
-        </VStack>
+          </Text>
+        </HStack>
+
         <Divider />
-        <VStack width="100%">
-          <Button letterSpacing="-0.005em" fontWeight="semibold" width="100%" type="submit" colorScheme='teal'>
+
+        <Button letterSpacing="-0.005em" fontWeight="semibold" width="100%" type="submit" colorScheme='teal'>
             Submit changes
-          </Button>
-          <Button letterSpacing="-0.005em" fontWeight="semibold" width="100%" leftIcon={<Focus />} variant="outline">
+        </Button>
+        <Button letterSpacing="-0.005em" fontWeight="semibold" width="100%" leftIcon={<Focus />} variant="outline">
             Return to scanner
-          </Button>
-        </VStack>
+        </Button>
       </VStack>
     </form>
   );
