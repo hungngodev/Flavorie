@@ -1,16 +1,59 @@
 import {HStack, Button} from "@chakra-ui/react"
 import React, {useState} from "react";
-import CustomTag, {Allergy, Diet} from "./CustomTag"
+import CustomTag from "./CustomTag"
+import { PiFishSimple, PiGrainsBold, PiShrimp } from "react-icons/pi";
+import { Milk, EggFried, Wheat, WheatOff, Bean, Salad, Nut, FishOff, Cherry, Beef, CandyOff} from "lucide-react";
+import { SlChemistry } from "react-icons/sl";
+import { GiSesame } from "react-icons/gi";
+import { TbBrandPeanut, TbMeatOff } from "react-icons/tb";
+
+export type Allergy = "Dairy" | "Egg" | "Gluten" | "Grain" | "Peanut" | "Seafood" | "Sesame" | "Shellfish" | "Soy" | "Sulfite" | "Tree Nut" | "Wheat";
+export type Diet = "Gluten Free" | "Ketogenic" | "Vegetarian" | "Lacto-Vegetarian" | "Ovo-Vegetarian" | "Vegan" | "Pescetarian" | "Paleo" | "Primal" | "Whole30" | "Low FODMAP"
+export const allergyTypes: Allergy[] = ["Dairy", "Egg", "Gluten", "Grain", "Peanut", "Seafood", "Sesame", "Shellfish", "Soy", "Sulfite", "Tree Nut", "Wheat"];
+export const dietTypes: Diet[] = ["Gluten Free", "Ketogenic", "Vegetarian", "Lacto-Vegetarian", "Ovo-Vegetarian", "Vegan", "Pescetarian", "Paleo", "Primal", "Whole30", "Low FODMAP"];
 
 export type PreferenceType = Allergy | Diet;
 export const Preferences: PreferenceType[] = ["Dairy", "Egg", "Gluten", "Grain", "Peanut", "Seafood", "Sesame", "Shellfish", "Soy", "Sulfite", "Tree Nut", "Wheat", "Gluten Free", "Ketogenic", "Vegetarian", "Lacto-Vegetarian", "Ovo-Vegetarian", "Vegan", "Pescetarian", "Paleo", "Primal", "Whole30", "Low FODMAP"];
 
-interface TagSelectProps {
-    tags: PreferenceType[];
-}
+const Icons: Record<Allergy | Diet, React.ComponentType> = {
+  "Dairy": Milk,
+  "Egg": EggFried,
+  "Gluten": Wheat,
+  "Grain": PiGrainsBold,
+  "Peanut": TbBrandPeanut,
+  "Seafood": PiFishSimple,
+  "Sesame": GiSesame,
+  "Shellfish": PiShrimp,
+  "Soy": Bean,
+  "Sulfite": SlChemistry,
+  "Tree Nut": Nut,
+  "Wheat": Wheat,
+  "Gluten Free": WheatOff,
+  "Ketogenic": WheatOff,
+  "Vegetarian": Salad,
+  "Lacto-Vegetarian": TbMeatOff,
+  "Ovo-Vegetarian": TbMeatOff,
+  "Vegan": Salad,
+  "Pescetarian": FishOff,
+  "Paleo": Cherry,
+  "Primal": Beef,
+  "Whole30": CandyOff,
+  "Low FODMAP": Beef,
+};
 
-const TagSelect: React.FC<TagSelectProps> = ({tags}) => {
-  const [selectedTags, setSelectedTags] = useState<Set<typeof tags[0]>>(new Set([]));
+const colorScheme = {
+  allergy: {
+    background: 'red.200',
+    text: 'red.800',
+  },
+  diet: {
+    background: 'orange.200',
+    text: 'orange.800',
+  },
+};
+
+const TagSelect = () => {
+  const [selectedTags, setSelectedTags] = useState<Set<PreferenceType>>(new Set([]));
 
   const handleSelect = (field: PreferenceType) => {
     if(selectedTags.has(field)){
@@ -26,14 +69,29 @@ const TagSelect: React.FC<TagSelectProps> = ({tags}) => {
       })
     }
   }
+
+  const submitTags = () => {
+    const tagRequest = {
+      tags: Array.from(selectedTags)
+    }
+    console.log(tagRequest);
+  }
   return (
     <>
     <HStack flexWrap="wrap" marginBlock={4}>
       {Preferences.map((type) => (
-        <CustomTag key={type} type={type} canClose={true} handleClick={()=>{handleSelect(type)}} border={selectedTags.has(type) ? "2px" : "0px"} />
+        <CustomTag 
+        key={type} 
+        type={type} 
+        onClick={() => handleSelect(type)} 
+        border={selectedTags.has(type) ? "2px" : "0px"}  
+        // change component color and background base on whether it is an allergy or diet
+        bgColor={allergyTypes.includes(type as Allergy) ? colorScheme['allergy']['background'] : colorScheme['diet']['background']}
+        color={dietTypes.includes(type as Diet) ? colorScheme['diet']['text'] : colorScheme['allergy']['text']} 
+        icon={Icons[type]}/>
       ))}
     </HStack>
-    <Button onClick={()=>{console.log(selectedTags)}}>SubmitTags</Button>
+    <Button onClick={submitTags}>SubmitTags</Button>
     </>
   );
 }
