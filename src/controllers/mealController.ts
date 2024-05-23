@@ -11,6 +11,14 @@ import {
 } from "../services/themealdb/themealdbServices.ts";
 import { getRandomKey } from "../services/themealdb/utils.ts";
 
+
+type theMealDB = {
+  strMeal: string;
+  idMeal: string;
+  strMealThumb: string;
+  strCategory: string;
+  strArea: string;
+}
 export const getRandomMealsUnauthenticated = async (
   req: Request,
   res: Response,
@@ -18,24 +26,21 @@ export const getRandomMealsUnauthenticated = async (
   try {
     const { size, mainSize, sideSize, dessertSize, ingredients } = req.query;
     const queryRange = size ? parseInt(size.toString()) : 30;
-    const mainRange = mainSize ? parseInt(mainSize.toString()) : 10;
-    const sideRange = sideSize ? parseInt(sideSize.toString()) : 5;
-    const dessertRange = dessertSize ? parseInt(dessertSize.toString()) : 5;
+    const mainRange = mainSize ? parseInt(mainSize.toString()) : 30;
+    const sideRange = sideSize ? parseInt(sideSize.toString()) : 15;
+    const dessertRange = dessertSize ? parseInt(dessertSize.toString()) : 15;
 
-    const response: {
-      randomMeals: {}[], mainMeals: {}[];
-      sideMeals: {}[];
-      dessertMeals: {}[];
-      suggestedMeals: {}[];
-    } = {
-      randomMeals: [],
-      mainMeals: [],
-      sideMeals: [],
-      dessertMeals: [],
-      suggestedMeals: [],
-    };
     const uniqueCheck = new Set<string>([]);
-
+    function processingMeals(meal: theMealDB) {
+      return {
+        id: meal.idMeal,
+        title: meal.strMeal,
+        image: meal.strMealThumb,
+        category: meal.strCategory + " " + meal.strArea,
+      }
+    }
+    const randomMeals = [];
+    const suggestedMeals = [];
     for (let i = 0; i < queryRange; i++) {
       let randomMeal = await getRandomMeal();
       // check for duplicate meals
@@ -43,15 +48,15 @@ export const getRandomMealsUnauthenticated = async (
         randomMeal = await getRandomMeal();
       }
       uniqueCheck.add(randomMeal.strMeal);
-      response.randomMeals.push(randomMeal);
+      randomMeals.push(randomMeal);
     }
-    response.sideMeals = await getMealByFilter("category", "Side", sideRange);
-    response.mainMeals = await getMealByFilter(
+    const sideMeals = await getMealByFilter("category", "Side", sideRange);
+    const mainMeals = await getMealByFilter(
       "category",
       getRandomKey(MainCategories),
       mainRange,
     );
-    response.dessertMeals = await getMealByFilter(
+    const dessertMeals = await getMealByFilter(
       "category",
       "Dessert",
       dessertRange,
@@ -59,10 +64,17 @@ export const getRandomMealsUnauthenticated = async (
     if (ingredients && Array.isArray(ingredients)) {
       for (const ingredient of ingredients) {
         const mealList = await getMealByFilter("ingredient", ingredient.toString());
-        response.suggestedMeals.push(mealList);
+        suggestedMeals.push(mealList);
       }
     }
-    return res.json(response).status(StatusCodes.OK);
+    const mealsReturn = {
+      randomMeals: randomMeals.map(processingMeals),
+      mainMeals: mainMeals.map(processingMeals),
+      sideMeals: sideMeals.map(processingMeals),
+      dessertMeals: dessertMeals.map(processingMeals),
+      suggestedMeals: suggestedMeals.map(processingMeals),
+    }
+    return res.json(mealsReturn).status(StatusCodes.OK);
   } catch (error) {
     throw new ServerError(`${error}`);
   }
@@ -77,7 +89,8 @@ export const getRanDomMealsAuthenticated = async (
     const queryAllergy = allergy.reduce((acc: string, curr: string) => `${acc},${curr}`, "");
     const queryDiet = diet.reduce((acc: string, curr: string) => `${acc},${curr}`, "");
     const response: {
-      randomMeals: {}[], mainMeals: {}[];
+      randomMeals: {}[],
+      mainMeals: {}[];
       sideMeals: {}[];
       dessertMeals: {}[];
       suggestedMeals: {}[];
@@ -88,6 +101,9 @@ export const getRanDomMealsAuthenticated = async (
       dessertMeals: [],
       suggestedMeals: [],
     };
+    response.randomMeals = await getRandomMealsAPI(
+      queryDiet,
+      queryAllergy, 30);
     response.mainMeals = await getRandomMealsAPI(
       queryDiet + ",main course",
       queryAllergy, 30);

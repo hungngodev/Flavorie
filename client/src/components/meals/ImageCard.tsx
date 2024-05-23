@@ -11,6 +11,9 @@ import {
   Text,
 } from '@chakra-ui/react';
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useAuth } from '../../hooks';
 
 interface ImageCardProps {
   imageProps: {
@@ -24,10 +27,17 @@ interface ImageCardProps {
 }
 
 const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
-  const handleSeeMore = () => {
-    window.open(imageProps.infoLink, '_blank');
+  // const handleSeeMore = () => {
+  //   window.open(imageProps.infoLink, '_blank');
+  // };
+  const { currentUser } = useAuth();
+  const handleLike = () => {
+    if (currentUser.status === 'authenticated') {
+      toast.success('Liked');
+    } else {
+      toast.error('Please login to like');
+    }
   };
-
   return (
     <Card maxW="sm" boxShadow="md" borderRadius="md" variant={'outline'}>
       <CardBody>
@@ -51,10 +61,12 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
       <Divider borderColor="base.200" />
       <CardFooter>
         <ButtonGroup>
-          <Button variant="solid" colorScheme="blue" fontWeight="bold" onClick={handleSeeMore}>
-            See more
-          </Button>
-          <Button variant="outline" colorScheme="blue" fontWeight="bold">
+          <Link to={imageProps.infoLink}>
+            <Button variant="solid" colorScheme="blue" fontWeight="bold">
+              See more
+            </Button>
+          </Link>
+          <Button variant="outline" colorScheme="blue" fontWeight="bold" onClick={handleLike}>
             Like
           </Button>
         </ButtonGroup>

@@ -4,9 +4,9 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
 import HomeLayout from './layouts/HomeLayout.tsx';
-import { Ingredient, Login, Main, Meal, Register, User } from './pages/index';
-
 import { loader as ingredientsLoader } from './pages/Ingredient.tsx';
+import { loader as mealsLoader } from './pages/Meal.tsx';
+import { Ingredient, Login, Main, Meal, Register, User } from './pages/index';
 import theme from './style/theme';
 
 const queryClient = new QueryClient({
@@ -55,6 +55,7 @@ const router = createBrowserRouter([
           {
             index: true,
             element: <Meal />,
+            loader: mealsLoader(queryClient),
           },
           {
             path: ':mealId',

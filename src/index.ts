@@ -9,12 +9,11 @@ import mongoose from "mongoose";
 import morgan from "morgan";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
-import { authenticateUser } from "./middleware/authMiddleware.ts";
 import authRouter from "./routes/authRouter.ts";
 import ingredientRouter from "./routes/ingredientRouter.ts";
 import mealRouter from "./routes/mealRouter.ts";
+import receiptScanRouter from "./routes/receiptScanRouter.ts";
 import userRouter from "./routes/userRouter.ts";
-import receiptScanRouter from "./routes/receiptScanRouter.ts"
 
 dotenv.config();
 const app = express();

@@ -11,3 +11,4 @@ export { default as ContainerScroll } from './ui/ContainerScrollAnimation';
 export { default as InputNumber } from './utils/numberInput';
 export { default as InputText } from './utils/textInput';
 export { default as InfoCard } from './users/InfoCard';
+export { default as ListOfMeals } from './meals/ListofMeals';

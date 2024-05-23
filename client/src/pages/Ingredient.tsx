@@ -65,7 +65,7 @@ export type Category = {
   color: string;
 };
 
-export default function OuterLayer() {
+export default function Ingredient() {
   const { category } = useParams<{ category: string }>();
   const { data: queryData, status } = useQuery(allIngredientsQuery(category ?? ''));
   const ingredientData = queryData?.data.category[0];
