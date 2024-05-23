@@ -1,8 +1,15 @@
 import {
+  Box,
   Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
   Divider,
   HStack,
   Heading,
+  IconButton,
+  Image,
   Input,
   Menu,
   MenuButton,
@@ -18,7 +25,7 @@ import {
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Focus, PenLine, Search, Trash, X } from 'lucide-react';
-import React, { useEffect } from 'react';
+import React, { useRef } from 'react';
 import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import mockReceipts from './mockReceipts';
@@ -47,9 +54,10 @@ const ReceiptForm: React.FC = () => {
     control,
     handleSubmit,
     watch,
-    setValue,
-    getValues,
     reset,
+    resetField,
+    trigger,
+    setValue,
     formState: { errors },
   } = useForm<ReceiptFieldType>({
     resolver: zodResolver(ReceiptField),
@@ -63,257 +71,328 @@ const ReceiptForm: React.FC = () => {
                 price: receipt.price,
                 suggested: {
                   display: false,
-                  items: receipt['potential_matches'] ?? [''],
+                  items: receipt['potential_matches'] ?? [],
                 },
               };
             })
-          : [{ name: '', quantity: '0', price: '0.0', suggested: { display: false, items: [''] } }],
+          : [{ name: '', quantity: '0', price: '0.0', suggested: { display: false, items: [] } }],
     },
   });
 
   const watchField = watch('receipts');
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, update } = useFieldArray({
     control: control,
     name: 'receipts',
   });
-  useEffect(() => {
-    console.log(fields);
-  }, [fields]);
+
+  const formRef = useRef<HTMLFormElement>(null);
 
   const submitReceipts: SubmitHandler<ReceiptFieldType> = (receiptResponse) => {
     console.log(receiptResponse);
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(submitReceipts)}
-      style={{
-        gap: '1.25rem',
-        overflow: 'auto',
-        height: '100dvh',
-        display: 'flex',
-        paddingBlock: '2.75rem',
-        paddingInline: '2rem',
-        justifyContent: 'space-evenly',
-        width: '100%',
-        backgroundColor: '#F7FAFC',
-        flexWrap: 'wrap',
-      }}
+    <Box
+      backgroundColor="gray.50"
+      display="flex"
+      flexDirection={['column', 'column', 'row']}
+      justifyContent="space-evenly"
+      paddingBlock={8}
+      paddingInline={[0, 0, 2, 4, 4]}
+      gap={4}
     >
-      <VStack
-        flex={4}
-        backgroundColor="whiteAlpha.700"
-        spacing={2}
-        alignItems="flex-start"
-        justifySelf="start"
-        boxShadow="base"
-        height="fit-content"
-        rounded="md"
-        paddingBlock={3}
-        paddingInline={6}
-      >
-        <Heading fontSize="3xl" color="teal" fontWeight="semibold" alignSelf="start">
-          Items
-        </Heading>
-        {fields.map((field, index) => (
-          <HStack width="100%" marginBlock={14} key={field.id}>
-            <VStack width="100%" alignItems="start">
-              <HStack>
-                <Controller
-                  control={control}
-                  name={`receipts.${index}.name`}
-                  render={({ field: { ref, ...fieldProps } }) => (
-                    <VStack width="fit-content" alignItems="start">
-                      <Text>Name</Text>
-                      <Input
-                        borderRadius="md"
-                        paddingX="0.95em"
-                        {...fieldProps}
-                        placeholder="Enter your item"
-                        variant="flushed"
-                        onChange={(val) => fieldProps.onChange(val)}
-                      />
-                      {fields[index].suggested.display && (
-                        <Menu>
-                          <MenuButton as={Button} arial-label="options" rightIcon={<Search />}>
-                            Suggestions
-                          </MenuButton>
-                          <MenuList>
-                            {fields[index].suggested.items.map((suggest: string) => {
-                              return (
-                                <MenuItem
-                                  key={suggest}
-                                  onClick={() => {
-                                    fieldProps.onChange(suggest);
-                                  }}
-                                >
-                                  {suggest}
-                                </MenuItem>
-                              );
-                            })}
-                          </MenuList>
-                        </Menu>
+      <Card flex={4} maxWidth={['100%', '100%', '80%', '60%']}>
+        <CardHeader>
+          <Heading fontSize="3xl" color="teal" fontWeight="semibold" alignSelf="start">
+            Receipts
+          </Heading>
+        </CardHeader>
+        <CardBody paddingInline={8}>
+          <form ref={formRef} onSubmit={handleSubmit(submitReceipts)}>
+            {fields.map((field, index) => (
+              <HStack width="100%" marginTop={12} gap={6} justifyContent="stretch">
+                <Image
+                  alignSelf="flex-start"
+                  borderRadius="lg"
+                  boxSize="7rem"
+                  src="https://img.freepik.com/free-vector/hand-drawn-flat-design-turkish-food-illustration_23-2149276733.jpg?w=826&t=st=1716431567~exp=1716432167~hmac=6eca3d748ea3362697544328f767549b297318ada51b416c2f8eabe4ed0b155f"
+                />
+                <VStack justifyContent="flex-start" alignItems="space-between" gap={6} width="100%">
+                  <HStack alignItems="space-between" minWidth="fit-content">
+                    <Controller
+                      control={control}
+                      name={`receipts.${index}.name`}
+                      render={({ field: { ref, ...fieldProps } }) => (
+                        <VStack width="fit-content" alignItems="start" minWidth="max-content">
+                          <Text color="blackAlpha.600" fontWeight="semibold">
+                            Name
+                          </Text>
+                          <Input
+                            borderRadius="md"
+                            {...fieldProps}
+                            value={watch(`receipts.${index}.name`)}
+                            placeholder="Enter your item"
+                            variant="flushed"
+                            onChange={(val) => fieldProps.onChange(val)}
+                            color="blackAlpha.800"
+                            fontWeight="semibold"
+                            fontSize="lg"
+                          />
+                        </VStack>
                       )}
-                    </VStack>
-                  )}
-                />
+                    />
+                    {fields[index].suggested.display && (
+                      <Controller
+                        control={control}
+                        name={`receipts.${index}.name`}
+                        render={({ field: { ...fieldProps } }) => {
+                          return (
+                            <VStack justifyContent="flex-start" alignItems="start" gap={6}>
+                              <Text color="blackAlpha.600" fontWeight="semibold">
+                                Suggestions
+                              </Text>
+                              <Menu>
+                                <MenuButton
+                                  arial-label="options"
+                                  color="blackAlpha.600"
+                                  fontWeight="semibold"
+                                  fontSize="lg"
+                                >
+                                  <HStack>
+                                    <Search />
+                                    <Text>Not what you're looking for?</Text>
+                                  </HStack>
+                                </MenuButton>
+                                <MenuList>
+                                  {fields[index].suggested.items.length > 0 ? (
+                                    fields[index].suggested.items?.map((suggest: string) => {
+                                      return (
+                                        <MenuItem
+                                          key={suggest}
+                                          onClick={() => {
+                                            fieldProps.onChange(suggest);
+                                          }}
+                                        >
+                                          <Image
+                                            borderRadius="lg"
+                                            boxSize="5rem"
+                                            src="https://img.freepik.com/free-vector/hand-drawn-flat-design-turkish-food-illustration_23-2149276733.jpg?w=826&t=st=1716431567~exp=1716432167~hmac=6eca3d748ea3362697544328f767549b297318ada51b416c2f8eabe4ed0b155f"
+                                          />
+                                          <Text
+                                            color="blackAlpha.800"
+                                            fontWeight="semibold"
+                                            marginInline={2}
+                                            fontSize="lg"
+                                          >
+                                            {suggest}
+                                          </Text>
+                                        </MenuItem>
+                                      );
+                                    })
+                                  ) : (
+                                    <MenuItem>
+                                      <Text color="blackAlpha.800" fontWeight="semibold" marginInline={2} fontSize="lg">
+                                        Oops nothing matches
+                                      </Text>
+                                    </MenuItem>
+                                  )}
+                                </MenuList>
+                              </Menu>
+                            </VStack>
+                          );
+                        }}
+                      />
+                    )}
+                  </HStack>
+                  <HStack maxWidth="40%">
+                    <Controller
+                      control={control}
+                      name={`receipts.${index}.quantity`}
+                      render={({ field: { onChange, ...fieldProps } }) => (
+                        <VStack alignItems="start">
+                          <Text color="blackAlpha.600" fontWeight="semibold">
+                            Quantity
+                          </Text>
+                          <NumberInput
+                            {...fieldProps}
+                            min={0}
+                            keepWithinRange={true}
+                            onChange={(valueString) => onChange(Number(valueString))}
+                            borderRadius="md"
+                            color="blackAlpha.800"
+                            fontWeight="semibold"
+                          >
+                            <NumberInputField
+                              {...fieldProps}
+                              value={watch(`receipts.${index}.quantity`)}
+                              fontSize="lg"
+                            />
+                            <NumberInputStepper>
+                              <NumberIncrementStepper border="none" />
+                              <NumberDecrementStepper border="none" />
+                            </NumberInputStepper>
+                          </NumberInput>
+                        </VStack>
+                      )}
+                    />
+                    <Controller
+                      control={control}
+                      name={`receipts.${index}.price`}
+                      render={({ field: { onChange, ...fieldProps } }) => (
+                        <VStack alignItems="start">
+                          <Text color="blackAlpha.600" fontWeight="semibold">
+                            Price
+                          </Text>
+                          <NumberInput
+                            precision={2}
+                            step={0.01}
+                            min={0.0}
+                            keepWithinRange={true}
+                            onChange={(valueString) => onChange(Number(valueString))}
+                            borderRadius="md"
+                            color="blackAlpha.800"
+                            fontWeight="semibold"
+                            {...fieldProps}
+                          >
+                            <NumberInputField {...fieldProps} value={watch(`receipts.${index}.price`)} fontSize="lg" />
+                            <NumberInputStepper>
+                              <NumberIncrementStepper border="none" />
+                              <NumberDecrementStepper border="none" />
+                            </NumberInputStepper>
+                          </NumberInput>
+                        </VStack>
+                      )}
+                    />
+                  </HStack>
+                </VStack>
+
+                <VStack justifyContent="space-between" alignItems="flex-end" alignSelf="stretch" gap={6}>
+                  <Text marginLeft="auto" justifySelf="end" fontSize="lg" fontWeight="semibold" color="blackAlpha.900">
+                    ${(parseFloat(watchField[index].price) * parseFloat(watchField[index].quantity)).toFixed(2) || 0}
+                    <Text as="span" color="blackAlpha.600">
+                      /total
+                    </Text>
+                  </Text>
+                  <HStack gap={4}>
+                    <IconButton
+                      aria-label="delete-button"
+                      color="red.600"
+                      backgroundColor="red.100"
+                      borderRadius="lg"
+                      icon={<Trash />}
+                      onClick={() => {
+                        remove(index);
+                        console.log(fields);
+                      }}
+                      size="md"
+                    />
+                    <IconButton
+                      aria-label="update-button"
+                      borderRadius="lg"
+                      color="teal.600"
+                      backgroundColor="teal.50"
+                      icon={fields[index].suggested.display ? <X /> : <PenLine />}
+                      onClick={() => {
+                        update(index, {
+                          name: watch(`receipts.${index}.name`),
+                          quantity: watch(`receipts.${index}.quantity`),
+                          price: watch(`receipts.${index}.price`),
+                          suggested: {
+                            display: !fields[index].suggested.display,
+                            items: fields[index].suggested.items,
+                          },
+                        });
+                      }}
+                      size="md"
+                    />
+                  </HStack>
+                </VStack>
               </HStack>
-              <HStack maxWidth="65%" alignSelf="start">
-                <Controller
-                  control={control}
-                  name={`receipts.${index}.quantity`}
-                  render={({ field: { onChange, ...fieldProps } }) => (
-                    <VStack alignItems="start">
-                      <Text>Quantity</Text>
-                      <NumberInput
-                        {...fieldProps}
-                        min={0}
-                        keepWithinRange={true}
-                        onChange={(valueString) => onChange(Number(valueString))}
-                        borderRadius="md"
-                        color="blackAlpha.600"
-                      >
-                        <NumberInputField {...fieldProps} />
-                        <NumberInputStepper>
-                          <NumberIncrementStepper border="none" />
-                          <NumberDecrementStepper border="none" />
-                        </NumberInputStepper>
-                      </NumberInput>
-                    </VStack>
-                  )}
-                />
-                <Controller
-                  control={control}
-                  name={`receipts.${index}.price`}
-                  render={({ field: { onChange, ...fieldProps } }) => (
-                    <VStack alignItems="start">
-                      <Text>Price</Text>
-                      <NumberInput
-                        precision={2}
-                        step={0.01}
-                        min={0.0}
-                        keepWithinRange={true}
-                        onChange={(valueString) => onChange(Number(valueString))}
-                        borderRadius="md"
-                        color="blackAlpha.600"
-                        {...fieldProps}
-                      >
-                        <NumberInputField {...fieldProps} />
-                        <NumberInputStepper>
-                          <NumberIncrementStepper border="none" />
-                          <NumberDecrementStepper border="none" />
-                        </NumberInputStepper>
-                      </NumberInput>
-                    </VStack>
-                  )}
-                />
-              </HStack>
-            </VStack>
-            <VStack alignSelf="stretch" justifyContent="space-between">
-              <Text alignSelf="end" fontSize="xl" fontWeight="semibold" color="blackAlpha.900">
-                ${(parseFloat(watchField[index].price) * parseFloat(watchField[index].quantity)).toFixed(2) || 0}
-              </Text>
-              <HStack>
-                <Button
-                  color="blackAlpha.700"
-                  letterSpacing="-0.005em"
-                  fontWeight="semibold"
-                  leftIcon={<Trash />}
-                  onClick={() => {
-                    remove(index);
-                    console.log(fields);
-                  }}
-                  variant="ghost"
-                >
-                  Delete
-                </Button>
-                <Button
-                  color="blackAlpha.700"
-                  letterSpacing="-0.005em"
-                  fontWeight="semibold"
-                  leftIcon={fields[index].suggested.display ? <X /> : <PenLine />}
-                  variant="ghost"
-                  onClick={() => {
-                    const updatedFields = [...fields];
-                    updatedFields[index].suggested.display = !updatedFields[index].suggested.display;
-                    reset({ receipts: updatedFields });
-                  }}
-                >
-                  {fields[index].suggested.display ? 'Close' : 'Update'}
-                </Button>
-              </HStack>
-            </VStack>
+            ))}
+          </form>
+        </CardBody>
+        <CardFooter>
+          <Button
+            colorScheme="teal"
+            letterSpacing="-0.005em"
+            fontWeight="semibold"
+            onClick={() => {
+              append({
+                name: '',
+                quantity: '0',
+                price: '0.0',
+                suggested: { display: false, items: [] },
+              });
+            }}
+          >
+            Add new receipt
+          </Button>
+        </CardFooter>
+      </Card>
+
+      <Card height="fit-content" position="sticky" top={0} paddingInline={6} paddingBlock={4} minWidth="35%">
+        <CardHeader>
+          <Heading fontSize="3xl" color="teal" fontWeight="semibold" alignSelf="start">
+            Summary
+          </Heading>
+        </CardHeader>
+
+        <CardBody fontSize="lg">
+          <HStack width="100%" justifyContent="space-between">
+            <Text fontWeight="semibold" color="blackAlpha.700">
+              Items
+            </Text>
+            <Text fontWeight="semibold" color="blackAlpha.900">
+              {fields.length}
+            </Text>
           </HStack>
-        ))}
-        <Button
-          colorScheme="teal"
-          letterSpacing="-0.005em"
-          fontWeight="semibold"
-          onClick={() => {
-            append({
-              name: '',
-              quantity: '0',
-              price: '0.0',
-              suggested: { display: false, items: [''] },
-            });
-          }}
-        >
-          Add new receipt
-        </Button>
-      </VStack>
-
-      <VStack
-        backgroundColor="whiteAlpha.700"
-        spacing={6}
-        alignItems="start"
-        position="sticky"
-        top={0}
-        boxShadow="base"
-        rounded="md"
-        height="fit-content"
-        paddingBlock={6}
-        paddingInline={8}
-        flex={1}
-        minWidth="35%"
-      >
-        <Heading fontSize="2xl" color="teal" fontWeight="semibold">
-          Order summary
-        </Heading>
-        <Divider />
-
-        <HStack width="100%" justifyContent="space-between">
-          <Text fontWeight="semibold" color="blackAlpha.700">
-            Total items
-          </Text>
-          <Text color="blackAlpha.600">{fields.length}</Text>
-        </HStack>
-        <HStack justifyContent="space-between" width="100%">
-          <Text fontWeight="semibold" color="blackAlpha.700">
-            Total price
-          </Text>
-          <Text color="blackAlpha.600">
-            ${' '}
-            {parseFloat(
-              watchField
-                .reduce((accumulator, field) => {
-                  return accumulator + parseFloat(field.price) * parseFloat(field.quantity);
-                }, 0)
-                .toFixed(2),
-            )}
-          </Text>
-        </HStack>
+          <HStack width="100%" justifyContent="space-between">
+            <Text fontWeight="semibold" color="blackAlpha.700">
+              Cost
+            </Text>
+            <Text fontWeight="semibold" color="blackAlpha.900">
+              ${' '}
+              {parseFloat(
+                watchField
+                  .reduce((accumulator, field) => {
+                    return accumulator + parseFloat(field.price) * parseFloat(field.quantity);
+                  }, 0)
+                  .toFixed(2),
+              )}
+            </Text>
+          </HStack>
+        </CardBody>
 
         <Divider />
 
-        <Button letterSpacing="-0.005em" fontWeight="semibold" width="100%" type="submit" colorScheme="teal">
-          Submit changes
-        </Button>
-        <Button letterSpacing="-0.005em" fontWeight="semibold" width="100%" leftIcon={<Focus />} variant="outline">
-          Return to scanner
-        </Button>
-      </VStack>
-    </form>
+        <CardFooter>
+          <VStack width="100%">
+            <Button
+              fontSize="lg"
+              letterSpacing="-0.005em"
+              fontWeight="semibold"
+              width="100%"
+              type="submit"
+              colorScheme="teal"
+              onClick={handleSubmit(submitReceipts)}
+            >
+              Submit changes
+            </Button>
+            <Button
+              letterSpacing="-0.005em"
+              fontWeight="semibold"
+              width="100%"
+              leftIcon={<Focus />}
+              variant="outline"
+              fontSize="lg"
+            >
+              Return to scanner
+            </Button>
+          </VStack>
+        </CardFooter>
+      </Card>
+    </Box>
   );
 };
 
