@@ -1,12 +1,9 @@
 import dotenv from 'dotenv';
-import Ingredients, { Ingredient } from '../models/IngredientModel.ts';
-import { getAllIngredientsAPI, getIngredientByIdAPI, findIngredientById } from './spoonacular/spoonacularServices.ts';
-import { NotFoundError, ServerError } from '../errors/customErrors.ts';
-import Progress from '../models/ProgressSeed.ts';
 import mongoose from 'mongoose';
-import { IngredientBank } from '../utils/queryBank.ts';
-import { error } from 'console';
-import { AxiosError } from 'axios';
+import { NotFoundError, ServerError } from '../../errors/customErrors.ts';
+import Progress from '../../models/ProgressSeed.ts';
+import { IngredientBank } from '../../utils/queryBank.ts';
+import { findIngredientById, getAllIngredientsAPI } from '../spoonacular/spoonacularServices.ts';
 
 dotenv.config();
 

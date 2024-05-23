@@ -18,4 +18,6 @@ router.route('/cart')
 router.route('/left-over')
     .get(authenticateUser, catchAsync(getLeftOver))
     .patch(authenticateUser, catchAsync(updateLeftOver));
+
+router.route('/likedMeals')
 export default router;

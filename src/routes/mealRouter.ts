@@ -4,11 +4,11 @@ import {
   getRanDomMealsAuthenticated
 } from "../controllers/mealController.ts";
 import { checkUser } from "../middleware/authMiddleware.ts";
-import { getDietAndAllergy } from "../middleware/userMiddleware.ts";
+import { getDietAndAllergy, getLeftOver } from "../middleware/userMiddleware.ts";
 import { catchAsync } from "../utils/catchAsync.ts";
 const router = express.Router();
 
-router.get("/", checkUser, getDietAndAllergy, catchAsync(getAllMeals));
+router.get("/", checkUser, getDietAndAllergy, getLeftOver, catchAsync(getAllMeals));
 router.route("/:id")
   .get(checkUser, catchAsync(getRanDomMealsAuthenticated))
 

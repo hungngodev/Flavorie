@@ -35,7 +35,7 @@ export function ListofMeals({ Type, meals }: MealTypeProps) {
       }
     });
   }, []);
-
+  console.log(meals);
   const truncateDescription = (description: string): string => {
     return description.length > 60 ? `${description.substring(0, 60)}...` : description;
   };
@@ -70,7 +70,7 @@ export function ListofMeals({ Type, meals }: MealTypeProps) {
                 imageProps={{
                   src: meal.image,
                   title: meal.title,
-                  description: '',
+                  description: truncateDescription(meal.description ?? ''),
                   category: meal.category,
                   // price: meal.price,
                   infoLink: `/meals/${meal.id}`,

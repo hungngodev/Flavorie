@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   ButtonGroup,
   Card,
@@ -49,10 +50,14 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
           objectFit="cover"
         />
         <Stack mt="2" spacing="1">
-          <Heading size="lg" fontSize="23" fontWeight="bold">
-            {imageProps.title}
-          </Heading>
-          <Text w="full">{imageProps.description}</Text>
+          <Box height={'82px'}>
+            <Heading size="lg" fontSize="23" fontWeight="bold">
+              {imageProps.title}
+            </Heading>
+          </Box>
+          <Box height={'60px'}>
+            <Text w="full">{imageProps.description.replace(/<\/[^>]+(>|$)/g, '')}</Text>
+          </Box>
           {/* <Text color="blue.350" fontSize="28">
             {imageProps.price}
           </Text> */}

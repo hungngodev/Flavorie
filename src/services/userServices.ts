@@ -64,7 +64,7 @@ export async function getUserItems(userId: string, type: string): Promise<UserIt
 
 export async function modifyUserItems(userId: string, items: Item[], type: string): Promise<void> {
     for (let item of items) {
-        let existingItem = await ItemModel.findOne({ userId: userId, itemId: item.itemId, type: type });
+        const existingItem = await ItemModel.findOne({ userId: userId, itemId: item.itemId, type: type });
         if (existingItem) {
             existingItem.quantity = item.quantity;
             existingItem.unit = item.unit;
@@ -74,3 +74,4 @@ export async function modifyUserItems(userId: string, items: Item[], type: strin
         }
     }
 }
+

@@ -18,6 +18,7 @@ type theMealDB = {
   strMealThumb: string;
   strCategory: string;
   strArea: string;
+  strInstructions: string;
 }
 export const getRandomMealsUnauthenticated = async (
   req: Request,
@@ -37,6 +38,7 @@ export const getRandomMealsUnauthenticated = async (
         title: meal.strMeal,
         image: meal.strMealThumb,
         category: meal.strCategory + " " + meal.strArea,
+        description: meal.strInstructions,
       }
     }
     const randomMeals = [];
@@ -80,45 +82,59 @@ export const getRandomMealsUnauthenticated = async (
   }
 };
 
+type spoonacularDB = {
+  id: string;
+  image: string;
+  title: string;
+  summary: string;
+  occasions: [string];
+  cuisines: [string];
+
+}
 export const getRanDomMealsAuthenticated = async (
   req: Request,
   res: Response,
 ) => {
   try {
     const { allergy, diet, leftOver } = req.body;
+
     const queryAllergy = allergy.reduce((acc: string, curr: string) => `${acc},${curr}`, "");
     const queryDiet = diet.reduce((acc: string, curr: string) => `${acc},${curr}`, "");
-    const response: {
-      randomMeals: {}[],
-      mainMeals: {}[];
-      sideMeals: {}[];
-      dessertMeals: {}[];
-      suggestedMeals: {}[];
-    } = {
-      randomMeals: [],
-      mainMeals: [],
-      sideMeals: [],
-      dessertMeals: [],
-      suggestedMeals: [],
-    };
-    response.randomMeals = await getRandomMealsAPI(
+    function processingMeals(meal: spoonacularDB) {
+      return {
+        id: meal.id,
+        title: meal.title,
+        image: meal.image,
+        category: meal.occasions.join(",") + " " + meal.cuisines.join(","),
+        description: meal.summary,
+      }
+    }
+    const randomMeals = await getRandomMealsAPI(
       queryDiet,
       queryAllergy, 30);
-    response.mainMeals = await getRandomMealsAPI(
+    const mainMeals = await getRandomMealsAPI(
       queryDiet + ",main course",
       queryAllergy, 30);
-    response.sideMeals = await getRandomMealsAPI(
+    const sideMeals = await getRandomMealsAPI(
       queryDiet + ",side dish",
       queryAllergy, 15);
-    response.dessertMeals = await getRandomMealsAPI(
+    const dessertMeals = await getRandomMealsAPI(
       queryDiet + ",dessert",
       queryAllergy, 15);
-    response.suggestedMeals = await getAllMealsByIngredientsAPI(
+    const suggestedMeals = await getAllMealsByIngredientsAPI(
       leftOver.map((item: Ingredient) => item.name).join(","),
       20,
     )
+
+    const mealsReturn = {
+      randomMeals: randomMeals.recipes.map(processingMeals),
+      mainMeals: mainMeals.recipes.map(processingMeals),
+      sideMeals: sideMeals.recipes.map(processingMeals),
+      dessertMeals: dessertMeals.recipes.map(processingMeals),
+      suggestedMeals: suggestedMeals.map(processingMeals),
+    }
     //adding more meals of SPOONACULAR API
-    return res.json(response).status(StatusCodes.OK);
+    return res.json(mealsReturn).status(StatusCodes.OK);
   } catch (error) {
     throw new ServerError(`${error}`);
   }

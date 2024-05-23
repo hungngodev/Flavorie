@@ -49,3 +49,12 @@ export const updateLeftOver = async (req: Request, res: Response) => {
     await modifyUserItems(req.user.userId, req.body, 'leftOver');
     res.status(StatusCodes.OK).send({ msg: 'update leftOver' });
 };
+
+export const getLikedMeals = async (req: Request, res: Response) => {
+    const user = await getUserItems(req.user.userId, 'likedMeal');
+    if (user) {
+        res.status(StatusCodes.OK).send({ user });
+    } else {
+        throw new NotFoundError('User not found');
+    }
+}

@@ -38,7 +38,7 @@ const ItemSchema = new mongoose.Schema<ItemDocument, ItemModel>({
     },
     type: {
         type: String,
-        enum: ['leftOver', 'cart'],
+        enum: ['leftOver', 'cart', 'likedMeal'],
         required: true,
     },
     status: {

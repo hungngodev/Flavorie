@@ -9,7 +9,7 @@ import { loader as mealsLoader } from './pages/Meal.tsx';
 import { Ingredient, Login, Main, Meal, Register, User } from './pages/index';
 import theme from './style/theme';
 
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 1000 * 60 * 5,
