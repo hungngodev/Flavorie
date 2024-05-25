@@ -14,7 +14,6 @@ interface MealProps {
     numReviews: string;
 }
 
-
 function IndividualMeal({ 
     individualMeal, 
     title, 
