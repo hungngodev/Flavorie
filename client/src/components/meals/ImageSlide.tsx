@@ -43,8 +43,8 @@ function ImageSlide({ dishes }: DishesProps): ReactNode {
             p={5}
           >
             <img src={dish.image} alt={dish.title} style={{ maxWidth: '100%', borderRadius: '8px' }} />
-            <VStack mt={4} mb={4}>
-              <Heading fontSize={{ base: 'xl', md: '2xl' }} textAlign="left" w="full" mb={2}>
+            <VStack mt={4} mb={2}>
+              <Heading fontSize={{ base: 'xl', md: '2xl' }} textAlign="left" w="full">
                 {dish.title}
               </Heading>
             </VStack>

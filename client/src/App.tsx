@@ -100,6 +100,8 @@ const IndividualMealWrapper = () => {
       totalTime="45 mins"
       servings="4"
       calories="500"
+      averageStar='5'
+      numReviews='1'
     />
   );
 };
