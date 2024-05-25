@@ -1,7 +1,8 @@
-import express from "express"
-import { processReceipt, upload } from "../controllers/receiptScanController.ts"
+// import express from "express"
+// import { processReceipt, upload } from "../controllers/receiptScanController.ts"
+// import { authenticateUser } from "../middleware/authMiddleware.ts";
 
-const router = express.Router();
+// const router = express.Router();
 
-router.post('/scan-receipt', upload.single('receipt'), processReceipt)
-export default router;
+// router.post('/scan-receipt', authenticateUser, upload.single('receipt'), processReceipt)
+// export default router;

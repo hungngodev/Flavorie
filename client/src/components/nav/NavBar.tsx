@@ -33,6 +33,10 @@ const NAV_ITEMS: Array<NavItem> = [
     label: 'Community',
     href: '/community',
   },
+  {
+    label: 'Upload Receipts',
+    href: '/upload-receipts'
+  }
 ];
 
 export default function NavBar() {

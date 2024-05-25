@@ -21,6 +21,12 @@ declare global {
 export const authenticateUser = (req: Request, res: Response, next: NextFunction) => {
     const { token } = req.cookies;
     if (!token) throw new UnauthenticatedError('authentication invalid');
+    // const authHeader = req.headers.authorization;
+    // if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    //     throw new UnauthenticatedError('authentication invalid');
+    // }
+
+    // const token = authHeader.split(' ')[1];
 
     try {
         const { userId, role } = verifyJWT(token);
@@ -34,7 +40,7 @@ export const authenticateUser = (req: Request, res: Response, next: NextFunction
 
 export const checkUser = (req: Request, res: Response, next: NextFunction) => {
     const { token } = req.cookies;
-    if (!token) {
+    if (token) {
         try {
             const { userId, role } = verifyJWT(token);
             const testUser = userId === '64b2c07ccac2efc972ab0eca';

@@ -4,6 +4,13 @@ import { Slide, ToastContainer } from 'react-toastify';
 import HomeLayout from './layouts/HomeLayout.tsx';
 import { Ingredient, Login, Main, Meal, Register } from './pages/index';
 import theme from './style/theme';
+import ReceiptScan from './pages/ReceiptScan.tsx';
+import {io} from 'socket.io-client'
+
+const socket = io('http://localhost:5100')
+socket.on('connect', () => {
+  console.log('Socket is connected')
+})
 
 const router = createBrowserRouter([
   {
@@ -44,6 +51,10 @@ const router = createBrowserRouter([
         path: 'community',
         element: <div>Community</div>,
       },
+      {
+        path: 'upload-receipts',
+        element: <ReceiptScan />
+      }
     ],
   },
 ]);
