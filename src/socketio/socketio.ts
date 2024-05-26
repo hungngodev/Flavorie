@@ -3,6 +3,7 @@ import { Server, Socket } from "socket.io";
 import fs from 'fs'
 import FormData from "form-data";
 import axios from "axios";
+import NotificationModel from "../models/NotificationModel.ts";
 
 const FLASK_SERVICE_URL = 'http://127.0.0.1:5000/scan-receipts'
 const authenticateSocketIO = async (socket: Socket, next) => {
@@ -48,10 +49,29 @@ const setUpSocketIO = (server: any) => {
                     headers: form.getHeaders()
                 })
                 socket.emit('processReceipt', response.data) 
+                const notification = new NotificationModel({
+                    userId: socket.data.user.userId, 
+                    status: false,
+                    message: {
+                        title: 'Process receipt successfully',
+                        data: response.data
+                    },
+                    timestamp: new Date()
+                })
+                await notification.save()
                 
                 } catch(error) {
                     console.log('Error processing receipt', error)
                     socket.emit('error', 'Failed to process receipt')
+                    const notification = new NotificationModel({
+                        userId: socket.data.user.userId, 
+                        status: false,
+                        message: {
+                            title: 'Cannot process receipt. Please try again',
+                        },
+                        timestamp: new Date()
+                    })
+                    await notification.save()
                 }
             })
         })
