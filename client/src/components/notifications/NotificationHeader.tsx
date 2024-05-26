@@ -4,14 +4,67 @@ import useSocketIO from "../../hooks/useSocketio.tsx";
 import { useState, useEffect } from "react";
 // import { useNavigate } from "react-router-dom";
 
-
+type Notification = {
+    _id: string;
+    userId: string;
+    status: boolean;
+    message: {
+        title: string;
+        data?: object;
+    };
+    timestamp: Date;
+};
 const NotificationHeader = () => {
     const {socket} = useSocketIO()
 
     // const navigate = useNavigate()
     const [numberNotifications, setNumberNotifications] = useState(0)
+    const [notifications, setNotifications] = useState<Notification[]>([])
+    const [showData, setShowData] = useState<string | null>(null)
     const {currentUser} = useAuth()
     const [isAutheticate, setIsAuthenticate] = useState(false)
+
+    const renderData = (data: any) => {
+        if (typeof data === 'object' && data !== null) {
+            return JSON.stringify(data, null, 2);
+        }
+        return data;
+    };
+
+    const handleClick = (notification: Notification) => {
+        const notificationId = notification._id
+        setShowData(showData === notificationId ? null : notificationId)
+        if (!notification.status){
+            socket?.emit('markRead', notificationId)
+        }
+    }
+
+    const handleDelete = (notification: Notification) => {
+        const notificationId = notification._id
+        socket?.emit('deleteNotification', notificationId)
+    }
+
+    useEffect(() => {
+        socket?.on('updateNotificationRead', (notificationId) => {
+            setNotifications((prevNotis) => 
+                prevNotis.map((noti) => (noti._id === notificationId ? {...noti, status: true} : noti)))
+            setNumberNotifications((prevCount) => prevCount - 1)
+        })
+        socket?.on('updateNotificationDelete', (notificationId, wasUnread) => {
+            setNotifications((prevNotis) => 
+                prevNotis.filter((noti) => noti._id !== notificationId)
+            )
+            if (wasUnread){
+                setNumberNotifications((prevCount) => prevCount - 1)
+
+            }
+        })
+        return () => {socket?.off('updateNotificationRead')}
+    }, [socket])
+
+    
+    
+    
     useEffect(() => {
         if (currentUser.status === 'unauthenticated') {
             toast.warn('Please log in to view notifications')
@@ -27,41 +80,50 @@ const NotificationHeader = () => {
             socket?.on('countNotification', (cnt) => {
                 setNumberNotifications(cnt)
             })
+            socket?.on('displayNotifications', (allNotifications: Notification[]) => {
+                setNotifications(allNotifications);
+            });
         }
         return () => {
             socket?.off('countNotification')
+            socket?.off('displayNotifications')
         }
     }, [isAutheticate, socket])
 
-    // useEffect(() => {
-    //     if (isAutheticate){
-//         //     socket?.on('connect', () => {
-//         //         socket?.emit('getNumberNotification', currentUser.email)
-//         // socket?.on('notificationLength', (data) => {
-//         //     setNumberNotifications(data)
-//         // })
-//         // const timer = setTimeout(() => {
-//         //     socket.emit('getNumberNotification', currentUser.email)
-//         // }, 30000)
-//         return () => {
-//             socket.off('notificationLength')
-//             clearTimeout(timer)
-//         }
-//             })
-//         // socket?.emit('getNumberNotification', currentUser.email)
-//         // socket?.on('notificationLength', (data) => {
-//         //     setNumberNotifications(data)
-//         // })
-        
-//     }
-// }, [isAutheticate, currentUser.email])
+    
 
     return (
-        // <button onClick={() => {navigate('/notificationsList')}}>
             <div>
-                {isAutheticate && <div>Number of notifications: {numberNotifications}</div>}
+                {isAutheticate && (
+                <div>
+                    <div>Number of notifications: {numberNotifications}</div>
+                    <div>
+                        Notification List:
+                        <ul>
+                            {notifications.map((noti) => (
+                               <li key={noti._id}>
+                                <button onClick={() => handleClick(noti)}>
+                                    {noti.message.title}
+                                </button>
+
+                                <button onClick={() => handleDelete(noti)}>
+                                    Delete
+                                </button>
+                                {showData === noti._id && (
+                                    <div>
+                                        {renderData(noti.message.data)}
+                                    </div>
+                                )}
+                               </li> 
+                                
+
+                            ))}
+                        </ul>
+                    </div>
+                </div>
+            )}
+
             </div>
-        // </button>
     )
 }
 export default NotificationHeader

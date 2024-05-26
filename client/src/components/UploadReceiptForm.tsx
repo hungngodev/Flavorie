@@ -58,9 +58,7 @@ const UploadReceiptForm = () => {
             return;
         }
         
-        // const formData = new FormData()
-        // formData.append('receipt', file)
-
+        
         socket.emit('submitReceipt', file)
         toast.success('Submit receipt successfully')
     }
