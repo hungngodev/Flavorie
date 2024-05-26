@@ -11,20 +11,28 @@
 //     )
 // }
 // export default UploadReceiptForm
+import { useAuth } from '../hooks';
 import React, { useState, useEffect } from 'react';
 import { toast } from "react-toastify";
 import { io } from 'socket.io-client';
+import { useNavigate } from 'react-router-dom';
 
-const socket = io('http://localhost:5100');
+const socket = io('http://localhost:5100', {
+    withCredentials: true,
+});
 
 
 const UploadReceiptForm = () => {
+    const auth = useAuth()
+    // const navigate = useNavigate()
     const [file, setFile] = useState<File | null>(null)
     useEffect(() => {
+        
         socket.on('processReceipt', (data) => {
             console.log(data); 
             toast.success('Process successfully')
         })
+        
         socket.on('error', (error) => {
             console.log(error);
             toast.error('Failed to process')
@@ -40,7 +48,15 @@ const UploadReceiptForm = () => {
 }
     const handleSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if (!file) return;
+        if (!file) {
+            toast.error('Please upload files');
+            return;
+        }
+
+        if (auth.currentUser.status === 'unauthenticated'){
+            toast.error('Please log in or sign up to submit receipt')
+            return;
+        }
         
         // const formData = new FormData()
         // formData.append('receipt', file)

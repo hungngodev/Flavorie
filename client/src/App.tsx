@@ -7,7 +7,9 @@ import theme from './style/theme';
 import ReceiptScan from './pages/ReceiptScan.tsx';
 import {io} from 'socket.io-client'
 
-const socket = io('http://localhost:5100')
+const socket = io('http://localhost:5100', {
+  withCredentials: true
+})
 socket.on('connect', () => {
   console.log('Socket is connected')
 })
