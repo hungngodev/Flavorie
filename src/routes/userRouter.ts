@@ -7,8 +7,8 @@ import { authenticateUser } from '../middleware/authMiddleware.js';
 import { catchAsync } from '../utils/catchAsync.js';
 import { storage } from '../services/cloudinary/cloudinaryServices.ts';
 import multer from 'multer';
-import { getNotificationByUser } from "../controllers/notificationController.ts"
-import { checkTaskStatus, processReceipt } from "../controllers/receiptScanController.ts"
+// import { getNotificationByUser } from "../controllers/notificationController.ts"
+// import { checkTaskStatus, processReceipt } from "../controllers/receiptScanController.ts"
 
 const upload = multer({ storage });
 
@@ -18,12 +18,12 @@ router.route('/current-user')
     .get(authenticateUser, catchAsync(getCurrentUser))
     .patch(authenticateUser, upload.array('images'), catchAsync(updateUser));
 
-router.route('/scan-receipt')
-    .post(authenticateUser, upload.single('receipt'), catchAsync(processReceipt));
+// router.route('/scan-receipt')
+//     .post(authenticateUser, upload.single('receipt'), catchAsync(processReceipt));
 
-router.route('/notifications')
-    .get(authenticateUser, catchAsync(getNotificationByUser))
+// router.route('/notifications')
+//     .get(authenticateUser, catchAsync(getNotificationByUser))
 
-router.route('/task-status/:taskId').get(authenticateUser, catchAsync(checkTaskStatus))
+// router.route('/task-status/:taskId').get(authenticateUser, catchAsync(checkTaskStatus))
 
 export default router;

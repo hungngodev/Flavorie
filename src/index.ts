@@ -17,14 +17,12 @@ import mealRouter from "./routes/mealRouter.ts";
 import userRouter from "./routes/userRouter.ts";
 // import receiptScanRouter from "./routes/receiptScanRouter.ts"
 import { createServer } from "http";
-import { Server } from "socket.io";
-import FormData from "form-data";
-import axios from "axios";
-import { Form } from "react-router-dom";
+// import { Server } from "socket.io";
+import  {setUpSocketIO}  from "./socketio/socketio.ts";
+
 
 dotenv.config();
 const app = express();
-// const allowedOrigins = 'http://localhost:5173';
 
 
 
@@ -35,24 +33,22 @@ if (process.env.NODE_ENV === "development") {
 }
 app.use(express.static(path.resolve(__dirname, "./client/dist")));
 
-// app.use(cors());
-// app.use(cors({
-//   origin: (origin, callback) => {
-//     if (!origin || allowedOrigins.includes(origin)) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   },
-//   credentials: true 
-// }));
-// app.use(cors:)
+app.use(cors({
+  credentials: true
+}));
+// app.use(cors())
+const port = process.env.PORT || 5100;
+
 
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
 app.use(mongoSanitize());
+
+const server = createServer(app);
+setUpSocketIO(server)
+
 
 app.get("/", (req, res) => {
   res.send("Hello World");
@@ -74,74 +70,45 @@ app.use("/api/ingredient", ingredientRouter);
 //   res.status(404).json({ msg: "not found" });
 // });
 
-const port = process.env.PORT || 5100;
-const server = createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: 'http://localhost:5173',
-    methods: ["GET", "POST"]
-  }
-})
 
-io.on("connection", (socket) => {
-  // console.log('user is connected');
-  // console.log(socket)
 
-socket.on("submitReceipt", async (data) => {
-  console.log(data)
-  try {
-    const fileBuffer = Buffer.from(data, 'base64');
-      const filePath = `${data.filename}`;
-      fs.writeFileSync(filePath, fileBuffer);
+// io.on("connection", (socket) => {
+//   // console.log('user is connected');
+//   // console.log(socket)
 
-      // Prepare the file to be sent to the Flask microservice
-      const form = new FormData();
-      form.append('receipt', fs.createReadStream(filePath), data.filename);
-    const response = await axios.post('http://127.0.0.1:5000/scan-receipts', form, {
-      headers: form.getHeaders()
-    })
-    socket.emit('processReceipt', response.data)
-  } catch (error) {
-    console.error('Error processing receipt:', error);
-socket.emit('error', 'Failed to process receipt');
-  }
+// socket.on("submitReceipt", async (data) => {
+//   console.log(data)
+//   try {
+//     const fileBuffer = Buffer.from(data, 'base64');
+//       const filePath = `${data.filename}`;
+//       fs.writeFileSync(filePath, fileBuffer);
 
-  // try {
-//     // const formData = new FormData()
-//     // const imageUrl = file.path
-//     // const imageResponse = await axios.get(imageUrl, {responseType: 'arraybuffer'});
-//     // formData.append('receipt', imageResponse.data, {
-//     //     filename: file.originalname,
-//     //     contentType: file.mimetype
-//     // })
-//     const response = await axios.post('http://127.0.0.1:5000/scan-receipts', file
-//     )
+//       const form = new FormData();
+//       form.append('receipt', fs.createReadStream(filePath), data.filename);
+//     const response = await axios.post('http://127.0.0.1:5000/scan-receipts', form, {
+//       headers: form.getHeaders()
+//     })
 //     socket.emit('processReceipt', response.data)
+//   } catch (error) {
+//     console.error('Error processing receipt:', error);
+// socket.emit('error', 'Failed to process receipt');
 //   }
-//  catch (error) {
-//   console.error('Error processing receipt:', error);
-//       socket.emit('error', 'Failed to process receipt');
-// }
-})
 
-  // socket.emit("message", "Hello")
+  
+// })
 
-  // socket.on('disconnect', () => {
-  //   console.log('user disconnected')
-  // })
-})
+  
+// })
 try {
   await mongoose.connect(process.env.MONGODB_URL ?? "");
   // app.listen(port, () => {
   //   console.log(`server running on PORT ${port}...`);
   // });
   server.listen(port, () => {
-    console.log('Server is running')
+    console.log(`Server is running on PORT ${port}`)
   })
 } catch (error) {
   console.log(error);
   process.exit(1);
 }
 
-export { io }
-// console.log('server started');

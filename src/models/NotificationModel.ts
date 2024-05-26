@@ -1,45 +1,34 @@
 import mongoose, {Types} from "mongoose";
 
 export interface Notification extends mongoose.Document{
-    // notificationId: number;
-    taskId: string;
-    // taskName: string;
     userId: mongoose.Types.ObjectId;
-    status: 'PENDING' | 'SUCCESS' | 'FAILURE';
-    // message: object;
+    status: boolean;
     message: {
         title: string;
-        data: object;
-    }
-    timestamp?:Date; 
+        data: object
+    };
+    timestamp: Date
 }
 
 type NotificationModel = mongoose.Model<Notification>;
+
 const NotificationSchema = new mongoose.Schema<Notification, NotificationModel>({
-    taskId: {
-        type: String, 
+    userId: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User', 
         required: true
     },
-    // taskName: 
-
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    },
     status: {
-        type: String,
-        enum: ['PENDING', 'SUCCESS', 'FAILURE'],
-        required: true,
-    },
+        type: Boolean,
+        default: false
+    }, 
     message: {
-        // type: Object 
         title: {
             type: String,
             required: true
-        }, 
+        },
         data: {
-            type: Object, 
-            // required: true
+            type: Object
         }
     },
     timestamp: {

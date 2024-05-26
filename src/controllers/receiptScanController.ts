@@ -5,8 +5,8 @@ import axios, {AxiosRequestHeaders} from "axios";
 import FormData from "form-data";
 import path from "path";
 import fs from "fs"
-import NotificationModel from "../models/NotificationModel.ts"
-import { io } from "../index.ts";
+// import NotificationModel from "../models/NotificationModel.ts"
+// import { io } from "../index.ts";
 import mongoose from "mongoose";
 
 const upload = multer({storage})
