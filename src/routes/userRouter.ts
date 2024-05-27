@@ -7,8 +7,6 @@ import { authenticateUser } from '../middleware/authMiddleware.js';
 import { catchAsync } from '../utils/catchAsync.js';
 import { storage } from '../services/cloudinary/cloudinaryServices.ts';
 import multer from 'multer';
-// import { getNotificationByUser } from "../controllers/notificationController.ts"
-// import { checkTaskStatus, processReceipt } from "../controllers/receiptScanController.ts"
 import { getAllNotifications } from '../controllers/notificationController.ts';
 import { getNotificationCount } from '../controllers/notificationController.ts';
 const upload = multer({ storage });
