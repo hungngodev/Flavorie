@@ -15,7 +15,6 @@ const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ children }: A
     status: 'loading',
   });
   const location = useLocation();
-  // const [token, setToken] = useState<string | null>(null)
 
   const logout = async () => {
     try {
@@ -25,7 +24,6 @@ const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ children }: A
       if (logOutRequest.status === 200) {
         toast.success('Logged out successfully!', { position: 'top-right', icon: <CiCircleCheck /> });
         setCurrentUser({ username: '', email: '', status: 'unauthenticated' });
-        // setToken(null)
       }
     } catch (error) {
       toast.error('Error during logging out, please try later!', { position: 'top-right', icon: <CiLogin /> });
