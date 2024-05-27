@@ -19,13 +19,6 @@ router.route('/current-user')
     .get(authenticateUser, catchAsync(getCurrentUser))
     .patch(authenticateUser, upload.array('images'), catchAsync(updateUser));
 
-// router.route('/scan-receipt')
-//     .post(authenticateUser, upload.single('receipt'), catchAsync(processReceipt));
-
-// router.route('/notifications')
-//     .get(authenticateUser, catchAsync(getNotificationByUser))
-// router.route('/notifications').get(authenticateUser, catchAsync(getAllNotifications))
-// router.route('/task-status/:taskId').get(authenticateUser, catchAsync(checkTaskStatus))
 router.route('/notifications/cnt').get(authenticateUser, catchAsync(getNotificationCount))
 router.route('/notifications').get(authenticateUser, catchAsync(getAllNotifications))
 
