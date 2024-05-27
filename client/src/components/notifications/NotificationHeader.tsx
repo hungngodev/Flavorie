@@ -84,18 +84,6 @@ const NotificationHeader = () => {
         }
     }, [socket])
 
-    
-    
-    
-    useEffect(() => {
-        if (currentUser.status === 'unauthenticated') {
-            toast.warn('Please log in to view notifications')
-            setIsAuthenticate(false)
-        }
-        else {
-            setIsAuthenticate(true)
-        }
-    }, [currentUser])
 
     useEffect(() => {
         if (isAutheticate){
