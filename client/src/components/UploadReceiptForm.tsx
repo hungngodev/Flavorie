@@ -23,7 +23,10 @@ const UploadReceiptForm = () => {
             toast.error('Failed to process')
         })
         
-        
+        return () => {
+            socket.off('processReceipt')
+            socket.off('error')
+        }
     },[])
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {

@@ -78,7 +78,10 @@ const NotificationHeader = () => {
 
             }
         })
-        return () => {socket?.off('updateNotificationRead')}
+        return () => {
+            socket?.off('updateNotificationRead')
+            socket?.off('updateNotificationDelete')
+        }
     }, [socket])
 
     
