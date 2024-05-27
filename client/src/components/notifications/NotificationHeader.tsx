@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import useAuth from "../../hooks/useAuth.tsx";
-import useSocketIO from "../../hooks/useSocketio.tsx";
+import socket from '../../socket/socketio.tsx';
 import { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -15,7 +15,6 @@ type Notification = {
     timestamp: Date;
 };
 const NotificationHeader = () => {
-    const {socket} = useSocketIO()
     const [numberNotifications, setNumberNotifications] = useState(0)
     const [notifications, setNotifications] = useState<Notification[]>([])
     const [showData, setShowData] = useState<string | null>(null)
@@ -82,7 +81,7 @@ const NotificationHeader = () => {
             socket?.off('updateNotificationRead')
             socket?.off('updateNotificationDelete')
         }
-    }, [socket])
+    }, [])
 
 
     useEffect(() => {
@@ -98,7 +97,7 @@ const NotificationHeader = () => {
             socket?.off('countNotification')
             socket?.off('displayNotifications')
         }
-    }, [isAutheticate, socket])
+    }, [isAutheticate])
 
     
 

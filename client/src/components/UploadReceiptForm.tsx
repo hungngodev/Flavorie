@@ -1,11 +1,7 @@
 import { useAuth } from '../hooks';
 import React, { useState, useEffect } from 'react';
 import { toast } from "react-toastify";
-import { io } from 'socket.io-client';
-
-const socket = io('http://localhost:5100', {
-    withCredentials: true,
-});
+import socket from '../socket/socketio.tsx';
 
 
 const UploadReceiptForm = () => {
@@ -13,19 +9,19 @@ const UploadReceiptForm = () => {
     const [file, setFile] = useState<File | null>(null)
     useEffect(() => {
         
-        socket.on('processReceipt', (data) => {
+        socket?.on('processReceipt', (data) => {
             console.log(data); 
             toast.success('Process successfully')
         })
         
-        socket.on('error', (error) => {
+        socket?.on('error', (error) => {
             console.log(error);
             toast.error('Failed to process')
         })
         
         return () => {
-            socket.off('processReceipt')
-            socket.off('error')
+            socket?.off('processReceipt')
+            socket?.off('error')
         }
     },[])
 
@@ -47,7 +43,7 @@ const UploadReceiptForm = () => {
         }
         
         
-        socket.emit('submitReceipt', file)
+        socket?.emit('submitReceipt', file)
         toast.success('Submit receipt successfully')
     }
     return (
