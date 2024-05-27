@@ -99,8 +99,6 @@ const setUpSocketIO = (server: any) => {
 
                 const notification = await NotificationModel.findById(notificationId)
                 if (notification) {
-                    // console.log(notification)
-
                     notification.status = true
                     await notification.save()
                     socket.emit('updateNotificationRead', notificationId)

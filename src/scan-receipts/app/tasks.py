@@ -2,11 +2,9 @@ import re
 import torch
 from transformers import DonutProcessor, VisionEncoderDecoderModel
 from app.utils import post_process, match_ingredients
-import os
 from flask import jsonify
 
 def process_receipt_task(img):
-    # img = Image.open(img_path).convert('RGB')
     try:
         processor = DonutProcessor.from_pretrained("AdamCodd/donut-receipts-extract")
         model = VisionEncoderDecoderModel.from_pretrained("AdamCodd/donut-receipts-extract")
