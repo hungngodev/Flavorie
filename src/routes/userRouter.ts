@@ -9,7 +9,7 @@ import { storage } from '../services/cloudinary/cloudinaryServices.ts';
 import multer from 'multer';
 // import { getNotificationByUser } from "../controllers/notificationController.ts"
 // import { checkTaskStatus, processReceipt } from "../controllers/receiptScanController.ts"
-
+import { getAllNotifications } from '../controllers/notificationController.ts';
 const upload = multer({ storage });
 
 const router = Router();
@@ -23,7 +23,7 @@ router.route('/current-user')
 
 // router.route('/notifications')
 //     .get(authenticateUser, catchAsync(getNotificationByUser))
-
+router.route('/notifications').get(authenticateUser, catchAsync(getAllNotifications))
 // router.route('/task-status/:taskId').get(authenticateUser, catchAsync(checkTaskStatus))
 
 export default router;

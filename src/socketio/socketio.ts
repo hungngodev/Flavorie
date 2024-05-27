@@ -4,21 +4,22 @@ import fs from 'fs'
 import FormData from "form-data";
 import axios from "axios";
 import NotificationModel from "../models/NotificationModel.ts";
+import mongoose from "mongoose";
 
 const FLASK_SERVICE_URL = 'http://127.0.0.1:5000/scan-receipts'
 const authenticateSocketIO = async (socket: Socket, next) => {
     try {
         const token = socket.handshake.headers.cookie?.split("=")[1]
-        if (token){
-            const {userId, role} = verifyJWT(token)
-            socket.data.user = {userId, role}
+        if (token) {
+            const { userId, role } = verifyJWT(token)
+            socket.data.user = { userId, role }
             next()
         }
-        
+
         else {
             next(new Error('Authenticate invalid'))
         }
-    } catch(error){
+    } catch (error) {
 
         next(new Error('Authentication error'))
     }
@@ -30,14 +31,14 @@ const setUpSocketIO = (server: any) => {
             origin: 'http://localhost:5173',
             credentials: true
         }
-    } )
+    })
 
     io.use(authenticateSocketIO)
     io.on("connection", (socket: Socket) => {
         console.log(socket)
         socket.on('submitReceipt', async (data) => {
-            
-            try{
+
+            try {
                 const fileBuffer = Buffer.from(data, 'base64')
                 const filePath = `${data.filename}`
                 fs.writeFileSync(filePath, fileBuffer)
@@ -48,9 +49,9 @@ const setUpSocketIO = (server: any) => {
                 const response = await axios.post(FLASK_SERVICE_URL, form, {
                     headers: form.getHeaders()
                 })
-                socket.emit('processReceipt', response.data) 
+                socket.emit('processReceipt', response.data)
                 const notification = new NotificationModel({
-                    userId: socket.data.user.userId, 
+                    userId: socket.data.user.userId,
                     status: false,
                     message: {
                         title: 'Process receipt successfully',
@@ -59,26 +60,79 @@ const setUpSocketIO = (server: any) => {
                     timestamp: new Date()
                 })
                 await notification.save()
-                
-                } catch(error) {
-                    console.log('Error processing receipt', error)
-                    socket.emit('error', 'Failed to process receipt')
-                    const notification = new NotificationModel({
-                        userId: socket.data.user.userId, 
-                        status: false,
-                        message: {
-                            title: 'Cannot process receipt. Please try again',
-                        },
-                        timestamp: new Date()
-                    })
-                    await notification.save()
-                }
-            })
+
+            } catch (error) {
+                console.log('Error processing receipt', error)
+                socket.emit('error', 'Failed to process receipt')
+                const notification = new NotificationModel({
+                    userId: socket.data.user.userId,
+                    status: false,
+                    message: {
+                        title: 'Cannot process receipt. Please try again',
+                    },
+                    timestamp: new Date()
+                })
+                await notification.save()
+            }
+        }
+        )
+
+        const userId = socket.data.user.userId
+        const pipeline = [
+            { $match: { 'fullDocument.userId': new mongoose.Types.ObjectId(userId) } }
+        ];
+        const changeStream = NotificationModel.watch(pipeline)
+        changeStream.on("change", async (next) => {
+            if (next.operationType === 'insert') {
+                const notificationCount = await NotificationModel.countDocuments({ userId: new mongoose.Types.ObjectId(userId), status: false })
+                socket.emit('countNotification', notificationCount)
+
+                const allNotifications = await NotificationModel.find({ userId: new mongoose.Types.ObjectId(userId), status: false }).sort({ timestamp: -1 })
+
+                socket.emit('displayNotifications', allNotifications)
+            }
+
         })
-        // console.log('User connected')
-        return io
 
-    }
+        socket.on('markRead', async (notificationId) => {
+            try {
 
-export  {setUpSocketIO}
+                const notification = await NotificationModel.findById(notificationId)
+                if (notification) {
+                    // console.log(notification)
+
+                    notification.status = true
+                    await notification.save()
+                    socket.emit('updateNotificationRead', notificationId)
+
+                }
+
+            } catch (error) {
+                console.log('Error to mark read notification', error)
+            }
+        })
+
+        socket.on('deleteNotification', async (notificationId) => {
+            try {
+                const notification = await NotificationModel.findById(notificationId)
+
+                if (notification) {
+                    const wasUnread = !notification.status
+                    await NotificationModel.deleteOne({ _id: notificationId })
+                    socket.emit('updateNotificationDelete', notificationId, wasUnread)
+
+                }
+
+            } catch (error) {
+                console.log('Error when deleting notifications', error)
+            }
+        })
+
+    })
+
+    return io
+
+}
+
+export { setUpSocketIO }
 

@@ -33,9 +33,11 @@ if (process.env.NODE_ENV === "development") {
 }
 app.use(express.static(path.resolve(__dirname, "./client/dist")));
 
-app.use(cors({
-  credentials: true
-}));
+// app.use(cors({
+//   origin: 'http://localhost:5173',
+//   credentials: true
+// }));
+
 // app.use(cors())
 const port = process.env.PORT || 5100;
 
@@ -62,7 +64,6 @@ app.use("/api/auth", authRouter);
 app.use("/api/user", authenticateUser, userRouter);
 app.use("/api/meal", mealRouter);
 app.use("/api/ingredient", ingredientRouter);
-// app.use("/api", receiptScanRouter)
 
 
 
@@ -72,33 +73,6 @@ app.use("/api/ingredient", ingredientRouter);
 
 
 
-// io.on("connection", (socket) => {
-//   // console.log('user is connected');
-//   // console.log(socket)
-
-// socket.on("submitReceipt", async (data) => {
-//   console.log(data)
-//   try {
-//     const fileBuffer = Buffer.from(data, 'base64');
-//       const filePath = `${data.filename}`;
-//       fs.writeFileSync(filePath, fileBuffer);
-
-//       const form = new FormData();
-//       form.append('receipt', fs.createReadStream(filePath), data.filename);
-//     const response = await axios.post('http://127.0.0.1:5000/scan-receipts', form, {
-//       headers: form.getHeaders()
-//     })
-//     socket.emit('processReceipt', response.data)
-//   } catch (error) {
-//     console.error('Error processing receipt:', error);
-// socket.emit('error', 'Failed to process receipt');
-//   }
-
-  
-// })
-
-  
-// })
 try {
   await mongoose.connect(process.env.MONGODB_URL ?? "");
   // app.listen(port, () => {
