@@ -14,6 +14,15 @@ socket.on('connect', () => {
   console.log('Socket is connected')
 })
 
+
+// const { Button } = chakraTheme.components;
+
+// const theme = extendBaseTheme({
+//   components: {
+//     Button,
+//   },
+// });
+
 const router = createBrowserRouter([
   {
     path: '/',

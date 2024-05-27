@@ -1,7 +1,8 @@
-import { Badge, Box, Button, Flex, Grid, Image } from '@chakra-ui/react';
+import { Badge, Box, Button, Flex, Grid, Image, Link } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-
+import { motion } from 'framer-motion';
 interface mockMeals {
+  id: string;
   image: string;
   title: string;
   tags: string[];
@@ -9,21 +10,25 @@ interface mockMeals {
 
 const mockMealData: mockMeals[] = [
   {
+    id: '1',
     image: 'https://www.themealdb.com/images/media/meals/wrpwuu1511786491.jpg',
     title: 'Ratatouille',
     tags: ['Stewed', 'Gluten-Free', 'Low-Calorie'],
   },
   {
+    id: '2',
     image: 'https://www.themealdb.com/images/media/meals/4er7mj1598733193.jpg',
     title: 'Koshari',
     tags: ['High-Protein', 'Vegetarian', 'Boiled'],
   },
   {
+    id: '3',
     image: 'https://www.themealdb.com/images/media/meals/yuwtuu1511295751.jpg',
     title: 'Lamb Tagine',
     tags: ['High-Protein', 'Gluten-Free', 'Slow-cooked'],
   },
   {
+    id: '4',
     image: 'https://www.thecocktaildb.com/images/media/drink/eg9i1d1487603469.jpg',
     title: 'Pineapple Gingerale Smoothie',
     tags: ['Gluten-Free', 'Dairy-Free', 'Summer Drink'],
@@ -53,31 +58,39 @@ export const Specialty = () => {
   return (
     <Box borderWidth="1px" borderRadius="lg" overflow="hidden" textAlign="center" padding="4" backgroundColor="beige">
       {!showMeal ? (
-        <Button borderRadius="full" colorScheme="teal" onClick={handleClick}>
+        <Button textAlign="center" borderRadius="full" colorScheme="teal" onClick={handleClick}>
           What's special today?
         </Button>
       ) : (
-        <Flex direction={{ base: 'column', md: 'row' }} alignItems="center" justifyContent="center">
-          <Image src={meal.image} alt={meal.title} boxSize="200px" borderRadius="full" mb={{ base: '4', md: '0' }} />
+        <motion.div
+        initial={{opacity: 0, scale: 0.8}}
+        animate={{opacity: 1, scale: 1}}
+        transition={{duration: 0.5, ease: "easeOut"}}
+        >
+          <Flex direction={{ base: 'column', md: 'row' }} alignItems="center" justifyContent="center">
+          <Image src={meal.image} alt={meal.title} boxSize="100px" borderRadius="full" mb={{ base: '4', md: '0' }} />
           <Box ml={{ md: '4' }} textAlign="left">
             <Grid templateColumns="repeat(2, auto)" gap="2">
-              <Badge borderRadius="full" px="4" py="2" colorScheme="teal" fontSize="lg" mb="4">
+              <Badge textAlign="center" borderRadius="full" px="4" py="2" colorScheme="teal" fontSize="md" mb="4">
                 {meal.title}
               </Badge>
-              <Button borderRadius="full" px="4" py="2" colorScheme="teal" fontSize="lg" mb="4">
-                Cook now
-              </Button>
+              <Link href={meal.id}>
+                <Button textAlign="center" borderRadius="full" px="4" py="2" colorScheme="teal" fontSize="md" mb="4">
+                  Cook now
+                </Button>
+              </Link>
             </Grid>
-
             <Grid templateColumns="repeat(2, auto)" gap="2">
               {meal.tags?.map((tag, index) => (
-                <Badge key={index} borderRadius="full" px="4" py="2" variant="outline" colorScheme="blue">
+                <Badge key={index} borderRadius="full" px="4" py="2" variant="outline" textAlign="center" colorScheme="blue">
                   {tag}
                 </Badge>
               ))}
             </Grid>
           </Box>
         </Flex>
+        </motion.div>
+        
       )}
     </Box>
   );

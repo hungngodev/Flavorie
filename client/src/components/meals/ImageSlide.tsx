@@ -1,7 +1,8 @@
-import { Container, Flex, HStack, Heading, Text, VStack } from '@chakra-ui/react';
+import { Text as CharkaText, Container, Flex, HStack, Heading, VStack } from '@chakra-ui/react';
 // import "fontsource-inter/500.css";
 //import { capsFirst } from "../utils/index.tsx";
-import ChakraCarousel from '../ChakraCarousel.tsx';
+import { ReactNode } from 'react';
+import ChakraCarousel from './ChakraCarousel.tsx';
 
 interface Dishes {
   image: string;
@@ -42,7 +43,7 @@ const dishes: Dishes[] = [
   },
 ];
 
-function ImageSlide(): JSX.Element {
+function ImageSlide(): ReactNode {
   // const [data, setData] = useState<Post[]>([]);
 
   // useEffect(() => {
@@ -87,7 +88,7 @@ function ImageSlide(): JSX.Element {
 
             <Flex justifyContent="space-between">
               <HStack spacing={2}>
-                <Text w="full">{dish.description}</Text>
+                <CharkaText w="full">{dish.description}</CharkaText>
               </HStack>
               {/* <Button
                     onClick={() => alert(`Post ${post.id - 5} clicked`)}
