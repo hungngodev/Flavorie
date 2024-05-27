@@ -33,12 +33,11 @@ if (process.env.NODE_ENV === "development") {
 }
 app.use(express.static(path.resolve(__dirname, "./client/dist")));
 
-// app.use(cors({
-//   origin: 'http://localhost:5173',
-//   credentials: true
-// }));
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
 
-// app.use(cors())
 const port = process.env.PORT || 5100;
 
 
