@@ -2,6 +2,7 @@ import { toast } from "react-toastify";
 import useAuth from "../../hooks/useAuth.tsx";
 import useSocketIO from "../../hooks/useSocketio.tsx";
 import { useState, useEffect } from "react";
+import axios from "axios";
 // import { useNavigate } from "react-router-dom";
 
 type Notification = {
@@ -43,6 +44,27 @@ const NotificationHeader = () => {
         const notificationId = notification._id
         socket?.emit('deleteNotification', notificationId)
     }
+
+    useEffect(() => {
+        const fetchNotifications = async () => {
+            try {
+                const cntResponse = await axios.get('http://localhost:5100/api/user/notifications/cnt', {withCredentials: true})
+                setNumberNotifications(cntResponse.data.count)
+
+                const notiResponse = await axios.get('http://localhost:5100/api/user/notifications', {withCredentials: true})
+                setNotifications(notiResponse.data.notifications)
+            } catch(error) {
+                toast.error('Failed to display notifications')
+            }
+        }
+        if (currentUser.status === 'authenticated'){
+            setIsAuthenticate(true)
+            fetchNotifications()
+        } else {
+            toast.warn('Please log in to view notifications')
+            setIsAuthenticate(false)
+        }
+    }, [currentUser.status])
 
     useEffect(() => {
         socket?.on('updateNotificationRead', (notificationId) => {
