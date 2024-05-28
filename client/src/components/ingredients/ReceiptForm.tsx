@@ -1,15 +1,15 @@
 import { Button, Card, CardBody, CardFooter, CardHeader, Heading } from '@chakra-ui/react';
 import React from 'react';
-import { ArrayPath, Control, FieldArrayWithId, SubmitHandler } from 'react-hook-form';
+import { ArrayPath, Control, FieldArrayWithId, SubmitHandler, UseFormWatch } from 'react-hook-form';
 import { ZodType, z } from 'zod';
 
 export interface FieldComponentProps<T extends ZodType<any, any, any>> {
   control: Control<z.infer<T>, any>;
   fields: FieldArrayWithId<z.infer<T>, ArrayPath<T>, 'id'>[];
-  watchField: z.infer<T>;
   submit: SubmitHandler<z.infer<T>>;
+  watch: UseFormWatch<z.infer<T>>;
   remove: (arg?: any) => void;
-  update: (arg?: any) => void;
+  update: (watch: UseFormWatch<z.infer<T>>, index: number) => void;
   append: (arg?: any) => void;
 }
 
@@ -25,7 +25,7 @@ function ReceiptForm<T extends ZodType<any, any, any>>({
   remove,
   update,
   append,
-  watchField,
+  watch,
 }: ReceiptFormProps<T>): React.ReactNode {
   return (
     <Card flex={4}>
@@ -38,7 +38,7 @@ function ReceiptForm<T extends ZodType<any, any, any>>({
         <form onSubmit={submit}>
           {fields.map((field, index) => (
             <FieldComponent
-              watchField={watchField}
+              field={field}
               key={index}
               fields={fields}
               index={index}
@@ -47,6 +47,7 @@ function ReceiptForm<T extends ZodType<any, any, any>>({
               remove={remove}
               update={update}
               append={append}
+              watch={watch}
             />
           ))}
         </form>
@@ -56,7 +57,9 @@ function ReceiptForm<T extends ZodType<any, any, any>>({
           colorScheme="teal"
           letterSpacing="-0.005em"
           fontWeight="semibold"
-          onClick={() => {
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
             append();
           }}
         >

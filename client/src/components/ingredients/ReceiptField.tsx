@@ -3,6 +3,10 @@ import {
   IconButton,
   Image,
   Input,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput,
@@ -10,17 +14,15 @@ import {
   NumberInputStepper,
   Text,
   VStack,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
 } from '@chakra-ui/react';
-import { PenLine, Trash } from 'lucide-react';
-import { Controller } from 'react-hook-form';
-import { ZodType } from 'zod';
+import { PenLine, Search, Trash, X } from 'lucide-react';
+import { Controller, FieldPath, Path } from 'react-hook-form';
+import { ZodType, z } from 'zod';
 import { ReceiptFormProps } from './ReceiptForm';
+
 interface ReceiptFieldProps<T extends ZodType<any, any, any>> extends ReceiptFormProps<T> {
   index: number;
+  field: z.infer<T>;
 }
 
 function ReceiptField<T extends ZodType<any, any, any>>({
@@ -28,10 +30,10 @@ function ReceiptField<T extends ZodType<any, any, any>>({
   index,
   remove,
   update,
-  append,
   fields,
+  field,
+  watch,
 }: ReceiptFieldProps<T>) {
-  console.log(fields);
   return (
     <HStack width="100%" marginTop={12} gap={6} justifyContent="stretch">
       <Image
@@ -44,7 +46,7 @@ function ReceiptField<T extends ZodType<any, any, any>>({
         <HStack alignItems="space-between" minWidth="fit-content">
           <Controller
             control={control}
-            name={`receipts.${index}.name`}
+            name={`receipts.${index}.name` as FieldPath<z.infer<T>>}
             render={({ field: { ref, ...fieldProps } }) => (
               <VStack width="fit-content" alignItems="start" minWidth="max-content">
                 <Text color="blackAlpha.600" fontWeight="semibold">
@@ -53,7 +55,7 @@ function ReceiptField<T extends ZodType<any, any, any>>({
                 <Input
                   borderRadius="md"
                   {...fieldProps}
-                  value={fields[index].name}
+                  value={watch(`receipts.${index}.name` as Path<z.infer<T>>)}
                   placeholder="Enter your item"
                   variant="flushed"
                   onChange={(val) => fieldProps.onChange(val)}
@@ -64,10 +66,10 @@ function ReceiptField<T extends ZodType<any, any, any>>({
               </VStack>
             )}
           />
-          {fields[index].suggested.display && (
+          {field.suggested.display && (
             <Controller
               control={control}
-              name={`receipts.${index}.name`}
+              name={`receipts.${index}.name` as FieldPath<z.infer<T>>}
               render={({ field: { ...fieldProps } }) => {
                 return (
                   <VStack justifyContent="flex-start" alignItems="start" gap={6}>
@@ -82,8 +84,8 @@ function ReceiptField<T extends ZodType<any, any, any>>({
                         </HStack>
                       </MenuButton>
                       <MenuList>
-                        {fields[index].suggested.items.length > 0 ? (
-                          fields[index].suggested.items?.map((suggest: string) => {
+                        {field.suggested.items.length > 0 ? (
+                          field.suggested.items.map((suggest: string) => {
                             return (
                               <MenuItem
                                 key={suggest}
@@ -120,7 +122,7 @@ function ReceiptField<T extends ZodType<any, any, any>>({
         <HStack maxWidth="40%">
           <Controller
             control={control}
-            name={`receipts.${index}.quantity`}
+            name={`receipts.${index}.quantity` as FieldPath<z.infer<T>>}
             render={({ field: { onChange, ...fieldProps } }) => (
               <VStack alignItems="start">
                 <Text color="blackAlpha.600" fontWeight="semibold">
@@ -134,8 +136,13 @@ function ReceiptField<T extends ZodType<any, any, any>>({
                   borderRadius="md"
                   color="blackAlpha.800"
                   fontWeight="semibold"
+                  value={watch(`receipts.${index}.quantity` as Path<z.infer<T>>)}
                 >
-                  <NumberInputField {...fieldProps} fontSize="lg" />
+                  <NumberInputField
+                    {...fieldProps}
+                    fontSize="lg"
+                    value={watch(`receipts.${index}.quantity` as Path<z.infer<T>>)}
+                  />
                   <NumberInputStepper>
                     <NumberIncrementStepper border="none" />
                     <NumberDecrementStepper border="none" />
@@ -146,7 +153,7 @@ function ReceiptField<T extends ZodType<any, any, any>>({
           />
           <Controller
             control={control}
-            name={`receipts.${index}.price`}
+            name={`receipts.${index}.price` as FieldPath<z.infer<T>>}
             render={({ field: { onChange, ...fieldProps } }) => (
               <VStack alignItems="start">
                 <Text color="blackAlpha.600" fontWeight="semibold">
@@ -162,8 +169,13 @@ function ReceiptField<T extends ZodType<any, any, any>>({
                   color="blackAlpha.800"
                   fontWeight="semibold"
                   {...fieldProps}
+                  value={watch(`receipts.${index}.price` as Path<z.infer<T>>)}
                 >
-                  <NumberInputField {...fieldProps} fontSize="lg" />
+                  <NumberInputField
+                    {...fieldProps}
+                    fontSize="lg"
+                    value={watch(`receipts.${index}.price` as Path<z.infer<T>>)}
+                  />
                   <NumberInputStepper>
                     <NumberIncrementStepper border="none" />
                     <NumberDecrementStepper border="none" />
@@ -177,7 +189,7 @@ function ReceiptField<T extends ZodType<any, any, any>>({
 
       <VStack justifyContent="space-between" alignItems="flex-end" alignSelf="stretch" gap={6}>
         <Text marginLeft="auto" justifySelf="end" fontSize="lg" fontWeight="semibold" color="blackAlpha.900">
-          ${(parseFloat(fields[index].price) * parseFloat(fields[index].quantity)).toFixed(2) || 0}
+          ${(parseFloat(field.price) * parseFloat(field.quantity)).toFixed(2) || 0}
           <Text as="span" color="blackAlpha.600">
             /total
           </Text>
@@ -199,9 +211,11 @@ function ReceiptField<T extends ZodType<any, any, any>>({
             borderRadius="lg"
             color="teal.600"
             backgroundColor="teal.50"
-            icon={fields[index].suggested.display ? <X /> : <PenLine />}
-            onClick={() => {
-              update();
+            icon={field.suggested.display ? <X /> : <PenLine />}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              update(watch, index);
             }}
             size="md"
           />
