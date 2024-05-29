@@ -74,3 +74,15 @@ export async function classifyIngredient() {
     }
     return outputs
 }
+
+export async function findIngredients(query: string) {
+    return await Ingredients.find(
+        {
+            $or: [
+                { originalName: { $regex: query.toLowerCase().trim(), $options: "i" } },
+                { original: { $regex: query.toLowerCase().trim(), $options: "i" } },
+                { name: { $regex: query.toLowerCase().trim(), $options: "i" } }
+            ]
+        }
+    )
+}

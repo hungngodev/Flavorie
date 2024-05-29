@@ -58,7 +58,6 @@ const Login: React.FC = () => {
       const LoginRequest = await customFetch.post('/auth/login', checkUser, {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       });
-      console.dir(LoginRequest);
       if (LoginRequest.status === 200) {
         toast.success('You have successfully logged in !'), { position: 'top-right', icon: <CiCircleCheck /> };
         setUserNotFounded(false);

@@ -77,6 +77,7 @@ export const baseCall = async (url: string, query: Record<string, any>, devAPIke
 
     } catch (error) {
         if (error instanceof AxiosError) {
+            console.log(error);
             throw new NotFoundError(`Error: ${error.response?.data}`);
         }
         else {
