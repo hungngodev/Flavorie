@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   ButtonGroup,
   Card,
@@ -11,6 +12,9 @@ import {
   Text,
 } from '@chakra-ui/react';
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useAuth } from '../../hooks';
 
 interface ImageCardProps {
   imageProps: {
@@ -24,10 +28,17 @@ interface ImageCardProps {
 }
 
 const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
-  const handleSeeMore = () => {
-    window.open(imageProps.infoLink, '_blank');
+  // const handleSeeMore = () => {
+  //   window.open(imageProps.infoLink, '_blank');
+  // };
+  const { currentUser } = useAuth();
+  const handleLike = () => {
+    if (currentUser.status === 'authenticated') {
+      toast.success('Liked');
+    } else {
+      toast.error('Please login to like');
+    }
   };
-
   return (
     <Card maxW="sm" boxShadow="md" borderRadius="md" variant={'outline'}>
       <CardBody>
@@ -39,10 +50,14 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
           objectFit="cover"
         />
         <Stack mt="2" spacing="1">
-          <Heading size="lg" fontSize="23" fontWeight="bold">
-            {imageProps.title}
-          </Heading>
-          <Text w="full">{imageProps.description}</Text>
+          <Box height={'82px'}>
+            <Heading size="lg" fontSize="23" fontWeight="bold">
+              {imageProps.title}
+            </Heading>
+          </Box>
+          <Box height={'60px'}>
+            <Text w="full">{imageProps.description.replace(/<\/[^>]+(>|$)/g, '')}</Text>
+          </Box>
           {/* <Text color="blue.350" fontSize="28">
             {imageProps.price}
           </Text> */}
@@ -51,10 +66,12 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
       <Divider borderColor="base.200" />
       <CardFooter>
         <ButtonGroup>
-          <Button variant="solid" colorScheme="blue" fontWeight="bold" onClick={handleSeeMore}>
-            See more
-          </Button>
-          <Button variant="outline" colorScheme="blue" fontWeight="bold">
+          <Link to={imageProps.infoLink}>
+            <Button variant="solid" colorScheme="blue" fontWeight="bold">
+              See more
+            </Button>
+          </Link>
+          <Button variant="outline" colorScheme="blue" fontWeight="bold" onClick={handleLike}>
             Like
           </Button>
         </ButtonGroup>

@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import User from "../models/UserModel.ts";
+import { NotFoundError } from "../errors/customErrors.ts";
+import UserModel from "../models/UserModel.ts";
 import { authenticateCheck, createUser } from "../services/userServices.ts";
+import { createJWT } from "../utils/tokenUtils.ts";
 
 
 function createCookie(token: string, res: Response) {
@@ -10,24 +12,32 @@ function createCookie(token: string, res: Response) {
   res.cookie("token", token, {
     httpOnly: true,
     expires: new Date(Date.now() + oneDay),
-    secure: process.env.NODE_ENV === "production",
+    secure: true,
   });
 }
+
+export const checkAuth = async (req: Request, res: Response) => {
+  if (!req.user) { res.status(StatusCodes.OK).send({ msg: 'Unauthorized' }); return; }
+  const user = await UserModel.findById(req.user.userId);
+  if (user) {
+    res.status(StatusCodes.OK).send({ user });
+  } else {
+    throw new NotFoundError('User not found');
+  }
+};
+
 export const register = async (req: Request, res: Response) => {
-  const isFirstAccount = (await User.countDocuments()) === 0;
+  const isFirstAccount = (await UserModel.countDocuments()) === 0;
   (req.body as any).role = "user";
-
-  const token = await createUser(req.body);
-  const oneDay = 1000 * 60 * 60 * 24;
-
+  const userId = await createUser(req.body);
+  const token = createJWT({ userId, role: "user" });
   createCookie(token, res);
   res.status(StatusCodes.CREATED).json({ msg: "user created" });
 };
+
 export const login = async (req: Request, res: Response) => {
-  const token = await authenticateCheck(req.body);
-
-  const oneDay = 1000 * 60 * 60 * 24;
-
+  const userId = await authenticateCheck(req.body);
+  const token = createJWT({ userId, role: "user" });
   createCookie(token, res);
   res.status(StatusCodes.OK).json({ msg: "user logged in" });
 };

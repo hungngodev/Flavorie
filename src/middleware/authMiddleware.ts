@@ -1,10 +1,10 @@
+import { NextFunction, Request, Response } from 'express';
 import {
+    BadRequestError,
     UnauthenticatedError,
     UnauthorizedError,
-    BadRequestError,
 } from '../errors/customErrors.js';
 import { verifyJWT } from '../utils/tokenUtils.js';
-import { Request, Response, NextFunction } from 'express';
 
 declare global {
     namespace Express {
@@ -24,7 +24,6 @@ export const authenticateUser = (req: Request, res: Response, next: NextFunction
 
     try {
         const { userId, role, ...res } = verifyJWT(token);
-        console.log(userId, role, res);
         const testUser = userId === '64b2c07ccac2efc972ab0eca';
         req.user = { userId, role, testUser };
         next();
@@ -35,7 +34,7 @@ export const authenticateUser = (req: Request, res: Response, next: NextFunction
 
 export const checkUser = (req: Request, res: Response, next: NextFunction) => {
     const { token } = req.cookies;
-    if (!token) {
+    if (token) {
         try {
             const { userId, role, ...res } = verifyJWT(token);
             const testUser = userId === '64b2c07ccac2efc972ab0eca';

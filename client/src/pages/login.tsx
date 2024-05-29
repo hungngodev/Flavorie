@@ -31,7 +31,6 @@ interface APIData {
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const auth = useAuth();
-
   useEffect(() => {
     if (auth.currentUser.status === 'authenticated') {
       toast.warn('You are already logged in!', { position: 'top-right', icon: <RiUserFollowLine /> });
@@ -65,10 +64,15 @@ const Login: React.FC = () => {
         navigate('/');
       }
     } catch (error) {
-      if (error instanceof AxiosError && error.response && error.response.status === 404) {
-        toast.error('Make sure your email and password is correct!', { position: 'top-right', icon: <FaUserXmark /> });
+      if (error instanceof AxiosError && error.response) {
+        toast.error(`Make sure your email and password is correct!: ${error.response.statusText} `, {
+          position: 'top-right',
+          icon: <FaUserXmark />,
+        });
         setUserNotFounded(true);
       }
+      console.dir(error);
+
       return;
     }
   };

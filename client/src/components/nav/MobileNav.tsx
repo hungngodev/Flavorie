@@ -12,6 +12,7 @@ import {
   useColorModeValue,
   useDisclosure,
 } from '@chakra-ui/react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks';
 import { NavItem } from './NavBar';
 
@@ -57,23 +58,20 @@ export const MobileNav = ({ NavItems }: { NavItems: NavItem[] }) => {
             {auth.currentUser.status !== 'authenticated' ? (
               <>
                 <Button
-                  as={'a'}
                   display={{ base: 'inline-flex' }}
                   fontSize={'sm'}
                   fontWeight={600}
                   color={'white'}
                   bg={'pink.400'}
-                  href={'/login'}
                   _hover={{
                     bg: 'pink.300',
                   }}
                 >
-                  Sign In
+                  <Link to="/login">Log In</Link>
                 </Button>
               </>
             ) : (
               <Button
-                as={'a'}
                 display={{ base: 'inline-flex' }}
                 fontSize={'sm'}
                 fontWeight={600}
@@ -108,26 +106,26 @@ export const MobileNavItem = ({ label, children, href }: NavItem) => {
     <Stack spacing={4} onClick={children && onToggle}>
       <Box
         py={2}
-        as="a"
-        href={href ?? '#'}
         justifyContent="space-between"
         alignItems="center"
         _hover={{
           textDecoration: 'none',
         }}
       >
-        <Text fontWeight={600} color={useColorModeValue('gray.600', 'gray.200')}>
-          {label}
-        </Text>
-        {children && (
-          <Icon
-            as={ChevronDownIcon}
-            transition={'all .25s ease-in-out'}
-            transform={isOpen ? 'rotate(180deg)' : ''}
-            w={6}
-            h={6}
-          />
-        )}
+        <Link to={href ?? '#'}>
+          <Text fontWeight={600} color={useColorModeValue('gray.600', 'gray.200')}>
+            {label}
+          </Text>
+          {children && (
+            <Icon
+              as={ChevronDownIcon}
+              transition={'all .25s ease-in-out'}
+              transform={isOpen ? 'rotate(180deg)' : ''}
+              w={6}
+              h={6}
+            />
+          )}
+        </Link>
       </Box>
 
       <Collapse in={isOpen} animateOpacity style={{ marginTop: '0!important' }}>

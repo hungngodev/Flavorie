@@ -8,8 +8,6 @@ import {
 export const MainCategories: mainCategoryType[] = [
   "Beef",
   "Chicken",
-  "Dessert",
-  "Goat",
   "Lamb",
   "Pasta",
   "Pork",
