@@ -10,6 +10,7 @@ const HomeLayout: React.FC = () => {
     <main>
       <AuthProvider>
         <Navbar />
+        
         <Box as={'section'} width="100%" height="90vh">
           <Outlet />
         </Box>

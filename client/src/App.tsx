@@ -5,14 +5,7 @@ import HomeLayout from './layouts/HomeLayout.tsx';
 import { Ingredient, Login, Main, Meal, Register } from './pages/index';
 import theme from './style/theme';
 import ReceiptScan from './pages/ReceiptScan.tsx';
-import {io} from 'socket.io-client'
-
-const socket = io('http://localhost:5100', {
-  withCredentials: true
-})
-socket.on('connect', () => {
-  console.log('Socket is connected')
-})
+import NotificationPage from './pages/NotificationPage.tsx';
 
 
 // const { Button } = chakraTheme.components;
@@ -65,6 +58,10 @@ const router = createBrowserRouter([
       {
         path: 'upload-receipts',
         element: <ReceiptScan />
+      },
+      {
+        path: 'notifications', 
+        element: <NotificationPage />
       }
     ],
   },

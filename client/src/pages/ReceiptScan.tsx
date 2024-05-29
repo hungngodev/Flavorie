@@ -13,8 +13,8 @@ const ReceiptScan: React.FC = () => {
         <div>
             <h1>Welcome, {currentUser.username}</h1>
             <UploadReceiptForm /> 
-            <ToastContainer />
-            <NotificationHeader />
+            {/* <ToastContainer /> */}
+            {/* <NotificationHeader /> */}
         </div>
     );
 };

@@ -1,6 +1,8 @@
 import { Box, useBreakpointValue, useColorModeValue } from '@chakra-ui/react';
 import { DesktopNav } from './DesktopNav';
 import { MobileNav } from './MobileNav';
+import useAuth from '../../hooks/useAuth';
+import NotificationHeader from '../notifications/NotificationHeader';
 export interface NavItem {
   label: string;
   subLabel?: string;
@@ -37,6 +39,10 @@ const NAV_ITEMS: Array<NavItem> = [
     label: 'Upload Receipts',
     href: '/upload-receipts'
   }
+  // {
+  //   label: 'Notifications',
+  //   href: '/notifications'
+  // }
   
 ];
 
@@ -45,6 +51,8 @@ export default function NavBar() {
     base: <MobileNav NavItems={NAV_ITEMS} />,
     md: <DesktopNav NavItems={NAV_ITEMS} />,
   });
+
+  const auth = useAuth()
   return (
     <Box
       position="sticky"
