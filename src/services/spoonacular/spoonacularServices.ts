@@ -2,6 +2,7 @@ import axios, { AxiosError } from 'axios';
 import { NotFoundError, ServerError } from '../../errors/customErrors.ts';
 import ApiTrack from '../../models/ApiTrack.ts';
 import Ingredients from '../../models/IngredientModel.ts';
+import qs from 'qs';
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -12,6 +13,7 @@ export const EndPoint = {
     FIND_INGREDIENTS_BY_ID: (id: string) => `/food/ingredients/${id}/information`,
     RANDOM_RECIPES: '/recipes/random',
     FIND_RECIPES_ID: (id: string) => `/recipes/${id}/information`,
+    ANALYZE_INSTRUCTIONS: "/recipes/analyzeInstructions"
 }
 
 const baseURL = axios.create(
@@ -30,7 +32,7 @@ const arrKey = [
     process.env.spoonacular_API_KEY_7,
 ];
 
-export const baseCall = async (url: string, query: Record<string, any>, devAPIkey?: string) => {
+export const baseCall = async (url: string, query: Record<string, any>, method = 'get', data?: Record<string, any>) => {
     let SpoonacularTrack = await ApiTrack.findOne({ serviceName: 'Spoonacular' });
     if (!SpoonacularTrack) {
         SpoonacularTrack = new ApiTrack({ serviceName: 'Spoonacular', usageCount: 0, currentKey: 0, callPerMin: 0, updatedAt: new Date(), lastMinute: new Date() });
@@ -72,9 +74,19 @@ export const baseCall = async (url: string, query: Record<string, any>, devAPIke
             number: '100',
             ...query,
         });
-        const response = await baseURL.get(url, { params });
-        return response.data;
-
+        if (method === 'get') {
+            const response = await baseURL.get(url, { params });
+            return response.data;
+        }
+        if (method === 'post') {
+            const response = await baseURL.post(url, qs.stringify(data), {
+                params, headers:
+                {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                }
+            });
+            return response.data;
+        }
     } catch (error) {
         if (error instanceof AxiosError) {
             console.log(error);
@@ -125,11 +137,11 @@ export const getRandomMealsAPI = async (includeTags?: string, excludeTags?: stri
 
 export const getMealByIdAPI = async (id: string) => {
     return await baseCall(EndPoint.FIND_RECIPES_ID(id), {
-        includeNutrition: 'true',
         addTasteData: 'true',
+        includeNutrition: 'true',
     });
-
 }
+
 
 export const findIngredientById = async (cagetory: string, id: Number) => {
     const find = await Ingredients.findOne({ id: id });
@@ -142,7 +154,14 @@ export const findIngredientById = async (cagetory: string, id: Number) => {
         await newIngredient.save();
         return newIngredient;
     }
+}
 
+export const analyzeInstruction = async (instructions: string) => {
+    return await baseCall(EndPoint.ANALYZE_INSTRUCTIONS, {},
+        'post', {
+        instructions: instructions,
+    }
+    );
 }
 interface DietDefinition {
     name: string;

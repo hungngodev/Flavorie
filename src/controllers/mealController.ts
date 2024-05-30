@@ -1,3 +1,4 @@
+import { createMeal } from '../services/mealServices.ts';
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { ServerError } from "../errors/customErrors.ts";
@@ -10,7 +11,6 @@ import {
   getRandomMeal,
 } from "../services/themealdb/themealdbServices.ts";
 import { getRandomKey } from "../services/themealdb/utils.ts";
-import MealModel from "../models/MealModel.ts";
 
 
 type theMealDB = {
@@ -33,15 +33,20 @@ export const getRandomMealsUnauthenticated = async (
     const dessertRange = dessertSize ? parseInt(dessertSize.toString()) : 15;
 
     const uniqueCheck = new Set<string>([]);
-    function processingMeals(meal: theMealDB) {
-      return {
-        id: meal.idMeal,
-        title: meal.strMeal,
-        image: meal.strMealThumb,
-        category: meal.strCategory + " " + meal.strArea,
-        description: meal.strInstructions,
-        source: 'themealdb',
-      }
+    async function processingMeals(meals: theMealDB[]) {
+      const results = await Promise.all(meals.map(async (meal) => {
+        const _id = await createMeal(meal, 'themealdb');
+        return {
+          _id,
+          id: meal.idMeal,
+          title: meal.strMeal,
+          image: meal.strMealThumb,
+          category: meal.strCategory + " " + meal.strArea,
+          description: meal.strInstructions,
+          source: 'themealdb',
+        }
+      }))
+      return results;
     }
     const randomMeals = [];
     const suggestedMeals = [];
@@ -72,11 +77,11 @@ export const getRandomMealsUnauthenticated = async (
       }
     }
     const mealsReturn = {
-      randomMeals: randomMeals.map(processingMeals),
-      mainMeals: mainMeals.map(processingMeals),
-      sideMeals: sideMeals.map(processingMeals),
-      dessertMeals: dessertMeals.map(processingMeals),
-      suggestedMeals: suggestedMeals.map(processingMeals),
+      randomMeals: await processingMeals(randomMeals),
+      sideMeals: await processingMeals(sideMeals),
+      mainMeals: await processingMeals(mainMeals),
+      dessertMeals: await processingMeals(dessertMeals),
+      suggestedMeals: await processingMeals(suggestedMeals),
     }
     return res.json(mealsReturn).status(StatusCodes.OK);
   } catch (error) {
@@ -102,17 +107,20 @@ export const getRanDomMealsAuthenticated = async (
 
     const queryAllergy = allergy.reduce((acc: string, curr: string) => `${acc},${curr}`, "");
     const queryDiet = diet.reduce((acc: string, curr: string) => `${acc},${curr}`, "");
-    async function processingMeals(meal: spoonacularDB) {
-      const foundInredients = await MealModel.findOne({ id: meal.id });
-      return {
-        _id: foundInredients?._id,
-        id: meal.id,
-        title: meal.title,
-        image: meal.image,
-        category: meal.occasions.join(",") + " " + meal.cuisines.join(","),
-        description: meal.summary,
-        source: 'spoonacular',
-      }
+    async function processingMeals(meals: spoonacularDB[]) {
+      const results = await Promise.all(meals.map(async (meal) => {
+        const _id = await createMeal(meal, 'themealdb');
+        return {
+          id: meal.id,
+          title: meal.title,
+          image: meal.image,
+          category: meal.occasions.join(",") + " " + meal.cuisines.join(","),
+          description: meal.summary,
+          source: 'spoonacular',
+        }
+      }))
+      return results;
+
     }
     const randomMeals = await getRandomMealsAPI(
       queryDiet,
@@ -126,17 +134,18 @@ export const getRanDomMealsAuthenticated = async (
     const dessertMeals = await getRandomMealsAPI(
       queryDiet + ",dessert",
       queryAllergy, 15);
-    const suggestedMeals = await getAllMealsByIngredientsAPI(
+    const suggestedMeals = leftOver.length !== 0 ? await getAllMealsByIngredientsAPI(
       leftOver.map((item: Ingredient) => item.name).join(","),
       20,
-    )
-
+    ) : {
+      recipes: []
+    };
     const mealsReturn = {
-      randomMeals: await Promise.all(randomMeals.recipes.map(processingMeals)),
-      mainMeals: await Promise.all(mainMeals.recipes.map(processingMeals)),
-      sideMeals: await Promise.all(sideMeals.recipes.map(processingMeals)),
-      dessertMeals: await Promise.all(dessertMeals.recipes.map(processingMeals)),
-      suggestedMeals: await Promise.all(suggestedMeals.recipes.map(processingMeals)),
+      randomMeals: await processingMeals(randomMeals),
+      sideMeals: await processingMeals(sideMeals),
+      mainMeals: await processingMeals(mainMeals),
+      dessertMeals: await processingMeals(dessertMeals),
+      suggestedMeals: await processingMeals(suggestedMeals),
     }
     //adding more meals of SPOONACULAR API
     return res.json(mealsReturn).status(StatusCodes.OK);
@@ -146,6 +155,7 @@ export const getRanDomMealsAuthenticated = async (
 };
 
 export const getAllMeals = async (req: Request, res: Response) => {
+
   if (req.user) {
     return getRanDomMealsAuthenticated(req, res);
   }

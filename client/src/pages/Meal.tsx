@@ -44,7 +44,7 @@ function Meal() {
   const { data: queryData, status } = useQuery(allMealsQuery(''));
   const mealData = queryData?.data;
   return (
-    <Flex flexDir={'column'} width={'100%'} height={'100%'} gap={2}>
+    <Flex flexDir={'column'} width={'100%'} height={'100%'}>
       <Specialty />
       <SearchBar />
       {status === 'pending' ? (
