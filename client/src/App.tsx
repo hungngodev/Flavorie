@@ -6,6 +6,7 @@ import { Ingredient, Login, Main, Meal, Register } from './pages/index';
 import theme from './style/theme';
 import IndividualMeal from './pages/Recipe.tsx';
 import { Dish } from '@/components/meals/ImageSlide'
+import PersonalDashboard from './pages/User.tsx';
 
 // const { Button } = chakraTheme.components;
 
@@ -106,11 +107,54 @@ const IndividualMealWrapper = () => {
   );
 };
 
+const PersonalDashboardWrapper = () => {
+  const userInfo = {
+    avatar: {
+            src: "../public/images/1989-Taylors-Version.webp",
+            username: "Taylor Swift",
+        },
+        email: "taylorswift@gmail.com",
+        phone: "+1 (202) 444 1989",
+        address: {
+            city: "Nashville",
+            state: "Tennessee",
+            country: "USA",
+            zipcode: "37208",
+        },
+  };
+
+  const recentMeals = [
+    { name: 'Bun bo', date: '04/28/2024' },
+    { name: 'Spring roll', date: '05/20/2024' },
+    { name: 'Grilled Cheese Sandwich', date: '05/30/2024' },
+  ];
+
+  const dashboardProps = {
+    info: userInfo,
+    totalMeals: '12',
+    points: '8',
+    tags: 'Lactose, Gym, Lunch',
+    reviewsGiven: '4',
+    recipesShared: '2',
+    caloriesConsumed: '5100',
+    badgesEarned: 'Daily Devotee',
+    recentMeals: recentMeals,
+    protein: '100g',
+    vitamins: 'A, B3, D',
+    carb: '150g',
+    fat: '60g',
+    minerals: 'Calcium, Ion',
+  };
+
+  return <PersonalDashboard {...dashboardProps} />;
+}
+
 function App() {
   return (
     <ChakraBaseProvider theme={extendTheme(theme)}>
-      <IndividualMealWrapper />
+      {/* <IndividualMealWrapper /> */}
       {/* <ImageScan /> */}
+      <PersonalDashboardWrapper />
       {/* <RouterProvider router={router} /> */}
       <ToastContainer autoClose={5000} limit={3} transition={Slide} />
     </ChakraBaseProvider>
