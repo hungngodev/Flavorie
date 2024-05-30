@@ -122,8 +122,11 @@ export const getRanDomMealsAuthenticated = async (
   try {
     const { allergy, diet, leftOver } = req.body;
 
+    const { search } = req.query;
     const queryAllergy = allergy.reduce((acc: string, curr: string) => `${acc},${curr}`, "");
     const queryDiet = diet.reduce((acc: string, curr: string) => `${acc},${curr}`, "");
+
+
     async function processingMeals(meals: spoonacularDB[]) {
       const results = await Promise.all(meals.map(async (meal) => {
         const _id = await createMeal(meal, 'themealdb');
