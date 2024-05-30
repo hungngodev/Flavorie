@@ -1,11 +1,9 @@
 import axios, { AxiosError } from 'axios';
-import { ServerError, NotFoundError } from '../../errors/customErrors.ts';
-import Ingredients from '../../models/IngredientsModel.ts';
+import { NotFoundError, ServerError } from '../../errors/customErrors.ts';
 import ApiTrack from '../../models/ApiTrack.ts';
+import Ingredients from '../../models/IngredientModel.ts';
 
 import dotenv from 'dotenv';
-import { number } from 'zod';
-import e from 'express';
 dotenv.config();
 
 export const EndPoint = {
@@ -79,6 +77,7 @@ export const baseCall = async (url: string, query: Record<string, any>, devAPIke
 
     } catch (error) {
         if (error instanceof AxiosError) {
+            console.log(error);
             throw new NotFoundError(`Error: ${error.response?.data}`);
         }
         else {
@@ -87,12 +86,12 @@ export const baseCall = async (url: string, query: Record<string, any>, devAPIke
     }
 }
 
-export const getAllIngredientsAPI = async (allergy: string[], diet: string[], query: string) => {
+export const getAllIngredientsAPI = async (allergy: string[], diet: string[], query: string, number: number) => {
 
     return await baseCall(EndPoint.FIND_INGREDIENTS,
         {
             query: query,
-            number: '100',
+            number: number.toString(),
             addChildren: 'true',
         }
     );
@@ -106,22 +105,30 @@ export const getIngredientByIdAPI = async (id: string) => {
     });
 }
 
-export const getAllMealsAPI = async (ingredients: string[]) => {
+export const getAllMealsByIngredientsAPI = async (ingredients: string, number: number) => {
     //add more fields like allergy, diet, etc
     return await baseCall(EndPoint.FIND_RECIPES_BY_INGREDIENTS, {
-        ingredients: ingredients.join(','),
-        number: '100',
+        ingredients: ingredients,
+        number: number.toString(),
         ranking: '1',
         ignorePantry: 'true',
     });
 }
 
-export const getRandomMealsAPI = async (includeTags?: string, excludeTags?: string) => {
+export const getRandomMealsAPI = async (includeTags?: string, excludeTags?: string, number?: number) => {
     return await baseCall(EndPoint.RANDOM_RECIPES, {
-        number: '30',
+        number: number?.toString(),
         tags: includeTags,
         "exclude-tags": excludeTags,
     });
+}
+
+export const getMealByIdAPI = async (id: string) => {
+    return await baseCall(EndPoint.FIND_RECIPES_ID(id), {
+        includeNutrition: 'true',
+        addTasteData: 'true',
+    });
+
 }
 
 export const findIngredientById = async (cagetory: string, id: Number) => {

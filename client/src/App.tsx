@@ -1,19 +1,23 @@
 import { ChakraBaseProvider, extendTheme } from '@chakra-ui/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
 import HomeLayout from './layouts/HomeLayout.tsx';
-import { Ingredient, Login, Main, Meal, Register } from './pages/index';
+import { loader as ingredientsLoader } from './pages/Ingredient.tsx';
+import { loader as mealsLoader } from './pages/Meal.tsx';
+import { Ingredient, Login, Main, Meal, Register, User } from './pages/index';
 import theme from './style/theme';
 import IndividualMeal from './pages/Recipe.tsx';
 import { Dish } from '@/components/meals/ImageSlide'
 
-// const { Button } = chakraTheme.components;
-
-// const theme = extendBaseTheme({
-//   components: {
-//     Button,
-//   },
-// });
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5,
+    },
+  },
+});
 
 const router = createBrowserRouter([
   {
@@ -38,21 +42,36 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <Ingredient />,
+            element: <div>HIHIH</div>,
           },
           {
             path: ':category',
             element: <Ingredient />,
+            loader: ingredientsLoader(queryClient),
           },
         ],
       },
       {
         path: 'meals',
-        element: <Meal />,
+        children: [
+          {
+            index: true,
+            element: <Meal />,
+            loader: mealsLoader(queryClient),
+          },
+          {
+            path: ':mealId',
+            element: <div>Meal</div>,
+          },
+        ],
       },
       {
         path: 'community',
         element: <div>Community</div>,
+      },
+      {
+        path: 'profile',
+        element: <User />,
       },
     ],
   },
@@ -109,10 +128,13 @@ const IndividualMealWrapper = () => {
 function App() {
   return (
     <ChakraBaseProvider theme={extendTheme(theme)}>
-      <IndividualMealWrapper />
+      <QueryClientProvider client={queryClient}>
+      {/* <IndividualMealWrapper /> */}
       {/* <ImageScan /> */}
-      {/* <RouterProvider router={router} /> */}
-      <ToastContainer autoClose={5000} limit={3} transition={Slide} />
+        <RouterProvider router={router} />
+        <ToastContainer autoClose={5000} limit={3} transition={Slide} />
+        <ReactQueryDevtools />
+      </QueryClientProvider>
     </ChakraBaseProvider>
   );
 }
