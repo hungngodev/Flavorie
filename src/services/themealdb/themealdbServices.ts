@@ -16,6 +16,7 @@ export const Endpoint = {
   SINGLE_RANDOM: "/random.php",
   FILTER: "/filter.php",
   ID: (id: string) => `/lookup.php?i=${id}`,
+  SEARCH: (name: string) => `/search.php?s=${name}`,
 };
 
 const baseFetch = axios.create({
@@ -90,5 +91,14 @@ export const getMealById = async (id: string) => {
     return mealRequest.data.meals[0];
   } catch (error) {
     throw new ServerError("API call for meal by id error");
+  }
+}
+
+export const getMealByName = async (name: string) => {
+  try {
+    const mealRequest = await baseFetch.get(Endpoint.SEARCH(name));
+    return mealRequest.data.meals[0];
+  } catch (error) {
+    throw new ServerError("API call for meal by name error");
   }
 }

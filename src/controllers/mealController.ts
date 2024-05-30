@@ -10,6 +10,7 @@ import {
   getMealByFilter,
   getMealById,
   getRandomMeal,
+  getMealByName
 } from "../services/themealdb/themealdbServices.ts";
 import { getRandomKey } from "../services/themealdb/utils.ts";
 import MealModel from '../models/MealModel.ts';
@@ -28,64 +29,78 @@ export const getRandomMealsUnauthenticated = async (
   res: Response,
 ) => {
   try {
-    const { size, mainSize, sideSize, dessertSize, ingredients } = req.query;
+    const { size, mainSize, sideSize, dessertSize, ingredients, search } = req.query;
     const queryRange = size ? parseInt(size.toString()) : 30;
     const mainRange = mainSize ? parseInt(mainSize.toString()) : 30;
     const sideRange = sideSize ? parseInt(sideSize.toString()) : 15;
     const dessertRange = dessertSize ? parseInt(dessertSize.toString()) : 15;
 
-    const uniqueCheck = new Set<string>([]);
-    async function processingMeals(meals: theMealDB[]) {
-      const results = await Promise.all(meals.map(async (meal) => {
-        const _id = await createMeal(meal, 'themealdb');
-        return {
-          _id: _id.toString(),
-          id: meal.idMeal,
-          title: meal.strMeal,
-          image: meal.strMealThumb,
-          category: meal.strCategory + " " + meal.strArea,
-          description: meal.strInstructions,
-          source: 'themealdb',
+    if (search) {
+      const nameResult = await getMealByName(search.toString());
+      const areaResult = await getMealByFilter("area", search.toString(), queryRange);
+      const categoryResult = await getMealByFilter("category", search.toString(), queryRange);
+      const ingredientResult = await getMealByFilter("ingredient", search.toString(), queryRange);
+      const mealReturns: any = {};
+      nameResult ? mealReturns.relevant = nameResult : null;
+      areaResult ? mealReturns.area = areaResult : null;
+      categoryResult ? mealReturns.category = categoryResult : null;
+      ingredientResult ? mealReturns.ingredient = ingredientResult : null;
+      return res.json(mealReturns).status(StatusCodes.OK);
+    }
+    else {
+      const uniqueCheck = new Set<string>([]);
+      async function processingMeals(meals: theMealDB[]) {
+        const results = await Promise.all(meals.map(async (meal) => {
+          const _id = await createMeal(meal, 'themealdb');
+          return {
+            _id: _id.toString(),
+            id: meal.idMeal,
+            title: meal.strMeal,
+            image: meal.strMealThumb,
+            category: meal.strCategory + " " + meal.strArea,
+            description: meal.strInstructions,
+            source: 'themealdb',
+          }
+        }))
+        return results;
+      }
+      const randomMeals = [];
+      const suggestedMeals = [];
+      for (let i = 0; i < queryRange; i++) {
+        let randomMeal = await getRandomMeal();
+        // check for duplicate meals
+        while (randomMeal.strMeal && uniqueCheck.has(randomMeal.strMeal)) {
+          randomMeal = await getRandomMeal();
         }
-      }))
-      return results;
-    }
-    const randomMeals = [];
-    const suggestedMeals = [];
-    for (let i = 0; i < queryRange; i++) {
-      let randomMeal = await getRandomMeal();
-      // check for duplicate meals
-      while (randomMeal.strMeal && uniqueCheck.has(randomMeal.strMeal)) {
-        randomMeal = await getRandomMeal();
+        uniqueCheck.add(randomMeal.strMeal);
+        randomMeals.push(randomMeal);
       }
-      uniqueCheck.add(randomMeal.strMeal);
-      randomMeals.push(randomMeal);
-    }
-    const sideMeals = await getMealByFilter("category", "Side", sideRange);
-    const mainMeals = await getMealByFilter(
-      "category",
-      getRandomKey(MainCategories),
-      mainRange,
-    );
-    const dessertMeals = await getMealByFilter(
-      "category",
-      "Dessert",
-      dessertRange,
-    );
-    if (ingredients && Array.isArray(ingredients)) {
-      for (const ingredient of ingredients) {
-        const mealList = await getMealByFilter("ingredient", ingredient.toString());
-        suggestedMeals.push(mealList);
+      const sideMeals = await getMealByFilter("category", "Side", sideRange);
+      const mainMeals = await getMealByFilter(
+        "category",
+        getRandomKey(MainCategories),
+        mainRange,
+      );
+      const dessertMeals = await getMealByFilter(
+        "category",
+        "Dessert",
+        dessertRange,
+      );
+      if (ingredients && Array.isArray(ingredients)) {
+        for (const ingredient of ingredients) {
+          const mealList = await getMealByFilter("ingredient", ingredient.toString());
+          suggestedMeals.push(mealList);
+        }
       }
+      const mealsReturn = {
+        randomMeals: await processingMeals(randomMeals),
+        sideMeals: await processingMeals(sideMeals),
+        mainMeals: await processingMeals(mainMeals),
+        dessertMeals: await processingMeals(dessertMeals),
+        suggestedMeals: await processingMeals(suggestedMeals),
+      }
+      return res.json(mealsReturn).status(StatusCodes.OK);
     }
-    const mealsReturn = {
-      randomMeals: await processingMeals(randomMeals),
-      sideMeals: await processingMeals(sideMeals),
-      mainMeals: await processingMeals(mainMeals),
-      dessertMeals: await processingMeals(dessertMeals),
-      suggestedMeals: await processingMeals(suggestedMeals),
-    }
-    return res.json(mealsReturn).status(StatusCodes.OK);
   } catch (error) {
     throw new ServerError(`${error}`);
   }
@@ -215,4 +230,3 @@ export const getIndividualMeal = async (req: Request, res: Response) => {
     throw new ServerError(`${error}`);
   }
 }
-
