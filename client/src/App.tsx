@@ -4,10 +4,8 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
 import HomeLayout from './layouts/HomeLayout.tsx';
-import { loader as ingredientsLoader } from './pages/Ingredient.tsx';
-import { loader as mealsLoader } from './pages/Meal.tsx';
-import { Ingredient, Login, Main, Meal, Register, User } from './pages/index';
-import theme from './style/theme';
+import { Ingredient, Login, Main, Meal, Receipt, Register, User } from './pages/index';
+import { theme } from './style/theme';
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -70,6 +68,10 @@ const router = createBrowserRouter([
       {
         path: 'profile',
         element: <User />,
+      },
+      {
+        path: 'receipts',
+        element: <Receipt />,
       },
     ],
   },
