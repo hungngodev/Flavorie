@@ -10,6 +10,7 @@ import {
   getRandomMeal,
 } from "../services/themealdb/themealdbServices.ts";
 import { getRandomKey } from "../services/themealdb/utils.ts";
+import MealModel from "../models/MealModel.ts";
 
 
 type theMealDB = {
@@ -39,6 +40,7 @@ export const getRandomMealsUnauthenticated = async (
         image: meal.strMealThumb,
         category: meal.strCategory + " " + meal.strArea,
         description: meal.strInstructions,
+        source: 'themealdb',
       }
     }
     const randomMeals = [];
@@ -100,13 +102,16 @@ export const getRanDomMealsAuthenticated = async (
 
     const queryAllergy = allergy.reduce((acc: string, curr: string) => `${acc},${curr}`, "");
     const queryDiet = diet.reduce((acc: string, curr: string) => `${acc},${curr}`, "");
-    function processingMeals(meal: spoonacularDB) {
+    async function processingMeals(meal: spoonacularDB) {
+      const foundInredients = await MealModel.findOne({ id: meal.id });
       return {
+        _id: foundInredients?._id,
         id: meal.id,
         title: meal.title,
         image: meal.image,
         category: meal.occasions.join(",") + " " + meal.cuisines.join(","),
         description: meal.summary,
+        source: 'spoonacular',
       }
     }
     const randomMeals = await getRandomMealsAPI(
@@ -127,11 +132,11 @@ export const getRanDomMealsAuthenticated = async (
     )
 
     const mealsReturn = {
-      randomMeals: randomMeals.recipes.map(processingMeals),
-      mainMeals: mainMeals.recipes.map(processingMeals),
-      sideMeals: sideMeals.recipes.map(processingMeals),
-      dessertMeals: dessertMeals.recipes.map(processingMeals),
-      suggestedMeals: suggestedMeals.map(processingMeals),
+      randomMeals: await Promise.all(randomMeals.recipes.map(processingMeals)),
+      mainMeals: await Promise.all(mainMeals.recipes.map(processingMeals)),
+      sideMeals: await Promise.all(sideMeals.recipes.map(processingMeals)),
+      dessertMeals: await Promise.all(dessertMeals.recipes.map(processingMeals)),
+      suggestedMeals: await Promise.all(suggestedMeals.recipes.map(processingMeals)),
     }
     //adding more meals of SPOONACULAR API
     return res.json(mealsReturn).status(StatusCodes.OK);
@@ -177,3 +182,4 @@ export const getIndividualMeal = async (req: Request, res: Response) => {
   }
   return getIndividualMealUnauthenticated(req, res);
 }
+

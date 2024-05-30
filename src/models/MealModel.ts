@@ -7,7 +7,7 @@ export interface Meal extends mongoose.Document {
     allIngredients: Types.DocumentArray<Ingredient>;
     instructions: string;
     source: Source;
-    mealID: string;
+    id: string;
 }
 type MealModel = mongoose.Model<Meal>;
 const MealSchema = new mongoose.Schema<Meal, MealModel>({
@@ -23,7 +23,7 @@ const MealSchema = new mongoose.Schema<Meal, MealModel>({
         required: true
     },
     instructions: String,
-    mealID: {
+    id: {
         type: String,
         required: true
     }

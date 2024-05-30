@@ -31,6 +31,7 @@ interface APIData {
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const auth = useAuth();
+
   useEffect(() => {
     if (auth.currentUser.status === 'authenticated') {
       toast.warn('You are already logged in!', { position: 'top-right', icon: <RiUserFollowLine /> });
