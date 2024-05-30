@@ -16,19 +16,21 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { RiUserFollowLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { z } from 'zod';
 import { useAuth } from '../hooks';
 import customFetch from '../utils/customFetch';
-import {z} from "zod"
 
-const UserRegister = z.object({
-  username: z.string().min(4, { message: "Username must be at least 4 characters" }),
-  email: z.string().email({ message: "Please enter a valid email"}),
-  password: z.string().min(8, { message: "Password must be at least 8 characters" }),
-  reEnterPassword: z.string().min(8, { message: "Password must be at least 8 characters" }),
-}).refine(data => data.password === data.reEnterPassword, {
-  message: "You must re-enter your password correctly",
-  path: ["reEnterPassword"], 
-});
+const UserRegister = z
+  .object({
+    username: z.string().min(4, { message: 'Username must be at least 4 characters' }),
+    email: z.string().email({ message: 'Please enter a valid email' }),
+    password: z.string().min(8, { message: 'Password must be at least 8 characters' }),
+    reEnterPassword: z.string().min(8, { message: 'Password must be at least 8 characters' }),
+  })
+  .refine((data) => data.password === data.reEnterPassword, {
+    message: 'You must re-enter your password correctly',
+    path: ['reEnterPassword'],
+  });
 
 const RequestRegister = z.object({
   name: z.string(),
@@ -93,35 +95,17 @@ const Register: React.FC = () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <VStack spacing={4}>
               <FormControl isInvalid={errors.username || existedUserError ? true : false}>
-                <Input
-                  {...register('username')}
-                  size="lg"
-                  type="username"
-                  placeholder="Enter username"
-                  isRequired
-                />
+                <Input {...register('username')} size="lg" type="username" placeholder="Enter username" isRequired />
                 <FormErrorMessage>
                   {(errors.username && errors.username.message) || (existedUserError && 'User already existed')}
                 </FormErrorMessage>
               </FormControl>
               <FormControl isInvalid={errors.email ? true : false}>
-                <Input
-                  {...register('email')}
-                  size="lg"
-                  type="email"
-                  isRequired
-                  placeholder="Enter email"
-                />
+                <Input {...register('email')} size="lg" type="email" isRequired placeholder="Enter email" />
                 <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
               </FormControl>
               <FormControl isInvalid={errors.password ? true : false}>
-                <Input
-                  {...register('password')}
-                  size="lg"
-                  type="password"
-                  placeholder="Enter password"
-                  isRequired
-                />
+                <Input {...register('password')} size="lg" type="password" placeholder="Enter password" isRequired />
                 <FormErrorMessage>{errors.password && errors.password.message}</FormErrorMessage>
               </FormControl>
               <FormControl isInvalid={errors.reEnterPassword ? true : false}>

@@ -1,6 +1,7 @@
 {
   "include": ["src/**/*"],
   "compilerOptions": {
+    "resolveJsonModule": true,
     "lib": [
       "es2022"
     ],
