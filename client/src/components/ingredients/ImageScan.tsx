@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import Webcam from 'react-webcam';
-import { Box, Button, ButtonGroup, Flex, HStack, VStack, Text } from '@chakra-ui/react';
+import { Box, Button, ButtonGroup, Flex, HStack, Image, VStack, Text } from '@chakra-ui/react';
 
 const CustomWebcam: React.FC = () => {
     const webcamRef = useRef<Webcam>(null); 
@@ -32,7 +32,7 @@ const CustomWebcam: React.FC = () => {
     return (
         <Flex className="container" direction='column' align='center' justify='center'>
             {imgSrc ? (
-                <img src={imgSrc} alt="webcam" />
+                <Image src={imgSrc} alt="webcam"/>
             ): (
                 <Webcam 
                     height={800} 
@@ -58,11 +58,12 @@ const CustomWebcam: React.FC = () => {
                 <Button mt='3' onClick={capture} colorScheme="blue">Capture photo</Button>
             )}
             </Box>
+            {/* submission message */}
             {message && (
                 <Text color="black.500" mt={3}>
-                    {message}
+                    {message}   
                 </Text>
-            )}
+            )} 
         </Flex>
     );
 };
