@@ -6,6 +6,7 @@ import { Ingredient, Login, Main, Meal, Register } from './pages/index';
 import theme from './style/theme';
 import ReceiptScan from './pages/ReceiptScan.tsx';
 import NotificationPage from './pages/NotificationPage.tsx';
+import NotificationDetailPage from './pages/NotificationDetail.tsx';
 
 
 // const { Button } = chakraTheme.components;
@@ -62,6 +63,11 @@ const router = createBrowserRouter([
       {
         path: 'notifications', 
         element: <NotificationPage />
+      },
+      {
+        path: 'notifications/:id',
+        element: 
+        <NotificationDetailPage />
       }
     ],
   },

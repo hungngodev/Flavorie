@@ -13,6 +13,9 @@ const NotificationProvider: React.FC<NotificationContextProviderProps> = ({child
     const auth = useAuth();
     const [notifications, setNotifications] = useState<Notification[]>([])
     const [numberOfNotifications, setCntNotifications] = useState(0)
+    const [notificationDetail, setNotificationDetail] = useState<Notification | null>(null)
+    // const [unreadNotifications, setUnreadNotifications] = useState<Notification[]>([])
+
     const [isAutheticate, setIsAuthenticate] = useState(false)
     const fetchNotifications = async () => {
         try {
@@ -26,6 +29,17 @@ const NotificationProvider: React.FC<NotificationContextProviderProps> = ({child
         console.log(error)
     }
 }
+    const fetchNotificationById = async (id: string) => {
+        try {
+            const response = await axios.get(`http://localhost:5100/api/user/notifications/${id}`, {withCredentials: true})
+            console.log(response.data.currNotification)
+            setNotificationDetail(response.data.currNotification)
+        } catch (error) {
+            toast.error('Cannot find notification')
+            console.log(error)
+        }
+    }
+
 useEffect(() => {
     if (auth.currentUser.status === 'authenticated'){
         console.log(auth.currentUser.status)
@@ -53,11 +67,16 @@ useEffect(() => {
             setNotifications(allNotifications);
         });
 
+        // socket?.on('displayUnreadNotifications', (allUnreadNotifications: Notification[]) => {
+        //     setUnreadNotifications(allUnreadNotifications)
+        // })
+
         return () => {
             socket.off('updateNotificationRead')
             socket.off('updateNotificationDelete')
             socket.off('countNotification')
             socket.off('displayNotifications')
+            // socket.off('displayUnreadNotifications')
         }
     } 
     else if (auth.currentUser.status === 'unauthenticated'){
@@ -65,6 +84,7 @@ useEffect(() => {
         setIsAuthenticate(false)
 
         setNotifications([]);
+        // setUnreadNotifications([])
         setCntNotifications(0);
         toast.warn('Please log in to view notifications');
     }
@@ -78,8 +98,9 @@ const deleteNotification = (notificationId: string) => {
     socket?.emit('deleteNotification', notificationId);
 };
 
+
 return (
-    <NotificationContext.Provider value={{notifications, numberOfNotifications, markAsRead, fetchNotifications, deleteNotification}}>
+    <NotificationContext.Provider value={{notifications, numberOfNotifications, markAsRead, fetchNotifications, deleteNotification, fetchNotificationById, notificationDetail}}>
         {children}
     </NotificationContext.Provider>
 )

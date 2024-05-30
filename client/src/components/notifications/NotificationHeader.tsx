@@ -2,26 +2,24 @@ import useNotification from "../../hooks/useNotification";
 import  useAuth  from "../../hooks/useAuth.tsx";
 import { useState, useEffect } from "react";
 import { Notification } from "../../contexts/NotificationContext.tsx";
-import { Badge, Button } from "@chakra-ui/react";
+import { Badge, Box, Button, Flex, Text, Heading, VStack, IconButton, Menu, MenuButton, MenuList, Link } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
+import { DeleteIcon } from "@chakra-ui/icons";
 
 const NotificationHeader = () => {
-    const {notifications, numberOfNotifications, markAsRead, deleteNotification} = useNotification()
+    const {notifications, numberOfNotifications, markAsRead, deleteNotification, fetchNotificationById, unreadNotifications} = useNotification()
     const auth= useAuth()
     const [showData, setShowData] = useState<string | null>(null)
     const [isAutheticate, setIsAuthenticate] = useState(false)
 
-    const renderData = (data: any) => {
-                if (typeof data === 'object' && data !== null) {
-                    return JSON.stringify(data, null, 2);
-                }
-                return data;
-            };
+    
     const handleClick = (notification: Notification) => {
         const notificationId = notification._id;
         setShowData(showData === notificationId ? null : notificationId);
         if (!notification.status) {
             markAsRead(notificationId);
         }
+        fetchNotificationById(notificationId)
     };
 
     const handleDelete = (notification: Notification) => {
@@ -37,17 +35,101 @@ const NotificationHeader = () => {
     }, [auth.currentUser.status])
 
     return (
-        <>
-        {isAutheticate && numberOfNotifications > 0 ? (
-            <Button>
-            <Badge>{numberOfNotifications}</Badge>
-            </Button>
-        ) : (
-            <div>
-                No notification
-            </div>
-        )}
-        </>
+        <Box p={4} maxW="lg" mx="auto" mt= "2.5" bg="gray.100" borderRadius="lg" boxShadow="md">
+            <Heading fontWeight="bold" size="lg" mb={4} textAlign="left">
+                Notifications
+            </Heading>
+            <VStack spacing={4} align="stretch">
+                {isAutheticate && notifications.length > 0 ? (
+                    notifications.map((noti) => (
+                        <Button
+                            key={noti._id}
+                            p={4}
+                            bg="white"
+                            borderRadius="md"
+                            boxShadow="md"
+                            display="flex"
+                            justifyContent="space-between"
+                            alignItems="center"
+                            _hover={{ bg: "gray.50" }}
+                            
+                        >
+                            <Box flex="1" textAlign="left">
+                                    <Link as={RouterLink}to={`/notifications/${noti._id}`} onClick={() => handleClick(noti)}>
+                                        <Text fontWeight={noti.status ? "normal" : "bold"}>
+                                            {noti.message.title}
+                                        </Text>
+                                    </Link>
+                                </Box>
+                            
+                            {/* <IconButton
+                                aria-label="Mark as read"
+                                icon={<CheckIcon />}
+                                size="sm"
+                                onClick={() => markAsRead(noti._id)}
+                                colorScheme="green"
+                                ml={2}
+                            /> */}
+                            <IconButton
+                                aria-label="Delete notification"
+                                icon={<DeleteIcon />}
+                                size="sm"
+                                onClick={() => handleDelete(noti)}
+                                colorScheme="red"
+                                ml={2}
+                            />
+                        </Button>
+                    ))
+                ) : (
+                    <Text textAlign="center">No notifications found</Text>
+                )}
+            </VStack>
+        </Box>
+        // <>
+        // {isAutheticate && numberOfNotifications > 0 ? (
+        //     <Flex direction="column" justifyContent="center" alignItems="center" height="100vh" width="100%">
+        //         <Box
+        //         bg="gray.200"
+        //         borderRadius="lg"
+        //         boxShadow="md"
+        //         maxW="md"
+        //         textAlign="center"
+        //         width="100%"
+        //         mt="0.75"
+        //         >
+        //         <Heading size="lg" mb={4} textAlign="center">Notifications</Heading>
+        //         <ul>
+        //                     {notifications.map((noti) => (
+        //                         <li key={noti._id}>
+        //                         <button onClick={() => handleClick(noti)}>
+        //                          {noti.message.title}
+        //                         </button>
+
+        //                         <button onClick={() => handleDelete(noti)}>
+        //                              Delete
+        //                          </button>
+        //                          {showData === noti._id && (
+        //                              <div>
+        //                                  {renderData(noti.message.data)}
+        //                              </div>
+        //                          )}
+        //                       </li> 
+                                
+
+        //                     ))}
+        //                 </ul>
+        //     </Box>
+        //     </Flex>
+            
+        //     // <Button>
+        //     // <Badge>{numberOfNotifications}</Badge>
+        //     // </Button>
+        // ) : (
+        //     <div>
+        //         No notification
+        //     </div>
+        // )}
+        // </>
         
     )
     // return (

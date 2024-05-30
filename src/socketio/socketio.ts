@@ -35,7 +35,7 @@ const setUpSocketIO = (server: any) => {
 
     io.use(authenticateSocketIO)
     io.on("connection", (socket: Socket) => {
-        console.log(socket)
+        // console.log(socket)
         socket.on('submitReceipt', async (data) => {
 
             try {
@@ -87,10 +87,16 @@ const setUpSocketIO = (server: any) => {
                 const notificationCount = await NotificationModel.countDocuments({ userId: new mongoose.Types.ObjectId(userId), status: false })
                 socket.emit('countNotification', notificationCount)
 
-                const allNotifications = await NotificationModel.find({ userId: new mongoose.Types.ObjectId(userId), status: false }).sort({ timestamp: -1 })
+                const allNotifications = await NotificationModel.find({ userId: new mongoose.Types.ObjectId(userId), status: false}).sort({ timestamp: -1 })
 
                 socket.emit('displayNotifications', allNotifications)
             }
+
+            // if (next.operationType === 'update'){
+            //     const allUnreadNotifications = await NotificationModel.find({ userId: new mongoose.Types.ObjectId(userId), status: false}).sort({ timestamp: -1 })
+
+            //     socket.emit('displayUnreadNotifications', allUnreadNotifications)
+            // }
 
         })
 
@@ -102,7 +108,6 @@ const setUpSocketIO = (server: any) => {
                     notification.status = true
                     await notification.save()
                     socket.emit('updateNotificationRead', notificationId)
-
                 }
 
             } catch (error) {
