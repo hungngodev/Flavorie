@@ -1,3 +1,4 @@
+'use client';
 import {
   Button,
   ChakraProvider,
@@ -12,139 +13,140 @@ import {
 import { AxiosError } from 'axios';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { CiCircleCheck } from 'react-icons/ci';
-import { FaUserXmark } from 'react-icons/fa6';
 import { RiUserFollowLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAuth } from '../hooks';
 import customFetch from '../utils/customFetch';
-interface FormFields {
-  email: string;
-  password: string;
-}
+import {z} from "zod"
 
-interface APIData {
-  email: string;
-  password: string;
-}
-const Login: React.FC = () => {
+const UserRegister = z.object({
+  username: z.string().min(4, { message: "Username must be at least 4 characters" }),
+  email: z.string().email({ message: "Please enter a valid email"}),
+  password: z.string().min(8, { message: "Password must be at least 8 characters" }),
+  reEnterPassword: z.string().min(8, { message: "Password must be at least 8 characters" }),
+}).refine(data => data.password === data.reEnterPassword, {
+  message: "You must re-enter your password correctly",
+  path: ["reEnterPassword"], 
+});
+
+const RequestRegister = z.object({
+  name: z.string(),
+  email: z.string(),
+  password: z.string(),
+});
+
+type UserRegisterType = z.infer<typeof UserRegister>;
+type RequestRegisterType = z.infer<typeof RequestRegister>;
+
+const Register: React.FC = () => {
   const navigate = useNavigate();
   const auth = useAuth();
   useEffect(() => {
     if (auth.currentUser.status === 'authenticated') {
-      toast.warn('You are already logged in!', { position: 'top-right', icon: <RiUserFollowLine /> });
+      toast.warn('You already have an account!', { position: 'top-right', icon: <RiUserFollowLine /> });
       navigate('/');
     }
   }, [auth.currentUser.status, navigate]);
 
-  const requiredErrorMessage = {
-    email: 'You need a email to login',
-    password: 'You need a password to login',
-  };
-  const minLengthErrorMessage = {
-    email: 'Your email should have at least 4 characters',
-    password: 'Your password should have at least 8 characters',
-  };
-
-  const [userNotFounded, setUserNotFounded] = useState<boolean>(false);
-
-  const onSubmit: SubmitHandler<FormFields> = async (data) => {
-    try {
-      const checkUser: APIData = {
-        email: data.email,
-        password: data.password,
-      };
-      const LoginRequest = await customFetch.post('/auth/login', checkUser, {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      });
-      if (LoginRequest.status === 200) {
-        toast.success('You have successfully logged in !'), { position: 'top-right', icon: <CiCircleCheck /> };
-        setUserNotFounded(false);
-        navigate('/');
-      }
-    } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        toast.error(`Make sure your email and password is correct!: ${error.response.statusText} `, {
-          position: 'top-right',
-          icon: <FaUserXmark />,
-        });
-        setUserNotFounded(true);
-      }
-      console.dir(error);
-
-      return;
-    }
-  };
-
+  const [existedUserError, setExistedUserError] = useState<boolean>(false);
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<FormFields>();
+    watch,
+  } = useForm<UserRegisterType>();
 
+  const onSubmit: SubmitHandler<UserRegisterType> = async (FormData) => {
+    try {
+      const newUserData: RequestRegisterType = {
+        name: FormData.username,
+        email: FormData.email,
+        password: FormData.password,
+      };
+      const NewUserRequest = await customFetch.post('/auth/register', newUserData, {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      });
+      if (NewUserRequest.status === 201) {
+        toast.success(`Welcome to Flavorie ${newUserData.name}!`, {
+          position: 'top-right',
+          icon: <RiUserFollowLine />,
+        });
+        setExistedUserError(false);
+        navigate('/');
+        auth.setUser();
+      }
+    } catch (error) {
+      if (error instanceof AxiosError && error.response && error.response.status === 409) {
+        setExistedUserError(true);
+      }
+      return;
+    }
+  };
   return (
     <ChakraProvider>
       <Flex height="100vh" alignItems="center" justifyContent="center">
-        <VStack width="100%" marginInline="auto" spacing={8}>
-          <Heading textAlign="center">Welcome back</Heading>
+        <VStack marginInline="auto" spacing={8}>
+          <Heading textAlign="center">
+            Welcome to <span style={{ color: 'teal' }}>Flavorie!</span>
+          </Heading>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <VStack spacing={6}>
-              <FormControl isInvalid={errors.email || userNotFounded ? true : false}>
+            <VStack spacing={4}>
+              <FormControl isInvalid={errors.username || existedUserError ? true : false}>
                 <Input
-                  {...register('email', {
-                    required: {
-                      value: true,
-                      message: requiredErrorMessage['email'],
-                    },
-                    minLength: {
-                      value: 4,
-                      message: minLengthErrorMessage['email'],
-                    },
-                    pattern: {
-                      // regex for email validation
-                      value: /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/,
-                      message: 'You need to login with a valid email',
-                    },
-                  })}
+                  {...register('username')}
+                  size="lg"
+                  type="username"
+                  placeholder="Enter username"
+                  isRequired
+                />
+                <FormErrorMessage>
+                  {(errors.username && errors.username.message) || (existedUserError && 'User already existed')}
+                </FormErrorMessage>
+              </FormControl>
+              <FormControl isInvalid={errors.email ? true : false}>
+                <Input
+                  {...register('email')}
                   size="lg"
                   type="email"
                   isRequired
                   placeholder="Enter email"
                 />
-                <FormErrorMessage>
-                  {(errors.email && errors.email.message) || (userNotFounded && 'Email or password did not match')}
-                </FormErrorMessage>
+                <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
               </FormControl>
               <FormControl isInvalid={errors.password ? true : false}>
                 <Input
-                  {...register('password', {
-                    required: {
-                      value: true,
-                      message: requiredErrorMessage['password'],
-                    },
-                    minLength: {
-                      value: 8,
-                      message: minLengthErrorMessage['password'],
-                    },
-                  })}
+                  {...register('password')}
                   size="lg"
                   type="password"
-                  isRequired
                   placeholder="Enter password"
+                  isRequired
                 />
                 <FormErrorMessage>{errors.password && errors.password.message}</FormErrorMessage>
               </FormControl>
-              <Link textAlign="left" href="#" alignSelf="flex-start">
-                Forgot your password?
-              </Link>
-              <Button width="100%" colorScheme="teal" type="submit" isLoading={isSubmitting}>
-                Login
+              <FormControl isInvalid={errors.reEnterPassword ? true : false}>
+                <Input
+                  {...register('reEnterPassword')}
+                  size="lg"
+                  type="password"
+                  placeholder="Re-enter password"
+                  isRequired
+                />
+                <FormErrorMessage>{errors.reEnterPassword && errors.reEnterPassword.message}</FormErrorMessage>
+              </FormControl>
+              <Button
+                width="100%"
+                colorScheme="teal"
+                type="submit"
+                isLoading={isSubmitting}
+                loadingText="Signing you up..."
+              >
+                Sign Up
               </Button>
             </VStack>
           </form>
-          <Link textAlign="center" href="/register">
-            Don't have an account? <span style={{ color: 'teal' }}>Sign up now!</span>
+          <Link textAlign="center" href="/login">
+            Already have an account? <span style={{ color: 'teal' }}>Sign in!</span>
           </Link>
         </VStack>
       </Flex>
@@ -152,4 +154,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default Register;

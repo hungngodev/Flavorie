@@ -8,7 +8,7 @@ interface CustomMenuProps<T extends ZodType<any, any, any>> extends Omit<MenuPro
   items: string[];
   itemProps?: MenuItemProps;
   fieldProps: ControllerRenderProps<z.infer<T>, any>;
-  label: string;
+  title: string;
   display: React.ReactNode | JSX.Element;
 }
 
@@ -17,7 +17,7 @@ function CustomMenu<T extends ZodType<any, any, any>>({
   items,
   itemProps,
   fieldProps,
-  label,
+  title,
   display,
   ...props
 }: CustomMenuProps<T>) {
@@ -25,7 +25,7 @@ function CustomMenu<T extends ZodType<any, any, any>>({
     <Menu {...props}>
       <VStack alignItems="flex-start">
         <Text color="blackAlpha.600" fontWeight="semibold">
-          {label ?? 'Menu'}
+          {title ?? 'Menu'}
         </Text>
         <MenuButton
           disabled={items.length > 0 ? false : true}

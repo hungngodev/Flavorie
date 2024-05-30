@@ -15,7 +15,7 @@ import React from 'react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 
 interface CustomNumberInputProps<T extends FieldValues> extends NumberInputProps {
-  inputFieldProps?: NumberInputFieldProps;
+  inputFieldProps: NumberInputFieldProps;
   isInValid?: boolean;
   label?: string;
   helperText?: string;
