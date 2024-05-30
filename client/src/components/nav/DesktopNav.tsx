@@ -119,8 +119,6 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
               }}
             >
               Sign Out
-              
-              
             </Button>
             <Button
                 display={{ base: 'none', md: 'inline-flex' }}
@@ -135,9 +133,6 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
                 <Link to="/notifications">Notifications</Link>
               </Button>
             </>
-            
-
-            
 
           )}
         </Stack>

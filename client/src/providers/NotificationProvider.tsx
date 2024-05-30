@@ -14,8 +14,6 @@ const NotificationProvider: React.FC<NotificationContextProviderProps> = ({child
     const [notifications, setNotifications] = useState<Notification[]>([])
     const [numberOfNotifications, setCntNotifications] = useState(0)
     const [isAutheticate, setIsAuthenticate] = useState(false)
-
-
     const fetchNotifications = async () => {
         try {
             const cntResponse = await axios.get('http://localhost:5100/api/user/notifications/cnt', {withCredentials: true})
@@ -61,7 +59,8 @@ useEffect(() => {
             socket.off('countNotification')
             socket.off('displayNotifications')
         }
-    } else if (auth.currentUser.status === 'unauthenticated'){
+    } 
+    else if (auth.currentUser.status === 'unauthenticated'){
         // console.log(auth.currentUser.status)
         setIsAuthenticate(false)
 

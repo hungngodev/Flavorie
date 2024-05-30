@@ -2,6 +2,7 @@ import useNotification from "../../hooks/useNotification";
 import  useAuth  from "../../hooks/useAuth.tsx";
 import { useState, useEffect } from "react";
 import { Notification } from "../../contexts/NotificationContext.tsx";
+import { Badge, Button } from "@chakra-ui/react";
 
 const NotificationHeader = () => {
     const {notifications, numberOfNotifications, markAsRead, deleteNotification} = useNotification()
@@ -27,48 +28,62 @@ const NotificationHeader = () => {
         deleteNotification(notification._id);
     };
 
-    // useEffect(() => {
-    //     if (auth.currentUser.status === 'authenticated'){
-    //         setIsAuthenticate(true)
-    //     } else {
-    //         setIsAuthenticate(false)
-    //     }
-    // }, [setIsAuthenticate, auth.currentUser.status])
+    useEffect(() => {
+        if (auth.currentUser.status === 'authenticated'){
+            setIsAuthenticate(true)
+        } else {
+            setIsAuthenticate(false)
+        }
+    }, [auth.currentUser.status])
 
     return (
-        <div>
-            {isAutheticate ? (
-                <div>
-                    <div>Number of notifications: {numberOfNotifications}</div>
-                    <div>
-                        Notification List:
-                        <ul>
-                            {notifications.map((noti) => (
-                               <li key={noti._id}>
-                                <button onClick={() => handleClick(noti)}>
-                                    {noti.message.title}
-                                </button>
+        <>
+        {isAutheticate && numberOfNotifications > 0 ? (
+            <Button>
+            <Badge>{numberOfNotifications}</Badge>
+            </Button>
+        ) : (
+            <div>
+                No notification
+            </div>
+        )}
+        </>
+        
+    )
+    // return (
+    //     <div>
+    //         {isAutheticate ? (
+    //             <div>
+    //                 <div>Number of notifications: {numberOfNotifications}</div>
+    //                 <div>
+    //                     Notification List:
+    //                     <ul>
+    //                         {notifications.map((noti) => (
+    //                            <li key={noti._id}>
+    //                             <button onClick={() => handleClick(noti)}>
+    //                                 {noti.message.title}
+    //                             </button>
 
-                                <button onClick={() => handleDelete(noti)}>
-                                    Delete
-                                </button>
-                                {showData === noti._id && (
-                                    <div>
-                                        {renderData(noti.message.data)}
-                                    </div>
-                                )}
-                               </li> 
+    //                             <button onClick={() => handleDelete(noti)}>
+    //                                 Delete
+    //                             </button>
+    //                             {showData === noti._id && (
+    //                                 <div>
+    //                                     {renderData(noti.message.data)}
+    //                                 </div>
+    //                             )}
+    //                            </li> 
                                 
 
-                            ))}
-                        </ul>
-                    </div>
-                </div>
-            ) : (
-                <div>No notification</div>
-            )}
-        </div>
-    )
+    //                         ))}
+    //                     </ul>
+    //                 </div>
+    //             </div>
+    //         ) : (
+    //             <div>No notification</div>
+    //         )}
+    //     </div>
+    // )
 
 
 }
