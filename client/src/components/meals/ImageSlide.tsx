@@ -4,54 +4,17 @@ import { Text as CharkaText, Container, Flex, HStack, Heading, VStack } from '@c
 import { ReactNode } from 'react';
 import ChakraCarousel from './ChakraCarousel.tsx';
 
-interface Dishes {
+export interface Dish {
   image: string;
   title: string;
   description: string;
 }
 
-const dishes: Dishes[] = [
-  {
-    image: '../public/images/baked-brie-with-roasted-mushrooms.webp',
-    title: 'Baked brie with roasted mushroom',
-    description: ' Step 1: Bake brie and roasted mushroom.',
-  },
-  {
-    image: '../public/images/apple-and-cheddar-crisp-salad-scaled.webp',
-    title: 'Apple and cheddar crisp salad',
-    description: 'Step 2: Wash salad and apple',
-  },
-  {
-    image: '../public/images/buffalo-chicken-cobb-salad-scaled.webp',
-    title: 'Buffalo chicken cobb salad',
-    description: 'Step 3: Roast buffalo chicken',
-  },
-  {
-    image: '../public/images/chocolate-raspberry-pavlova-stack-12-scaled.webp',
-    title: 'Chocolate raspberry pavlova stack',
-    description: 'Step 4: Wash raspberry',
-  },
-  {
-    image: '../public/images/new-york-crumb-cake-7-scaled.webp',
-    title: 'New york crumb cake',
-    description: 'Step 5: Bake cake',
-  },
-  {
-    image: '../public/images/summer-ricotta-grilled-vegetables.webp',
-    title: 'Summer ricotta grilled vegetables',
-    description: 'Step 6: Grilled vegetables after washing',
-  },
-];
+type DishesProps = {
+  dishes: Dish[];
+}
 
-function ImageSlide(): ReactNode {
-  // const [data, setData] = useState<Post[]>([]);
-
-  // useEffect(() => {
-  //     fetch("https://jsonplaceholder.typicode.com/posts/")
-  //     .then((res) => res.json())
-  //     .then((res: Post[]) => setData(res));
-  // }, []);
-
+function ImageSlide({ dishes }: DishesProps): ReactNode {
   return (
     <Container
       py={8}
@@ -66,7 +29,7 @@ function ImageSlide(): ReactNode {
       }}
     >
       <ChakraCarousel gap={32}>
-        {dishes.map((dish: Dishes, index: number) => (
+        {dishes.map((dish: Dish, index: number) => (
           <Flex
             key={index}
             boxShadow="rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px"
@@ -80,8 +43,8 @@ function ImageSlide(): ReactNode {
             p={5}
           >
             <img src={dish.image} alt={dish.title} style={{ maxWidth: '100%', borderRadius: '8px' }} />
-            <VStack mt={4} mb={4}>
-              <Heading fontSize={{ base: 'xl', md: '2xl' }} textAlign="left" w="full" mb={2}>
+            <VStack mt={4} mb={2}>
+              <Heading fontSize={{ base: 'xl', md: '2xl' }} textAlign="left" w="full">
                 {dish.title}
               </Heading>
             </VStack>
@@ -90,15 +53,6 @@ function ImageSlide(): ReactNode {
               <HStack spacing={2}>
                 <CharkaText w="full">{dish.description}</CharkaText>
               </HStack>
-              {/* <Button
-                    onClick={() => alert(`Post ${post.id - 5} clicked`)}
-                    colorScheme="green"
-                    fontWeight="bold"
-                    color="gray.900"
-                    size="sm"
-                    >
-                    More
-                    </Button> */}
             </Flex>
           </Flex>
         ))}
