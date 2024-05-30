@@ -4,12 +4,16 @@ import { ArrayPath, Control, FieldArrayWithId, SubmitHandler, UseFormWatch } fro
 import { ZodType, z } from 'zod';
 
 export interface FieldComponentProps<T extends ZodType<any, any, any>> {
-  control: Control<z.infer<T>, any>;
-  fields: FieldArrayWithId<z.infer<T>, ArrayPath<T>, 'id'>[];
+  control: Control<z.infer<T>, any>; // link the input component to the form
+  fields: FieldArrayWithId<z.infer<T>, ArrayPath<T>, 'id'>[]; // array of field objects (include id and actual values)
   submit: SubmitHandler<z.infer<T>>;
   watch: UseFormWatch<z.infer<T>>;
   remove: (arg?: any) => void;
-  update: (watch: UseFormWatch<z.infer<T>>, index: number) => void;
+  update: (
+    index: number,
+    watch?: UseFormWatch<z.infer<T>>,
+    fields?: FieldArrayWithId<z.infer<T>, ArrayPath<T>, 'id'>[],
+  ) => void;
   append: (arg?: any) => void;
 }
 
@@ -38,11 +42,11 @@ function ReceiptForm<T extends ZodType<any, any, any>>({
         <form onSubmit={submit}>
           {fields.map((field, index) => (
             <FieldComponent
-              field={field}
-              key={index}
-              fields={fields}
-              index={index}
               control={control}
+              fields={fields}
+              field={field}
+              index={index}
+              key={field.id}
               submit={submit}
               remove={remove}
               update={update}
@@ -57,9 +61,7 @@ function ReceiptForm<T extends ZodType<any, any, any>>({
           colorScheme="teal"
           letterSpacing="-0.005em"
           fontWeight="semibold"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
+          onClick={() => {
             append();
           }}
         >

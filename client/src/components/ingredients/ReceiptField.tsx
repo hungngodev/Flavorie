@@ -1,23 +1,8 @@
-import {
-  HStack,
-  IconButton,
-  Image,
-  Input,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
+import { HStack, IconButton, Image, Input, InputGroup, InputLeftElement, Text, VStack } from '@chakra-ui/react';
 import { PenLine, Search, Trash, X } from 'lucide-react';
 import { Controller, FieldPath, Path } from 'react-hook-form';
 import { ZodType, z } from 'zod';
+import { CustomMenu, CustomNumberInput } from '../form/index';
 import { ReceiptFormProps } from './ReceiptForm';
 
 interface ReceiptFieldProps<T extends ZodType<any, any, any>> extends ReceiptFormProps<T> {
@@ -43,7 +28,8 @@ function ReceiptField<T extends ZodType<any, any, any>>({
         src="https://img.freepik.com/free-vector/hand-drawn-flat-design-turkish-food-illustration_23-2149276733.jpg?w=826&t=st=1716431567~exp=1716432167~hmac=6eca3d748ea3362697544328f767549b297318ada51b416c2f8eabe4ed0b155f"
       />
       <VStack justifyContent="flex-start" alignItems="space-between" gap={6} width="100%">
-        <HStack alignItems="space-between" minWidth="fit-content">
+        // row for name and menu
+        <HStack alignItems="space-between" minWidth="max-content">
           <Controller
             control={control}
             name={`receipts.${index}.name` as FieldPath<z.infer<T>>}
@@ -66,127 +52,85 @@ function ReceiptField<T extends ZodType<any, any, any>>({
               </VStack>
             )}
           />
-          {field.suggested.display && (
-            <Controller
-              control={control}
-              name={`receipts.${index}.name` as FieldPath<z.infer<T>>}
-              render={({ field: { ...fieldProps } }) => {
-                return (
-                  <VStack justifyContent="flex-start" alignItems="start" gap={6}>
-                    <Text color="blackAlpha.600" fontWeight="semibold">
-                      Suggestions
-                    </Text>
-                    <Menu>
-                      <MenuButton arial-label="options" color="blackAlpha.600" fontWeight="semibold" fontSize="lg">
-                        <HStack>
-                          <Search />
-                          <Text>Not what you're looking for?</Text>
-                        </HStack>
-                      </MenuButton>
-                      <MenuList>
+
+          <Controller
+            control={control}
+            name={`receipts.${index}.name` as FieldPath<z.infer<T>>}
+            render={({ field: { ...fieldProps } }) => {
+              return (
+                field.suggested.display && (
+                  <CustomMenu
+                    title="Suggestions"
+                    display={
+                      <div>
                         {field.suggested.items.length > 0 ? (
-                          field.suggested.items.map((suggest: string) => {
-                            return (
-                              <MenuItem
-                                key={suggest}
-                                onClick={() => {
-                                  fieldProps.onChange(suggest);
-                                }}
-                              >
-                                <Image
-                                  borderRadius="lg"
-                                  boxSize="5rem"
-                                  src="https://img.freepik.com/free-vector/hand-drawn-flat-design-turkish-food-illustration_23-2149276733.jpg?w=826&t=st=1716431567~exp=1716432167~hmac=6eca3d748ea3362697544328f767549b297318ada51b416c2f8eabe4ed0b155f"
-                                />
-                                <Text color="blackAlpha.800" fontWeight="semibold" marginInline={2} fontSize="lg">
-                                  {suggest}
-                                </Text>
-                              </MenuItem>
-                            );
-                          })
+                          <InputGroup>
+                            <InputLeftElement>
+                              <Search />
+                            </InputLeftElement>
+                            <Input placeholder="Try these instead!" />
+                          </InputGroup>
                         ) : (
-                          <MenuItem>
-                            <Text color="blackAlpha.800" fontWeight="semibold" marginInline={2} fontSize="lg">
-                              Oops nothing matches
-                            </Text>
-                          </MenuItem>
+                          <Text>We couldn't find anything yet :(</Text>
                         )}
-                      </MenuList>
-                    </Menu>
-                  </VStack>
-                );
-              }}
-            />
-          )}
+                      </div>
+                    }
+                    items={field.suggested.items}
+                    field={field}
+                    fieldProps={fieldProps}
+                  />
+                )
+              );
+            }}
+          />
         </HStack>
+        // row for quantity and price
         <HStack maxWidth="40%">
           <Controller
             control={control}
             name={`receipts.${index}.quantity` as FieldPath<z.infer<T>>}
-            render={({ field: { onChange, ...fieldProps } }) => (
+            render={({ field: { ...fieldProps } }) => (
               <VStack alignItems="start">
                 <Text color="blackAlpha.600" fontWeight="semibold">
                   Quantity
                 </Text>
-                <NumberInput
-                  {...fieldProps}
+                <CustomNumberInput
+                  fieldProps={fieldProps}
                   min={0}
                   keepWithinRange={true}
-                  onChange={(valueString) => onChange(Number(valueString))}
+                  onChange={(valueString) => fieldProps.onChange(Number(valueString))}
                   borderRadius="md"
                   color="blackAlpha.800"
                   fontWeight="semibold"
                   value={watch(`receipts.${index}.quantity` as Path<z.infer<T>>)}
-                >
-                  <NumberInputField
-                    {...fieldProps}
-                    fontSize="lg"
-                    value={watch(`receipts.${index}.quantity` as Path<z.infer<T>>)}
-                  />
-                  <NumberInputStepper>
-                    <NumberIncrementStepper border="none" />
-                    <NumberDecrementStepper border="none" />
-                  </NumberInputStepper>
-                </NumberInput>
+                />
               </VStack>
             )}
           />
           <Controller
             control={control}
             name={`receipts.${index}.price` as FieldPath<z.infer<T>>}
-            render={({ field: { onChange, ...fieldProps } }) => (
+            render={({ field: { ...fieldProps } }) => (
               <VStack alignItems="start">
                 <Text color="blackAlpha.600" fontWeight="semibold">
                   Price
                 </Text>
-                <NumberInput
-                  precision={2}
-                  step={0.01}
-                  min={0.0}
+                <CustomNumberInput
+                  fieldProps={fieldProps}
+                  min={0}
                   keepWithinRange={true}
-                  onChange={(valueString) => onChange(Number(valueString))}
+                  onChange={(valueString) => fieldProps.onChange(Number(valueString))}
                   borderRadius="md"
                   color="blackAlpha.800"
                   fontWeight="semibold"
-                  {...fieldProps}
                   value={watch(`receipts.${index}.price` as Path<z.infer<T>>)}
-                >
-                  <NumberInputField
-                    {...fieldProps}
-                    fontSize="lg"
-                    value={watch(`receipts.${index}.price` as Path<z.infer<T>>)}
-                  />
-                  <NumberInputStepper>
-                    <NumberIncrementStepper border="none" />
-                    <NumberDecrementStepper border="none" />
-                  </NumberInputStepper>
-                </NumberInput>
+                />
               </VStack>
             )}
           />
         </HStack>
       </VStack>
-
+      // column for button and price display
       <VStack justifyContent="space-between" alignItems="flex-end" alignSelf="stretch" gap={6}>
         <Text marginLeft="auto" justifySelf="end" fontSize="lg" fontWeight="semibold" color="blackAlpha.900">
           ${(parseFloat(field.price) * parseFloat(field.quantity)).toFixed(2) || 0}
@@ -212,10 +156,8 @@ function ReceiptField<T extends ZodType<any, any, any>>({
             color="teal.600"
             backgroundColor="teal.50"
             icon={field.suggested.display ? <X /> : <PenLine />}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              update(watch, index);
+            onClick={() => {
+              update(index, watch, fields);
             }}
             size="md"
           />

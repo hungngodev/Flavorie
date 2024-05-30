@@ -14,8 +14,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Focus } from 'lucide-react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
+import ReceiptField from '../components/ingredients/ReceiptField';
 import ReceiptForm from '../components/ingredients/ReceiptForm';
-import mockReceipts from '../components/ingredients/mockReceipts';
+import { mockReceipts } from '../components/ingredients/mockReceipts';
 
 const ReceiptObject = z
   .object({
@@ -30,11 +31,11 @@ const ReceiptObject = z
   .strict()
   .required();
 
-const ReceiptField = z.object({
+const ReceiptFieldObject = z.object({
   receipts: z.array(ReceiptObject),
 });
 
-type ReceiptFieldType = z.infer<typeof ReceiptField>;
+type ReceiptFieldType = z.infer<typeof ReceiptFieldObject>;
 
 const Receipt = () => {
   const {
@@ -43,7 +44,7 @@ const Receipt = () => {
     watch,
     formState: { errors },
   } = useForm<ReceiptFieldType>({
-    resolver: zodResolver(ReceiptField),
+    resolver: zodResolver(ReceiptFieldObject),
     defaultValues: {
       receipts:
         mockReceipts?.data?.length > 0
@@ -62,32 +63,35 @@ const Receipt = () => {
     },
   });
 
-  const watchField = watch('receipts');
-
   const { fields, append, remove, update } = useFieldArray({
     control: control,
     name: 'receipts',
   });
 
+  // this function handles the submission of the form
   const submitReceipts: SubmitHandler<ReceiptFieldType> = (receiptResponse) => {
-    console.log(receiptResponse);
+    // console.log(receiptResponse);
+    // actual submit logic will be added later
   };
 
+  // these functions change individual fields in the form
   const removeField = (index: number) => {
     remove(index);
   };
-  const updateField = (index: number) => {
+
+  const updateField = (index: number, watch: any, fields: any) => {
     update(index, {
       name: watch(`receipts.${index}.name`),
       quantity: watch(`receipts.${index}.quantity`),
       price: watch(`receipts.${index}.price`),
       suggested: {
         display: !fields[index].suggested.display,
-        items: fields[index].suggested.items,
+        items: watch(`receipts.${index}.suggested.items`),
       },
     });
   };
-  const appendField = (index?: number) => {
+
+  const appendField = () => {
     append({
       name: '',
       quantity: '0',
@@ -95,21 +99,21 @@ const Receipt = () => {
       suggested: { display: false, items: [] },
     });
   };
+
   return (
     <HStack width="100%" height="100%" position="sticky" alignItems="flex-start">
       <ReceiptForm
-        // field={fields}
-        // schema={ReceiptField}
-        // fieldKey={'receipts'}
-        // control={control}
-        // submit={submitReceipts}
-        // remove={removeField}
-        // update={updateField}
-        // append={appendField}
+        fields={fields}
+        FieldComponent={ReceiptField as React.ComponentType<any>}
+        control={control}
+        watch={watch}
+        submit={submitReceipts}
+        remove={removeField}
+        update={updateField}
+        append={appendField}
       />
-    </HStack>
-  )
-      {/* <Card height="fit-content" position="sticky" top={0} paddingInline={6} paddingBlock={4}>
+
+      <Card height="fit-content" position="sticky" top={0} paddingInline={6} paddingBlock={4}>
         <CardHeader>
           <Heading fontSize="3xl" color="teal" fontWeight="semibold" alignSelf="start">
             Summary
@@ -121,25 +125,24 @@ const Receipt = () => {
             <Text fontWeight="semibold" color="blackAlpha.700">
               Items
             </Text>
-            <Text fontWeight="semibold" color="blackAlpha.900"> */}
-              {/* {fields.length} */}
-            {/* </Text>
+            <Text fontWeight="semibold" color="blackAlpha.900">
+              {fields.length}
+            </Text>
           </HStack>
           <HStack width="100%" justifyContent="space-between">
             <Text fontWeight="semibold" color="blackAlpha.700">
               Cost
             </Text>
-            <Text fontWeight="semibold" color="blackAlpha.900"> */}
-              {/* ${' '}
+            <Text fontWeight="semibold" color="blackAlpha.900">
+              ${' '}
               {parseFloat(
-                watchField
+                watch(`receipts`)
                   .reduce((accumulator, field) => {
                     return accumulator + parseFloat(field.price) * parseFloat(field.quantity);
                   }, 0)
                   .toFixed(2),
-              )} */}
-            //   Test
-            {/* </Text>
+              )}
+            </Text>
           </HStack>
         </CardBody>
 
@@ -171,7 +174,8 @@ const Receipt = () => {
           </VStack>
         </CardFooter>
       </Card>
-    </HStack> */}
-  
+    </HStack>
+  );
 };
+
 export default Receipt;
