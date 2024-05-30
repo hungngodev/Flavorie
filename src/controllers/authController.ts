@@ -27,8 +27,7 @@ export const checkAuth = async (req: Request, res: Response) => {
 };
 
 export const register = async (req: Request, res: Response) => {
-  const isFirstAccount = (await UserModel.countDocuments()) === 0;
-  (req.body as any).role = "user";
+  (req.body).role = "user";
   const userId = await createUser(req.body);
   const token = createJWT({ userId, role: "user" });
   createCookie(token, res);

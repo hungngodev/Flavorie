@@ -2,6 +2,7 @@ import { Types } from 'mongoose';
 import IngredientModel from '../models/IngredientModel.ts';
 import MatchingModel from '../models/MatchingModel.ts';
 import MealModel from '../models/MealModel.ts';
+import { ServerError } from '../errors/customErrors.ts';
 
 export const createMeal = async (data: any, source: string): Promise<Types.ObjectId> => {
     let newMeal;
@@ -40,10 +41,14 @@ export const createMeal = async (data: any, source: string): Promise<Types.Objec
             ) {
                 const idMap = map?.get(mealData[key].toLowerCase());
                 if (idMap) {
-                    newMeal.allIngredients.push(idMap)
+                    const ingredient = await IngredientModel.findById(idMap);
+                    if (!ingredient) {
+                        throw new ServerError('Ingredient not matching of ThemealDB in DB');
+                    }
+                    newMeal.allIngredients.push(new Types.ObjectId(idMap.toString()));
                     const number = key.split('strIngredient')[1];
                     const measure = mealData[`strMeasure${number}`];
-                    newMeal.amount.set(idMap.toString(), measure ?
+                    newMeal.amount.set(ingredient.name, measure ?
                         measure : '');
                 }
                 else {
@@ -86,8 +91,8 @@ export const createMeal = async (data: any, source: string): Promise<Types.Objec
                 id: ingredient.id
             });
             if (matchingIngredient) {
-                newMeal.allIngredients.push(matchingIngredient._id);
-                newMeal.amount.set(matchingIngredient._id.toString(), ingredient.
+                newMeal.allIngredients.push(matchingIngredient);
+                newMeal.amount.set(matchingIngredient.name, ingredient.
                     Ingredient.original);
             }
             else {

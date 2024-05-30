@@ -165,62 +165,54 @@ export const getAllMeals = async (req: Request, res: Response) => {
   return getRandomMealsUnauthenticated(req, res);
 }
 
-
-export const getIndividualMealUnauthenticated = async (req: Request, res: Response) => {
-  // get individual meal by id from themealdb
-  const { mealId } = req.params;
-  const meal = await MealModel.findOne({
-    id: mealId,
-    source: 'themealdb',
-  });
-  if (meal) {
-    if (Object.keys(meal.analyzeInstruction).length === 0) {
-      const analyze = await analyzeInstruction(meal.instruction);
-      meal.analyzeInstruction = analyze;
-      await meal.save();
-    }
-    return res.json(meal).status(StatusCodes.OK);
-  }
-  try {
-    const mealInfo = await getMealById(mealId);
-    const idNewMeal = await createMeal(mealInfo, 'themealdb');
-    const info = await MealModel.findById(idNewMeal);
-    if (info) {
-      const analyze = await analyzeInstruction(info.instruction);
-      info.analyzeInstruction = analyze;
-      await info.save();
-    }
-    return res.json(info).status(StatusCodes.OK);
-  } catch (error) {
-    throw new ServerError(`${error}`);
-  }
-}
-
-export const getIndividualMealAuthenticated = async (req: Request, res: Response) => {
-  // get individual meal by id from spoonacular
-  const { mealId } = req.params;
-  const meal = await MealModel.findOne({
-    id: mealId,
-    source: 'spoonacular',
-  });
-  if (meal) {
-    return res.json(meal).status(StatusCodes.OK);
-  }
-  try {
-    const mealInfo = await getMealByIdAPI(mealId);
-    const idNewMeal = await createMeal(mealInfo, 'spoonacular');
-    const info = await MealModel.findById(idNewMeal);
-    return res.json(info).status(StatusCodes.OK);
-  } catch (error) {
-    throw new ServerError(`${error}`);
-  }
-
-}
-
 export const getIndividualMeal = async (req: Request, res: Response) => {
-  if (req.user) {
-    return getIndividualMealAuthenticated(req, res);
+
+  try {
+    console.dir(req.params);
+    if (req.user) {
+      const { mealId } = req.params;
+      const meal = await MealModel.findOne({
+        id: mealId,
+        source: 'spoonacular',
+      }).populate('allIngredients');
+      if (meal) {
+        return res.json(meal).status(StatusCodes.OK);
+      }
+      try {
+        const mealInfo = await getMealByIdAPI(mealId);
+        const idNewMeal = await createMeal(mealInfo, 'spoonacular');
+        const info = await MealModel.findById(idNewMeal).populate('allIngredients');
+        return res.json(info).status(StatusCodes.OK);
+      } catch (error) {
+        throw new ServerError(`${error}`);
+      }
+    }
+    else {
+      const { mealId } = req.params;
+      console.log(mealId);
+      let meal = await MealModel.findOne({
+        id: mealId,
+        source: 'themealdb',
+      }).populate('allIngredients');
+      if (!meal) {
+        const mealInfo = await getMealById(mealId);
+        const idNewMeal = await createMeal(mealInfo, 'themealdb');
+        meal = await MealModel.findById(idNewMeal).populate('allIngredients');
+      }
+      if (meal) {
+        if (Object.keys(meal.analyzeInstruction).length === 0) {
+          const analyze = await analyzeInstruction(meal.instruction);
+          meal.analyzeInstruction = analyze;
+          await meal.save();
+        }
+        return res.json(meal).status(StatusCodes.OK);
+      }
+      else {
+        throw new ServerError("Meal not found");
+      }
+    }
+  } catch (error) {
+    throw new ServerError(`${error}`);
   }
-  return getIndividualMealUnauthenticated(req, res);
 }
 

@@ -73,7 +73,7 @@ export function ListofMeals({ Type, meals }: MealTypeProps) {
                   description: truncateDescription(meal.description ?? ''),
                   category: meal.category,
                   // price: meal.price,
-                  infoLink: `/meals/${meal._id}`,
+                  infoLink: `/meals/${meal.id}`,
                 }}
               />
             </Box>

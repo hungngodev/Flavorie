@@ -60,7 +60,6 @@ type MealModel = mongoose.Model<Meal>;
 const MealSchema = new mongoose.Schema<Meal, MealModel>({
     title: String,
     imageUrl: String,
-
     allIngredients: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Ingredient'
