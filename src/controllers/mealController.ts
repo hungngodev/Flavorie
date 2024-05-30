@@ -1,3 +1,4 @@
+import { analyzeInstruction } from '../services/spoonacular/spoonacularServices.ts'
 import { createMeal } from '../services/mealServices.ts';
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
@@ -11,6 +12,7 @@ import {
   getRandomMeal,
 } from "../services/themealdb/themealdbServices.ts";
 import { getRandomKey } from "../services/themealdb/utils.ts";
+import MealModel from '../models/MealModel.ts';
 
 
 type theMealDB = {
@@ -37,7 +39,7 @@ export const getRandomMealsUnauthenticated = async (
       const results = await Promise.all(meals.map(async (meal) => {
         const _id = await createMeal(meal, 'themealdb');
         return {
-          _id,
+          _id: _id.toString(),
           id: meal.idMeal,
           title: meal.strMeal,
           image: meal.strMealThumb,
@@ -111,6 +113,7 @@ export const getRanDomMealsAuthenticated = async (
       const results = await Promise.all(meals.map(async (meal) => {
         const _id = await createMeal(meal, 'themealdb');
         return {
+          _id: _id.toString(),
           id: meal.id,
           title: meal.title,
           image: meal.image,
@@ -166,9 +169,28 @@ export const getAllMeals = async (req: Request, res: Response) => {
 export const getIndividualMealUnauthenticated = async (req: Request, res: Response) => {
   // get individual meal by id from themealdb
   const { mealId } = req.params;
-  try {
-    const meal = getMealById(mealId);
+  const meal = await MealModel.findOne({
+    id: mealId,
+    source: 'themealdb',
+  });
+  if (meal) {
+    if (Object.keys(meal.analyzeInstruction).length === 0) {
+      const analyze = await analyzeInstruction(meal.instruction);
+      meal.analyzeInstruction = analyze;
+      await meal.save();
+    }
     return res.json(meal).status(StatusCodes.OK);
+  }
+  try {
+    const mealInfo = await getMealById(mealId);
+    const idNewMeal = await createMeal(mealInfo, 'themealdb');
+    const info = await MealModel.findById(idNewMeal);
+    if (info) {
+      const analyze = await analyzeInstruction(info.instruction);
+      info.analyzeInstruction = analyze;
+      await info.save();
+    }
+    return res.json(info).status(StatusCodes.OK);
   } catch (error) {
     throw new ServerError(`${error}`);
   }
@@ -177,9 +199,18 @@ export const getIndividualMealUnauthenticated = async (req: Request, res: Respon
 export const getIndividualMealAuthenticated = async (req: Request, res: Response) => {
   // get individual meal by id from spoonacular
   const { mealId } = req.params;
-  try {
-    const meal = await getMealByIdAPI(mealId);
+  const meal = await MealModel.findOne({
+    id: mealId,
+    source: 'spoonacular',
+  });
+  if (meal) {
     return res.json(meal).status(StatusCodes.OK);
+  }
+  try {
+    const mealInfo = await getMealByIdAPI(mealId);
+    const idNewMeal = await createMeal(mealInfo, 'spoonacular');
+    const info = await MealModel.findById(idNewMeal);
+    return res.json(info).status(StatusCodes.OK);
   } catch (error) {
     throw new ServerError(`${error}`);
   }

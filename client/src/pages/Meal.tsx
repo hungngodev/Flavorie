@@ -12,6 +12,7 @@ miyagi.register();
 // Default values shown
 export interface Meal {
   id: string;
+  _id: string;
   title: string;
   description: string;
   image: string;

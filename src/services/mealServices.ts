@@ -2,10 +2,14 @@ import { Types } from 'mongoose';
 import IngredientModel from '../models/IngredientModel.ts';
 import MatchingModel from '../models/MatchingModel.ts';
 import MealModel from '../models/MealModel.ts';
-import { analyzeInstruction } from '../services/spoonacular/spoonacularServices.ts'
 
 export const createMeal = async (data: any, source: string): Promise<Types.ObjectId> => {
     let newMeal;
+    const foundMeal = await MealModel.findOne({
+        id: (source === 'themealdb' ? data.idMeal.toString() : data.id.toString()),
+        source: source,
+    });
+    if (foundMeal) return foundMeal._id;
     if (source === 'themealdb') {
         const mealData = data;
         const matchingThemealDB = await MatchingModel.findOne({
@@ -23,7 +27,7 @@ export const createMeal = async (data: any, source: string): Promise<Types.Objec
                 ...(mealData.strArea ? mealData.strArea.split(',') : []),
             ].map(e => e.toLowerCase()),
             videoLink: mealData.strYoutube,
-            analyzeInstruction: [],
+            analyzeInstruction: {},
             amount: {},
         });
 
