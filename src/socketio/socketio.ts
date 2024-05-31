@@ -36,6 +36,8 @@ const setUpSocketIO = (server: any) => {
     io.use(authenticateSocketIO)
     io.on("connection", (socket: Socket) => {
         console.log(socket)
+
+        //submit receipt
         socket.on('submitReceipt', async (data) => {
 
             try {
@@ -77,6 +79,7 @@ const setUpSocketIO = (server: any) => {
         }
         )
 
+        // update new notification when the receipt is done
         const userId = socket.data.user.userId
         const pipeline = [
             { $match: { 'fullDocument.userId': new mongoose.Types.ObjectId(userId) } }
@@ -100,6 +103,7 @@ const setUpSocketIO = (server: any) => {
 
         })
 
+        // mark the notification as read
         socket.on('markRead', async (notificationId) => {
             try {
 
@@ -115,6 +119,7 @@ const setUpSocketIO = (server: any) => {
             }
         })
 
+        // delete the notification
         socket.on('deleteNotification', async (notificationId) => {
             try {
                 const notification = await NotificationModel.findById(notificationId)
