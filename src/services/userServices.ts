@@ -1,7 +1,12 @@
+import { NotFoundError, UnauthenticatedError, UserCreationError } from '../errors/customErrors.ts';
+import { Ingredient } from "../models/IngredientModel.ts";
+import ItemModel, { Item } from "../models/ItemModel.ts";
 import UserModel, { User } from "../models/UserModel.ts";
-import { hashPassword, comparePassword } from "../utils/passwordUtils.ts";
-import { UnauthenticatedError, UserCreationError } from '../errors/customErrors.ts';
-import { createJWT } from '../utils/tokenUtils.ts';
+import { comparePassword, hashPassword } from "../utils/passwordUtils.ts";
+
+interface UserItem extends Omit<Item, 'itemId'> {
+    itemId: Ingredient;
+}
 
 export async function createUser(userDocument: User): Promise<string> {
     const { email, name } = userDocument;
@@ -9,11 +14,10 @@ export async function createUser(userDocument: User): Promise<string> {
 
     const isEmailExist = await UserModel.findOne({ email: email });
     const isNameExist = await UserModel.findOne({ name: name });
-    if (isEmailExist || isNameExist) throw new UserCreationError('User already exists');
+    if (isEmailExist) throw new UserCreationError('User already exists');
 
     const user = await UserModel.create(userDocument);
-    const token = createJWT({ userId: user._id.toString(), role: user.role });
-    return token;
+    return user._id.toString();
 }
 
 
@@ -23,19 +27,13 @@ export async function authenticateCheck(userDocument: User): Promise<string> {
 
     const user = await UserModel.findOne({ email: email });
     const isValidUser = user;
-    if (!isValidUser) throw new UnauthenticatedError('Not Found');
+    if (!isValidUser) throw new NotFoundError('User not found');
     const isValidPassword = await comparePassword(password, user.password);
 
     if (!isValidPassword) throw new UnauthenticatedError('invalid credentials');
 
-    const token = createJWT({ userId: user._id.toString(), role: user.role });
-    return token;
+    return user._id.toString();
 }
-
-type UserValueTypes = {
-    [K in keyof User]: User[K];
-}[keyof User];
-
 
 export async function modifyOrdinaryInfo(userId: string, reqInfo: User): Promise<void> {
     let user = await UserModel.findById(userId);
@@ -55,11 +53,25 @@ export async function modifyOrdinaryInfo(userId: string, reqInfo: User): Promise
 }
 
 
-export async function modifyLeftOver(userId: string, reqInfo: User): Promise<void> {
-    let user = await UserModel.findById(userId);
-    if (!user) throw new UnauthenticatedError('User not found');
-    for (let i = 0; i < reqInfo.leftOver.length; i++) {
-        user.leftOver.push(reqInfo.leftOver[i]);
-    }
-    await user.save();
+export async function getUserItems(userId: string, type: string): Promise<UserItem[]> {
+    const items = await ItemModel.find({ userId: userId, type: type }).populate<
+        {
+            itemId: Ingredient
+        }
+    >('itemId');
+    return items;
 }
+
+export async function modifyUserItems(userId: string, items: Item[], type: string): Promise<void> {
+    for (let item of items) {
+        const existingItem = await ItemModel.findOne({ userId: userId, itemId: item.itemId, type: type });
+        if (existingItem) {
+            existingItem.quantity = item.quantity;
+            existingItem.unit = item.unit;
+            await existingItem.save();
+        } else {
+            await ItemModel.create({ ...item, userId: userId, type: type });
+        }
+    }
+}
+

@@ -1,5 +1,7 @@
+
 import { Request, Response, NextFunction } from "express";
 import User from "../models/UserModel.ts";
+import ItemModel from "../models/ItemModel.ts";
 
 export async function getDietAndAllergy(req: Request, res: Response, next: NextFunction) {
     const allergy = [];
@@ -8,10 +10,23 @@ export async function getDietAndAllergy(req: Request, res: Response, next: NextF
         const thisUser = await User.findOne({ _id: req.user.userId });
         if (thisUser) {
             allergy.push(...thisUser.allergy);
-            diet.push(thisUser.diet);
+            diet.push(...thisUser.diet);
         }
     }
     req.body.allergy = allergy;
     req.body.diet = diet;
     next();
 }
+
+export async function getLeftOver(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { userId } = req.user;
+        const items = await ItemModel.find({ userId: userId, type: 'leftover' }).populate('itemId');
+        const leftOver = items ?? [];
+        req.body.leftOver = leftOver.map((item) => item.itemId);
+    }
+    catch (error) {
+    }
+    next();
+}
+

@@ -1,10 +1,7 @@
 import { Router } from 'express';
-import {
-    getCurrentUser
-} from '../controllers/userController.js';
-import { updateUser } from '../controllers/userController.js';
+import multer from 'multer';
+import { getCart, getLeftOver, updateCart, updateLeftOver, updateUser } from '../controllers/userController.js';
 import { authenticateUser } from '../middleware/authMiddleware.js';
-import { catchAsync } from '../utils/catchAsync.js';
 import { storage } from '../services/cloudinary/cloudinaryServices.ts';
 import multer from 'multer';
 import { getAllNotifications } from '../controllers/notificationController.ts';
@@ -14,8 +11,7 @@ const upload = multer({ storage });
 
 const router = Router();
 
-router.route('/current-user')
-    .get(authenticateUser, catchAsync(getCurrentUser))
+router.route('/')
     .patch(authenticateUser, upload.array('images'), catchAsync(updateUser));
 
 router.route('/notifications/cnt').get(authenticateUser, catchAsync(getNotificationCount))
