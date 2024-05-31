@@ -17,7 +17,7 @@ const SocketProvider: React.FC<SocketContextProviderProps> = ({ children }) => {
 
         socket.on('error', (error) => {
             console.log(error);
-            notifyError('Failed to process');
+            notifyError('Failed to process receipt. Please try again');
         });
 
         return () => {

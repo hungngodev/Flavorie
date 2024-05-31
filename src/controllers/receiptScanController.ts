@@ -8,6 +8,7 @@ const upload = multer({ storage })
 
 const FLASK_SERVICE_URL = 'http://127.0.0.1:5000/scan-receipts'
 
+// Upload receipt and process
 const processReceipt = async (req: Request, res: Response) => {
     if (!req.file) {
         return res.status(400).send('No image uploaded.')

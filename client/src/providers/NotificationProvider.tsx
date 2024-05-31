@@ -22,6 +22,7 @@ const NotificationProvider: React.FC<NotificationContextProviderProps> = ({
 
   // const [unreadNotifications, setUnreadNotifications] = useState<Notification[]>([])
 
+  //fetch all notifications 
   const fetchNotifications = useCallback(async () => {
     try {
       const cntResponse = await axios.get('http://localhost:5100/api/user/notifications/cnt', {
@@ -36,6 +37,8 @@ const NotificationProvider: React.FC<NotificationContextProviderProps> = ({
       console.log(error);
     }
   }, [notifyError]);
+
+  // get notification detail 
   const fetchNotificationById = async (id: string) => {
     try {
       const response = await axios.get(`http://localhost:5100/api/user/notifications/${id}`, { withCredentials: true });
