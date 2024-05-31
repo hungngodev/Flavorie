@@ -20,6 +20,7 @@ export type NotificationContextType = {
     fetchNotifications: () => void;
     deleteNotification: (id: string) => void;
     fetchNotificationById: (id: string) => void;
+    
 }
 
 const NotificationContext = React.createContext<NotificationContextType>({
@@ -30,5 +31,6 @@ const NotificationContext = React.createContext<NotificationContextType>({
     fetchNotifications: () => {},
     deleteNotification: () => {},
     fetchNotificationById: () => {},
+    
 })
 export default NotificationContext

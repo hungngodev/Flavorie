@@ -2,29 +2,14 @@ import { useAuth } from '../hooks';
 import React, { useState, useEffect } from 'react';
 import { toast } from "react-toastify";
 import socket from '../socket/socketio.tsx';
+import useToast from '../hooks/useToast.tsx';
 
 
 const UploadReceiptForm = () => {
     const auth = useAuth()
     const [file, setFile] = useState<File | null>(null)
-    useEffect(() => {
-        
-        socket?.on('processReceipt', (data) => {
-            console.log(data); 
-            toast.success('Process successfully')
-        })
-        
-        socket?.on('error', (error) => {
-            console.log(error);
-            toast.error('Failed to process')
-        })
-        
-        return () => {
-            socket?.off('processReceipt')
-            socket?.off('error')
-        }
-    },[])
-
+    const {notifyError, notifySuccess, notifyWarning} = useToast()
+    
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files){
         setFile(event.target.files[0])
@@ -33,18 +18,18 @@ const UploadReceiptForm = () => {
     const handleSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (!file) {
-            toast.error('Please upload files');
+            notifyError('Please upload files');
             return;
         }
 
         if (auth.currentUser.status === 'unauthenticated'){
-            toast.error('Please log in or sign up to submit receipt')
+            notifyError('Please log in or sign up to submit receipt')
             return;
         }
         
         
         socket?.emit('submitReceipt', file)
-        toast.success('Submit receipt successfully')
+        notifySuccess('Submit receipt successfully')
     }
     return (
         <form onSubmit={handleSubmit}>

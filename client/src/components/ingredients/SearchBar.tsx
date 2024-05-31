@@ -25,7 +25,7 @@ export const SearchBar = () => {
     useEffect(() => {
         const results = items.filter(i => i.toLowerCase().includes(query))
         setSearchResult(results)
-    }, [debounce])
+    }, [debounce, query])
     return (
         <>
         <Flex align="center" justify="center" padding="1.5">

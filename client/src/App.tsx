@@ -7,6 +7,9 @@ import theme from './style/theme';
 import ReceiptScan from './pages/ReceiptScan.tsx';
 import NotificationPage from './pages/NotificationPage.tsx';
 import NotificationDetailPage from './pages/NotificationDetail.tsx';
+import NotificationProvider from './providers/NotificationProvider.tsx';
+import ToastProvider from './providers/ToastProvider.tsx';
+import SocketProvider from './providers/SocketProvider.tsx';
 
 
 // const { Button } = chakraTheme.components;
@@ -76,8 +79,19 @@ const router = createBrowserRouter([
 function App() {
   return (
     <ChakraBaseProvider theme={extendTheme(theme)}>
-      <RouterProvider router={router} />
+      <ToastProvider>
+        <SocketProvider>
+        {/* <NotificationProvider> */}
+
+          <RouterProvider router={router} />
       <ToastContainer autoClose={5000} limit={3} transition={Slide} />
+      {/* </NotificationProvider> */}
+
+        </SocketProvider>
+      
+      </ToastProvider>
+      
+      
     </ChakraBaseProvider>
   );
 }

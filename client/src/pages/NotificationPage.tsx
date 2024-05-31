@@ -1,22 +1,12 @@
 import React from 'react';
-import NotificationHeader from '../components/notifications/NotificationHeader.tsx';
-import NotificationProvider from '../providers/NotificationProvider.tsx';
-import { AuthProvider } from '../providers/index.ts';
-
-
+import NotificationList from '../components/notifications/NotificationList.tsx';
 
 const NotificationPage: React.FC = () => {
-    return (
-        <div>
-            
-            <NotificationProvider>
-                <AuthProvider>
-                    <NotificationHeader />
-                </AuthProvider>
-            </NotificationProvider>
-            
-        </div>
-    );
+  return (
+    <div>
+      <NotificationList />
+    </div>
+  );
 };
 
 export default NotificationPage;

@@ -1,6 +1,5 @@
 import { Request, Response} from "express";
 import NotificationModel from "../models/NotificationModel.ts";
-import mongoose from "mongoose";
 
 const getNotificationCount = async (req: Request, res: Response) => {
     const userId = req.user.userId;

@@ -1,10 +1,13 @@
 'use client';
 
 import { ChevronRightIcon } from '@chakra-ui/icons';
+import { FaBell } from 'react-icons/fa';
+
 import {
   Avatar,
   Box,
   Button,
+  Circle,
   Flex,
   Icon,
   Menu,
@@ -23,14 +26,15 @@ import {
 import { Link } from 'react-router-dom';
 import logo from '../../assets/logo.svg';
 import { useAuth } from '../../hooks';
+import useNotification from '../../hooks/useNotification.tsx';
 import { NavItem } from './NavBar';
-import useNotification from '../../hooks/useNotification';
 
 export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
   const linkColor = useColorModeValue('gray.600', 'gray.200');
   const linkHoverColor = useColorModeValue('gray.800', 'white');
   const popoverContentBgColor = useColorModeValue('white', 'gray.800');
   const auth = useAuth();
+  const { numberOfNotifications } = useNotification();
 
   return (
     <>
@@ -107,33 +111,41 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
             </>
           ) : (
             <>
-            <Button
-              display={{ base: 'none', md: 'inline-flex' }}
-              fontSize={'sm'}
-              fontWeight={600}
-              color={'white'}
-              bg={'pink.400'}
-              onClick={auth.logout}
-              _hover={{
-                bg: 'pink.300',
-              }}
-            >
-              Sign Out
-            </Button>
-            <Button
+              <Button
                 display={{ base: 'none', md: 'inline-flex' }}
                 fontSize={'sm'}
                 fontWeight={600}
                 color={'white'}
                 bg={'pink.400'}
+                onClick={auth.logout}
                 _hover={{
                   bg: 'pink.300',
                 }}
               >
-                <Link to="/notifications">Notifications</Link>
+                Sign Out
               </Button>
+              <Box position="relative" display="inline-block">
+                <Link to="/notifications">
+                  <FaBell color="gray" size="24px" />
+                  {numberOfNotifications > 0 && (
+                    <Circle
+                      size="17px"
+                      bg="tomato"
+                      color="white"
+                      position="absolute"
+                      top="-4px"
+                      right="-6px"
+                      fontSize="0.8rem"
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                    >
+                      {numberOfNotifications}
+                    </Circle>
+                  )}
+                </Link>
+              </Box>
             </>
-
           )}
         </Stack>
         {auth.currentUser.status === 'authenticated' && (
