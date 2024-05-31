@@ -1,3 +1,4 @@
+import { Dish } from '@/components/meals/ImageSlide';
 import { ChakraBaseProvider, extendTheme } from '@chakra-ui/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -6,16 +7,14 @@ import { Slide, ToastContainer } from 'react-toastify';
 import HomeLayout from './layouts/HomeLayout.tsx';
 import { loader as ingredientsLoader } from './pages/Ingredient.tsx';
 import { loader as mealsLoader } from './pages/Meal.tsx';
-import { Ingredient, Login, Main, Meal, Register, User } from './pages/index';
-import theme from './style/theme';
-import ReceiptScan from './pages/ReceiptScan.tsx';
-import NotificationPage from './pages/NotificationPage.tsx';
 import NotificationDetailPage from './pages/NotificationDetail.tsx';
-import NotificationProvider from './providers/NotificationProvider.tsx';
-import ToastProvider from './providers/ToastProvider.tsx';
-import SocketProvider from './providers/SocketProvider.tsx';
+import NotificationPage from './pages/NotificationPage.tsx';
+import ReceiptScan from './pages/ReceiptScan.tsx';
 import IndividualMeal from './pages/Recipe.tsx';
-import { Dish } from '@/components/meals/ImageSlide'
+import { Ingredient, Login, Main, Meal, Register, User } from './pages/index';
+import SocketProvider from './providers/SocketProvider.tsx';
+import ToastProvider from './providers/ToastProvider.tsx';
+import theme from './style/theme';
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -81,17 +80,16 @@ const router = createBrowserRouter([
       },
       {
         path: 'upload-receipts',
-        element: <ReceiptScan />
+        element: <ReceiptScan />,
       },
       {
-        path: 'notifications', 
-        element: <NotificationPage />
+        path: 'notifications',
+        element: <NotificationPage />,
       },
       {
         path: 'notifications/:id',
-        element: 
-        <NotificationDetailPage />
-      }
+        element: <NotificationDetailPage />,
+      },
     ],
   },
 ]);
@@ -138,8 +136,8 @@ const IndividualMealWrapper = () => {
       totalTime="45 mins"
       servings="4"
       calories="500"
-      averageStar='5'
-      numReviews='1'
+      averageStar="5"
+      numReviews="1"
     />
   );
 };
@@ -149,19 +147,15 @@ function App() {
     <ChakraBaseProvider theme={extendTheme(theme)}>
       <ToastProvider>
         <SocketProvider>
-
           <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+            <ToastContainer autoClose={5000} limit={3} transition={Slide} />
+            <ReactQueryDevtools />
+          </QueryClientProvider>
+        </SocketProvider>
+      </ToastProvider>
       {/* <IndividualMealWrapper /> */}
       {/* <ImageScan /> */}
-        <RouterProvider router={router} />
-        <ToastContainer autoClose={5000} limit={3} transition={Slide} />
-
-        </SocketProvider>
-      
-      </ToastProvider>
-      
-      
-        <ReactQueryDevtools />
     </ChakraBaseProvider>
   );
 }

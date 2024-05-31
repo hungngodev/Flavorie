@@ -35,7 +35,7 @@ const setUpSocketIO = (server: any) => {
 
     io.use(authenticateSocketIO)
     io.on("connection", (socket: Socket) => {
-        // console.log(socket)
+        console.log(socket)
         socket.on('submitReceipt', async (data) => {
 
             try {

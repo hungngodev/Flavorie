@@ -15,9 +15,7 @@ import ingredientRouter from "./routes/ingredientRouter.ts";
 import mealRouter from "./routes/mealRouter.ts";
 import receiptScanRouter from "./routes/receiptScanRouter.ts";
 import userRouter from "./routes/userRouter.ts";
-// import receiptScanRouter from "./routes/receiptScanRouter.ts"
 import { createServer } from "http";
-// import { Server } from "socket.io";
 import  {setUpSocketIO}  from "./socketio/socketio.ts";
 
 
