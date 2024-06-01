@@ -3,18 +3,17 @@ import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { useRef, useEffect } from 'react';
 import ImageCard from './ImageCard';
 
-interface MealTypeProps {
-    Type: string;
-    meals: Meal[];
-}
-
-interface Meal {
+export interface singleMeal {
     title: string;
     description: string;
     image: string;
     category: string;
     // price: string;
     infoLink: string;
+}
+interface MealTypeProps {
+    Type: string;
+    meals: singleMeal[];
 }
 
 export function ListofMeals({ Type, meals }: MealTypeProps) {

@@ -17,6 +17,7 @@
     "@iconscout/unicons": "^4.0.8",
     "@motionone/utils": "^10.17.0",
     "axios": "^1.6.8",
+    "chart.js": "^4.4.3",
     "clsx": "^2.1.1",
     "framer-motion": "^11.2.4",
     "lodash": "^4.17.21",

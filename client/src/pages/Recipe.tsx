@@ -3,27 +3,30 @@ import { FaPrint, FaSave, FaShareAlt, FaStar } from 'react-icons/fa';
 import ImageSlide from '../components/meals/ImageSlide';
 import { Dish } from '../components/meals/ImageSlide';
 
-interface MealProps {
+export interface MealProps {
     individualMeal: Dish[];
     title: string;
     overview: string;
+    image: string;
     totalTime: string;
     servings: string;
     calories: string;
     averageStar: string;
     numReviews: string;
+    // tags: Tag[];
 }
 
 function IndividualMeal({ 
     individualMeal, 
     title, 
-    overview, 
+    overview,
+    image, 
     totalTime, 
     servings, 
     calories, 
     averageStar, 
-    numReviews }: MealProps) {
-    const lastDish = individualMeal[individualMeal.length - 1];
+    numReviews,
+}: MealProps) {
     return (
         <Stack alignItems="center" justifyContent="center">
             <Grid 
@@ -40,7 +43,7 @@ function IndividualMeal({
                         justifyContent="center" 
                         alignItems="center"
                     >
-                        <Image src={lastDish.image} alt={lastDish.title} objectFit='cover' />  
+                        <Image src={image} alt={title} objectFit='cover' />  
                     </Box>
                 </GridItem>
                 <GridItem 
@@ -84,7 +87,7 @@ function IndividualMeal({
                             fontWeight="bold" 
                             textAlign="center"
                         >
-                        {title}
+                            {title}
                         </Heading>
                         <Text justifyContent="center" alignItems="center" fontSize={26}>{overview}</Text>
                         <HStack mt='2' justifyContent="center" alignItems="center" fontSize='14'>

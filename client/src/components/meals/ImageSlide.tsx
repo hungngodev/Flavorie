@@ -8,6 +8,7 @@ export interface Dish {
   image: string;
   title: string;
   description: string;
+  bgColor: string;
 }
 
 type DishesProps = {
@@ -37,7 +38,7 @@ function ImageSlide({ dishes }: DishesProps): ReactNode {
             flexDirection="column"
             overflow="hidden"
             color="black.200"
-            bg="base.d100"
+            bg={dish.bgColor}
             rounded={5}
             flex={1}
             p={5}
