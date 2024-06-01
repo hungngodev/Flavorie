@@ -28,7 +28,7 @@ export const createMeal = async (data: any, source: string): Promise<Types.Objec
                 ...(mealData.strArea ? mealData.strArea.split(',') : []),
             ].map(e => e.toLowerCase()),
             videoLink: mealData.strYoutube,
-            analyzeInstruction: {},
+            analyzeInstruction: [],
             amount: {},
         });
 

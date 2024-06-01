@@ -13,7 +13,8 @@ export const EndPoint = {
     FIND_INGREDIENTS_BY_ID: (id: string) => `/food/ingredients/${id}/information`,
     RANDOM_RECIPES: '/recipes/random',
     FIND_RECIPES_ID: (id: string) => `/recipes/${id}/information`,
-    ANALYZE_INSTRUCTIONS: "/recipes/analyzeInstructions"
+    ANALYZE_INSTRUCTIONS: "/recipes/analyzeInstructions",
+    COMPLEX_SEARCH: "/recipes/complexSearch",
 }
 
 const baseURL = axios.create(
@@ -114,6 +115,18 @@ export const getIngredientByIdAPI = async (id: string) => {
     return await baseCall(EndPoint.FIND_INGREDIENTS_BY_ID(id), {
         amount: '100',
         unit: 'grams',
+    });
+}
+
+export const getAllMealsComplexSearch = async (query: string, cuisine: string, diet: string[], intolerances: string[], mealType: string, sort: string, number: number) => {
+    return await baseCall(EndPoint.COMPLEX_SEARCH, {
+        query: query,
+        cuisine: cuisine,
+        diet: diet.join(','),
+        intolerances: intolerances.join(','),
+        type: mealType,
+        sort: sort,
+        number: number.toString(),
     });
 }
 

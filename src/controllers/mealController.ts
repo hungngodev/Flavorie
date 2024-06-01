@@ -218,9 +218,15 @@ export const getIndividualMeal = async (req: Request, res: Response) => {
         meal = await MealModel.findById(idNewMeal).populate('allIngredients');
       }
       if (meal) {
-        if (Object.keys(meal.analyzeInstruction).length === 0) {
+        console.log("Found");
+        if (meal.analyzeInstruction.length === 0) {
           const analyze = await analyzeInstruction(meal.instruction);
-          meal.analyzeInstruction = analyze;
+          meal.analyzeInstruction = analyze.parsedInstructions;
+          meal.readyInMinutes = analyze.parsedInstructions.reduce(
+            (acc: number, curr: any) => curr.steps ? acc + curr.steps.reduce(
+              (acc: number, curr: any) => curr.length ? acc + curr.length.number : acc, 0
+            ) : acc, 0
+          )
           await meal.save();
         }
         return res.json(meal).status(StatusCodes.OK);
@@ -233,3 +239,6 @@ export const getIndividualMeal = async (req: Request, res: Response) => {
     throw new ServerError(`${error}`);
   }
 }
+
+
+

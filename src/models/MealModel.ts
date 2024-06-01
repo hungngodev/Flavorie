@@ -32,7 +32,7 @@ export interface Meal extends mongoose.Document {
                 unit: string;
             };
         }[];
-    };
+    }[];
 
     source: Source;
     id: string;
