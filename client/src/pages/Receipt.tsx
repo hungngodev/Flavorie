@@ -11,7 +11,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { zodResolver } from '@hookform/resolvers/zod';
+// import { zodResolver } from '@hookform/resolvers/zod';
 import { Focus } from 'lucide-react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -19,9 +19,12 @@ import ReceiptField from '../components/ingredients/ReceiptField';
 import ReceiptForm from '../components/ingredients/ReceiptForm';
 import { mockReceipts } from '../components/ingredients/MockReceipt';
 
+export const defaultImg = "https://img.freepik.com/free-photo/fried-chicken-breast-with-vegetables_140725-4650.jpg?t=st=1717211148~exp=1717214748~hmac=35aff48267e7d35f50f03fdd12473c2606c90b4f0a73eb45e2d4a51cfb44d0d8&w=740";
+
 const ReceiptObject = z
   .object({
     name: z.string(),
+    image: z.string(),
     quantity: z.coerce.string(),
     price: z.coerce.string(),
     suggested: z.object({
@@ -30,7 +33,12 @@ const ReceiptObject = z
     }),
   })
   .strict()
-  .required();
+  .required({
+    name:true,
+    quantity: true,
+    price:true,
+    suggested: true,
+  });
 
 const ReceiptFieldObject = z.object({
   receipts: z.array(ReceiptObject),
@@ -45,13 +53,14 @@ const Receipt = () => {
     watch,
     formState: { errors },
   } = useForm<ReceiptFieldType>({
-    resolver: zodResolver(ReceiptFieldObject),
+    // resolver: zodResolver(ReceiptFieldObject),
     defaultValues: {
       receipts:
         mockReceipts?.data?.length > 0
           ? mockReceipts.data.map((receipt: any) => {
               return {
                 name: receipt.name.toLowerCase(),
+                image: receipt.image ?? defaultImg,
                 quantity: receipt.quantity,
                 price: receipt.price,
                 suggested: {
@@ -60,7 +69,7 @@ const Receipt = () => {
                 },
               };
             })
-          : [{ name: '', quantity: '0', price: '0.0', suggested: { display: false, items: [] } }],
+          : [{ name: '', image: defaultImg, quantity: '0', price: '0.0', suggested: { display: false, items: [] } }],
     },
   });
 
@@ -71,7 +80,7 @@ const Receipt = () => {
 
   // this function handles the submission of the form
   const submitReceipts: SubmitHandler<ReceiptFieldType> = (receiptResponse) => {
-    // console.log(receiptResponse);
+    console.log(receiptResponse);
     // actual submit logic will be added later
   };
 
@@ -83,6 +92,7 @@ const Receipt = () => {
   const updateField = (index: number, watch: any, fields: any) => {
     update(index, {
       name: watch(`receipts.${index}.name`),
+      image: watch(`receipts.${index}.image`),
       quantity: watch(`receipts.${index}.quantity`),
       price: watch(`receipts.${index}.price`),
       suggested: {
@@ -95,6 +105,7 @@ const Receipt = () => {
   const appendField = () => {
     append({
       name: '',
+      image: defaultImg,
       quantity: '0',
       price: '0.0',
       suggested: { display: false, items: [] },

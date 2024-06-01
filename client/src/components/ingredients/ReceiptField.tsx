@@ -23,12 +23,17 @@ function ReceiptField<T extends ZodType<any, any, any>>({
 }: ReceiptFieldProps<T>) {
   return (
     <HStack width="100%" marginTop={12} gap={6} justifyContent="stretch">
-      <Image
-        alignSelf="flex-start"
-        borderRadius="lg"
-        boxSize="7rem"
-        src="https://img.freepik.com/free-vector/hand-drawn-flat-design-turkish-food-illustration_23-2149276733.jpg?w=826&t=st=1716431567~exp=1716432167~hmac=6eca3d748ea3362697544328f767549b297318ada51b416c2f8eabe4ed0b155f"
-      />
+      {
+        field.image && 
+          <Image
+          aspectRatio="1/1"
+          alignSelf="flex-start"
+          borderRadius="lg"
+          boxSize="7rem"
+          src={field.image}
+          alt="receipt image"
+        />
+      }
       <VStack justifyContent="flex-start" alignItems="flex-start" gap={6} width="100%">
         // row for name and menu
         <HStack>
