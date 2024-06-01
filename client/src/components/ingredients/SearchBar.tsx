@@ -3,34 +3,25 @@ import { Box, Flex, IconButton, Input, InputGroup } from '@chakra-ui/react';
 import { useClickAway } from '@uidotdev/usehooks';
 import { useEffect, useState } from 'react';
 
-function useDebounce<T>(value: T, delay: number): T {
-  const [debounceValue, setDebounceValue] = useState<T>(value);
-  useEffect(() => {
-    const timeOut = setTimeout(() => {
-      setDebounceValue(value);
-    }, delay);
-    return () => {
-      clearTimeout(timeOut);
-    };
-  }, [value, delay]);
-  return debounceValue;
-}
-
 const items = ['orange', 'apple', 'lemon'];
 
 export const SearchBar = () => {
   const [query, setQuery] = useState('');
   const [searchResult, setSearchResult] = useState<string[]>([]);
-  const debounce = useDebounce(query, 1000);
   const [focus, setFocus] = useState(false);
   const ref = useClickAway(() => {
     setFocus(false);
   });
 
   useEffect(() => {
-    const results = items.filter((i) => i.toLowerCase().includes(query));
-    setSearchResult(results);
-  }, [debounce, query]);
+    const timeOut = setTimeout(() => {
+      const results = items.filter((i) => i.toLowerCase().includes(query));
+      setSearchResult(results);
+    }, 1000);
+    return () => {
+      clearTimeout(timeOut);
+    };
+  }, [query]);
   return (
     <>
       <Flex align="center" justify="center" padding="1.5">

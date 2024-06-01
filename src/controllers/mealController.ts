@@ -34,36 +34,35 @@ export const getRandomMealsUnauthenticated = async (
     const mainRange = mainSize ? parseInt(mainSize.toString()) : 30;
     const sideRange = sideSize ? parseInt(sideSize.toString()) : 15;
     const dessertRange = dessertSize ? parseInt(dessertSize.toString()) : 15;
-
+    async function processingMeals(meals: theMealDB[]) {
+      const results = await Promise.all(meals.map(async (meal) => {
+        const _id = await createMeal(meal, 'themealdb');
+        return {
+          _id: _id.toString(),
+          id: meal.idMeal,
+          title: meal.strMeal,
+          image: meal.strMealThumb,
+          category: meal.strCategory + " " + meal.strArea,
+          description: meal.strInstructions,
+          source: 'themealdb',
+        }
+      }))
+      return results;
+    }
     if (search) {
       const nameResult = await getMealByName(search.toString());
       const areaResult = await getMealByFilter("area", search.toString(), queryRange);
       const categoryResult = await getMealByFilter("category", search.toString(), queryRange);
       const ingredientResult = await getMealByFilter("ingredient", search.toString(), queryRange);
       const mealReturns: any = {};
-      nameResult ? mealReturns.relevant = nameResult : null;
-      areaResult ? mealReturns.area = areaResult : null;
-      categoryResult ? mealReturns.category = categoryResult : null;
-      ingredientResult ? mealReturns.ingredient = ingredientResult : null;
+      nameResult ? mealReturns.relevant = await processingMeals(nameResult) : null;
+      areaResult ? mealReturns.area = await processingMeals(areaResult) : null;
+      categoryResult ? mealReturns.category = await processingMeals(categoryResult) : null;
+      ingredientResult ? mealReturns.ingredient = await processingMeals(ingredientResult) : null;
       return res.json(mealReturns).status(StatusCodes.OK);
     }
     else {
       const uniqueCheck = new Set<string>([]);
-      async function processingMeals(meals: theMealDB[]) {
-        const results = await Promise.all(meals.map(async (meal) => {
-          const _id = await createMeal(meal, 'themealdb');
-          return {
-            _id: _id.toString(),
-            id: meal.idMeal,
-            title: meal.strMeal,
-            image: meal.strMealThumb,
-            category: meal.strCategory + " " + meal.strArea,
-            description: meal.strInstructions,
-            source: 'themealdb',
-          }
-        }))
-        return results;
-      }
       const randomMeals = [];
       const suggestedMeals = [];
       for (let i = 0; i < queryRange; i++) {
@@ -129,7 +128,7 @@ export const getRanDomMealsAuthenticated = async (
 
     async function processingMeals(meals: spoonacularDB[]) {
       const results = await Promise.all(meals.map(async (meal) => {
-        const _id = await createMeal(meal, 'themealdb');
+        const _id = await createMeal(meal, 'spoonacular');
         return {
           _id: _id.toString(),
           id: meal.id,
@@ -158,14 +157,12 @@ export const getRanDomMealsAuthenticated = async (
     const suggestedMeals = leftOver.length !== 0 ? await getAllMealsByIngredientsAPI(
       leftOver.map((item: Ingredient) => item.name).join(","),
       20,
-    ) : {
-      recipes: []
-    };
+    ) : [];
     const mealsReturn = {
-      randomMeals: await processingMeals(randomMeals),
-      sideMeals: await processingMeals(sideMeals),
-      mainMeals: await processingMeals(mainMeals),
-      dessertMeals: await processingMeals(dessertMeals),
+      randomMeals: await processingMeals(randomMeals.recipes),
+      sideMeals: await processingMeals(sideMeals.recipes),
+      mainMeals: await processingMeals(mainMeals.recipes),
+      dessertMeals: await processingMeals(dessertMeals.recipes),
       suggestedMeals: await processingMeals(suggestedMeals),
     }
     //adding more meals of SPOONACULAR API

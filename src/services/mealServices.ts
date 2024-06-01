@@ -3,6 +3,7 @@ import IngredientModel from '../models/IngredientModel.ts';
 import MatchingModel from '../models/MatchingModel.ts';
 import MealModel from '../models/MealModel.ts';
 import { ServerError } from '../errors/customErrors.ts';
+import { findIngredientById } from '../services/spoonacular/spoonacularServices.ts';
 
 export const createMeal = async (data: any, source: string): Promise<Types.ObjectId> => {
     let newMeal;
@@ -78,7 +79,7 @@ export const createMeal = async (data: any, source: string): Promise<Types.Objec
             description: mealData.summary,
             videoLink: mealData.sourceUrl,
             instructions: mealData.instructions,
-            analyzeInstruction: mealData.analyzeInstructions,
+            analyzeInstruction: mealData.analyzedInstructions,
             amount: {},
         });
         for (const key of Object.keys(mealData)) {
@@ -90,13 +91,26 @@ export const createMeal = async (data: any, source: string): Promise<Types.Objec
             const matchingIngredient = await IngredientModel.findOne({
                 id: ingredient.id
             });
+            if (ingredient.id === -1) {
+                console.log("Ingredient not valid")
+                continue;
+            }
             if (matchingIngredient) {
                 newMeal.allIngredients.push(matchingIngredient);
-                newMeal.amount.set(matchingIngredient.name, ingredient.
-                    Ingredient.original);
+                newMeal.amount.set(matchingIngredient.name, ingredient.original);
             }
             else {
-                console.log('Spoonacular Missing');
+                console.log('Spoonacular Missing Ingredient');
+                console.dir(ingredient);
+                try {
+                    const newIngredient = await findIngredientById("", ingredient.id);
+                    newMeal.allIngredients.push(newIngredient);
+                    newMeal.amount.set(newIngredient.name, ingredient.original);
+                }
+                catch (error) {
+                    console.log('Ingredient not found');
+                    console.dir(ingredient);
+                }
             }
 
         }

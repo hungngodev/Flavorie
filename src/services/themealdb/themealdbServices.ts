@@ -97,7 +97,7 @@ export const getMealById = async (id: string) => {
 export const getMealByName = async (name: string) => {
   try {
     const mealRequest = await baseFetch.get(Endpoint.SEARCH(name));
-    return mealRequest.data.meals[0];
+    return mealRequest.data.meals;
   } catch (error) {
     throw new ServerError("API call for meal by name error");
   }

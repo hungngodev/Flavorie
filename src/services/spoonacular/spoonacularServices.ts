@@ -31,6 +31,7 @@ const arrKey = [
     process.env.spoonacular_API_KEY_5,
     process.env.spoonacular_API_KEY_6,
     process.env.spoonacular_API_KEY_7,
+    process.env.spoonacular_API_KEY_8,
 ];
 
 export const baseCall = async (url: string, query: Record<string, any>, method = 'get', data?: Record<string, any>) => {

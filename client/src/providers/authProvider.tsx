@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
 import { CiCircleCheck, CiLogin } from 'react-icons/ci';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import AuthContext, { AuthContextType } from '../contexts/authContext';
 import customFetch from '../utils/customFetch';
@@ -18,6 +18,7 @@ const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ children }: A
   });
   const location = useLocation();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const logout = async () => {
     try {
@@ -29,7 +30,7 @@ const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ children }: A
         setCurrentUser({ username: '', email: '', status: 'unauthenticated' });
       }
       queryClient.invalidateQueries();
-      window.location.reload();
+      navigate('/');
     } catch (error) {
       toast.error('Error during logging out, please try later!', { position: 'top-right', icon: <CiLogin /> });
     }
