@@ -1,4 +1,4 @@
-import { Button, Card, CardBody, CardFooter, CardHeader, Heading } from '@chakra-ui/react';
+import { Button, Card, CardBody, CardFooter, CardHeader, Heading, Text } from '@chakra-ui/react';
 import React from 'react';
 import { ArrayPath, Control, FieldArrayWithId, SubmitHandler, UseFormWatch } from 'react-hook-form';
 import { ZodType, z } from 'zod';
@@ -32,11 +32,14 @@ function ReceiptForm<T extends ZodType<any, any, any>>({
   watch,
 }: ReceiptFormProps<T>): React.ReactNode {
   return (
-    <Card flex={4}>
+    <Card flex={4} border="none" boxShadow="none">
       <CardHeader>
         <Heading fontSize="3xl" color="teal" fontWeight="semibold" alignSelf="start">
           Receipts
         </Heading>
+        <Text color="blackAlpha.700">
+            {`We found ${fields.length} matches for your ingredients`}
+          </Text>
       </CardHeader>
       <CardBody paddingInline={8}>
         <form onSubmit={submit}>

@@ -119,6 +119,7 @@ const Receipt = () => {
       position="sticky"
       alignItems="flex-start"
       direction={{ base: 'column', md: 'row' }}
+      paddingInline={4}
     >
       <ReceiptForm
         fields={fields}
@@ -137,7 +138,6 @@ const Receipt = () => {
         top={0}
         paddingInline={6}
         paddingBlock={4}
-        minWidth={{ base: '100%', md: '37%' }}
       >
         <CardHeader>
           <Heading fontSize="3xl" color="teal" fontWeight="semibold" alignSelf="start">
