@@ -67,7 +67,12 @@ const router = createBrowserRouter([
       },
       {
         path: 'community',
-        element: <div>Community</div>,
+        children: [
+          {
+            index: true,
+            element: <div>Community</div>,
+          },
+        ],
       },
       {
         path: 'profile',
