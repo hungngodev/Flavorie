@@ -12,7 +12,7 @@ export interface Dish {
 
 type DishesProps = {
   dishes: Dish[];
-}
+};
 
 function ImageSlide({ dishes }: DishesProps): ReactNode {
   return (

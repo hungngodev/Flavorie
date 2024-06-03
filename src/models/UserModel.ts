@@ -1,7 +1,5 @@
-import mongoose, { Types } from 'mongoose';
 import bcrypt from 'bcrypt';
-import { Ingredient } from './IngredientModel.ts';
-import { Meal } from './MealModel.ts';
+import mongoose from 'mongoose';
 
 export interface User {
     name: string;
