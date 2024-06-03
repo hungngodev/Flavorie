@@ -22,6 +22,7 @@ export const SearchBar = () => {
       clearTimeout(timeOut);
     };
   }, [query]);
+
   return (
     <>
       <Flex align="center" justify="center" padding="1.5">
