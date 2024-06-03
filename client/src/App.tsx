@@ -513,20 +513,148 @@ const backendData: BackendData = {
   },
 };
 
-
 const individualMeal: Dish[] = transformToDishes(backendData.analyzeInstruction);
 
-// const mealProps: MealProps = {
-//   individualMeal,
-//   title: backendData.title,
-//   overview: backendData.description,
-//   image: backendData.imageUrl,
-//   totalTime: backendData.readyInMinutes,
-//   servings: backendData.servings.toString(),
-//   calories: '300', 
-//   averageStar: '4.8', 
-//   numReviews: '1',
-// };
+const PersonalDashboardWrapper = () => {
+  const userInfo = {
+    avatar: {
+      src: "../public/images/1989-Taylors-Version.webp",
+      username: "Taylor Swift",
+    },
+    email: "taylorswift@gmail.com",
+    phone: "+1 (202) 444 1989",
+    address: {
+      city: "Nashville",
+      state: "Tennessee",
+      country: "USA",
+      zipcode: "37208",
+    },
+  };
+
+  const Dailydata = [
+    {
+      mealType: 'Breakfast',
+      calories: 120.4,
+      carbs: 53.7,
+      protein: 62.4,
+      fat: 14.5,
+    },
+    {
+      mealType: 'Lunch',
+      calories: 280.6,
+      carbs: 130.7,
+      protein: 136.2,
+      fat: 18.4,
+    },
+    {
+      mealType: 'Dinner',
+      calories: 220.7,
+      carbs: 89.4,
+      protein: 100.9,
+      fat: 19.8,
+    }
+  ];
+
+  const recentMeals = [
+    {
+      image: 'https://www.chilipeppermadness.com/wp-content/uploads/2023/12/Bun-Bo-Hue-Recipe1.jpg',
+      title: 'Bun bo Hue',
+      calories: 550,
+      date: '04/28/2024',
+      infoLink: 'https://www.chilipeppermadness.com/recipes/bun-bo-hue/',
+    },
+    {
+      image:
+        'https://assets.bonappetit.com/photos/6437281f4c497b684ece7ff3/1:1/w_2240,c_limit/Recipe_Beauty_Gingery_Chicken_Ramen_0350.jpg',
+      title: 'Ramen',
+      calories: 400,
+      date: '04/22/2024',
+      infoLink: 'https://www.bonappetit.com/recipe/homemade-chicken-ramen-recipe',
+    },
+    {
+      image: 'https://joyfoodsunshine.com/wp-content/uploads/2022/11/BBQ-chicken-pizza-recipe-8.jpg',
+      title: 'Pizza',
+      calories: 780,
+      date: '04/18/2024',
+      infoLink: 'https://joyfoodsunshine.com/bbq-chicken-pizza/',
+    },
+    {
+      image: 'https://www.budgetbytes.com/wp-content/uploads/2013/07/Creamy-Tomato-Spinach-Pasta-V2-bowl.jpg',
+      title: 'Pasta',
+      calories: 600,
+      date: '04/15/2024',
+      infoLink: 'https://www.budgetbytes.com/wp-content/uploads/2013/07/Creamy-Tomato-Spinach-Pasta-V2-bowl.jpg',
+    },
+    {
+      image: 'https://preppykitchen.com/wp-content/uploads/2022/05/Naked-Cake-Blog2.jpg',
+      title: 'Naked Cake',
+      calories: 600,
+      date: '04/12/2024',
+      infoLink: 'https://preppykitchen.com/wp-content/uploads/2022/05/Naked-Cake-Blog2.jpg',
+    },
+    {
+      image:
+        'https://img.taste.com.au/4F5Z2H_-/w720-h480-cfill-q80/taste/2016/11/aussie-style-beef-and-salad-tacos-86525-1.jpeg',
+      title: 'Tacos',
+      calories: 600,
+      date: '03/28/2024',
+      infoLink:
+        'https://img.taste.com.au/4F5Z2H_-/w720-h480-cfill-q80/taste/2016/11/aussie-style-beef-and-salad-tacos-86525-1.jpeg',
+    },
+    {
+      image: 'https://www.chilipeppermadness.com/wp-content/uploads/2023/12/Bun-Bo-Hue-Recipe1.jpg',
+      title: 'Bun bo Hue',
+      calories: 550,
+      date: '04/28/2024',
+      infoLink: 'https://www.chilipeppermadness.com/recipes/bun-bo-hue/',
+    },
+    {
+      image:
+        'https://assets.bonappetit.com/photos/6437281f4c497b684ece7ff3/1:1/w_2240,c_limit/Recipe_Beauty_Gingery_Chicken_Ramen_0350.jpg',
+      title: 'Ramen',
+      calories: 400,
+      date: '04/22/2024',
+      infoLink: 'https://www.bonappetit.com/recipe/homemade-chicken-ramen-recipe',
+    },
+  ];
+
+  const weeklyData = {
+    weeklyProtein: 70, 
+    weeklyCarb: 50, 
+    weeklyFat: 30, 
+  };
+
+  const weeklyCalories = [
+    { date: 'Mon', weeklyCalories: '200' },
+    { date: 'Tue', weeklyCalories: '250' },
+    { date: 'Wed', weeklyCalories: '300' },
+    { date: 'Thu', weeklyCalories: '280' },
+    { date: 'Fri', weeklyCalories: '350' },
+    { date: 'Sat', weeklyCalories: '400' },
+    { date: 'Sun', weeklyCalories: '370' },
+  ];
+
+  const dashboardProps = {
+    mealData: Dailydata,
+    info: userInfo,
+    totalMeals: '12',
+    points: '34',
+    tags: 'diet',
+    reviewsGiven: '10',
+    recipesShared: '8',
+    caloriesConsumed: '5420',
+    badgesEarned: 'First popular shared',
+    recentMeals: recentMeals,
+    protein: '210',
+    vitamins: '48',
+    carb: '190',
+    fat: '120',
+    minerals: '42',
+    weeklySummaryData: weeklyData,
+    weeklyCaloriesData: weeklyCalories
+  }
+  return <PersonalDashboard {...dashboardProps}/>;
+};
 
 
 function App() {
@@ -544,7 +672,7 @@ function App() {
         numReviews="10"
       /> */}
       {/* <ImageScan /> */}
-      <PersonalDashboardWrapper />
+      <PersonalDashboardWrapper/>
       {/* <RouterProvider router={router} /> */}
       <ToastContainer autoClose={5000} limit={3} transition={Slide} />
     </ChakraBaseProvider>

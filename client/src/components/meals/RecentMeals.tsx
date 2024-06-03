@@ -28,42 +28,45 @@ export function RecentMeals({ meals }: RecentMealsProps) {
             Recent meals
             </Heading>
             <Box width="full" height="45px">
-            <HStack height="100%" width="100%" spacing={0}>
-                <Box
-                bg="base.100"
-                borderBottom="1px solid lightgray"
-                textAlign="center"
-                height="100%"
-                width="55%"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                >
-                <Text fontWeight="bold">Meal</Text>
-                </Box>
-                <Box
-                bg="base.100"
-                borderBottom="1px solid lightgray"
-                height="100%"
-                width="22%"
-                display="flex"
-                justifyContent="center"
-                >
-                <Text fontWeight="bold">Calories</Text>
-                </Box>
-                <Box
-                bg="base.100"
-                borderBottom="1px solid lightgray"
-                textAlign="center"
-                height="100%"
-                width="23%"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                >
-                <Text fontWeight="bold">Date</Text>
-                </Box>
-            </HStack>
+                <HStack height="100%" width="100%" spacing={0}>
+                    <Box
+                    bg="base.100"
+                    borderBottom="1px solid lightgray"
+                    textAlign="center"
+                    height="100%"
+                    width="55%"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    flexDirection="column" 
+                    >
+                        <Text fontWeight="bold">Meal</Text>
+                    </Box>
+                    <Box
+                    bg="base.100"
+                    borderBottom="1px solid lightgray"
+                    height="100%"
+                    width="22%"
+                    display="flex"
+                    justifyContent="center"
+                    flexDirection="column"
+                    alignItems="center"
+                    >
+                        <Text fontWeight="bold">Calories</Text>
+                    </Box>
+                    <Box
+                    bg="base.100"
+                    borderBottom="1px solid lightgray"
+                    textAlign="center"
+                    height="100%"
+                    width="23%"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    >
+                        <Text fontWeight="bold">Date</Text>
+                    </Box>
+                </HStack>
             </Box>
             <Box width="full" overflowY="auto" ref={scrollRef} border="1px solid lightgray" borderTop="none">
             {meals.map((meal, index) => (
