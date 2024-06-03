@@ -8,7 +8,5 @@ export { default as IngredientsMain } from './ingredients/IngredientsMain';
 export { default as CategorySidebar } from './ingredients/CategorySidebar';
 export { default as Cart } from './ingredients/Cart';
 export { default as ContainerScroll } from './ui/ContainerScrollAnimation';
-export { default as InputNumber } from './utils/numberInput';
-export { default as InputText } from './utils/textInput';
 export { default as InfoCard } from './users/InfoCard';
 export { default as ListOfMeals } from './meals/ListofMeals';
