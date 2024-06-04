@@ -21,12 +21,12 @@ export interface PersonalProps {
 const UserCard: React.FC<PersonalProps> = ({ avatar, email, phone, address }) => {
   return (
     <Card maxW="md">
-      <Flex ml="4" mt="4" mr="4" mb="4">
+      <Flex ml="4" mt="4" mr="4" mb="2">
         <Flex flex="1" gap="4" alignItems="center" flexWrap="wrap">
           <HStack>
-            <Avatar size="2xl" name={avatar.username} src={avatar.src} />
+            <Avatar size="xl" name={avatar.username} src={avatar.src} />
             <Box ml="4">
-              <Heading size="md" fontWeight="bold">
+              <Heading mb="2" size="md" fontWeight="bold">
                 {avatar.username}
               </Heading>
               <Text>
@@ -37,7 +37,7 @@ const UserCard: React.FC<PersonalProps> = ({ avatar, email, phone, address }) =>
         </Flex>
         <IconButton variant="solid" colorScheme="gray" aria-label="Edit" icon={<EditIcon />} />
       </Flex>
-      <Box ml="36" mr="4">
+      <Box ml="32" mr="4">
         <Divider width="100%" borderColor="base.200" />
       </Box>
       <CardBody>

@@ -1,11 +1,10 @@
 import axios, { AxiosError } from 'axios';
-import { ServerError, NotFoundError } from '../../errors/customErrors.ts';
-import Ingredients from '../../models/IngredientsModel.ts';
+import { NotFoundError, ServerError } from '../../errors/customErrors.ts';
 import ApiTrack from '../../models/ApiTrack.ts';
+import Ingredients from '../../models/IngredientModel.ts';
+import qs from 'qs';
 
 import dotenv from 'dotenv';
-import { number } from 'zod';
-import e from 'express';
 dotenv.config();
 
 export const EndPoint = {
@@ -14,6 +13,8 @@ export const EndPoint = {
     FIND_INGREDIENTS_BY_ID: (id: string) => `/food/ingredients/${id}/information`,
     RANDOM_RECIPES: '/recipes/random',
     FIND_RECIPES_ID: (id: string) => `/recipes/${id}/information`,
+    ANALYZE_INSTRUCTIONS: "/recipes/analyzeInstructions",
+    COMPLEX_SEARCH: "/recipes/complexSearch",
 }
 
 const baseURL = axios.create(
@@ -30,9 +31,10 @@ const arrKey = [
     process.env.spoonacular_API_KEY_5,
     process.env.spoonacular_API_KEY_6,
     process.env.spoonacular_API_KEY_7,
+    process.env.spoonacular_API_KEY_8,
 ];
 
-export const baseCall = async (url: string, query: Record<string, any>, devAPIkey?: string) => {
+export const baseCall = async (url: string, query: Record<string, any>, method = 'get', data?: Record<string, any>) => {
     let SpoonacularTrack = await ApiTrack.findOne({ serviceName: 'Spoonacular' });
     if (!SpoonacularTrack) {
         SpoonacularTrack = new ApiTrack({ serviceName: 'Spoonacular', usageCount: 0, currentKey: 0, callPerMin: 0, updatedAt: new Date(), lastMinute: new Date() });
@@ -74,11 +76,22 @@ export const baseCall = async (url: string, query: Record<string, any>, devAPIke
             number: '100',
             ...query,
         });
-        const response = await baseURL.get(url, { params });
-        return response.data;
-
+        if (method === 'get') {
+            const response = await baseURL.get(url, { params });
+            return response.data;
+        }
+        if (method === 'post') {
+            const response = await baseURL.post(url, qs.stringify(data), {
+                params, headers:
+                {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                }
+            });
+            return response.data;
+        }
     } catch (error) {
         if (error instanceof AxiosError) {
+            console.log(error);
             throw new NotFoundError(`Error: ${error.response?.data}`);
         }
         else {
@@ -87,12 +100,12 @@ export const baseCall = async (url: string, query: Record<string, any>, devAPIke
     }
 }
 
-export const getAllIngredientsAPI = async (allergy: string[], diet: string[], query: string) => {
+export const getAllIngredientsAPI = async (allergy: string[], diet: string[], query: string, number: number) => {
 
     return await baseCall(EndPoint.FIND_INGREDIENTS,
         {
             query: query,
-            number: '100',
+            number: number.toString(),
             addChildren: 'true',
         }
     );
@@ -106,23 +119,43 @@ export const getIngredientByIdAPI = async (id: string) => {
     });
 }
 
-export const getAllMealsAPI = async (ingredients: string[]) => {
+export const getAllMealsComplexSearch = async (query: string, cuisine: string, diet: string[], intolerances: string[], mealType: string, sort: string, number: number) => {
+    return await baseCall(EndPoint.COMPLEX_SEARCH, {
+        query: query,
+        cuisine: cuisine,
+        diet: diet.join(','),
+        intolerances: intolerances.join(','),
+        type: mealType,
+        sort: sort,
+        number: number.toString(),
+    });
+}
+
+export const getAllMealsByIngredientsAPI = async (ingredients: string, number: number) => {
     //add more fields like allergy, diet, etc
     return await baseCall(EndPoint.FIND_RECIPES_BY_INGREDIENTS, {
-        ingredients: ingredients.join(','),
-        number: '100',
+        ingredients: ingredients,
+        number: number.toString(),
         ranking: '1',
         ignorePantry: 'true',
     });
 }
 
-export const getRandomMealsAPI = async (includeTags?: string, excludeTags?: string) => {
+export const getRandomMealsAPI = async (includeTags?: string, excludeTags?: string, number?: number) => {
     return await baseCall(EndPoint.RANDOM_RECIPES, {
-        number: '30',
+        number: number?.toString(),
         tags: includeTags,
         "exclude-tags": excludeTags,
     });
 }
+
+export const getMealByIdAPI = async (id: string) => {
+    return await baseCall(EndPoint.FIND_RECIPES_ID(id), {
+        addTasteData: 'true',
+        includeNutrition: 'true',
+    });
+}
+
 
 export const findIngredientById = async (cagetory: string, id: Number) => {
     const find = await Ingredients.findOne({ id: id });
@@ -135,7 +168,14 @@ export const findIngredientById = async (cagetory: string, id: Number) => {
         await newIngredient.save();
         return newIngredient;
     }
+}
 
+export const analyzeInstruction = async (instructions: string) => {
+    return await baseCall(EndPoint.ANALYZE_INSTRUCTIONS, {},
+        'post', {
+        instructions: instructions,
+    }
+    );
 }
 interface DietDefinition {
     name: string;

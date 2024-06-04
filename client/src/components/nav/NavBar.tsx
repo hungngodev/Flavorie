@@ -12,18 +12,7 @@ const NAV_ITEMS: Array<NavItem> = [
   { label: 'Home', href: '/' },
   {
     label: 'Ingredients',
-    children: [
-      {
-        label: 'Fridge',
-        subLabel: 'your leftover foods',
-        href: '/',
-      },
-      {
-        label: 'Market',
-        subLabel: 'prepare your shopping list',
-        href: '/ingredients',
-      },
-    ],
+    href: '/ingredients/meat',
   },
   {
     label: 'Meals',
@@ -32,6 +21,18 @@ const NAV_ITEMS: Array<NavItem> = [
   {
     label: 'Community',
     href: '/community',
+    children: [
+      {
+        label: 'Browse',
+        subLabel: 'Look what others are cooking',
+        href: '/',
+      },
+      {
+        label: 'Share',
+        subLabel: 'share your favorite recipe',
+        href: '/',
+      },
+    ],
   },
 ];
 

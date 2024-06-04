@@ -16,20 +16,30 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { RiUserFollowLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { z } from 'zod';
 import { useAuth } from '../hooks';
 import customFetch from '../utils/customFetch';
 
-interface FormFields {
-  username: string;
-  email: string;
-  password: string;
-  reEnterPassword: string;
-}
-interface APIData {
-  name: string;
-  email: string;
-  password: string;
-}
+const UserRegister = z
+  .object({
+    username: z.string().min(4, { message: 'Username must be at least 4 characters' }),
+    email: z.string().email({ message: 'Please enter a valid email' }),
+    password: z.string().min(8, { message: 'Password must be at least 8 characters' }),
+    reEnterPassword: z.string().min(8, { message: 'Password must be at least 8 characters' }),
+  })
+  .refine((data) => data.password === data.reEnterPassword, {
+    message: 'You must re-enter your password correctly',
+    path: ['reEnterPassword'],
+  });
+
+const RequestRegister = z.object({
+  name: z.string(),
+  email: z.string(),
+  password: z.string(),
+});
+
+type UserRegisterType = z.infer<typeof UserRegister>;
+type RequestRegisterType = z.infer<typeof RequestRegister>;
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
@@ -47,11 +57,11 @@ const Register: React.FC = () => {
     handleSubmit,
     formState: { errors, isSubmitting },
     watch,
-  } = useForm<FormFields>();
+  } = useForm<UserRegisterType>();
 
-  const onSubmit: SubmitHandler<FormFields> = async (FormData) => {
+  const onSubmit: SubmitHandler<UserRegisterType> = async (FormData) => {
     try {
-      const newUserData: APIData = {
+      const newUserData: RequestRegisterType = {
         name: FormData.username,
         email: FormData.email,
         password: FormData.password,
@@ -66,6 +76,7 @@ const Register: React.FC = () => {
         });
         setExistedUserError(false);
         navigate('/');
+        auth.setUser();
       }
     } catch (error) {
       if (error instanceof AxiosError && error.response && error.response.status === 409) {
@@ -73,17 +84,6 @@ const Register: React.FC = () => {
       }
       return;
     }
-  };
-  const minLengthErrorMessage = {
-    username: 'Your username should have at least 4 characters',
-    password: 'Your password should have at least 8 characters',
-    reEnterPassword: 'You need to re-enter your password with at least 8 characters',
-  };
-  const requiredErrorMessage = {
-    username: 'You need a username to register',
-    email: 'You need an email to register',
-    password: 'You need a password to register',
-    reEnterPassword: 'You need to re-enter your password correctly to register',
   };
   return (
     <ChakraProvider>
@@ -95,82 +95,22 @@ const Register: React.FC = () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <VStack spacing={4}>
               <FormControl isInvalid={errors.username || existedUserError ? true : false}>
-                <Input
-                  {...register('username', {
-                    minLength: {
-                      value: 4,
-                      message: minLengthErrorMessage['username'],
-                    },
-                    required: {
-                      value: true,
-                      message: requiredErrorMessage['username'],
-                    },
-                  })}
-                  size="lg"
-                  type="username"
-                  placeholder="Enter username"
-                  isRequired
-                />
+                <Input {...register('username')} size="lg" type="username" placeholder="Enter username" isRequired />
                 <FormErrorMessage>
                   {(errors.username && errors.username.message) || (existedUserError && 'User already existed')}
                 </FormErrorMessage>
               </FormControl>
               <FormControl isInvalid={errors.email ? true : false}>
-                <Input
-                  {...register('email', {
-                    required: {
-                      value: true,
-                      message: requiredErrorMessage['email'],
-                    },
-                    pattern: {
-                      // regex for email validation
-                      value: /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/,
-                      message: 'You need to login with a valid email',
-                    },
-                  })}
-                  size="lg"
-                  type="email"
-                  isRequired
-                  placeholder="Enter email"
-                />
+                <Input {...register('email')} size="lg" type="email" isRequired placeholder="Enter email" />
                 <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
               </FormControl>
               <FormControl isInvalid={errors.password ? true : false}>
-                <Input
-                  {...register('password', {
-                    required: {
-                      value: true,
-                      message: requiredErrorMessage['password'],
-                    },
-                    minLength: {
-                      value: 8,
-                      message: minLengthErrorMessage['password'],
-                    },
-                  })}
-                  size="lg"
-                  type="password"
-                  placeholder="Enter password"
-                  isRequired
-                />
+                <Input {...register('password')} size="lg" type="password" placeholder="Enter password" isRequired />
                 <FormErrorMessage>{errors.password && errors.password.message}</FormErrorMessage>
               </FormControl>
               <FormControl isInvalid={errors.reEnterPassword ? true : false}>
                 <Input
-                  {...register('reEnterPassword', {
-                    required: {
-                      value: true,
-                      message: requiredErrorMessage['reEnterPassword'],
-                    },
-                    minLength: {
-                      value: 8,
-                      message: minLengthErrorMessage['reEnterPassword'],
-                    },
-                    validate: (val: string) => {
-                      if (watch('password') != val) {
-                        return 'You must re-enter your password correctly';
-                      }
-                    },
-                  })}
+                  {...register('reEnterPassword')}
                   size="lg"
                   type="password"
                   placeholder="Re-enter password"

@@ -3,7 +3,7 @@ import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import Lottie from 'lottie-react';
 import React from 'react';
 import { Cooking, Ingredient, LiveVideo, Scanning, Sharing } from '../assets/animations';
-import { ContainerScroll, Hero, StickyScrollReveal, Testimonials, WavyBackground } from '../components/index';
+import { ContainerScroll, Hero, StickyScrollReveal, Testimonials, WavyBackground } from '../components';
 
 const content = [
   {

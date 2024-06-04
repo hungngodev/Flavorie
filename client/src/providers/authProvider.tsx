@@ -1,9 +1,11 @@
+import { useQueryClient } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
 import { CiCircleCheck, CiLogin } from 'react-icons/ci';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import AuthContext, { AuthContextType } from '../contexts/authContext';
 import customFetch from '../utils/customFetch';
+
 interface AuthContextProviderProps {
   children: React.ReactNode;
 }
@@ -15,6 +17,8 @@ const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ children }: A
     status: 'loading',
   });
   const location = useLocation();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const logout = async () => {
     try {
@@ -25,6 +29,8 @@ const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ children }: A
         toast.success('Logged out successfully!', { position: 'top-right', icon: <CiCircleCheck /> });
         setCurrentUser({ username: '', email: '', status: 'unauthenticated' });
       }
+      queryClient.invalidateQueries();
+      navigate('/');
     } catch (error) {
       toast.error('Error during logging out, please try later!', { position: 'top-right', icon: <CiLogin /> });
     }
@@ -32,11 +38,14 @@ const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ children }: A
 
   const setUser = async () => {
     try {
-      const getUser = await customFetch.get('/user/current-user');
+      const getUser = await customFetch.get('/auth');
+      if (getUser.data.msg === 'Unauthorized') {
+        setCurrentUser({ username: '', email: '', status: 'unauthenticated' });
+        return;
+      }
       setCurrentUser({ username: getUser.data.user.name, email: getUser.data.user.email, status: 'authenticated' });
     } catch (error) {
       setCurrentUser({ username: '', email: '', status: 'unauthenticated' });
-      console.log(error);
     }
   };
 

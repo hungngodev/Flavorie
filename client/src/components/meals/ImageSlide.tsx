@@ -1,8 +1,9 @@
+import React from 'react'; 
 import { Text as CharkaText, Container, Flex, HStack, Heading, VStack } from '@chakra-ui/react';
 // import "fontsource-inter/500.css";
 //import { capsFirst } from "../utils/index.tsx";
 import { ReactNode } from 'react';
-import ChakraCarousel from './ChakraCarousel.tsx';
+import ChakraCarousel from './ChakraCarousel';
 
 export interface Dish {
   image: string;
@@ -13,7 +14,7 @@ export interface Dish {
 
 type DishesProps = {
   dishes: Dish[];
-}
+};
 
 function ImageSlide({ dishes }: DishesProps): ReactNode {
   return (

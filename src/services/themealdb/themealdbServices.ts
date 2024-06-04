@@ -1,7 +1,5 @@
 import axios, { AxiosResponse } from "axios";
 import dotenv from "dotenv";
-import { url } from "inspector";
-import { never } from "zod";
 import { MainCategories } from "./data.ts";
 import {
   areaType,
@@ -10,12 +8,15 @@ import {
   ingredientType,
 } from "./type.ts";
 import { getDataFromParam, getQueryParameter, getRandomKey } from "./utils.ts";
+import { ServerError } from "../../errors/customErrors.ts";
 
 dotenv.config();
 
 export const Endpoint = {
   SINGLE_RANDOM: "/random.php",
   FILTER: "/filter.php",
+  ID: (id: string) => `/lookup.php?i=${id}`,
+  SEARCH: (name: string) => `/search.php?s=${name}`,
 };
 
 const baseFetch = axios.create({
@@ -28,7 +29,7 @@ export const getRandomMeal = async () => {
     const randomMealRequest = await baseFetch.get(Endpoint.SINGLE_RANDOM);
     return randomMealRequest.data.meals[0];
   } catch (error) {
-    console.log(`API call for random meal error : ${error}`);
+    throw new ServerError("API call for random meal error");
   }
 };
 
@@ -45,7 +46,7 @@ export const getRandomMainMeal = async () => {
 
     return mealRequest.data.meals[0];
   } catch (error) {
-    console.log(`API call for random main meal error : ${error}`);
+    throw new ServerError("API call for random main meal error");
   }
 };
 
@@ -80,6 +81,24 @@ export const getMealByFilter = async (
       ? mealFilterRequest.data.meals.slice(0, size)
       : mealFilterRequest.data.meals;
   } catch (error) {
-    console.log(`API call for meal by filter error : ${error}`);
+    throw new ServerError("API call for meal by filter error");
   }
 };
+
+export const getMealById = async (id: string) => {
+  try {
+    const mealRequest = await baseFetch.get(Endpoint.ID(id));
+    return mealRequest.data.meals[0];
+  } catch (error) {
+    throw new ServerError("API call for meal by id error");
+  }
+}
+
+export const getMealByName = async (name: string) => {
+  try {
+    const mealRequest = await baseFetch.get(Endpoint.SEARCH(name));
+    return mealRequest.data.meals;
+  } catch (error) {
+    throw new ServerError("API call for meal by name error");
+  }
+}
