@@ -1,47 +1,147 @@
+import React from 'react'; 
 import { Box, Button, ButtonGroup, Grid, GridItem, HStack, Heading, Image, Stack, Text } from '@chakra-ui/react';
+import { QueryClient, useQuery } from '@tanstack/react-query';
+import { waveform } from 'ldrs';
 import { FaPrint, FaSave, FaShareAlt, FaStar } from 'react-icons/fa';
-import ImageSlide from '../components/meals/ImageSlide';
-import { Dish } from '../components/meals/ImageSlide';
+import { Params, useParams } from 'react-router-dom';
+import ImageSlide, { Dish } from '../components/meals/ImageSlide';
+import customFetch from '../utils/customFetch';
+import { Tag, TagLabel } from '@chakra-ui/react';
+
+
+waveform.register();
+
+// Default values shown
+
+const individualMealQuery = (id: string) => {
+    return {
+        queryKey: ['individualMeal', id],
+        queryFn: async () => {
+        const data = await customFetch(`/meal/${id}`, {});
+        return data;
+        },
+    };
+};
+
+export const loader =
+    (queryClient: QueryClient) =>
+    async ({ params }: { params: Params }) => {
+        queryClient.ensureQueryData(individualMealQuery(params.mealId ?? ''));
+        return null;
+    };
+
+
+// function Recipe() {
+//     const sampleMeal: Dish[] = [
+//         {
+//         image: '../public/images/baked-brie-with-roasted-mushrooms.webp',
+//         title: 'Baked brie with roasted mushroom',
+//         description: ' Step 1: Bake brie and roasted mushroom.',
+//         },
+//         {
+//         image: '../public/images/apple-and-cheddar-crisp-salad-scaled.webp',
+//         title: 'Apple and cheddar crisp salad',
+//         description: 'Step 2: Wash salad and apple',
+//         },
+//         {
+//         image: '../public/images/buffalo-chicken-cobb-salad-scaled.webp',
+//         title: 'Buffalo chicken cobb salad',
+//         description: 'Step 3: Roast buffalo chicken',
+//         },
+//         {
+//         image: '../public/images/chocolate-raspberry-pavlova-stack-12-scaled.webp',
+//         title: 'Chocolate raspberry pavlova stack',
+//         description: 'Step 4: Wash raspberry',
+//         },
+//         {
+//         image: '../public/images/new-york-crumb-cake-7-scaled.webp',
+//         title: 'New york crumb cake',
+//         description: 'Step 5: Bake cake',
+//         },
+//         {
+//         image: '../public/images/summer-ricotta-grilled-vegetables.webp',
+//         title: 'Summer ricotta grilled vegetables',
+//         description: 'Step 6: Grilled vegetables after washing',
+//         },
+//     ];
+//     const individualMeal = sampleMeal;
+//     const lastDish = sampleMeal[sampleMeal.length - 1];
+//     const title = 'Sample Meal Title';
+//     const overview = 'This is an overview of the sample meal.';
+//     const image = 'https://images.pexels.com/photos/1640772/pexels-photo-1640772.jpeg?auto=compress&cs=tinysrgb&w=800';
+//     const totalTime = '45 mins';
+//     const servings = '4';
+//     const calories = '500';
+//     const averageStar = '5';
+//     const numReviews = '1';
+
+//     const { mealId } = useParams<{ mealId: string }>();
+//     const { data: queryData, status } = useQuery(individualMealQuery(mealId ?? ''));
+//     const recipeData = queryData?.data;
+//     console.log(recipeData);
+//     console.log(status);
+
 
 interface MealProps {
     individualMeal: Dish[];
     title: string;
     overview: string;
+    image: string;
+    source: string;
     totalTime: string;
     servings: string;
     calories: string;
     averageStar: string;
     numReviews: string;
-}
+    tags: string[];
+};
 
 function IndividualMeal({ 
     individualMeal, 
     title, 
-    overview, 
+    overview,
+    image, 
+    source,
     totalTime, 
     servings, 
     calories, 
     averageStar, 
-    numReviews }: MealProps) {
-    const lastDish = individualMeal[individualMeal.length - 1];
+    numReviews,
+    tags }: MealProps) {
+    
     return (
         <Stack alignItems="center" justifyContent="center">
             <Grid 
                 templateRows='repeat(5)'
                 templateColumns='repeat(4, 2fr)'
-                mt='1' 
+                mt='10' 
                 width='100%'
             >
                 <GridItem rowSpan={5} colSpan={2} ml={4}>
-                    <Box 
-                        width="100%" 
-                        height="100%" 
-                        display="flex" 
-                        justifyContent="center" 
-                        alignItems="center"
-                    >
-                        <Image src={lastDish.image} alt={lastDish.title} objectFit='cover' />  
-                    </Box>
+                    <Stack>
+                        <Box 
+                            width="100%" 
+                            height="100%" 
+                            display="flex" 
+                            justifyContent="center" 
+                            alignItems="center"
+                            borderRadius="md"
+                            mb="3"
+                        >
+                            <Image src={image} alt={title} objectFit='cover' borderRadius="md" />  
+                        </Box>
+                        <Box mt="2">
+                            <HStack align="start" mt={4}>
+                                <Heading fontSize="24" fontWeight="bold">Tags:</Heading>
+                                {tags.map((tag, index) => (
+                                    <Tag key={index} colorScheme="gray" borderRadius="full" fontSize="18" mr={2} mb={5}>
+                                        <TagLabel px={1} py={1}>{tag}</TagLabel>
+                                    </Tag>
+                                ))}
+                            </HStack>
+                            <Text fontSize="14" textColor="base.600">* Source: {source}</Text>
+                        </Box>
+                    </Stack>
                 </GridItem>
                 <GridItem 
                     rowSpan={4}
@@ -94,6 +194,22 @@ function IndividualMeal({
                             ))}
                             <Text fontSize={18} ml={2}>({numReviews})</Text>
                         </HStack>
+                        <HStack justifyContent="flex-end" width="100%" mt={8}>
+                            <ButtonGroup spacing={2} mb={10}>
+                                <Button rightIcon={<FaSave />} bg="base.50">
+                                    Save
+                                </Button>
+                                <Button rightIcon={<FaStar />} bg="base.50">
+                                    Rate
+                                </Button>
+                                <Button rightIcon={<FaPrint />} bg="base.50">
+                                    Print
+                                </Button>
+                                <Button rightIcon={<FaShareAlt />} bg="base.50">
+                                    Share
+                                </Button>
+                            </ButtonGroup>
+                        </HStack>
                     </Box>
                 </GridItem>
                 <GridItem colSpan={2}>
@@ -139,24 +255,10 @@ function IndividualMeal({
             <Box width="100%" mx="auto" px={4}>
                 <ImageSlide dishes={individualMeal} />
             </Box>
-            <HStack justifyContent="flex-end" width="100%" mr={8}>
-                <ButtonGroup spacing={2} mb={10}>
-                    <Button rightIcon={<FaSave />} bg="base.50">
-                        Save
-                    </Button>
-                    <Button rightIcon={<FaStar />} bg="base.50">
-                        Rate
-                    </Button>
-                    <Button rightIcon={<FaPrint />} bg="base.50">
-                        Print
-                    </Button>
-                    <Button rightIcon={<FaShareAlt />} bg="base.50">
-                        Share
-                    </Button>
-                </ButtonGroup>
-            </HStack>
         </Stack>
     );
 }
+
+// export default Recipe;
 
 export default IndividualMeal;
