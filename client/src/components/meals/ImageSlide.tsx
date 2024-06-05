@@ -30,7 +30,7 @@ export interface Dish {
 
 type DishesProps = {
   dishes: Dish[];
-}
+};
 
 export const IngredientsList = ({ ingredients }: IngredientsProps) => {
   const scrollRef = useRef<HTMLDivElement | null>(null);

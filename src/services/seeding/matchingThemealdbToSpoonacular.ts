@@ -1,12 +1,11 @@
-import { Ingredient } from './../../models/IngredientModel';
 import { input } from '@inquirer/prompts';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
-import themealData from './themeal-ingredient.js';
+import { NotFoundError, ServerError } from '../../errors/customErrors.ts';
 import IngredientModel from '../../models/IngredientModel.ts';
 import MatchingModel from '../../models/MatchingModel.ts';
-import { ServerError, NotFoundError } from '../../errors/customErrors.ts';
-import { getAllIngredientsAPI, findIngredientById, getIngredientByIdAPI } from '../spoonacular/spoonacularServices.ts';
+import { getAllIngredientsAPI, getIngredientByIdAPI } from '../spoonacular/spoonacularServices.ts';
+import themealData from './themeal-ingredient.js';
 
 dotenv.config();
 const listOfIngredients = themealData;
