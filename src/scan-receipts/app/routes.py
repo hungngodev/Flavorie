@@ -4,19 +4,17 @@ import requests
 from app.tasks import process_receipt_task
 from PIL import Image
 
+main = Blueprint("main", __name__)
 
-main = Blueprint('main', __name__)
-
-@main.route('/scan-receipts', methods=['POST'])
-
+@main.route("/scan-receipts", methods=["POST"])
 def scan_receipt():
-    if 'receipt' not in request.form:
+    if "receipt" not in request.form:
         return jsonify({"error": "No receipt variables"}), 400
-    
-    #img_url received from nodejs
-    img_url = request.form['receipt']
-    
-    if img_url== "":
+
+    # img_url received from nodejs
+    img_url = request.form["receipt"]
+
+    if img_url == "":
         return jsonify({"error": "No selected file"}), 400
     try:
         # fetch img data from url, stream=True allows writing even when the download is not done
@@ -26,12 +24,10 @@ def scan_receipt():
         response.raise_for_status()
 
         # response.content is in bytes
-        img = Image.open(BytesIO(response.content)).convert('RGB')
+        img = Image.open(BytesIO(response.content)).convert("RGB")
 
         final_res = process_receipt_task(img)
         return jsonify(final_res)
-        
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-

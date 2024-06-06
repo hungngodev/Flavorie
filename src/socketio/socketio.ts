@@ -17,12 +17,10 @@ const authenticateSocketIO = async (socket: Socket, next) => {
             socket.data.user = { userId, role }
             next()
         }
-
         else {
             next(new Error('Authenticate invalid'))
         }
     } catch (error) {
-
         next(new Error('Authentication error'))
     }
 }
