@@ -73,6 +73,10 @@ const router = createBrowserRouter([
         path: 'profile',
         element: <User />,
       },
+      {
+        path: 'receipts',
+        element: <Receipt />,
+      },
     ],
   },
 ]);
