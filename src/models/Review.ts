@@ -8,10 +8,7 @@ export interface Review extends mongoose.Document {
     content: string;
     timestamp: Date;
     childrenReview: Types.DocumentArray<Review>;
-    parentReview: {
-        parentReviewID: mongoose.Types.ObjectId | null;
-        childrenReviews: Types.DocumentArray<Review>;
-    };
+    parentReview: mongoose.Types.ObjectId | null;
 }
 
 type ReviewModel = mongoose.Model<Review>;
@@ -21,10 +18,7 @@ const ReviewSchema = new mongoose.Schema<Review, ReviewModel>({
     content: String,
     timestamp: { type: Date, default: Date.now },
     childrenReview: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],
-    parentReview: {
-        parentReviewID: { type: mongoose.Schema.Types.ObjectId, ref: "Review" },
-        childrenReviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],
-    },
+    parentReview: { type: mongoose.Schema.Types.ObjectId, ref: "Review", default: null },
 });
 
 export default mongoose.model<Review, ReviewModel>("Review", ReviewSchema);
