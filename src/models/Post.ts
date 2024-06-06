@@ -1,4 +1,5 @@
 import mongoose, { Types } from "mongoose";
+import { Review } from "./Review"
 
 export interface Media {
   type: "image" | "video" | "file";
@@ -7,24 +8,31 @@ export interface Media {
 }
 export type Privacy = "public" | "private" | "friend";
 
-interface PostDocument extends mongoose.Document {
+interface Post extends mongoose.Document {
   id: string;
+  author: Types.ObjectId;
   header: string;
   body: string;
-  author: Types.ObjectId;
   media: Media[];
   privacy: Privacy;
-  commentCount: number;
+  review: Types.DocumentArray<Review>;
+  //react: Types.DocumentArray<React>;
+  reviewCount: number;
   reactCount: number;
 }
 
-interface PostModel extends mongoose.Model<PostDocument> {}
-const PostSchema = new mongoose.Schema<PostDocument, PostModel>(
+interface PostModel extends mongoose.Model<Post> {}
+const PostSchema = new mongoose.Schema<Post, PostModel>(
   {
     id: {
       type: String,
       required: true,
       unique: true,
+    },
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
     },
     header: {
       type: String,
@@ -33,11 +41,6 @@ const PostSchema = new mongoose.Schema<PostDocument, PostModel>(
     body: {
       type: String,
       required: true,
-    },
-    author: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: "User",
     },
     media: [
       {
@@ -61,7 +64,11 @@ const PostSchema = new mongoose.Schema<PostDocument, PostModel>(
       required: true,
       default: "public",
     },
-    commentCount: {
+    review: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Review",
+    }],
+    reviewCount: {
       type: Number,
       default: 0,
     },
@@ -73,7 +80,4 @@ const PostSchema = new mongoose.Schema<PostDocument, PostModel>(
   { timestamps: true },
 );
 
-PostSchema.methods.toJSON = function () {
-  return this.toObject();
-};
-export default mongoose.model<PostDocument, PostModel>("Post", PostSchema);
+export default mongoose.model<Post, PostModel>("Post", PostSchema);
