@@ -1,6 +1,5 @@
 import { useAuth } from '../hooks';
 import React, { useState, useEffect } from 'react';
-import { toast } from "react-toastify";
 import socket from '../socket/socketio.tsx';
 import useToast from '../hooks/useToast.tsx';
 
@@ -27,9 +26,17 @@ const UploadReceiptForm = () => {
             return;
         }
         
-        
-        socket?.emit('submitReceipt', file)
-        notifySuccess('Submit receipt successfully')
+        // FileReader object to read a file
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const base64 = e.target?.result as string;
+            const filename = file.name;
+            socket?.emit('submitReceipt', { base64, filename });
+            notifySuccess('Submit receipt successfully');
+        };
+
+        // initiate to read file => result is base64 encoded string
+        reader.readAsDataURL(file);
     }
     return (
         <form onSubmit={handleSubmit}>

@@ -1,10 +1,12 @@
 import { verifyJWT } from "../utils/tokenUtils.ts";
 import { Server, Socket } from "socket.io";
 import fs from 'fs'
+
 import FormData from "form-data";
 import axios from "axios";
 import NotificationModel from "../models/NotificationModel.ts";
 import mongoose from "mongoose";
+import { cloudinary } from "../services/cloudinary/cloudinaryServices.ts";
 
 const FLASK_SERVICE_URL = 'http://127.0.0.1:5000/scan-receipts'
 const authenticateSocketIO = async (socket: Socket, next) => {
@@ -30,7 +32,8 @@ const setUpSocketIO = (server: any) => {
         cors: {
             origin: 'http://localhost:5173',
             credentials: true
-        }
+        }, 
+        maxHttpBufferSize: 1e8
     })
 
     io.use(authenticateSocketIO)
@@ -39,15 +42,18 @@ const setUpSocketIO = (server: any) => {
 
         //submit receipt
         socket.on('submitReceipt', async (data) => {
-
+            const { base64, filename } = data;
             try {
-                const fileBuffer = Buffer.from(data, 'base64')
-                const filePath = `${data.filename}`
-                fs.writeFileSync(filePath, fileBuffer)
+                // upload to Cloudinary
+                const uploadResponse = await cloudinary.uploader.upload(base64, {
+                    folder: process.env.CLOUDINARY_FOLDER || '',
+                    public_id: filename, 
+                    overwrite: true
+                })
 
                 const form = new FormData()
-                form.append('receipt', fs.createReadStream(filePath), data.filename);
-
+                form.append("receipt", uploadResponse.secure_url);
+                
                 const response = await axios.post(FLASK_SERVICE_URL, form, {
                     headers: form.getHeaders()
                 })
