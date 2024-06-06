@@ -22,7 +22,7 @@ type ItemModel = mongoose.Model<ItemDocument>;
 const ItemSchema = new mongoose.Schema<ItemDocument, ItemModel>({
     itemId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Ingredient',
+        refPath: 'Ingredient'
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,

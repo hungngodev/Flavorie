@@ -42,7 +42,7 @@ export function ListofMeals({ Type, meals }: MealTypeProps) {
 
   const scrollRefs = useRef<(HTMLDivElement | null)[]>([]);
   return (
-    <VStack spacing={1} width={'100%'} height={'fit'} marginBottom={'10vh'} alignItems="center">
+    <VStack spacing={1} width={'100%'} height={'fit'} marginBottom={'2vh'} alignItems="center">
       <Hero title="" boldTitle={Type} />
       <HStack width={'92%'} justifyContent={'center'} alignItems={'center'} marginTop={'1vh'}>
         <IconButton

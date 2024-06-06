@@ -52,30 +52,12 @@ const colorScheme = {
   },
 };
 
-const TagSelect = () => {
-  const [selectedTags, setSelectedTags] = useState<Set<PreferenceType>>(new Set([]));
+interface TagSelectProps {
+  handleSelect: (tag : PreferenceType) => void;
+  selectedTags: Set<PreferenceType>;
+}
+const TagSelect: React.FC<TagSelectProps> = ({handleSelect, selectedTags}) => {
 
-  const handleSelect = (field: PreferenceType) => {
-    if(selectedTags.has(field)){
-      setSelectedTags((prevTags)=>{
-        prevTags.delete(field);
-        return new Set(prevTags);
-      })
-    }
-    else{
-      setSelectedTags((prevTags)=>{
-        prevTags.add(field);
-        return new Set(prevTags);
-      })
-    }
-  }
-
-  const submitTags = () => {
-    const tagRequest = {
-      tags: Array.from(selectedTags)
-    }
-    console.log(tagRequest);
-  }
   return (
     <>
     <HStack flexWrap="wrap" marginBlock={4}>
@@ -91,7 +73,6 @@ const TagSelect = () => {
         icon={Icons[type]}/>
       ))}
     </HStack>
-    <Button onClick={submitTags}>SubmitTags</Button>
     </>
   );
 }
