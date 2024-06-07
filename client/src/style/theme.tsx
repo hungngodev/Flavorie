@@ -59,7 +59,6 @@ const theme = {
     },
     Button: {
       baseStyle: {
-        letterSpacing: 'widest',
         fontWeight: 'normal',
         userSelect: 'none',
       },

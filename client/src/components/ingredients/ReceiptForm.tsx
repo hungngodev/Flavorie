@@ -10,9 +10,10 @@ export interface FieldComponentProps<T extends ZodType<any, any, any>> {
   watch: UseFormWatch<z.infer<T>>;
   remove: (arg?: any) => void;
   update: (
-    index: number,
-    watch?: UseFormWatch<z.infer<T>>,
-    fields?: FieldArrayWithId<z.infer<T>, ArrayPath<T>, 'id'>[],
+    // index: number,
+    // watch?: UseFormWatch<z.infer<T>>,
+    // fields?: FieldArrayWithId<z.infer<T>, ArrayPath<T>, 'id'>[],
+    ...args: any
   ) => void;
   append: (arg?: any) => void;
 }
@@ -68,7 +69,7 @@ function ReceiptForm<T extends ZodType<any, any, any>>({
             append();
           }}
         >
-          Add new receipt
+          Add new item
         </Button>
       </CardFooter>
     </Card>

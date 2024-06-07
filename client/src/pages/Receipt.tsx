@@ -15,11 +15,12 @@ import {
 import { Focus } from 'lucide-react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { mockReceipts } from '../components/ingredients/MockReceipt';
 import ReceiptField from '../components/ingredients/ReceiptField';
 import ReceiptForm from '../components/ingredients/ReceiptForm';
-import { mockReceipts } from '../components/ingredients/MockReceipt';
 
-export const defaultImg = "https://img.freepik.com/free-photo/fried-chicken-breast-with-vegetables_140725-4650.jpg?t=st=1717211148~exp=1717214748~hmac=35aff48267e7d35f50f03fdd12473c2606c90b4f0a73eb45e2d4a51cfb44d0d8&w=740";
+export const defaultImg =
+  'https://img.freepik.com/free-photo/fried-chicken-breast-with-vegetables_140725-4650.jpg?t=st=1717211148~exp=1717214748~hmac=35aff48267e7d35f50f03fdd12473c2606c90b4f0a73eb45e2d4a51cfb44d0d8&w=740';
 
 const ReceiptObject = z
   .object({
@@ -34,9 +35,9 @@ const ReceiptObject = z
   })
   .strict()
   .required({
-    name:true,
+    name: true,
     quantity: true,
-    price:true,
+    price: true,
     suggested: true,
   });
 
@@ -89,16 +90,10 @@ const Receipt = () => {
     remove(index);
   };
 
-  const updateField = (index: number, watch: any, fields: any) => {
+  const updateField = (index: number, watch: any, fields: any, newField?:any) => {
     update(index, {
-      name: watch(`receipts.${index}.name`),
-      image: watch(`receipts.${index}.image`),
-      quantity: watch(`receipts.${index}.quantity`),
-      price: watch(`receipts.${index}.price`),
-      suggested: {
-        display: !fields[index].suggested.display,
-        items: watch(`receipts.${index}.suggested.items`),
-      },
+      ...fields[index],
+      ...newField,
     });
   };
 
@@ -132,13 +127,7 @@ const Receipt = () => {
         append={appendField}
       />
 
-      <Card
-        height="fit-content"
-        position="sticky"
-        top={0}
-        paddingInline={6}
-        paddingBlock={4}
-      >
+      <Card height="fit-content" position="sticky" top={0} paddingInline={6} paddingBlock={4}>
         <CardHeader>
           <Heading fontSize="3xl" color="teal" fontWeight="semibold" alignSelf="start">
             Summary

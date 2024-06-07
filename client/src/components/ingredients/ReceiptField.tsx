@@ -15,27 +15,23 @@ import {
   Tooltip,
 } from '@chakra-ui/react';
 import { ChakraStylesConfig, Select } from 'chakra-react-select';
-import { MoveRight, Pencil, Trash } from 'lucide-react';
+import { Check, MoveRight, Pencil, Trash } from 'lucide-react';
+import { useState } from 'react';
 import { Controller, FieldPath, Path } from 'react-hook-form';
 import { useDebouncedCallback } from 'use-debounce';
 import { ZodType, z } from 'zod';
+import parseOption, { OptionMenuType } from '../../utils/parseOption';
 import CustomNumberInput from '../form/CustomNumberInput';
 import CustomTextInput from '../form/CustomTextInput';
 import { ReceiptFormProps } from './ReceiptForm';
+import CustomFetch from "../../utils/customFetch";
 
 const mockSuggestionUpdate1 = [
   'mockingredient1',
-  'mockingredient1',
-  'mockingredient1',
-  'mockingredient1',
-  'mockingredient1',
-];
-const mockSuggestionUpdate2 = [
-  'mockingredient1',
-  'mockingredient1',
-  'mockingredient1',
-  'mockingredient1',
-  'mockingredient1',
+  'mockingredient2',
+  'mockingredient3',
+  'mockingredient4',
+  'mockingredient5',
 ];
 
 const menuStyles: ChakraStylesConfig = {
@@ -65,10 +61,6 @@ const menuStyles: ChakraStylesConfig = {
   }),
 };
 
-interface OptionType {
-  label: string;
-  value: any;
-}
 interface ReceiptFieldProps<T extends ZodType<any, any, any>> extends ReceiptFormProps<T> {
   index: number;
   field: z.infer<T>;
@@ -83,19 +75,39 @@ function ReceiptField<T extends ZodType<any, any, any>>({
   field,
   watch,
 }: ReceiptFieldProps<T>) {
-  const updateReceipt = useDebouncedCallback((val: any) => {
-    console.log(val);
-  }, 300);
+  const toggleChange = () => {
+    update(index, watch, fields, {
+      suggested: {
+        display: !watch(`receipts.${index}.suggested.display` as Path<z.infer<T>>),
+        items: watch(`receipts.${index}.suggested.items` as Path<z.infer<T>>),
+      },
+    });
+  };
 
-  const Options: OptionType[] = [];
-  field.suggested.items.map((item: any) => {
-    Options.push({ label: item, value: item });
-  });
-  const Suggestions = {
+  const [menuSuggestion, setMenuSuggestion] = useState<OptionMenuType>({
     label:
       `${field.suggested.items.length} suggestions for ${watch(`receipts.${index}.name` as Path<z.infer<T>>)}:` as string,
-    options: Options,
-  };
+    options: parseOption(field.suggested.items),
+  });
+
+  const updateReceipt = useDebouncedCallback((val: any) => {
+    const updateData: string[] = []
+
+    const fakeFetch = CustomFetch.get(`https://jsonplaceholder.typicode.com/posts/${Math.floor(Math.random() * 50)}`).then(response => {
+      setMenuSuggestion({
+        label: `${watch(`receipts.${index}.suggested.items` as Path<z.infer<T>>)} suggestions for ${val}:` as string,
+        options: parseOption(updateData),
+      });
+      update(index, watch, fields, {
+        name: val,
+        suggested: {
+          display: true,
+          items: updateData,
+        },
+      });
+    }).catch(error => console.log(error))
+  }, 300);
+
   return (
     <Grid
       templateAreas={`
@@ -141,14 +153,17 @@ function ReceiptField<T extends ZodType<any, any, any>>({
                   fieldProps.onChange(value);
                   updateReceipt(value.target.value);
                 }}
+                onBlur={() => {
+                  toggleChange();
+                }}
                 control={
                   <Tooltip label="Edit ingredient">
                     <IconButton
                       aria-label="edit-name"
                       backgroundColor="transparent"
-                      icon={<Pencil />}
+                      icon={watch(`receipts.${index}.suggested.display` as Path<z.infer<T>>) ? <Check /> : <Pencil />}
                       onClick={() => {
-                        update(index, watch, fields);
+                        toggleChange();
                       }}
                       padding={1}
                       rounded="full"
@@ -185,8 +200,8 @@ function ReceiptField<T extends ZodType<any, any, any>>({
                   <Select
                     chakraStyles={menuStyles}
                     selectedOptionColor="teal"
-                    defaultValue={Suggestions.options[0]}
-                    options={[Suggestions]}
+                    defaultValue={menuSuggestion.options[0]}
+                    options={[menuSuggestion]}
                     onChange={(newValue: any) => {
                       fieldProps.onChange(newValue?.value);
                     }}
