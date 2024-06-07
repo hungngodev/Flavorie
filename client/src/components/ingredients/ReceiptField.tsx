@@ -9,7 +9,10 @@ import {
   Icon,
   IconButton,
   Image,
-  Text,
+  Stat,
+  StatLabel,
+  StatNumber,
+  Tooltip,
 } from '@chakra-ui/react';
 import { ChakraStylesConfig, Select } from 'chakra-react-select';
 import { MoveRight, Pencil, Trash } from 'lucide-react';
@@ -19,6 +22,21 @@ import { ZodType, z } from 'zod';
 import CustomNumberInput from '../form/CustomNumberInput';
 import CustomTextInput from '../form/CustomTextInput';
 import { ReceiptFormProps } from './ReceiptForm';
+
+const mockSuggestionUpdate1 = [
+  'mockingredient1',
+  'mockingredient1',
+  'mockingredient1',
+  'mockingredient1',
+  'mockingredient1',
+];
+const mockSuggestionUpdate2 = [
+  'mockingredient1',
+  'mockingredient1',
+  'mockingredient1',
+  'mockingredient1',
+  'mockingredient1',
+];
 
 const menuStyles: ChakraStylesConfig = {
   container: (baseStyles, state) => ({
@@ -116,7 +134,7 @@ function ReceiptField<T extends ZodType<any, any, any>>({
                 width="100%"
                 borderRadius="md"
                 autoFocus={field.suggested.display}
-                backgroundColor={field.suggested.display ? 'gray.50' : 'transparent'}
+                backgroundColor={field.suggested.display ? 'gray.200' : 'transparent'}
                 paddingInline={0}
                 variant="ghost"
                 onChange={(value) => {
@@ -124,21 +142,23 @@ function ReceiptField<T extends ZodType<any, any, any>>({
                   updateReceipt(value.target.value);
                 }}
                 control={
-                  <IconButton
-                    aria-label="edit-name"
-                    backgroundColor="transparent"
-                    icon={<Pencil />}
-                    onClick={() => {
-                      update(index, watch, fields);
-                    }}
-                    padding={1}
-                    rounded="full"
-                    size="sm"
-                    color="blackAlpha.700"
-                  />
+                  <Tooltip label="Edit ingredient">
+                    <IconButton
+                      aria-label="edit-name"
+                      backgroundColor="transparent"
+                      icon={<Pencil />}
+                      onClick={() => {
+                        update(index, watch, fields);
+                      }}
+                      padding={1}
+                      rounded="full"
+                      size="sm"
+                      color="blackAlpha.700"
+                    />
+                  </Tooltip>
                 }
                 containerProps={{
-                  backgroundColor: !field.suggested.display ? 'gray.50' : 'transparent',
+                  backgroundColor: !field.suggested.display ? 'gray.200' : 'transparent',
                   border: '1px',
                   borderColor: 'gray.200',
                   borderRadius: 'md',
@@ -163,12 +183,13 @@ function ReceiptField<T extends ZodType<any, any, any>>({
                 >
                   <FormLabel color="blackAlpha.700">Suggest</FormLabel>
                   <Select
+                    chakraStyles={menuStyles}
+                    selectedOptionColor="teal"
                     defaultValue={Suggestions.options[0]}
                     options={[Suggestions]}
                     onChange={(newValue: any) => {
                       fieldProps.onChange(newValue?.value);
                     }}
-                    chakraStyles={menuStyles}
                   />
                 </FormControl>
               );
@@ -216,31 +237,33 @@ function ReceiptField<T extends ZodType<any, any, any>>({
         </HStack>
       </GridItem>
       <GridItem area={'cost'}>
-        <Text textAlign="right" fontSize="lg" fontWeight="semibold" color="blackAlpha.900">
-          $
-          {(
-            parseFloat(watch(`receipts.${index}.price` as Path<z.infer<T>>)) *
-            parseFloat(watch(`receipts.${index}.quantity` as Path<z.infer<T>>))
-          ).toFixed(2) || '0.00'}
-          <Text as="span" color="blackAlpha.800">
-            /total
-          </Text>
-        </Text>
+        <Stat color="blackAlpha.700" textAlign="right">
+          <StatLabel>Total</StatLabel>
+          <StatNumber>
+            $
+            {(
+              parseFloat(watch(`receipts.${index}.price` as Path<z.infer<T>>)) *
+              parseFloat(watch(`receipts.${index}.quantity` as Path<z.infer<T>>))
+            ).toFixed(2)}
+          </StatNumber>
+        </Stat>
       </GridItem>
       <GridItem area={'button'}>
         <HStack gap={2} height="100%" alignItems="end" justify="end">
-          <Button
-            variant="ghost"
-            aria-label="delete-button"
-            children="Remove"
-            onClick={() => {
-              remove(index);
-            }}
-            size="sm"
-            fontWeight="semibold"
-            color="blackAlpha.700"
-            leftIcon={<Trash strokeWidth={1} />}
-          />
+          <Tooltip label="Delete ingredient">
+            <Button
+              variant="ghost"
+              aria-label="delete-button"
+              children="Remove"
+              onClick={() => {
+                remove(index);
+              }}
+              size="md"
+              fontWeight="semibold"
+              color="blackAlpha.700"
+              leftIcon={<Trash strokeWidth={1} />}
+            />
+          </Tooltip>
         </HStack>
       </GridItem>
     </Grid>
