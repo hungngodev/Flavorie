@@ -163,7 +163,8 @@ function ReceiptField<T extends ZodType<any, any, any>>({
                 >
                   <FormLabel color="blackAlpha.700">Suggest</FormLabel>
                   <Select
-                    options={[Suggestions]} // Fix: Convert Suggestions object into an array
+                    defaultValue={Suggestions.options[0]}
+                    options={[Suggestions]}
                     onChange={(newValue: any) => {
                       fieldProps.onChange(newValue?.value);
                     }}
@@ -240,19 +241,6 @@ function ReceiptField<T extends ZodType<any, any, any>>({
             color="blackAlpha.700"
             leftIcon={<Trash strokeWidth={1} />}
           />
-          {/* <Button
-            aria-label="update-button"
-            borderRadius="lg"
-            children={field.suggested.display ? 'Cancel' : 'Update'}
-            color="whiteAlpha.900"
-            backgroundColor="teal.500"
-            _hover={{ backgroundColor: 'teal.600' }}
-            onClick={() => {
-              update(index, watch, fields);
-            }}
-            size="sm"
-            leftIcon={field.suggested.display ? <X strokeWidth={1} /> : <PenLine strokeWidth={1} />}
-          /> */}
         </HStack>
       </GridItem>
     </Grid>
