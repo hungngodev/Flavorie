@@ -3,5 +3,5 @@ import { processReceipt, upload } from "../controllers/receiptScanController.ts"
 
 const router = express.Router();
 
-router.post('/scan-receipt', upload.single('receipt'), processReceipt)
+router.post('/', upload.single('receipt'), processReceipt)
 export default router;
