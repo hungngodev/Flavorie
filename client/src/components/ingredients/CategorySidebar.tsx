@@ -28,7 +28,7 @@ const SidebarContext = createContext<SidebarContextProps | undefined>(undefined)
 export function SidebarItem({ icon, text, active, alert, onClickF, index = 0, link }: SidebarItemProps): JSX.Element {
   const { expanded } = useContext(SidebarContext) as SidebarContextProps;
   return (
-    <Link to={onClickF ? '' : link}>
+    <Link to={onClickF ? '' : link ?? ''}>
       <motion.li
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
