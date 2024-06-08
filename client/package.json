@@ -43,6 +43,7 @@
     "zod": "^3.23.4"
   },
   "devDependencies": {
+    "@hookform/resolvers": "^3.4.2",
     "@types/axios": "^0.14.0",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",

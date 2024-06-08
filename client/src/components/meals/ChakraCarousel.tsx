@@ -51,12 +51,12 @@ const ChakraCarousel: React.FC<ChakraCarouselProps> = ({ children, gap }) => {
       setConstraint(1);
     }
     if (isBetweenMdAndXl) {
-      setItemWidth(sliderWidth / 2 - gap);
+      setItemWidth(sliderWidth / 1.5 - gap);
       setMultiplier(0.5);
       setConstraint(2);
     }
     if (isGreaterThanXL) {
-      setItemWidth(sliderWidth / 3 - gap);
+      setItemWidth(sliderWidth / 2 - gap);
       setMultiplier(0.35);
       setConstraint(3);
     }
@@ -139,14 +139,27 @@ const Slider: React.FC<SliderProps> = ({
 
   const handleFocus = () => setTrackIsActive(true);
 
+  // const handleDecrementClick = () => {
+  //   setTrackIsActive(true);
+  //   !(activeItem === positions.length - positions.length) && setActiveItem((prev) => prev - 1);
+  // };
+
+  // const handleIncrementClick = () => {
+  //   setTrackIsActive(true);
+  //   !(activeItem === positions.length - constraint) && setActiveItem((prev) => prev + 1);
+  // };
+
+  // scroll by 2 slides at a time
   const handleDecrementClick = () => {
     setTrackIsActive(true);
-    !(activeItem === positions.length - positions.length) && setActiveItem((prev) => prev - 1);
+    !(activeItem <= 0) && setActiveItem((prev) => Math.max(prev - 2, 0));
   };
 
+  // scroll by 2 slides at a time
   const handleIncrementClick = () => {
     setTrackIsActive(true);
-    !(activeItem === positions.length - constraint) && setActiveItem((prev) => prev + 1);
+    !(activeItem >= positions.length - constraint) &&
+      setActiveItem((prev) => Math.min(prev + 2, positions.length - constraint));
   };
 
   return (
