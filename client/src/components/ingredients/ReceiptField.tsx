@@ -25,14 +25,7 @@ import parseOption, { OptionMenuType } from '../../utils/parseOption';
 import CustomNumberInput from '../form/CustomNumberInput';
 import CustomTextInput from '../form/CustomTextInput';
 import { ReceiptFormProps } from './ReceiptForm';
-
-const mockSuggestionUpdate1 = [
-  'mockingredient1',
-  'mockingredient2',
-  'mockingredient3',
-  'mockingredient4',
-  'mockingredient5',
-];
+import {useCallback} from "react";
 
 const menuStyles: ChakraStylesConfig = {
   container: (baseStyles, state) => ({
@@ -77,37 +70,45 @@ function ReceiptField<T extends ZodType<any, any, any>>({
   field,
   watch,
 }: ReceiptFieldProps<T>) {
-  const toggleChange = () => {
-    update(index, watch, fields, {
+  const toggleChange = useCallback(() => {
+    update(index, fields, {
       suggested: {
+        ...watch(`receipts.${index}.suggested` as Path<z.infer<T>>),
         display: !watch(`receipts.${index}.suggested.display` as Path<z.infer<T>>),
-        items: watch(`receipts.${index}.suggested.items` as Path<z.infer<T>>),
       },
     });
-  };
+  }, [watch(`receipts.${index}.suggested.display` as Path<z.infer<T>>)]);
 
   const [menuSuggestion, setMenuSuggestion] = useState<OptionMenuType>({
     label:
       `${field.suggested.items.length} suggestions for ${watch(`receipts.${index}.name` as Path<z.infer<T>>)}:` as string,
-    options: parseOption(field.suggested.items),
+    options: parseOption(field.suggested.items.map((item: any) => item?.name)),
   });
-  console.log(menuSuggestion);
 
   const updateReceipt = useDebouncedCallback((val: any) => {
-    const updateData: string[] = [];
+    if(val === ""){
+      return;
+    }
 
-    const fakeFetch = CustomFetch.get(`https://jsonplaceholder.typicode.com/posts/${Math.floor(Math.random() * 50)}`)
+    const updateData: Array<{ name: string; img: string }> = [];
+
+    // fake fetch 
+    CustomFetch.get(`https://jsonplaceholder.typicode.com/posts/${Math.floor(Math.random() * 50)}`)
       .then((response) => {
-        updateData.push(response.data.title);
         setMenuSuggestion({
           label: `${watch(`receipts.${index}.suggested.items` as Path<z.infer<T>>)} suggestions for ${val}:` as string,
-          options: parseOption(updateData),
+          options: parseOption([response.data.title]),
         });
-        update(index, watch, fields, {
+      })
+      .then(() => {
+        update(index, fields, {
           name: val,
           suggested: {
             display: true,
-            items: updateData,
+            items: updateData.map(item => ({
+              name: item.name,
+              img: item?.img ?? 'https://img.freepik.com/free-photo/fried-chicken-breast-with-vegetables_140725-4650.jpg?t=st=1717211148~exp=1717214748~hmac=35aff48267e7d35f50f03fdd12473c2606c90b4f0a73eb45e2d4a51cfb44d0d8&w=740',
+            })),
           },
         });
       })
@@ -134,7 +135,7 @@ function ReceiptField<T extends ZodType<any, any, any>>({
           alignSelf="flex-start"
           borderRadius="lg"
           width="90%"
-          src={field.image}
+          src={field.suggested.items[0].img}
           alt="receipt image"
         />
       </GridItem>
@@ -158,11 +159,11 @@ function ReceiptField<T extends ZodType<any, any, any>>({
                 fontSize="xl"
                 variant="ghost"
                 onChange={(value) => {
-                  fieldProps.onChange(value);
                   updateReceipt(value.target.value);
+                  fieldProps.onChange(value);
                 }}
-                onBlur={() => {
-                  updateReceipt(field.name);
+                onBlur={(e) => {
+                  toggleChange()
                 }}
                 control={
                   <Tooltip

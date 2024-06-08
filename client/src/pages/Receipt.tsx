@@ -11,8 +11,9 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-// import { zodResolver } from '@hookform/resolvers/zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Focus } from 'lucide-react';
+import { useEffect } from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { mockReceipts } from '../components/ingredients/MockReceipt';
@@ -30,7 +31,12 @@ const ReceiptObject = z
     price: z.coerce.string(),
     suggested: z.object({
       display: z.boolean(),
-      items: z.array(z.coerce.string()),
+      items: z.array(
+        z.object({
+          name: z.coerce.string(),
+          img: z.coerce.string(),
+        }),
+      ),
     }),
   })
   .strict()
@@ -40,12 +46,16 @@ const ReceiptObject = z
     price: true,
     suggested: true,
   });
-
 const ReceiptFieldObject = z.object({
   receipts: z.array(ReceiptObject),
 });
+const ReceiptRequest = z.object({
+  message: z.string(),
+  data: z.array(ReceiptObject.extend({ potential_oids: z.array(z.string()) })),
+});
 
-type ReceiptFieldType = z.infer<typeof ReceiptFieldObject>;
+export type ReceiptFieldType = z.infer<typeof ReceiptFieldObject>;
+export type ReceiptRequest = z.infer<typeof ReceiptRequest>;
 
 const Receipt = () => {
   const {
@@ -54,26 +64,30 @@ const Receipt = () => {
     watch,
     formState: { errors },
   } = useForm<ReceiptFieldType>({
-    // resolver: zodResolver(ReceiptFieldObject),
+    resolver: zodResolver(ReceiptFieldObject),
     defaultValues: {
       receipts:
         mockReceipts?.data?.length > 0
           ? mockReceipts.data.map((receipt: any) => {
               return {
                 name: receipt.name.toLowerCase(),
-                image: receipt.image ?? defaultImg,
                 quantity: receipt.quantity,
                 price: receipt.price,
                 suggested: {
                   display: false,
-                  items: receipt['potential_matches'] ?? [],
+                  items: receipt['potential_matches'].map((item: any) => ({
+                    name: item?.name ?? item,
+                    img: item?.img ?? defaultImg,
+                  })),
                 },
               };
             })
           : [{ name: '', image: defaultImg, quantity: '0', price: '0.0', suggested: { display: false, items: [] } }],
     },
   });
-
+  useEffect(() => {
+    console.log(errors);
+  }, [errors]);
   const { fields, append, remove, update } = useFieldArray({
     control: control,
     name: 'receipts',
@@ -85,12 +99,11 @@ const Receipt = () => {
     // actual submit logic will be added later
   };
 
-  // these functions change individual fields in the form
   const removeField = (index: number) => {
     remove(index);
   };
 
-  const updateField = (index: number, watch: any, fields: any, newField?:any) => {
+  const updateField = (index: number, fields: any, newField?: any) => {
     update(index, {
       ...fields[index],
       ...newField,
