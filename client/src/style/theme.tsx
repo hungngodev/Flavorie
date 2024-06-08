@@ -60,9 +60,13 @@ const theme = {
     },
     Button: {
       baseStyle: {
-        letterSpacing: 'widest',
         fontWeight: 'normal',
         userSelect: 'none',
+      },
+    },
+    Divider: {
+      baseStyle: {
+        color: 'blackAlpha.300',
       },
     },
   },
