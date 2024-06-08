@@ -26,6 +26,27 @@ import CustomNumberInput from '../form/CustomNumberInput';
 import CustomTextInput from '../form/CustomTextInput';
 import { ReceiptFormProps } from './ReceiptForm';
 import {useCallback} from "react";
+import {useQuery, QueryClient} from "@tanstack/react-query";
+import {Params} from "react-router-dom"
+import customFetch from "../../utils/customFetch"
+
+
+// ! to be updated later
+export const updateSuggestionQuery = (id?: any) => {
+  return {
+    queryKey: ['update-suggestion', id],
+    queryFn: async () => {
+      const receiptResponse = await customFetch.post('/update-suggestion', { id });
+      return receiptResponse;
+    },
+  };
+};
+
+export const loader =
+  (queryClient: QueryClient) =>
+  async ({ param }: { param: Params }) => {
+    queryClient.ensureQueryData(updateSuggestionQuery(param));
+  };
 
 const menuStyles: ChakraStylesConfig = {
   container: (baseStyles, state) => ({

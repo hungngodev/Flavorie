@@ -12,13 +12,32 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { QueryClient } from '@tanstack/react-query';
 import { Focus } from 'lucide-react';
 import { useEffect } from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
+import { Params } from 'react-router-dom';
 import { z } from 'zod';
 import { mockReceipts } from '../components/ingredients/MockReceipt';
 import ReceiptField from '../components/ingredients/ReceiptField';
 import ReceiptForm from '../components/ingredients/ReceiptForm';
+import customFetch from '../utils/customFetch';
+
+export const scannedReceiptQuery = (id?: any) => {
+  return {
+    queryKey: ['scanned-receipt', id],
+    queryFn: async () => {
+      const receiptResponse = await customFetch.post('/scan-receipt', { id });
+      return receiptResponse;
+    },
+  };
+};
+
+export const loader =
+  (queryClient: QueryClient) =>
+  async ({ param }: { param: Params }) => {
+    queryClient.ensureQueryData(scannedReceiptQuery(param));
+  };
 
 export const defaultImg =
   'https://img.freepik.com/free-photo/fried-chicken-breast-with-vegetables_140725-4650.jpg?t=st=1717211148~exp=1717214748~hmac=35aff48267e7d35f50f03fdd12473c2606c90b4f0a73eb45e2d4a51cfb44d0d8&w=740';
