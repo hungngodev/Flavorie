@@ -13,7 +13,6 @@ import { fileURLToPath } from "url";
 import authRouter from "./routes/authRouter.ts";
 import ingredientRouter from "./routes/ingredientRouter.ts";
 import mealRouter from "./routes/mealRouter.ts";
-import receiptScanRouter from "./routes/receiptScanRouter.ts";
 import userRouter from "./routes/userRouter.ts";
 import { createServer } from "http";
 import  {setUpSocketIO}  from "./socketio/socketio.ts";

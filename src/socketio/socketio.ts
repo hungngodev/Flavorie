@@ -9,7 +9,7 @@ import mongoose from "mongoose";
 import { cloudinary } from "../services/cloudinary/cloudinaryServices.ts";
 
 const FLASK_SERVICE_URL = 'http://127.0.0.1:5000/scan-receipts'
-const authenticateSocketIO = async (socket: Socket, next) => {
+const authenticateSocketIO =  (socket: Socket, next) => {
     try {
         const token = socket.handshake.headers.cookie?.split("=")[1]
         if (token) {
@@ -18,10 +18,10 @@ const authenticateSocketIO = async (socket: Socket, next) => {
             next()
         }
         else {
-            next(new Error('Authenticate invalid'))
+            next(new Error('authenticate invalid'))
         }
     } catch (error) {
-        next(new Error('Authentication error'))
+        next(new Error('authenticate error'))
     }
 }
 
