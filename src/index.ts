@@ -63,7 +63,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/meal", mealRouter);
 app.use("/api/ingredient", ingredientRouter);
-app.use("/api/scan-receipt", receiptScanRouter)
+// app.use("/api/scan-receipt", receiptScanRouter)
 app.use("/api/community", postRouter);
 
 // app.use("*", (req, res) => {
