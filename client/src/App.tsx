@@ -13,7 +13,6 @@ import ReceiptScan from './pages/ReceiptScan.tsx';
 import IndividualMeal from './pages/Recipe.tsx';
 import { loader as recipeLoader } from './pages/Recipe.tsx';
 import { Ingredient, Login, Main, Meal, Recipe, Register, User } from './pages/index';
-import SocketProvider from './providers/SocketProvider.tsx';
 import ToastProvider from './providers/ToastProvider.tsx';
 import theme from './style/theme';
 
@@ -148,13 +147,11 @@ function App() {
   return (
     <ChakraBaseProvider theme={extendTheme(theme)}>
       <ToastProvider>
-        <SocketProvider>
           <QueryClientProvider client={queryClient}>
             <RouterProvider router={router} />
             <ToastContainer autoClose={5000} limit={3} transition={Slide} />
             <ReactQueryDevtools />
           </QueryClientProvider>
-        </SocketProvider>
       </ToastProvider>
       {/* <IndividualMealWrapper /> */}
       {/* <ImageScan /> */}

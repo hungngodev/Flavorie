@@ -5,11 +5,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Navbar } from '../components';
 import { AuthProvider } from '../providers';
 import NotificationProvider from '../providers/NotificationProvider';
+import SocketProvider from '../providers/SocketProvider';
 
 const HomeLayout: React.FC = () => {
   return (
     <main>
       <AuthProvider>
+        <SocketProvider>
         <NotificationProvider>
         <Navbar />
         
@@ -17,7 +19,7 @@ const HomeLayout: React.FC = () => {
           <Outlet />
         </Box>
         </NotificationProvider>
-        
+        </SocketProvider>
       </AuthProvider>
     </main>
   );

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import socket from '../socket/socketio.tsx';
 import useToast from '../hooks/useToast.tsx';
+import useAuth from '../hooks/useAuth.tsx';
 
 interface SocketContextProviderProps {
     children: React.ReactNode;
@@ -8,10 +9,22 @@ interface SocketContextProviderProps {
 
 const SocketProvider: React.FC<SocketContextProviderProps> = ({ children }) => {
     const { notifyError, notifySuccess, notifyWarning } = useToast();
-
+    const auth = useAuth()
     useEffect(() => {
+        if (auth.currentUser.status === 'authenticated'){
+            if (!socket.connected){
+                socket.connect()
+                console.log('Socket is connected')
+            }
+        } else {
+            if (socket.connected){
+                socket.disconnect()
+                console.log('Disconnect socket')
+            }
+        }
+
         socket.on('processReceipt', (data) => {
-            console.log(data);
+            // console.log(data);
             notifySuccess('Process successfully');
         });
 
@@ -24,7 +37,7 @@ const SocketProvider: React.FC<SocketContextProviderProps> = ({ children }) => {
             socket.off('processReceipt');
             socket.off('error');
         };
-    }, [notifyError, notifySuccess]);
+    }, [auth.currentUser.status, notifyError, notifySuccess]);
 
     return <>{children}</>;
 };
