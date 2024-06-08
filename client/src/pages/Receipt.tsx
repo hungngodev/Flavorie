@@ -103,7 +103,7 @@ const Receipt = () => {
       image: defaultImg,
       quantity: '0',
       price: '0.0',
-      suggested: { display: false, items: [] },
+      suggested: { display: true, items: [] },
     });
   };
 

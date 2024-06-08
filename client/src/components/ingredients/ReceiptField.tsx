@@ -20,11 +20,11 @@ import { useState } from 'react';
 import { Controller, FieldPath, Path } from 'react-hook-form';
 import { useDebouncedCallback } from 'use-debounce';
 import { ZodType, z } from 'zod';
+import CustomFetch from '../../utils/customFetch';
 import parseOption, { OptionMenuType } from '../../utils/parseOption';
 import CustomNumberInput from '../form/CustomNumberInput';
 import CustomTextInput from '../form/CustomTextInput';
 import { ReceiptFormProps } from './ReceiptForm';
-import CustomFetch from "../../utils/customFetch";
 
 const mockSuggestionUpdate1 = [
   'mockingredient1',
@@ -58,6 +58,8 @@ const menuStyles: ChakraStylesConfig = {
     ...baseStyles,
     border: 'none',
     paddingInline: '0',
+    fontSize: 'xl',
+    color: 'blackAlpha.700',
   }),
 };
 
@@ -89,23 +91,27 @@ function ReceiptField<T extends ZodType<any, any, any>>({
       `${field.suggested.items.length} suggestions for ${watch(`receipts.${index}.name` as Path<z.infer<T>>)}:` as string,
     options: parseOption(field.suggested.items),
   });
+  console.log(menuSuggestion);
 
   const updateReceipt = useDebouncedCallback((val: any) => {
-    const updateData: string[] = []
+    const updateData: string[] = [];
 
-    const fakeFetch = CustomFetch.get(`https://jsonplaceholder.typicode.com/posts/${Math.floor(Math.random() * 50)}`).then(response => {
-      setMenuSuggestion({
-        label: `${watch(`receipts.${index}.suggested.items` as Path<z.infer<T>>)} suggestions for ${val}:` as string,
-        options: parseOption(updateData),
-      });
-      update(index, watch, fields, {
-        name: val,
-        suggested: {
-          display: true,
-          items: updateData,
-        },
-      });
-    }).catch(error => console.log(error))
+    const fakeFetch = CustomFetch.get(`https://jsonplaceholder.typicode.com/posts/${Math.floor(Math.random() * 50)}`)
+      .then((response) => {
+        updateData.push(response.data.title);
+        setMenuSuggestion({
+          label: `${watch(`receipts.${index}.suggested.items` as Path<z.infer<T>>)} suggestions for ${val}:` as string,
+          options: parseOption(updateData),
+        });
+        update(index, watch, fields, {
+          name: val,
+          suggested: {
+            display: true,
+            items: updateData,
+          },
+        });
+      })
+      .catch((error) => console.log(error));
   }, 300);
 
   return (
@@ -115,7 +121,7 @@ function ReceiptField<T extends ZodType<any, any, any>>({
         "image text cost"
         "image number button"
     `}
-      templateColumns={`1fr 6fr 2fr`}
+      templateColumns={`1fr 6fr 1fr`}
       gap={6}
       paddingBottom={6}
     >
@@ -146,18 +152,28 @@ function ReceiptField<T extends ZodType<any, any, any>>({
                 width="100%"
                 borderRadius="md"
                 autoFocus={field.suggested.display}
-                backgroundColor={field.suggested.display ? 'gray.200' : 'transparent'}
-                paddingInline={0}
+                backgroundColor={field.suggested.display ? 'gray.100' : 'transparent'}
+                paddingInline={field.suggested.display ? '0.95em' : '0'}
+                paddingBlock={field.suggested.display ? '0.75em' : '0'}
+                fontSize="xl"
                 variant="ghost"
                 onChange={(value) => {
                   fieldProps.onChange(value);
                   updateReceipt(value.target.value);
                 }}
                 onBlur={() => {
-                  toggleChange();
+                  updateReceipt(field.name);
                 }}
                 control={
-                  <Tooltip label="Edit ingredient">
+                  <Tooltip
+                    label={
+                      watch(`receipts.${index}.suggested.display` as Path<z.infer<T>>)
+                        ? 'Save ingredient'
+                        : 'Edit ingredient'
+                    }
+                    margin={0}
+                    padding={0}
+                  >
                     <IconButton
                       aria-label="edit-name"
                       backgroundColor="transparent"
@@ -168,7 +184,6 @@ function ReceiptField<T extends ZodType<any, any, any>>({
                       padding={1}
                       rounded="full"
                       size="sm"
-                      color="blackAlpha.700"
                     />
                   </Tooltip>
                 }
@@ -196,7 +211,7 @@ function ReceiptField<T extends ZodType<any, any, any>>({
                   paddingInline="0.95em"
                   paddingBlock="0.75em"
                 >
-                  <FormLabel color="blackAlpha.700">Suggest</FormLabel>
+                  <FormLabel fontSize="xl">Suggest</FormLabel>
                   <Select
                     chakraStyles={menuStyles}
                     selectedOptionColor="teal"
@@ -265,7 +280,7 @@ function ReceiptField<T extends ZodType<any, any, any>>({
       </GridItem>
       <GridItem area={'button'}>
         <HStack gap={2} height="100%" alignItems="end" justify="end">
-          <Tooltip label="Delete ingredient">
+          <Tooltip label="Remove ingredient">
             <Button
               variant="ghost"
               aria-label="delete-button"
