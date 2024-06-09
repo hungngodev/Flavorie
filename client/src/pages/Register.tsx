@@ -14,7 +14,7 @@ import { AxiosError } from 'axios';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { RiUserFollowLine } from 'react-icons/ri';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
 import { useAuth } from '../hooks';
@@ -44,6 +44,10 @@ type RequestRegisterType = z.infer<typeof RequestRegister>;
 const Register: React.FC = () => {
   const navigate = useNavigate();
   const auth = useAuth();
+  const { search } = useLocation();
+  const searchParams = new URLSearchParams(search);
+  const redirect = searchParams.get('redirect');
+
   useEffect(() => {
     if (auth.currentUser.status === 'authenticated') {
       toast.warn('You already have an account!', { position: 'top-right', icon: <RiUserFollowLine /> });
@@ -56,7 +60,6 @@ const Register: React.FC = () => {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    watch,
   } = useForm<UserRegisterType>();
 
   const onSubmit: SubmitHandler<UserRegisterType> = async (FormData) => {
@@ -75,7 +78,7 @@ const Register: React.FC = () => {
           icon: <RiUserFollowLine />,
         });
         setExistedUserError(false);
-        navigate('/');
+        navigate(redirect ? redirect : '/');
         auth.setUser();
       }
     } catch (error) {

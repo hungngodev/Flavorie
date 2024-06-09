@@ -17,7 +17,7 @@ import { CiCircleCheck } from 'react-icons/ci';
 import { FaUserXmark } from 'react-icons/fa6';
 import { RiUserFollowLine } from 'react-icons/ri';
 import { TbFaceIdError } from 'react-icons/tb';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import * as z from 'zod';
 import { useAuth } from '../hooks';
@@ -28,11 +28,15 @@ const UserLogin = z
     email: z.string().email({ message: 'Please enter a valid email' }),
     password: z.string().min(8, { message: 'Please enter a password with 8 characters minimum' }),
   })
-  .strict().required({ email: true, password: true });
+  .strict()
+  .required({ email: true, password: true });
 type UserLoginType = z.infer<typeof UserLogin>;
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const { search } = useLocation();
+  const searchParams = new URLSearchParams(search);
+  const redirect = searchParams.get('redirect');
   const auth = useAuth();
 
   useEffect(() => {
@@ -57,7 +61,7 @@ const Login: React.FC = () => {
       if (LoginRequest.status === 200) {
         toast.success('You have successfully logged in !'), { position: 'top-right', icon: <CiCircleCheck /> };
         setUserNotFounded(false);
-        navigate('/');
+        navigate(redirect ? redirect : '/');
         auth.setUser();
       } else if (LoginRequest.status === 500) {
         toast.error('Oops! Something went wrong, please try again!', {
