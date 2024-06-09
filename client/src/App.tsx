@@ -1,4 +1,4 @@
-import { Dish } from '@/components/meals/ImageSlide';
+import { Dish } from './components/meals/ImageSlide';
 import { ChakraBaseProvider, extendTheme } from '@chakra-ui/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -10,13 +10,11 @@ import { loader as mealsLoader } from './pages/Meal.tsx';
 import NotificationDetailPage from './pages/NotificationDetail.tsx';
 import NotificationPage from './pages/NotificationPage.tsx';
 import ReceiptScan from './pages/ReceiptScan.tsx';
-import IndividualMeal from './pages/Recipe.tsx';
 import { loader as recipeLoader } from './pages/Recipe.tsx';
 import { Ingredient, Login, Main, Meal, Recipe, Register, User } from './pages/index';
 import ToastProvider from './providers/ToastProvider.tsx';
 import theme from './style/theme';
 import IndividualMeal from './pages/Recipe';
-import { Dish } from './components/meals/ImageSlide'
 import { BackendData, transformToDishes } from './utils/mealDataTransform';
 
 export const queryClient = new QueryClient({

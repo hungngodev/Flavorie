@@ -2,8 +2,6 @@ import React from 'react';
 import { Box, Button, ButtonGroup, Grid, GridItem, HStack, Heading, Image, Stack, Text } from '@chakra-ui/react';
 import { QueryClient, useQuery } from '@tanstack/react-query';
 import { waveform } from 'ldrs';
-import { QueryClient, useQuery } from '@tanstack/react-query';
-import { waveform } from 'ldrs';
 import { FaPrint, FaSave, FaShareAlt, FaStar } from 'react-icons/fa';
 import { Params, useParams } from 'react-router-dom';
 import ImageSlide, { Dish } from '../components/meals/ImageSlide';

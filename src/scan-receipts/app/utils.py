@@ -1,7 +1,5 @@
-import json
 import os
 import string
-
 import fasttext
 import fasttext.util
 import nltk
@@ -9,7 +7,6 @@ from annoy import AnnoyIndex
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from scipy.spatial.distance import cdist
-
 
 # Extract related information from receipts
 def post_process(data):
@@ -26,12 +23,14 @@ def post_process(data):
 
 # Match ingredients
 # Load FastText model
-MODEL_PATH = os.path.join(os.path.dirname(__file__), "../models/cc.en.300.bin")
-if MODEL_PATH:
-    ft_model = fasttext.load_model(MODEL_PATH)
-else:
-    fasttext.util.download_model("en", if_exists="ignore")
-
+def load_fasttext_model():
+    model_path = os.path.join(os.path.dirname(__file__), "../models/cc.en.300.bin")
+    if os.path.exists(model_path):
+        return fasttext.load_model(model_path)
+    else:
+        fasttext.util.download_model("en", if_exists="ignore")
+        return fasttext.load_model('cc.en.300.bin')
+ft_model = load_fasttext_model()
 
 # Preprocess text
 def preprocess(text):
@@ -47,30 +46,27 @@ def preprocess(text):
     processed_text = " ".join(words)
     return processed_text
 
-
 # Load ingredients' names
-INGREDIENTS_PATH = os.path.join(
-    os.path.dirname(__file__), "../../../flavorie.ingredients.json"
-)
-
-with open(INGREDIENTS_PATH, "r") as f:
-    file = json.load(f)
-ingredient_names = [ingredient["name"] for ingredient in file]
-ingredient_oid = {ingredient["name"]: ingredient["_id"]["$oid"] for ingredient in file}
-
+def get_ingredients(mongo_client):
+    ingredient_collection = mongo_client.test.ingredients
+    ingredient_cursor = ingredient_collection.find({})
+    ingredient_names = [ingredient['name'] for ingredient in ingredient_cursor]
+    ingredient_oid = {ingredient['name']: str(ingredient['_id']) for ingredient in ingredient_cursor.rewind()}
+    # ingredient_names = []
+    return ingredient_names, ingredient_oid
+    
 # Build ANNOY index
-annoy_index = AnnoyIndex(ft_model.get_dimension(), "angular")
+def build_annoy_idx(ft_model, ingredient_names):
+    annoy_index = AnnoyIndex(ft_model.get_dimension(), "angular")
+    for i, name in enumerate(ingredient_names):
+        name_emb = ft_model.get_sentence_vector(preprocess(name))
+        annoy_index.add_item(i, name_emb)
+    annoy_index.build(50)
+    return annoy_index
 
-for i, ingredient in enumerate(file):
-    name = ingredient["name"]
-    name_emb = ft_model.get_sentence_vector(preprocess(name))
-    annoy_index.add_item(i, name_emb)
-annoy_index.build(50)
-# annoy_index.save('ingredient_idx.ann')
-# annoy_index.load('ingredient_idx.ann')
-
-
-def match_ingredients(items):
+def match_ingredients(items, mongo_client):
+    ingredient_names, ingredient_oid = get_ingredients(mongo_client)
+    annoy_index = build_annoy_idx(ft_model, ingredient_names)
     matched_items = []
     for item in items:
         item_name = item["name"]

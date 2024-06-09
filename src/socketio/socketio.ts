@@ -56,6 +56,7 @@ const setUpSocketIO = (server: any) => {
                     headers: form.getHeaders()
                 })
                 socket.emit('processReceipt', response.data)
+
                 const notification = new NotificationModel({
                     userId: socket.data.user.userId,
                     status: false,

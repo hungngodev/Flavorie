@@ -4,7 +4,7 @@ from transformers import DonutProcessor, VisionEncoderDecoderModel
 from app.utils import post_process, match_ingredients
 from flask import jsonify
 
-def process_receipt_task(img):
+def process_receipt_task(img, mongo_client):
     try:
         processor = DonutProcessor.from_pretrained("AdamCodd/donut-receipts-extract")
         model = VisionEncoderDecoderModel.from_pretrained("AdamCodd/donut-receipts-extract")
@@ -30,13 +30,7 @@ def process_receipt_task(img):
         structured_data = processor.token2json(sequence)
 
         structured_receipts = post_process(structured_data)
-        matched_items = match_ingredients(structured_receipts['items'])
+        matched_items = match_ingredients(structured_receipts['items'], mongo_client)
         return matched_items
     except Exception as e:
         return jsonify(str(e))
-
-
-    
-    
-    
-

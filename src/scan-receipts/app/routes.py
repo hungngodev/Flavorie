@@ -26,8 +26,8 @@ def scan_receipt():
         # response.content is in bytes
         img = Image.open(BytesIO(response.content)).convert("RGB")
 
-        final_res = process_receipt_task(img)
-        return jsonify(final_res)
+        final_res = process_receipt_task(img, main.mongo_client)
+        return final_res
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
