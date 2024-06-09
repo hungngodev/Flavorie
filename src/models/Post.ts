@@ -1,5 +1,5 @@
 import mongoose, { Types } from "mongoose";
-import { Review } from "./Review"
+import { Review } from "./Review.ts"
 
 export interface Media {
   type: "image" | "video" | "file";
@@ -8,7 +8,7 @@ export interface Media {
 }
 export type Privacy = "public" | "private" | "friend";
 
-interface Post extends mongoose.Document {
+export interface Post extends mongoose.Document {
   id: string;
   author: Types.ObjectId;
   header: string;
