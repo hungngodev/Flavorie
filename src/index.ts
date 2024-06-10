@@ -49,6 +49,7 @@ app.use("/api/meal", mealRouter);
 app.use("/api/ingredient", ingredientRouter);
 app.use("/api/scan-receipt", receiptScanRouter)
 app.use("/api/community", postRouter);
+app.use("/api/community/reviews", reviewRouter);
 
 // app.use("*", (req, res) => {
 //   res.status(404).json({ msg: "not found" });
@@ -65,4 +66,5 @@ try {
   console.log(error);
   process.exit(1);
 }
+
 // console.log('server started');
