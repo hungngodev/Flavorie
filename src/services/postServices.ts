@@ -57,11 +57,17 @@ export const updatePostDocument = async (
     if (!updatePost) {
       throw new ServerError("Post not found");
     }
-    if ("header" in body) updatePost.header = body.header;
-    if ("body" in body) updatePost.body = body.body;
-    if ("media" in body) updatePost.media = body.media;
-    if ("privacy" in body) updatePost.privacy = body.privacy;
-    if ("review" in body) updatePost.review = body.review;
+
+    if ("header" in body && updatePost)
+      (updatePost as Post).header = body.header;
+    if ("body" in body) (updatePost as Post).body = body.body;
+    if ("media" in body) (updatePost as Post).media = body.media;
+    if ("privacy" in body) (updatePost as Post).privacy = body.privacy;
+    if ("review" in body) (updatePost as Post).review = body.review;
+
+    if ("author" in body) {
+      throw new BadRequestError("Cannot change author");
+    }
 
     await updatePost.save();
     return updatePost._id as string;

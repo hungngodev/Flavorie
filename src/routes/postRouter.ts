@@ -15,8 +15,8 @@ const apiLimiter = rateLimiter({
 });
 
 router.get("/");
-router.post("/create-post", checkUser, apiLimiter, createPost);
-router.put("/update-post", apiLimiter, updatePost);
-router.delete("/delete-post", apiLimiter, deletePost);
+router.post("/post", checkUser, apiLimiter, createPost);
+router.put("/post/:postid", checkUser, apiLimiter, updatePost);
+router.delete("/post/:postid", checkUser, apiLimiter, deletePost);
 
 export default router;

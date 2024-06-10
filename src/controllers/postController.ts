@@ -31,8 +31,8 @@ export const createPost = async (req: Request, res: Response) => {
 
 export const updatePost = async (req: Request, res: Response) => {
   try {
-    const { id, author } = req.body;
-    const new_post = await updatePostDocument(id, req.body);
+    const { postid } = req.params;
+    const new_post = await updatePostDocument(postid, req.body);
     return res
       .status(StatusCodes.OK)
       .json({ message: "Post updated", id: new_post });
@@ -48,8 +48,8 @@ export const updatePost = async (req: Request, res: Response) => {
 };
 export const deletePost = async (req: Request, res: Response) => {
   try {
-    const { id } = req.body;
-    await deletePostDocument(id);
+    const { postid } = req.params;
+    await deletePostDocument(postid);
     return res.status(StatusCodes.OK).json({ message: "Post deleted" });
   } catch (err) {
     if (err instanceof Error) {
