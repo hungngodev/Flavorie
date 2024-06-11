@@ -14,6 +14,7 @@ export interface Post extends mongoose.Document {
   body: string;
   media: Media[];
   privacy: Privacy;
+  location: string;
   review: Types.DocumentArray<Review>;
   //react: Types.DocumentArray<React>;
   reviewCount: number;
@@ -57,6 +58,9 @@ const PostSchema = new mongoose.Schema<Post, PostModel>(
       enum: ["public", "private", "friend"],
       required: true,
       default: "public",
+    },
+    location: {
+      type: String,
     },
     review: [
       {

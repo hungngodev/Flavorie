@@ -17,32 +17,29 @@ export const getSinglePostDocument = async (
   }
 };
 
-export const buildPostDocument = async (body: Post): Promise<string> => {
+export const buildPostDocument = async (postBody: Post): Promise<string> => {
   try {
-    const { id, author } = body;
+    const { author, header, body, media, privacy } = postBody;
     const getUser = await UserModel.findById(author);
 
-    if (id) {
-      const existedPost = await PostModel.findById(id);
-      if (existedPost) {
-        throw new BadRequestError(`Post already exists`);
-      }
-    }
     if (!getUser) {
-      console.log("here");
       throw new BadRequestError("Invalid author");
     }
-    if (!body.body || !body.header) {
+    if (!body || !header) {
       throw new BadRequestError("Missing information");
     }
-    const newPost = await PostModel.create({
-      author: body.author,
-      header: body.header,
-      body: body.body,
-      media: body.media,
-      privacy: body.privacy,
-    });
-
+    const updateData = {
+      author: author,
+      header: header,
+      body: body,
+      media: media,
+      privacy: privacy,
+      location: postBody.location,
+    };
+    const newPost = await PostModel.create(updateData);
+    if (!newPost) {
+      throw new ServerError("Failed to create post");
+    }
     return newPost._id as string;
   } catch (error) {
     throw new ServerError(`${error}`);
@@ -63,6 +60,7 @@ export const updatePostDocument = async (
     if ("body" in body) (updatePost as Post).body = body.body;
     if ("media" in body) (updatePost as Post).media = body.media;
     if ("privacy" in body) (updatePost as Post).privacy = body.privacy;
+    if ("location" in body) (updatePost as Post).location = body.location;
     if ("review" in body) (updatePost as Post).review = body.review;
 
     if ("author" in body) {
