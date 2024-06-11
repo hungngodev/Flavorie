@@ -39,41 +39,7 @@ export const mockData: NotificationType[] = [
     body: 'A new update has been released. Please update your application.',
     date: new Date(),
   },
-  {
-    header: 'Maintenance Notice',
-    body: 'Scheduled maintenance will occur on March 1st, 2024 from 2:00 AM to 4:00 AM UTC.',
-    date: new Date('2024-03-01T02:00:00Z'),
-  },
-  {
-    header: 'Maintenance Notice',
-    body: 'Scheduled maintenance will occur on March 1st, 2024 from 2:00 AM to 4:00 AM UTC.',
-    date: new Date('2024-03-01T02:00:00Z'),
-  },
-  {
-    header: 'Maintenance Notice',
-    body: 'Scheduled maintenance will occur on March 1st, 2024 from 2:00 AM to 4:00 AM UTC.',
-    date: new Date('2024-03-01T02:00:00Z'),
-  },
-  {
-    header: 'Maintenance Notice',
-    body: 'Scheduled maintenance will occur on March 1st, 2024 from 2:00 AM to 4:00 AM UTC.',
-    date: new Date('2024-03-01T02:00:00Z'),
-  },
-  {
-    header: 'Maintenance Notice',
-    body: 'Scheduled maintenance will occur on March 1st, 2024 from 2:00 AM to 4:00 AM UTC.',
-    date: new Date('2024-03-01T02:00:00Z'),
-  },
-  {
-    header: 'Maintenance Notice',
-    body: 'Scheduled maintenance will occur on March 1st, 2024 from 2:00 AM to 4:00 AM UTC.',
-    date: new Date('2024-03-01T02:00:00Z'),
-  },
-  {
-    header: 'Maintenance Notice',
-    body: 'Scheduled maintenance will occur on March 1st, 2024 from 2:00 AM to 4:00 AM UTC.',
-    date: new Date('2024-03-01T02:00:00Z'),
-  },
+
 ];
 
 const isOverflow = (containerRef: HTMLDivElement | null) => {
@@ -150,13 +116,12 @@ const Notification = () => {
 
   return (
     <VStack
-      height="100dvh"
+      height="100%"
       width="100%"
       backgroundColor="blackAlpha.50"
       alignItems="center"
       justifyContent="center"
-      ref={containerRef}
-      overflow={resizeButton ? 'hidden' : 'auto'}
+
     >
       <Card
         width={{ base: '100%', md: '80%', lg: '70%' }}
@@ -164,6 +129,8 @@ const Notification = () => {
         backgroundColor="whiteAlpha.800"
         boxShadow="md"
         position="relative"
+        ref={containerRef}
+        overflow={resizeButton ? 'hidden' : 'auto'}
       >
         <CardHeader>
           <HStack width="100%" justifyContent="space-between" color="blackAlpha.700">

@@ -57,8 +57,11 @@ export interface Meal extends mongoose.Document {
     }
 }
 type MealModel = mongoose.Model<Meal>;
+
 const MealSchema = new mongoose.Schema<Meal, MealModel>({
-    title: String,
+    title: {
+        type: String,
+    },
     imageUrl: String,
     allIngredients: [{
         type: mongoose.Schema.Types.ObjectId,
