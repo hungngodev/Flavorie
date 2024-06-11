@@ -1,4 +1,5 @@
 import {
+  Button,
   Card,
   CardBody,
   CardHeader,
@@ -8,16 +9,14 @@ import {
   IconButton,
   Menu,
   MenuButton,
-  VStack,
   MenuItem,
   MenuList,
-  Button,
+  VStack,
 } from '@chakra-ui/react';
-import { Check, Settings, Ellipsis } from 'lucide-react';
-import { useEffect, useState, useRef } from 'react';
-import NotificationField from '../components/form/NotificationField.tsx';
-import customFetch from '../utils/customFetch';
-
+import { Check, Ellipsis, Settings } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import NotificationBell from '../components/notification/NotificationBell.tsx';
+import NotificationField from '../components/notification/NotificationField.tsx';
 export type NotificationType = {
   header: string;
   body: string;
@@ -88,7 +87,7 @@ const Notification = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [notificationList, setNotificationList] = useState<NotificationType[]>(mockData);
   const [resizeButton, setResizeButton] = useState<boolean>(isOverflow(containerRef.current));
-
+  const [trigger, setTrigger] = useState<boolean>(false);
   //   useEffect(() => {
   //     const getAllNoti = async () => {
   //       const notiReq = await customFetch.get('/notification');
@@ -101,6 +100,11 @@ const Notification = () => {
     containerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
     setResizeButton(isOverflow(containerRef.current));
   }, []);
+
+  // const ringAnimation: AnimationDefinition<string & {}> | undefined = {
+  //   rotate: [0, -25, 25, -25, 25, 0],
+  //   transition: { duration: 0.5, type: 'spring', stiffness: 300 },
+  // };
 
   const OpenButton = () => {
     return (
@@ -116,6 +120,16 @@ const Notification = () => {
         borderColor="blackAlpha.500"
         paddingBlock="2.5em"
       >
+        <NotificationBell
+          color="blackAlpha.700"
+          boxSize="1.75em"
+          fontSize="2.25em"
+          notiCount={2}
+          isTriggered={true}
+          aria-label="notification-button"
+          backgroundColor="gray.50"
+          isRound={true}
+        />
         <Button
           variant="ghost"
           color="teal.500"
