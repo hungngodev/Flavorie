@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import Review from "../models/Review";
-import { compareSync } from "bcrypt";
 
 export const createReview = async (req: Request, res: Response) => {
     const { content, postId, parentReview } = req.body;
