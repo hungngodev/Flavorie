@@ -59,7 +59,7 @@ export const postService = async (req: Request, res: Response) => {
     return res.status(StatusCodes.OK).json(response);
   } catch (err) {
     if (err instanceof Error) {
-      return res.status(StatusCodes.CONFLICT).json(new PostError(err.message));
+      return res.status(StatusCodes.CONFLICT).json({ error: err.message });
     } else {
       return res
         .status(StatusCodes.CONFLICT)
