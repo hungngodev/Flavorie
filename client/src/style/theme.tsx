@@ -64,6 +64,11 @@ const theme = {
         userSelect: 'none',
       },
     },
+    Divider: {
+      baseStyle: {
+        color: 'blackAlpha.300',
+      },
+    },
   },
 };
 
