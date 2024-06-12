@@ -3,11 +3,14 @@ import { z } from 'zod';
 // Define your schemas
 const BaseObject = z
   .object({
-    id: z.string(),
-    author: z.string(),
-    body: z.string(),
+    id: z.string().optional(),
+    author: z.object({
+      avatar: z.string().optional(),
+      name: z.string(),
+    }),
+    body: z.string().optional(),
   })
-  .required({ author: true });
+  .required();
 
 export const ReactObject = BaseObject.extend({
   body: z.enum(['like', 'dislike']),
@@ -21,7 +24,6 @@ type ReviewType = z.infer<typeof BaseReview> & {
   reviews: ReviewType[];
 };
 
-// recursively define a Review
 export const ReviewObject: z.ZodType<ReviewType> = BaseReview.extend({
   reviews: z.lazy(() => ReviewObject.array()),
 });
@@ -40,16 +42,23 @@ export const PostObject = BaseObject.extend({
   reviews: z.array(ReviewObject),
   reacts: z.array(ReactObject),
   shares: z.array(z.string()),
+  date: z.date(),
 }).required({
   author: true,
   header: true,
   body: true,
 });
 
-export const MockPosts: Array<z.infer<typeof PostObject>> = [
+export type PostObjectType = z.infer<typeof PostObject>;
+
+// Define the mock data array
+export const MockPosts: Array<PostObjectType> = [
   {
     id: 'post1',
-    author: 'user1',
+    author: {
+      avatar: 'https://github.com/shadcn.png',
+      name: 'user1',
+    },
     header: 'Delicious Homemade Pizza',
     body: 'Tried a new recipe for homemade pizza and it turned out amazing! The crust is crispy, and the cheese is perfectly melted. Highly recommend giving this a try.',
     media: [
@@ -64,12 +73,18 @@ export const MockPosts: Array<z.infer<typeof PostObject>> = [
     reviews: [
       {
         id: 'review1',
-        author: 'user2',
+        author: {
+          avatar: 'https://github.com/shadcn.png',
+          name: 'user2',
+        },
         body: 'This looks delicious!',
         reacts: [
           {
             id: 'react1',
-            author: 'user3',
+            author: {
+              avatar: 'https://github.com/shadcn.png',
+              name: 'user3',
+            },
             body: 'like',
           },
         ],
@@ -79,15 +94,22 @@ export const MockPosts: Array<z.infer<typeof PostObject>> = [
     reacts: [
       {
         id: 'react2',
-        author: 'user4',
+        author: {
+          avatar: 'https://github.com/shadcn.png',
+          name: 'user4',
+        },
         body: 'like',
       },
     ],
     shares: ['user5', 'user6'],
+    date: new Date(),
   },
   {
     id: 'post2',
-    author: 'user3',
+    author: {
+      avatar: 'https://github.com/shadcn.png',
+      name: 'user3',
+    },
     header: 'Quick and Easy Pasta',
     body: 'Whipped up a quick pasta dish for dinner tonight. Super simple but packed with flavor. Used fresh basil and garlic for an extra kick.',
     media: [
@@ -102,12 +124,18 @@ export const MockPosts: Array<z.infer<typeof PostObject>> = [
     reviews: [
       {
         id: 'review2',
-        author: 'user5',
+        author: {
+          avatar: 'https://github.com/shadcn.png',
+          name: 'user5',
+        },
         body: 'I love quick recipes like this!',
         reacts: [
           {
             id: 'react3',
-            author: 'user6',
+            author: {
+              avatar: 'https://github.com/shadcn.png',
+              name: 'user6',
+            },
             body: 'like',
           },
         ],
@@ -117,15 +145,22 @@ export const MockPosts: Array<z.infer<typeof PostObject>> = [
     reacts: [
       {
         id: 'react4',
-        author: 'user7',
+        author: {
+          avatar: 'https://github.com/shadcn.png',
+          name: 'user7',
+        },
         body: 'like',
       },
     ],
     shares: ['user8'],
+    date: new Date(),
   },
   {
     id: 'post3',
-    author: 'user4',
+    author: {
+      avatar: 'https://github.com/shadcn.png',
+      name: 'user4',
+    },
     header: 'Vegan Chocolate Cake',
     body: 'Baked a vegan chocolate cake for the first time and it turned out so moist and rich! Perfect for any chocolate lover.',
     media: [
@@ -140,12 +175,18 @@ export const MockPosts: Array<z.infer<typeof PostObject>> = [
     reviews: [
       {
         id: 'review3',
-        author: 'user8',
+        author: {
+          avatar: 'https://github.com/shadcn.png',
+          name: 'user8',
+        },
         body: "This looks incredible! Can't believe it's vegan.",
         reacts: [
           {
             id: 'react5',
-            author: 'user9',
+            author: {
+              avatar: 'https://github.com/shadcn.png',
+              name: 'user9',
+            },
             body: 'like',
           },
         ],
@@ -153,12 +194,18 @@ export const MockPosts: Array<z.infer<typeof PostObject>> = [
       },
       {
         id: 'review4',
-        author: 'user10',
+        author: {
+          avatar: 'https://github.com/shadcn.png',
+          name: 'user10',
+        },
         body: 'I need this recipe!',
         reacts: [
           {
             id: 'react6',
-            author: 'user11',
+            author: {
+              avatar: 'https://github.com/shadcn.png',
+              name: 'user11',
+            },
             body: 'like',
           },
         ],
@@ -168,15 +215,22 @@ export const MockPosts: Array<z.infer<typeof PostObject>> = [
     reacts: [
       {
         id: 'react7',
-        author: 'user12',
+        author: {
+          avatar: 'https://github.com/shadcn.png',
+          name: 'user12',
+        },
         body: 'like',
       },
     ],
     shares: ['user13', 'user14'],
+    date: new Date(),
   },
   {
     id: 'post4',
-    author: 'user5',
+    author: {
+      avatar: 'https://github.com/shadcn.png',
+      name: 'user5',
+    },
     header: 'Fresh Summer Salad',
     body: 'This summer salad is a mix of fresh greens, strawberries, and a light vinaigrette. Perfect for a hot day!',
     media: [
@@ -192,15 +246,22 @@ export const MockPosts: Array<z.infer<typeof PostObject>> = [
     reacts: [
       {
         id: 'react8',
-        author: 'user15',
+        author: {
+          avatar: 'https://github.com/shadcn.png',
+          name: 'user15',
+        },
         body: 'like',
       },
     ],
     shares: ['user16'],
+    date: new Date(),
   },
   {
     id: 'post5',
-    author: 'user6',
+    author: {
+      avatar: 'https://github.com/shadcn.png',
+      name: 'user6',
+    },
     header: 'Spicy Tacos',
     body: 'Made some spicy tacos with homemade salsa. They have just the right amount of heat and are incredibly flavorful!',
     media: [
@@ -215,12 +276,18 @@ export const MockPosts: Array<z.infer<typeof PostObject>> = [
     reviews: [
       {
         id: 'review5',
-        author: 'user17',
+        author: {
+          avatar: 'https://github.com/shadcn.png',
+          name: 'user17',
+        },
         body: 'These look fantastic! Love spicy food.',
         reacts: [
           {
             id: 'react9',
-            author: 'user18',
+            author: {
+              avatar: 'https://github.com/shadcn.png',
+              name: 'user18',
+            },
             body: 'like',
           },
         ],
@@ -230,10 +297,14 @@ export const MockPosts: Array<z.infer<typeof PostObject>> = [
     reacts: [
       {
         id: 'react10',
-        author: 'user19',
+        author: {
+          avatar: 'https://github.com/shadcn.png',
+          name: 'user19',
+        },
         body: 'like',
       },
     ],
     shares: ['user20'],
+    date: new Date(),
   },
 ];
