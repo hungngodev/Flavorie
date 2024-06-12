@@ -26,10 +26,10 @@ export const createReview = async (req: Request, res: Response) => {
         }
 
         await review.save();
-        res.status(201).send(review);
+        return res.status(201).send(review);
     }
     catch (error) {
-        res.status(400).send(error);
+        return res.status(400).send(error);
     }
 };
 
@@ -53,12 +53,13 @@ export const updateReview = async (req: Request, res: Response) => {
         review.content = content;
         await review.save();
 
-        res.status(200).send(review);
+        return res.status(200).send(review);
     }
     catch (error) {
-        res.status(400).send(error);
+        if (error instanceof Error) {
+            return res.status(400).send({ error: error.message });
+        }
     }
-
 };
 
 export const deleteReview = async (req: Request, res: Response) => {
