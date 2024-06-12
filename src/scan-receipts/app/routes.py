@@ -25,7 +25,6 @@ def scan_receipt():
 
         # response.content is in bytes
         img = Image.open(BytesIO(response.content)).convert("RGB")
-
         final_res = process_receipt_task(img, main.mongo_client)
         return final_res
 

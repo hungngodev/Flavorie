@@ -1,6 +1,5 @@
 import { verifyJWT } from "../utils/tokenUtils.ts";
 import { Server, Socket } from "socket.io";
-import fs from 'fs'
 
 import FormData from "form-data";
 import axios from "axios";
@@ -55,8 +54,8 @@ const setUpSocketIO = (server: any) => {
                 const response = await axios.post(FLASK_SERVICE_URL, form, {
                     headers: form.getHeaders()
                 })
-                socket.emit('processReceipt', response.data)
 
+                socket.emit('processReceipt', response.data)
                 const notification = new NotificationModel({
                     userId: socket.data.user.userId,
                     status: false,

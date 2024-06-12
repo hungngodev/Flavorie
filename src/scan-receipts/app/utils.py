@@ -49,11 +49,11 @@ def preprocess(text):
 # Load ingredients' names
 def get_ingredients(mongo_client):
     ingredient_collection = mongo_client.test.ingredients
-    ingredient_cursor = ingredient_collection.find({})
+    ingredient_cursor = list(ingredient_collection.find({}))
     ingredient_names = [ingredient['name'] for ingredient in ingredient_cursor]
-    ingredient_oid = {ingredient['name']: str(ingredient['_id']) for ingredient in ingredient_cursor.rewind()}
-    # ingredient_names = []
-    return ingredient_names, ingredient_oid
+    # ingredient_oid = {ingredient['name']: str(ingredient['_id']) for ingredient in ingredient_cursor.rewind()}
+    ingredient_img = {ingredient['name']: ingredient.get('image' , 'No image') for ingredient in ingredient_cursor}
+    return ingredient_names, ingredient_img
     
 # Build ANNOY index
 def build_annoy_idx(ft_model, ingredient_names):
@@ -65,7 +65,7 @@ def build_annoy_idx(ft_model, ingredient_names):
     return annoy_index
 
 def match_ingredients(items, mongo_client):
-    ingredient_names, ingredient_oid = get_ingredients(mongo_client)
+    ingredient_names, ingredient_img = get_ingredients(mongo_client)
     annoy_index = build_annoy_idx(ft_model, ingredient_names)
     matched_items = []
     for item in items:
@@ -89,17 +89,18 @@ def match_ingredients(items, mongo_client):
             (
                 cosine_similarities[i],
                 ingredient_names[idx],
-                ingredient_oid[ingredient_names[idx]],
+                # ingredient_oid[ingredient_names[idx]],
+                ingredient_img[ingredient_names[idx]]
             )
             for i, idx in enumerate(similar_idx)
         ]
 
         similar_items.sort(key=lambda x: x[0], reverse=True)
-
-        potential_matches = [val[1] for val in similar_items]
-        potential_oids = [val[2] for val in similar_items]
-
+        potential_matches = []
+        for val in similar_items:
+            potential_items = {'potential_name': val[1], 'potential_image': val[2]}
+            potential_matches.append(potential_items)
+        
         item["potential_matches"] = potential_matches
-        item["potential_oids"] = potential_oids
         matched_items.append(item)
     return matched_items
