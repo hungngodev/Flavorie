@@ -27,21 +27,30 @@ interface PostHeaderProps extends StackProps {
 
 const PostHeader = memo<PostHeaderProps>(({ avatar, author, date, privacy, location, ...props }) => (
   <HStack width="100%" justifyContent="space-between" alignItems="center">
-    <Box>
+    <HStack gap={4} alignItems="start">
       <Avatar
         name={author}
         src={avatar ?? 'https://github.com/shadcn.png'}
         aria-label="user-image"
         icon={<FaUserCircle />}
       />
-      <VStack>
-        <Text>{author}</Text>
-        <Text>{parseDate(date)}</Text>
+      <VStack alignItems="start" height="auto" gap={0}>
+        <Text fontWeight="semibold" fontSize="lg">
+          {author}
+        </Text>
+        <Text fontSize="md">{parseDate(date)}</Text>
       </VStack>
-    </Box>
+    </HStack>
     <Menu>
-      <MenuButton as={IconButton} icon={<Ellipsis />} aria-label="post-options" />
-      <MenuList>
+      <MenuButton
+        as={IconButton}
+        icon={<Ellipsis />}
+        aria-label="post-options"
+        variant="ghost"
+        isRound={true}
+        fontSize="2xl"
+      />
+      <MenuList zIndex="200">
         <MenuItem icon={<Bookmark />} command="⌘S">
           Save post
         </MenuItem>

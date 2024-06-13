@@ -66,7 +66,17 @@ export const MockPosts: Array<PostObjectType> = [
     media: [
       {
         type: 'image',
-        url: 'https://example.com/images/pizza.jpg',
+        url: 'https://i.pinimg.com/564x/3a/70/7b/3a707b7160f5ec185f8f917872dfb8b6.jpg',
+        metadata: ['homemade', 'pizza', 'cheese'],
+      },
+      {
+        type: 'image',
+        url: 'https://i.pinimg.com/564x/3a/70/7b/3a707b7160f5ec185f8f917872dfb8b6.jpg',
+        metadata: ['homemade', 'pizza', 'cheese'],
+      },
+      {
+        type: 'image',
+        url: 'https://i.pinimg.com/564x/3a/70/7b/3a707b7160f5ec185f8f917872dfb8b6.jpg',
         metadata: ['homemade', 'pizza', 'cheese'],
       },
     ],
@@ -116,9 +126,34 @@ export const MockPosts: Array<PostObjectType> = [
     body: 'Whipped up a quick pasta dish for dinner tonight. Super simple but packed with flavor. Used fresh basil and garlic for an extra kick.',
     media: [
       {
-        type: 'video',
-        url: 'https://example.com/videos/pasta.mp4',
-        metadata: ['pasta', 'quick meal', 'dinner'],
+        type: 'image',
+        url: 'https://i.pinimg.com/564x/3a/70/7b/3a707b7160f5ec185f8f917872dfb8b6.jpg',
+        metadata: ['vegan', 'chocolate', 'dessert'],
+      },
+      {
+        type: 'image',
+        url: 'https://i.pinimg.com/564x/3a/70/7b/3a707b7160f5ec185f8f917872dfb8b6.jpg',
+        metadata: ['vegan', 'chocolate', 'dessert'],
+      },
+      {
+        type: 'image',
+        url: 'https://i.pinimg.com/564x/3a/70/7b/3a707b7160f5ec185f8f917872dfb8b6.jpg',
+        metadata: ['vegan', 'chocolate', 'dessert'],
+      },
+      {
+        type: 'image',
+        url: 'https://i.pinimg.com/564x/3a/70/7b/3a707b7160f5ec185f8f917872dfb8b6.jpg',
+        metadata: ['vegan', 'chocolate', 'dessert'],
+      },
+      {
+        type: 'image',
+        url: 'https://i.pinimg.com/564x/3a/70/7b/3a707b7160f5ec185f8f917872dfb8b6.jpg',
+        metadata: ['vegan', 'chocolate', 'dessert'],
+      },
+      {
+        type: 'image',
+        url: 'https://i.pinimg.com/564x/3a/70/7b/3a707b7160f5ec185f8f917872dfb8b6.jpg',
+        metadata: ['vegan', 'chocolate', 'dessert'],
       },
     ],
     location: 'San Francisco, USA',
@@ -168,7 +203,7 @@ export const MockPosts: Array<PostObjectType> = [
     media: [
       {
         type: 'image',
-        url: 'https://example.com/images/chocolate-cake.jpg',
+        url: 'https://i.pinimg.com/564x/3a/70/7b/3a707b7160f5ec185f8f917872dfb8b6.jpg',
         metadata: ['vegan', 'chocolate', 'dessert'],
       },
     ],
@@ -238,7 +273,7 @@ export const MockPosts: Array<PostObjectType> = [
     media: [
       {
         type: 'image',
-        url: 'https://example.com/images/summer-salad.jpg',
+        url: 'https://i.pinimg.com/564x/3a/70/7b/3a707b7160f5ec185f8f917872dfb8b6.jpg',
         metadata: ['salad', 'summer', 'healthy'],
       },
     ],
@@ -269,7 +304,7 @@ export const MockPosts: Array<PostObjectType> = [
     media: [
       {
         type: 'image',
-        url: 'https://example.com/images/tacos.jpg',
+        url: 'https://i.pinimg.com/564x/3a/70/7b/3a707b7160f5ec185f8f917872dfb8b6.jpg',
         metadata: ['tacos', 'spicy', 'mexican'],
       },
     ],

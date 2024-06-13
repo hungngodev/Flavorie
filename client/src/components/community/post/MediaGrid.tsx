@@ -1,6 +1,11 @@
 import {
   Grid,
   GridItem,
+  Skeleton,
+  GridProps,
+  ImageProps,
+  Image,
+  useDisclosure,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -8,16 +13,10 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-  Skeleton,
-  SkeletonCircle,
-  SkeletonText,
-  AspectRatio,
-  GridProps,
-  ImageProps,
-  Image,
+  Text,
 } from '@chakra-ui/react';
 import { MediaObjectType } from './MockPosts';
-import { memo } from 'react';
+import { memo, useRef, useState } from 'react';
 
 interface MediaGridProps extends GridProps {
   mediaData: MediaObjectType[];
@@ -26,20 +25,66 @@ interface MediaGridProps extends GridProps {
 }
 
 const MediaGrid = memo<MediaGridProps>(({ mediaData, isLoaded = true, imageProps, ...props }) => {
+  const [slide, setSlide] = useState<MediaObjectType[]>(mediaData.length <= 4 ? mediaData : mediaData.slice(0, 4));
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const dynamic_rows = mediaData.length <= 2 ? 1 : slide.length - 1;
+  const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <Grid
-      templateColumns={'3fr 1fr'}
-      gridTemplateRows={mediaData.length <= 2 ? `1fr` : `${Math.min(mediaData.length, 3)}fr`}
+      templateColumns={slide.length <= 2 ? `1fr` : '5fr 4fr'}
+      gridAutoRows="1fr"
+      gridAutoFlow="column"
       {...props}
+      gap={1}
     >
-      {mediaData.map((media, index) => (
-        <GridItem key={media.url} gridRow={index <= 1 ? 1 / -1 : '1fr'}>
-          <Skeleton isLoaded={isLoaded}>
+      {slide.map((media, index) => (
+        <GridItem
+          key={media.url}
+          gridRow={index === 0 ? `span ${dynamic_rows}` : `auto`}
+          gridColumn={index === 0 ? 1 : 2}
+          overflow="hidden"
+          zIndex="100"
+        >
+          <Skeleton isLoaded={isLoaded} height="100%" width="100%" position="relative">
+            {index === slide.length - 1 && mediaData.length > slide.length ? (
+              <Text position="absolute" top="50%" right="50%" color="white" zIndex="100">
+                +{mediaData.length - slide.length}
+              </Text>
+            ) : null}
+            {index === slide.length - 1 && mediaData.length > slide.length ? (
+              <Modal isOpen={isOpen} onClose={onClose}>
+                <ModalOverlay />
+                <ModalContent>
+                  <ModalHeader>Modal Title</ModalHeader>
+                  <ModalCloseButton />
+                  <ModalBody>
+                    <p>test</p>
+                  </ModalBody>
+                </ModalContent>
+              </Modal>
+            ) : null}
             {media.type === 'image' ? (
-              <Image src={media.url} alt={media.description ?? `post-image - ${index}`} aspectRatio={1 / 1} />
+              <Image
+                src={media.url}
+                alt={media.description ?? `post-image - ${index}`}
+                objectFit="cover"
+                height="100%"
+                width="100%"
+                justifySelf="center"
+                alignSelf="center"
+                {...imageProps}
+                onClick={
+                  index === slide.length - 1 && mediaData.length > slide.length
+                    ? () => {
+                        onOpen();
+                      }
+                    : undefined
+                }
+                filter={index === slide.length - 1 && mediaData.length > slide.length ? 'brightness(20%)' : 'none'}
+              />
             ) : (
-              <video>
-                <source src={media.url} type="video" />
+              <video width="100%" height="100%" style={{ objectFit: 'cover' }}>
+                <source src={media.url} type="video/mp4" />
               </video>
             )}
           </Skeleton>
@@ -48,4 +93,5 @@ const MediaGrid = memo<MediaGridProps>(({ mediaData, isLoaded = true, imageProps
     </Grid>
   );
 });
+
 export default MediaGrid;
