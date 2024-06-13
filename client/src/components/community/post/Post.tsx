@@ -1,12 +1,11 @@
-import { Card, CardBody, CardFooter, CardHeader, Text } from '@chakra-ui/react';
+import { Box, Card, CardBody, CardFooter, CardHeader, Text, Heading } from '@chakra-ui/react';
 import React from 'react';
-import { z } from 'zod';
-import { PostObject } from './MockPosts';
+import { PostObjectType } from './MockPosts';
 import PostFooter from './PostFooter';
 import PostHeader from './PostHeader';
-
+import MediaGrid from './MediaGrid';
 interface PostProps {
-  postData: z.infer<typeof PostObject>;
+  postData: PostObjectType;
   isDisplayed?: boolean;
 }
 
@@ -25,8 +24,11 @@ const Post: React.FC<PostProps> = ({ postData, isDisplayed, ...props }) => {
             />
           </CardHeader>
           <CardBody>
-            <Text>{postData.header}</Text>
-            <Text>{postData.body}</Text>
+            <Box>
+              <Heading>{postData.header}</Heading>
+              <Text>{postData.body}</Text>
+            </Box>
+            <MediaGrid mediaData={postData.media} isLoaded={true} />
           </CardBody>
           <CardFooter>
             <PostFooter reacts={postData.reacts} reviews={postData.reviews} shares={postData.shares} />

@@ -29,9 +29,10 @@ export const ReviewObject: z.ZodType<ReviewType> = BaseReview.extend({
 });
 
 export const MediaObject = z.object({
-  type: z.enum(['image', 'video', 'file']),
+  type: z.enum(['image', 'video']),
   url: z.string(),
-  metadata: z.array(z.string()),
+  metadata: z.array(z.string()).optional(),
+  description: z.string().optional(),
 });
 
 export const PostObject = BaseObject.extend({
@@ -49,6 +50,7 @@ export const PostObject = BaseObject.extend({
   body: true,
 });
 
+export type MediaObjectType = z.infer<typeof MediaObject>;
 export type PostObjectType = z.infer<typeof PostObject>;
 
 // Define the mock data array
