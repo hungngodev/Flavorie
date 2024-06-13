@@ -63,13 +63,13 @@ export const updateReview = async (req: Request, res: Response) => {
 };
 
 export const deleteReview = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { reviewId } = req.params;
 
     try {
-        const review = await Review.findByIdAndDelete(id);
+        const review = await Review.findByIdAndDelete(reviewId);
         res.status(200).send(review);
     }
     catch (error) {
         res.status(400).send(error);
     } 
-};
+};  
