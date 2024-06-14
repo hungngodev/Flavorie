@@ -4,8 +4,8 @@ import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { ServerError } from "../errors/customErrors.ts";
 import { Ingredient } from '../models/IngredientModel.ts';
-import { getAllMealsByIngredientsAPI, getMealByIdAPI, getRandomMealsAPI } from "../services/spoonacular/spoonacularServices.ts";
-import { MainCategories } from "../services/themealdb/data.ts";
+import { getAllMealsByIngredientsAPI, getMealByIdAPI, getRandomMealsAPI, getAllMealsComplexSearch, getMealsAutoCompleteAPI } from "../services/spoonacular/spoonacularServices.ts";
+import { MainCategories, Categories, Areas, Ingredients } from "../services/themealdb/data.ts";
 import {
   getMealByFilter,
   getMealById,
@@ -27,7 +27,7 @@ type theMealDB = {
 export const getRandomMealsUnauthenticated = async (
   req: Request,
   res: Response,
-) => {
+): Promise<Response<any, Record<string, any>>> => {
   try {
     const { size, mainSize, sideSize, dessertSize, ingredients, search } = req.query;
     const queryRange = size ? parseInt(size.toString()) : 30;
@@ -49,16 +49,16 @@ export const getRandomMealsUnauthenticated = async (
       }))
       return results;
     }
-    if (search) {
-      const nameResult = await getMealByName(search.toString());
+    if (search || search === "") {
+      const nameResult = await getMealByName(search.toString().toLowerCase());
       const areaResult = await getMealByFilter("area", search.toString(), queryRange);
       const categoryResult = await getMealByFilter("category", search.toString(), queryRange);
       const ingredientResult = await getMealByFilter("ingredient", search.toString(), queryRange);
       const mealReturns: any = {};
-      nameResult ? mealReturns.relevant = await processingMeals(nameResult) : null;
-      areaResult ? mealReturns.area = await processingMeals(areaResult) : null;
-      categoryResult ? mealReturns.category = await processingMeals(categoryResult) : null;
-      ingredientResult ? mealReturns.ingredient = await processingMeals(ingredientResult) : null;
+      nameResult && nameResult.length ? mealReturns.relevant = await processingMeals(nameResult) : null;
+      areaResult && areaResult.length ? mealReturns.area = await processingMeals(areaResult) : null;
+      categoryResult && categoryResult.length ? mealReturns.category = await processingMeals(categoryResult) : null;
+      ingredientResult && ingredientResult.length ? mealReturns.ingredient = await processingMeals(ingredientResult) : null;
       return res.json(mealReturns).status(StatusCodes.OK);
     }
     else {
@@ -125,7 +125,6 @@ export const getRanDomMealsAuthenticated = async (
     const queryAllergy = allergy.reduce((acc: string, curr: string) => `${acc},${curr}`, "");
     const queryDiet = diet.reduce((acc: string, curr: string) => `${acc},${curr}`, "");
 
-
     async function processingMeals(meals: spoonacularDB[]) {
       const results = await Promise.all(meals.map(async (meal) => {
         const _id = await createMeal(meal, 'spoonacular');
@@ -140,8 +139,20 @@ export const getRanDomMealsAuthenticated = async (
         }
       }))
       return results;
-
     }
+    if (search) {
+      const searchResult = await getAllMealsComplexSearch(search.toString().toLowerCase(), diet, allergy, 'meta-score', 30);
+      const mealReturns: any = {};
+      searchResult && searchResult.results.length ? mealReturns.relevant = searchResult.results.map((meal: spoonacularDB) => {
+        return {
+          id: meal.id,
+          title: meal.title,
+          image: meal.image,
+        }
+      }) : null;
+      return res.json(mealReturns).status(StatusCodes.OK);
+    }
+
     const randomMeals = await getRandomMealsAPI(
       queryDiet,
       queryAllergy, 30);
@@ -180,10 +191,38 @@ export const getAllMeals = async (req: Request, res: Response) => {
   return getRandomMealsUnauthenticated(req, res);
 }
 
-export const getIndividualMeal = async (req: Request, res: Response) => {
+export const getAutoComplete = async (req: Request, res: Response) => {
+  let { query } = req.query;
+  if (!query) {
+    return res.json([]).status(StatusCodes.OK);
+  }
+  query = query.toString().toLowerCase().trim();
+  const numsAutoComplete = 7;
+  if (!req.user) {
+    const results: { title: string }[] = [];
+    const adding = (value: string) => results.length < numsAutoComplete && value.toLowerCase().startsWith(query.toString().toLowerCase()) ? results.push({ title: value.toLowerCase().trim() }) : null;
+    MainCategories.forEach(adding);
+    Categories.forEach(adding);
+    Areas.forEach(adding);
+    Ingredients.forEach(adding);
+    const matching = await MealModel.find({ "title": { "$regex": `^${query}`, "$options": "i" } }).limit(numsAutoComplete)
+    matching.forEach((meal) => {
+      results.length < numsAutoComplete && results.push({ title: meal.title });
+    })
+    return res.json(results).status(StatusCodes.OK);
 
+  }
+  console.log("AutoComplete");
   try {
-    console.dir(req.params);
+    const autoComplete = await getMealsAutoCompleteAPI(query.toString(), numsAutoComplete);
+    return res.json(autoComplete).status(StatusCodes.OK);
+  } catch (error) {
+    throw new ServerError(`${error}`);
+  }
+}
+
+export const getIndividualMeal = async (req: Request, res: Response) => {
+  try {
     if (req.user) {
       const { mealId } = req.params;
       const meal = await MealModel.findOne({
@@ -204,12 +243,12 @@ export const getIndividualMeal = async (req: Request, res: Response) => {
     }
     else {
       const { mealId } = req.params;
-      console.log(mealId);
       let meal = await MealModel.findOne({
-        id: mealId,
+        id: `${mealId}`,
         source: 'themealdb',
       }).populate('allIngredients');
       if (!meal) {
+        console.log("Not found Meal id: ", mealId);
         const mealInfo = await getMealById(mealId);
         const idNewMeal = await createMeal(mealInfo, 'themealdb');
         meal = await MealModel.findById(idNewMeal).populate('allIngredients');

@@ -61,6 +61,7 @@ export function IngredientsMain({ addFunction, data }: IngredientsMainProps) {
               {subCategory.ingredients.map((ingredient, innerIndex) => (
                 <IngredientCard
                   key={ingredient.id + innerIndex * index}
+                  id={ingredient.id}
                   imgLink={ingredient.image}
                   title={ingredient.name}
                   category={ingredient.category}
@@ -69,6 +70,9 @@ export function IngredientsMain({ addFunction, data }: IngredientsMainProps) {
                   onClick={() => {
                     addFunction(ingredient);
                   }}
+                  amount={ingredient.amount}
+                  unitShort={ingredient.unitShort}
+                  nutrition={ingredient.nutrition}
                 />
               ))}
             </HStack>

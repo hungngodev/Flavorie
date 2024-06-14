@@ -35,7 +35,6 @@ export function ListofMeals({ Type, meals }: MealTypeProps) {
       }
     });
   }, []);
-  console.log(meals);
   const truncateDescription = (description: string): string => {
     return description.length > 60 ? `${description.substring(0, 60)}...` : description;
   };

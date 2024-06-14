@@ -104,6 +104,9 @@ export const createMeal = async (data: any, source: string): Promise<Types.Objec
                 console.dir(ingredient);
                 try {
                     const newIngredient = await findIngredientById("", ingredient.id);
+                    if (newIngredient.name.includes('.')) {
+                        newIngredient.name = newIngredient.name.replace('.', '');
+                    }
                     newMeal.allIngredients.push(newIngredient);
                     newMeal.amount.set(newIngredient.name, ingredient.original);
                 }

@@ -12,10 +12,9 @@ import { fileURLToPath } from "url";
 import authRouter from "./routes/authRouter.ts";
 import ingredientRouter from "./routes/ingredientRouter.ts";
 import mealRouter from "./routes/mealRouter.ts";
+import postRouter from "./routes/postRouter.ts";
 import receiptScanRouter from "./routes/receiptScanRouter.ts";
 import userRouter from "./routes/userRouter.ts";
-import postRouter from "./routes/postRouter.ts";
-import reviewRouter from "./routes/reviewRouter.ts";
 
 
 dotenv.config();

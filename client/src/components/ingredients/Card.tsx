@@ -1,21 +1,18 @@
-import React from 'react';
 import { AddIcon, InfoOutlineIcon } from '@chakra-ui/icons';
 import {
   Box,
   Flex,
   IconButton,
-  chakra,
   Popover,
-  PopoverTrigger,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
   PopoverContent,
   PopoverHeader,
-  PopoverBody,
-  PopoverFooter,
-  PopoverArrow,
-  PopoverCloseButton,
-  PopoverAnchor,
+  PopoverTrigger,
+  chakra,
 } from '@chakra-ui/react';
-import NutritionCard, { IngredientProps } from './NutritionCard';
+import NutritionCard, { Nutrition } from './NutritionCard';
 
 type CardProps = {
   imgLink: string;
@@ -24,9 +21,12 @@ type CardProps = {
   height?: string;
   width?: string;
   onClick?: () => void;
-  nutritionData: IngredientProps;
+  id: string;
+  amount: number;
+  unitShort: string;
+  nutrition: Nutrition;
 };
-function Card({ imgLink, title, height, width, onClick, nutritionData }: CardProps) {
+function Card({ imgLink, title, height, width, onClick, amount, unitShort, nutrition }: CardProps) {
   return (
     <Flex alignItems="center" gap={5} justifyContent="center">
       <Flex direction="column" w={'full'} justifyContent="end" alignItems="center" mx="auto">
@@ -80,7 +80,7 @@ function Card({ imgLink, title, height, width, onClick, nutritionData }: CardPro
             <PopoverCloseButton />
             <PopoverHeader>Nutrition Information</PopoverHeader>
             <PopoverBody>
-              <NutritionCard {...nutritionData}/>
+              <NutritionCard amount={amount} unitShort={unitShort} nutrition={nutrition} />
             </PopoverBody>
           </PopoverContent>
         </Popover>

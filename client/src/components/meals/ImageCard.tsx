@@ -50,14 +50,16 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
           objectFit="cover"
         />
         <Stack mt="2" spacing="1">
-          <Box height={'82px'}>
+          <Box height={'52px'}>
             <Heading size="lg" fontSize="23" fontWeight="bold">
               {imageProps.title}
             </Heading>
           </Box>
-          <Box height={'60px'}>
-            <Text w="full">{imageProps.description.replace(/<\/[^>]+(>|$)/g, '')}</Text>
-          </Box>
+          {imageProps.description && (
+            <Box height={'60px'}>
+              <Text w="full">{imageProps.description.replace(/<\/[^>]+(>|$)/g, '')}</Text>
+            </Box>
+          )}
           {/* <Text color="blue.350" fontSize="28">
             {imageProps.price}
           </Text> */}

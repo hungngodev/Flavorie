@@ -8,6 +8,7 @@ import { useRef, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { Params, useParams } from 'react-router-dom';
 import { Cart, CategorySidebar, IngredientsMain } from '../components';
+import { Nutrition } from '../components/ingredients/NutritionCard';
 import customFetch from '../utils/customFetch';
 
 waveform.register();
@@ -50,6 +51,9 @@ export type Ingredient = {
   name: string;
   image: string;
   category: string;
+  amount: number;
+  unitShort: string;
+  nutrition: Nutrition;
 };
 
 export type SubCategory = {

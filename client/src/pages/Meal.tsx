@@ -1,8 +1,7 @@
-import React from 'react';
 import { Flex } from '@chakra-ui/react';
 import { QueryClient, useQuery } from '@tanstack/react-query';
 import { miyagi } from 'ldrs';
-import { Params } from 'react-router-dom';
+import { Params, useLoaderData } from 'react-router-dom';
 import { ListOfMeals } from '../components';
 import { SearchBar } from '../components/ingredients/SearchBar';
 import { Specialty } from '../components/meals/Specialty';
@@ -21,14 +20,13 @@ export interface Meal {
   // price: string;
 }
 
-const allMealsQuery = (category: string) => {
+const allMealsQuery = (params: { [key: string]: string }) => {
+  const search = params.search;
   return {
-    queryKey: ['meals', category],
+    queryKey: search ? ['meals', search] : ['meals'],
     queryFn: async () => {
       const data = await customFetch('/meal', {
-        params: {
-          category: category,
-        },
+        params: search ? { search } : {},
       });
       return data;
     },
@@ -37,13 +35,16 @@ const allMealsQuery = (category: string) => {
 
 export const loader =
   (queryClient: QueryClient) =>
-  async ({ params }: { params: Params }) => {
-    queryClient.ensureQueryData(allMealsQuery(params.category ?? ''));
-    return null;
+  async ({ request }: { params: Params; request: Request }) => {
+    const queries: { [key: string]: string } = Object.fromEntries(new URL(request.url).searchParams.entries());
+    console.log(queries);
+    queryClient.ensureQueryData(allMealsQuery(queries));
+    return queries;
   };
 
 function Meal() {
-  const { data: queryData, status } = useQuery(allMealsQuery(''));
+  const params = useLoaderData();
+  const { data: queryData, status } = useQuery(allMealsQuery(params as { [key: string]: string }));
   const mealData = queryData?.data;
   return (
     <Flex flexDir={'column'} width={'100%'} height={'100%'}>

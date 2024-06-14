@@ -1,9 +1,10 @@
+import IngredientModel from '../models/IngredientModel.ts';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { ServerError } from '../errors/customErrors.ts';
 import User from '../models/UserModel.ts';
 import { classifyIngredient } from '../services/ingredientServices.ts';
-import { findIngredientById, getAllIngredientsAPI } from '../services/spoonacular/spoonacularServices.ts';
+import { getAllIngredientsAPI } from '../services/spoonacular/spoonacularServices.ts';
 
 export const getAllIngredients = async (req: Request, res: Response) => {
     const { category } = req.query;
@@ -41,8 +42,8 @@ export const searchIngredients = async (req: Request, res: Response) => {
 }
 
 export const getIndividualIngredient = async (req: Request, res: Response) => {
-    const ingredientId = req.params.ingredientId;
-    const ingredient = await findIngredientById('', parseInt(ingredientId));
+    const { id: ingredientId } = req.params;
+    const ingredient = await IngredientModel.findById(ingredientId);
     res.json({ ingredient }).status(StatusCodes.OK);
 }
 

@@ -66,7 +66,11 @@ export async function classifyIngredient() {
                     id: ingredient._id.toString(),
                     name: ingredient.name,
                     image: "https://img.spoonacular.com/ingredients_100x100/" + ingredient.image,
-                    category: ingredient.categoryPath
+                    category: ingredient.categoryPath,
+                    amount: ingredient.amount,
+                    unit: ingredient.unit,
+                    unitShort: ingredient.unitShort,
+                    nutrition: ingredient.nutrition
                 }))
             })
         }
