@@ -9,10 +9,9 @@ import { loader as ingredientsLoader } from './pages/Ingredient';
 import { loader as mealsLoader } from './pages/Meal';
 import { loader as recipeLoader } from './pages/Recipe';
 import { Ingredient, Login, Main, Meal, Recipe, Register, User } from './pages/index';
-import theme from './style/theme.tsx';
-import IndividualMeal from './pages/Recipe.tsx';
-import { Dish } from './components/meals/ImageSlide.tsx'
-import { BackendData, transformToDishes } from './utils/mealDataTransform.tsx';
+import theme from './style/theme';
+import IndividualMeal from './pages/Recipe';
+import { BackendData } from './components/meals/ImageSlide';
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,64 +21,64 @@ export const queryClient = new QueryClient({
   },
 });
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <HomeLayout />,
-    children: [
-      {
-        index: true,
-        element: <Main />,
-      },
-      {
-        path: 'register',
-        element: <Register />,
-      },
-      {
-        path: 'login',
-        element: <Login />,
-      },
-      {
-        path: 'ingredients',
-        element: <Outlet />,
-        children: [
-          {
-            index: true,
-            element: <div>HIHIH</div>,
-          },
-          {
-            path: ':category',
-            element: <Ingredient />,
-            loader: ingredientsLoader(queryClient),
-          },
-        ],
-      },
-      {
-        path: 'meals',
-        children: [
-          {
-            index: true,
-            element: <Meal />,
-            loader: mealsLoader(queryClient),
-          },
-          {
-            path: ':mealId',
-            element: <Recipe />,
-            loader: recipeLoader(queryClient),
-          },
-        ],
-      },
-      {
-        path: 'community',
-        element: <div>Community</div>,
-      },
-      {
-        path: 'profile',
-        element: <User />,
-      },
-    ],
-  },
-]);
+// const router = createBrowserRouter([
+//   {
+//     path: '/',
+//     element: <HomeLayout />,
+//     children: [
+//       {
+//         index: true,
+//         element: <Main />,
+//       },
+//       {
+//         path: 'register',
+//         element: <Register />,
+//       },
+//       {
+//         path: 'login',
+//         element: <Login />,
+//       },
+//       {
+//         path: 'ingredients',
+//         element: <Outlet />,
+//         children: [
+//           {
+//             index: true,
+//             element: <div>HIHIH</div>,
+//           },
+//           {
+//             path: ':category',
+//             element: <Ingredient />,
+//             loader: ingredientsLoader(queryClient),
+//           },
+//         ],
+//       },
+//       {
+//         path: 'meals',
+//         children: [
+//           {
+//             index: true,
+//             element: <Meal />,
+//             loader: mealsLoader(queryClient),
+//           },
+//           {
+//             path: ':mealId',
+//             element: <Recipe />,
+//             loader: recipeLoader(queryClient),
+//           },
+//         ],
+//       },
+//       {
+//         path: 'community',
+//         element: <div>Community</div>,
+//       },
+//       {
+//         path: 'profile',
+//         element: <User />,
+//       },
+//     ],
+//   },
+// ]);
 
 const backendData: BackendData = {
   title: 'Sample Meal',
@@ -531,30 +530,21 @@ const backendData: BackendData = {
   },
 };
 
-const individualMeal: Dish[] = transformToDishes(backendData.analyzeInstruction);
-
 function App() {
   return (
     <ChakraBaseProvider theme={extendTheme(theme)}>
-      <QueryClientProvider client={queryClient}>
+      {/* <QueryClientProvider client={queryClient}> */}
         {/* <ImageScan /> */}
-        <RouterProvider router={router} />
+        {/* <RouterProvider router={router} /> */}
         <IndividualMeal
-          individualMeal={individualMeal}
-          title={backendData.title}
-          overview={backendData.instruction}
-          image={backendData.imageUrl}
-          source={backendData.source}
-          totalTime="20 minutes"
-          servings="4 servings"
-          calories="150 kcal"
+          recipeData={backendData}
+          calories='340 kcal'
           averageStar="4.5"
-          numReviews="10"
-          tags={backendData.tags}
+          numReviews="3"
         />
-        <ToastContainer autoClose={5000} limit={3} transition={Slide} />
-        <ReactQueryDevtools />
-      </QueryClientProvider> 
+        {/* <ToastContainer autoClose={5000} limit={3} transition={Slide} /> */}
+        {/* <ReactQueryDevtools /> */}
+      {/* </QueryClientProvider> */}
     </ChakraBaseProvider>
   );
 }
