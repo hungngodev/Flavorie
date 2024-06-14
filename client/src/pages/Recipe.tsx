@@ -8,7 +8,6 @@ import ImageSlide, { Dish } from '../components/meals/ImageSlide';
 import customFetch from '../utils/customFetch';
 import { Tag, TagLabel } from '@chakra-ui/react';
 
-
 waveform.register();
 
 // Default values shown

@@ -7,8 +7,8 @@ import { ReactNode } from 'react';
 import ChakraCarousel from './ChakraCarousel';
 
 interface Ingredient {
-  ingredientImage: string;
-  ingredientName: string;
+  image: string;
+  name: string;
 }
 
 interface IngredientsProps {
@@ -16,8 +16,8 @@ interface IngredientsProps {
 }
 
 interface Equipment {
-  equipmentImage: string;
-  equipmentName: string;
+  image: string;
+  name: string;
 }
 
 export interface Dish {
@@ -46,9 +46,9 @@ export const IngredientsList = ({ ingredients }: IngredientsProps) => {
       {ingredients.map((ingredient, index) => (
         <HStack key={index} mb={4} alignItems="center">
           <Box bg="white" boxSize="40px" borderRadius="full" mr="2">
-            <Image src={ingredient.ingredientImage} alt={ingredient.ingredientName} boxSize="40px" borderRadius="full"/>
+            <Image src={ingredient.image} alt={ingredient.name} boxSize="40px" borderRadius="full"/>
           </Box>
-          <Text>{ingredient.ingredientName}</Text>
+          <Text>{ingredient.name}</Text>
         </HStack>
       ))}
     </Box>
@@ -116,13 +116,13 @@ function ImageSlide({ dishes }: DishesProps): ReactNode {
                       <HStack mb={4}>
                         <Box bg="white" boxSize="40px" borderRadius="full" mr="2">
                           <Image
-                            src={equip.equipmentImage}
-                            alt={equip.equipmentName}
+                            src={equip.image}
+                            alt={equip.name}
                             boxSize="40px"
                             borderRadius="full"
                           />
                         </Box>
-                        <Text>{equip.equipmentName}</Text>
+                        <Text>{equip.name}</Text>
                       </HStack>
                     ))}
                   </Box>
