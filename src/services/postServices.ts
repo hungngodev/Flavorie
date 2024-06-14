@@ -28,7 +28,7 @@ export const buildPostDocument = async (postBody: Post): Promise<string> => {
     if (!body || !header) {
       throw new BadRequestError("Missing information");
     }
-    const updateData = {
+    const postData = {
       author: author,
       header: header,
       body: body,
@@ -36,7 +36,7 @@ export const buildPostDocument = async (postBody: Post): Promise<string> => {
       privacy: privacy,
       location: postBody.location,
     };
-    const newPost = await PostModel.create(updateData);
+    const newPost = await PostModel.create(postData);
     if (!newPost) {
       throw new ServerError("Failed to create post");
     }
@@ -47,28 +47,30 @@ export const buildPostDocument = async (postBody: Post): Promise<string> => {
 };
 export const updatePostDocument = async (
   postId: string,
-  body: Post,
+  body: Partial<Post>,
 ): Promise<string> => {
   try {
-    const updatePost = await PostModel.findById(postId);
-    if (!updatePost) {
-      throw new ServerError("Post not found");
+    if (!body) {
+      throw new BadRequestError("Missing data");
     }
-
-    if ("header" in body && updatePost)
-      (updatePost as Post).header = body.header;
-    if ("body" in body) (updatePost as Post).body = body.body;
-    if ("media" in body) (updatePost as Post).media = body.media;
-    if ("privacy" in body) (updatePost as Post).privacy = body.privacy;
-    if ("location" in body) (updatePost as Post).location = body.location;
-    if ("review" in body) (updatePost as Post).review = body.review;
-
     if ("author" in body) {
       throw new BadRequestError("Cannot change author");
     }
+    const updateData = {
+      header: body.header,
+      body: body.body,
+      media: body.media,
+      privacy: body.privacy,
+      location: body.location,
+      review: body.review,
+    };
+    const updatedPost = await PostModel.findByIdAndUpdate(postId, updateData, {
+      new: true,
+    });
+    if (!updatedPost) throw new ServerError("Failed to update post");
 
-    await updatePost.save();
-    return updatePost._id as string;
+    await updatedPost.save();
+    return updatedPost._id as string;
   } catch (err) {
     throw new ServerError(`${err}`);
   }
