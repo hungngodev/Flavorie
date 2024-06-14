@@ -19,7 +19,7 @@ export const getSinglePostDocument = async (
 
 export const buildPostDocument = async (postBody: Post): Promise<string> => {
   try {
-    const { author, header, body, media, privacy } = postBody;
+    const { author, header, body, media, privacy, location } = postBody;
     const getUser = await UserModel.findById(author);
 
     if (!getUser) {
@@ -34,7 +34,7 @@ export const buildPostDocument = async (postBody: Post): Promise<string> => {
       body: body,
       media: media,
       privacy: privacy,
-      location: postBody.location,
+      location: location,
     };
     const newPost = await PostModel.create(postData);
     if (!newPost) {
