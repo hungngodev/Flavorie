@@ -1,5 +1,5 @@
 import UserCard from '../components/users/InfoCard';
-import { Box, Button, Flex, Image, Grid, GridItem, Heading, Progress, Stack, Table, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
+import { Box, Button, Flex, Image, Grid, GridItem, Heading, Progress, Stack, Table, Tbody, Td, Text, Th, Thead, Tr, background } from '@chakra-ui/react';
 import React from 'react';
 import { PersonalProps } from '../components/users/InfoCard';
 import RecentMeals from '../components/meals/RecentMeals';
@@ -29,23 +29,6 @@ interface RecentMeals {
 type recentMealProps = {
   meals: RecentMeal[];
 };
-interface UserProps {
-  mealData: TableData[];
-  info: PersonalProps;
-  points: string;
-  tags: string;
-  reviewsGiven: string;
-  recipesShared: string;
-  badgesEarned: string;
-  recentMeals: RecentMeal[];
-  protein: string;
-  vitamins: string;
-  carb: string;
-  fat: string;
-  minerals: string;
-  weeklySummaryData: WeeklyData;
-  weeklyCaloriesData: WeeklyCalories[];
-}
 
 // polar area chart
 export type NutrientData = {
@@ -79,6 +62,17 @@ const generateChartData = ({ protein, carb, fat, vitamins, minerals }: NutrientD
 };
 
 const NutrientChart = (nutrients: NutrientData) => {
+  const { protein, carb, fat, vitamins, minerals } = nutrients;
+  const hasData = [protein, carb, fat, vitamins, minerals].some((value) => parseInt(value, 10) > 0);
+
+  if (!hasData) {
+    return (
+      <Box p={4} textAlign="center">
+        <Text fontSize="lg">We'll analyze your nutrient intake after you log some meals.</Text>
+      </Box>
+    );
+  }
+
   const chartData = generateChartData(nutrients);
 
   const options = {
@@ -114,31 +108,86 @@ export type WeeklyData = {
 };
 
 const WeeklySummary = ({ weeklyProtein, weeklyCarb, weeklyFat }: WeeklyData) => {
-  return (
-    <Box p={4} borderRadius="md" boxShadow="md" bg="white">
-      <Box>
-        <Stack spacing="2">
-          <Box>
-            <Text fontSize="16" fontWeight="bold">
-              Proteins
-            </Text>
-            <Progress colorScheme="lighpurple" size="sm" value={weeklyProtein} />
-          </Box>
-          <Box>
-            <Text fontSize="16" fontWeight="bold">
-              Carbs
-            </Text>
-            <Progress colorScheme="lighblue" size="sm" value={weeklyCarb} />
-          </Box>
-          <Box>
-            <Text fontSize="16" fontWeight="bold">
-              Fat
-            </Text>
-            <Progress colorScheme="lighblue" size="sm" value={weeklyFat} />
-          </Box>
-        </Stack>
+  const hasData = weeklyProtein > 0 || weeklyCarb > 0 || weeklyFat > 0;
+
+  if (!hasData) {
+    return (
+      <Box p={4} textAlign="center">
+        <Text fontSize="lg">We'll provide a summary after you log some meals.</Text>
       </Box>
+    );
+  }
+
+  const chartData = {
+    labels: ['Protein, Carbs, Fats'],
+    datasets: [
+      {
+        label: 'Nutrients',
+        data: [weeklyProtein, weeklyCarb, weeklyFat],
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.5)', 
+          'rgba(54, 162, 235, 0.5)', 
+          'rgba(255, 206, 86, 0.5)'],
+        borderColor: [
+          'rgba(255, 99, 132, 1)', 
+          'rgba(54, 162, 235, 1)', 
+          'rgba(255, 206, 86, 1)'
+        ],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const options: ChartOptions<'bar'> = {
+    indexAxis: 'y' as const,
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'bottom',
+      },
+      title: {
+        display: true,
+        text: 'Weekly Summary'
+      },
+    },
+    scales: {
+      x: {
+        beginAtZero: true,
+      },
+      y: {
+        beginAtZero: true,
+      },
+    }
+  };
+
+  return (
+    <Box p="2" borderRadius="md" boxShadow="md" bg="white">
+      <Bar data={chartData} options={options} />
     </Box>
+    // <Box p={4} borderRadius="md" boxShadow="md" bg="white">
+    //   <Box>
+    //     <Stack spacing="2">
+    //       <Box>
+    //         <Text fontSize="16" fontWeight="bold">
+    //           Proteins
+    //         </Text>
+    //         <Progress colorScheme="lighpurple" size="sm" value={weeklyProtein} />
+    //       </Box>
+    //       <Box>
+    //         <Text fontSize="16" fontWeight="bold">
+    //           Carbs
+    //         </Text>
+    //         <Progress colorScheme="lighblue" size="sm" value={weeklyCarb} />
+    //       </Box>
+    //       <Box>
+    //         <Text fontSize="16" fontWeight="bold">
+    //           Fat
+    //         </Text>
+    //         <Progress colorScheme="lighblue" size="sm" value={weeklyFat} />
+    //       </Box>
+    //     </Stack>
+    //   </Box>
+    // </Box>
   );
 };
 
@@ -148,6 +197,16 @@ export interface WeeklyCalories {
 }
 
 const WeeklyCaloriesChart = ({ data }: { data: WeeklyCalories[] }) => {
+  const hasData = data.length > 0;
+
+  if (!hasData) {
+    return (
+      <Box p={4} textAlign="center">
+        <Text fontSize="lg">We'll track your calories after you log some meals.</Text>
+      </Box>
+    );
+  }
+
   const chartData = {
     labels: data.map((item) => item.date),
     datasets: [
@@ -191,6 +250,24 @@ const WeeklyCaloriesChart = ({ data }: { data: WeeklyCalories[] }) => {
     </Box>
   );
 };
+
+interface UserProps {
+  mealData: TableData[];
+  info: PersonalProps;
+  points: string;
+  tags: string;
+  reviewsGiven: string;
+  recipesShared: string;
+  badgesEarned: string;
+  recentMeals: RecentMeal[];
+  protein: string;
+  vitamins: string;
+  carb: string;
+  fat: string;
+  minerals: string;
+  weeklySummaryData: WeeklyData;
+  weeklyCaloriesData: WeeklyCalories[];
+}
 
 function User({
   mealData,
