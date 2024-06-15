@@ -22,8 +22,11 @@ export const updateUser = async (req: Request, res: Response) => {
 
 
 export const getCart = async (req: Request, res: Response) => {
+    if (!req.user) {
+        return res.status(StatusCodes.OK).send({ msg: 'Unauthorized', cart: [] });
+    }
     const cart = await getUserItems(req.user.userId, 'cart');
-    res.status(StatusCodes.OK).send({ cart });
+    return res.status(StatusCodes.OK).send({ cart });
 }
 
 export const getLeftOver = async (req: Request, res: Response) => {

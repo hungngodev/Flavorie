@@ -7,7 +7,7 @@ import { classifyIngredient, classifyIngredientByAisle } from '../services/ingre
 import { getAllIngredientsAPI } from '../services/spoonacular/spoonacularServices.ts';
 
 export const getAllIngredients = async (req: Request, res: Response) => {
-    const { category } = req.query;
+    const { category, sideBar } = req.query;
     const allergy = [];
     const diet = [];
     if (req.user) {
@@ -18,22 +18,18 @@ export const getAllIngredients = async (req: Request, res: Response) => {
         }
     }
     try {
-        const aisle = await classifyIngredientByAisle();
-        res.status(StatusCodes.OK).json({
-            category: category !== '/' ? aisle.filter((SubCategory) => SubCategory.categoryName === category) : aisle,
+        const classifiedIngredients = await classifyIngredientByAisle();
+        if (sideBar) return res.status(StatusCodes.OK).json({ categories: classifiedIngredients.map((SubCategory) => SubCategory.categoryName) });
+        return res.status(StatusCodes.OK).json({
+            category: category !== '/' ? classifiedIngredients.filter((SubCategory) => SubCategory.categoryName === category) : classifiedIngredients,
+            categories: classifiedIngredients.map((SubCategory) => SubCategory.categoryName),
             allergy,
             diet,
-        });
-        // const classifiedIngredients = await classifyIngredient()
-        // res.status(StatusCodes.OK).json({
-        //     category: category !== '/' ? classifiedIngredients.filter((SubCategory) => SubCategory.categoryName === category) : classifiedIngredients,
-        //     allergy,
-        //     diet,
-        // })
+        })
     }
     catch (e) {
         console.error('Error classifying ingredients:', e)
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new ServerError('Failed to classify ingredients'))
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new ServerError('Failed to classify ingredients'))
     }
 
     // res.json({ ingredients, allergy, diet, leftOver }).status(StatusCodes.OK);

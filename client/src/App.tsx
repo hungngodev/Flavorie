@@ -41,7 +41,8 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <div>HIHIH</div>,
+            element: <Ingredient />,
+            loader: ingredientsLoader(queryClient),
           },
           {
             path: ':category',

@@ -1,8 +1,8 @@
 import { AddIcon, InfoOutlineIcon } from '@chakra-ui/icons';
 import {
-  Box,
   Flex,
   IconButton,
+  Image,
   Popover,
   PopoverArrow,
   PopoverBody,
@@ -12,6 +12,7 @@ import {
   PopoverTrigger,
   chakra,
 } from '@chakra-ui/react';
+import customFetch from '../../utils/customFetch';
 import NutritionCard, { Nutrition } from './NutritionCard';
 
 type CardProps = {
@@ -26,22 +27,31 @@ type CardProps = {
   unitShort: string;
   nutrition: Nutrition;
 };
-function Card({ imgLink, title, height, width, onClick, amount, unitShort, nutrition }: CardProps) {
+function Card({ id, imgLink, title, height, width, onClick, amount, unitShort, nutrition }: CardProps) {
   return (
     <Flex alignItems="center" gap={5} justifyContent="center">
       <Flex direction="column" w={'full'} justifyContent="end" alignItems="center" mx="auto">
-        <Box
+        <Image
           bg="gray.300"
           h={height}
-          w={width}
+          minWidth={width}
           rounded="xl"
           shadow="md"
           bgSize="cover"
           bgPos="center"
-          style={{
-            backgroundImage: `url(${imgLink})`,
-          }}
-        ></Box>
+          src={'https://img.spoonacular.com/ingredients_100x100/' + imgLink}
+          onError={async (e) =>
+            ((e.target as HTMLImageElement).src = (
+              await customFetch('/bug/image-fix', {
+                params: {
+                  name: title,
+                  type: 'ingredient',
+                  _id: id,
+                },
+              })
+            ).data)
+          }
+        ></Image>
         <chakra.h4
           textAlign="center"
           fontWeight="bold"
@@ -53,7 +63,7 @@ function Card({ imgLink, title, height, width, onClick, amount, unitShort, nutri
           }}
           letterSpacing={1}
         >
-          {title}
+          {title.slice(0, 20)}
         </chakra.h4>
       </Flex>
       <Flex direction={'column'} gap={4}>

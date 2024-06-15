@@ -76,7 +76,7 @@ export function SidebarItem({ icon, text, active, alert, onClickF, index = 0, li
 
         {!expanded && (
           <motion.div
-            className={`text-md border-1 invisible absolute left-full ml-1 w-min -translate-x-3 text-nowrap rounded-md  text-secondary-foreground opacity-20 transition-all group-hover:visible group-hover:translate-x-0 group-hover:opacity-100`}
+            className={`text-md border-1 invisible absolute left-full z-10 ml-1 w-min -translate-x-3 text-nowrap rounded-md  text-secondary-foreground opacity-20 transition-all group-hover:visible group-hover:translate-x-0 group-hover:opacity-100`}
           >
             {text}
           </motion.div>
@@ -93,7 +93,7 @@ const Sidebar: FC<SidebarProps> = ({ categories, expanded, setExpanded }: Sideba
         <button onClick={setExpanded} className="cursor-pointer rounded-lg  p-1.5 hover:bg-secondary ">
           <ChevronFirst className={`${expanded ? '' : 'rotate-180'} ml-4 transition-all duration-500 `} />
         </button>
-        <ul className="flex h-full w-full  flex-col justify-around px-3">
+        <ul className="p-r relative -z-10  flex h-full w-full flex-col  justify-around overflow-auto px-3">
           {mainNav.map((item, index) => (
             <SidebarItem key={index} {...item} />
           ))}

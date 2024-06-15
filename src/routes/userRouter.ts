@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import multer from 'multer';
 import { getCart, getLeftOver, updateCart, updateLeftOver, updateUser, getLikedMeals, updateLikedMeals } from '../controllers/userController.js';
-import { authenticateUser } from '../middleware/authMiddleware.js';
+import { authenticateUser, checkUser } from '../middleware/authMiddleware.js';
 import { storage } from '../services/cloudinary/cloudinaryServices.ts';
 import { catchAsync } from '../utils/catchAsync.js';
 const upload = multer({ storage });
@@ -12,7 +12,7 @@ router.route('/')
     .patch(authenticateUser, upload.array('images'), catchAsync(updateUser));
 
 router.route('/cart')
-    .get(authenticateUser, catchAsync(getCart))
+    .get(checkUser, catchAsync(getCart))
     .patch(authenticateUser, catchAsync(updateCart));
 
 router.route('/left-over')

@@ -15,6 +15,7 @@ import mealRouter from "./routes/mealRouter.ts";
 import postRouter from "./routes/postRouter.ts";
 import receiptScanRouter from "./routes/receiptScanRouter.ts";
 import userRouter from "./routes/userRouter.ts";
+import bugRouter from "./routes/bugRouter.ts";
 
 
 dotenv.config();
@@ -48,6 +49,7 @@ app.use("/api/meal", mealRouter);
 app.use("/api/ingredient", ingredientRouter);
 app.use("/api/scan-receipt", receiptScanRouter)
 app.use("/api/community", postRouter);
+app.use("/api/bug", bugRouter)
 
 // app.use("*", (req, res) => {
 //   res.status(404).json({ msg: "not found" });

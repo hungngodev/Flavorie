@@ -71,7 +71,10 @@ export type Category = {
 
 export default function Ingredient() {
   const { category: currentCategory } = useParams<{ category: string }>();
-  const { data: queryData, status } = useQuery(allIngredientsQuery(currentCategory ?? ''));
+  const { data: queryData, status } = useQuery(
+    allIngredientsQuery(currentCategory !== undefined ? currentCategory : '/'),
+  );
+  console.log(status);
   const ingredientData = queryData?.data.category[0];
   const cartData = useLoaderData() as
     | {
@@ -87,28 +90,12 @@ export default function Ingredient() {
         };
       }
     | undefined;
-  const categories = ingredientData?.results.map(
-    (category: {
-      categoryName: string;
-      numberOfQueryKeys: number;
-      totalNumberOfIngredients: number;
-      results: SubCategory[];
-    }) => {
-      return {
-        index: 1,
-        icon: <Home size={20} />,
-        text: category.categoryName,
-        alert: true,
-        active: category.categoryName === currentCategory,
-        link: `/ingredients/${category.categoryName}`,
-      };
-    },
-  );
+
   const fridgeWidth = '300';
   const { getButtonProps, getDisclosureProps, isOpen } = useDisclosure();
   const [hidden, setHidden] = useState(!isOpen);
   const [expanded, setExpanded] = useState(false);
-
+  const lottieCartRef = useRef<LottieRefCurrentProps>(null);
   const { control, handleSubmit, watch, setValue } = useForm<CartData>({
     defaultValues: {
       cart: cartData
@@ -126,6 +113,26 @@ export default function Ingredient() {
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'cart',
+  });
+  const { data: categoriesData } = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      const data = await customFetch('/ingredient', {
+        params: {
+          sideBar: true,
+        },
+      });
+      return data;
+    },
+  });
+  const categories = categoriesData?.data.categories.map((categoryName: string) => {
+    return {
+      index: 1,
+      icon: <Home size={20} />,
+      text: categoryName,
+      active: categoryName === currentCategory,
+      link: `/ingredients/${categoryName}`,
+    };
   });
   const currentCart = watch('cart');
   const addFunction = (ingredientData: Ingredient) => {
@@ -168,7 +175,6 @@ export default function Ingredient() {
       );
     })();
   };
-  const lottieCartRef = useRef<LottieRefCurrentProps>(null);
   return (
     <Box
       position="relative"
