@@ -1,30 +1,6 @@
 //import { Dish } from '../components/meals/ImageSlide'
 import { useEffect, useState } from 'react';
 
-interface Nutrient {
-    name: string;
-    amount: number;
-    unit: string;
-    percentOfDailyNeeds: number;
-}
-
-interface CaloricBreakdown {
-    percentProtein: number;
-    percentFat: number;
-    percentCarbs: number;
-}
-
-interface WeightPerServing {
-    amount: number;
-    unit: string;
-};
-
-export interface Nutrition {
-    nutrient: Nutrient[];
-    caloricBreakdown: CaloricBreakdown;
-    weightperServing: WeightPerServing;
-}
-
 // export interface Ingredient {
 //     id: number;
 //     name: string;

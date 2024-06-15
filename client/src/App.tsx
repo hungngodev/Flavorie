@@ -645,20 +645,6 @@ const router = createBrowserRouter([
 //     },
 //   ];
 
-//   return (
-//     <IndividualMeal
-//       individualMeal={sampleMeal}
-//       title="Sample Meal Title"
-//       overview="This is an overview of the sample meal."
-//       totalTime="45 mins"
-//       servings="4"
-//       calories="500"
-//       averageStar='5'
-//       numReviews='1'
-//     />
-//   );
-// };
-
 function App() {
   return (
     <ChakraBaseProvider theme={extendTheme(theme)}>
