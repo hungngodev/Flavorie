@@ -5,14 +5,15 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
 import HomeLayout from './layouts/HomeLayout';
-import { loader as ingredientsLoader } from './pages/Ingredient';
-import { loader as mealsLoader } from './pages/Meal';
+import { Ingredient, loader as ingredientsLoader } from './pages/Ingredient.tsx';
+import { loader as mealsLoader } from './pages/Meal.tsx';
 import { loader as recipeLoader } from './pages/Recipe';
 import { Ingredient, Login, Main, Meal, Recipe, Register, User } from './pages/index';
-import theme from './style/theme.tsx';
-import IndividualMeal from './pages/Recipe.tsx';
-import { Dish } from './components/meals/ImageSlide.tsx'
-import { BackendData, transformToDishes } from './utils/mealDataTransform.tsx';
+import theme from './style/theme';
+import IndividualMeal from './pages/Recipe';
+import { BackendData } from './components/meals/ImageSlide';
+import NutritionCard from './components/ingredients/NutritionCard';
+import { IngredientProps } from './components/ingredients/NutritionCard';
 import ReviewCard, { Review } from './components/community/reviewCard.tsx';
 import { identity } from 'lodash';
 
@@ -136,18 +137,12 @@ function App() {
         {/* <ImageScan /> */}
         <RouterProvider router={router} />
         {/* <IndividualMeal
-          individualMeal={individualMeal}
-          title={backendData.title}
-          overview={backendData.instruction}
-          image={backendData.imageUrl}
-          source={backendData.source}
-          totalTime="20 minutes"
-          servings="4 servings"
-          calories="150 kcal"
+          recipeData={backendData}
+          calories='340 kcal'
           averageStar="4.5"
-          numReviews="10"
-          tags={backendData.tags}
+          numReviews="3"
         /> */}
+        {/* <NutritionCard {...mockdata} /> */}
         {/* <Box>
           {mockComments.map((review) => (
               <ReviewCard key={review.id} review={review} />
@@ -155,7 +150,7 @@ function App() {
         </Box> */}
       <ToastContainer autoClose={5000} limit={3} transition={Slide} />
       <ReactQueryDevtools />
-      </QueryClientProvider> 
+      </QueryClientProvider>
     </ChakraBaseProvider>
   );
 }
