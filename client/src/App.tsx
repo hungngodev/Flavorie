@@ -14,8 +14,9 @@ import IndividualMeal from './pages/Recipe';
 import { BackendData } from './components/meals/ImageSlide';
 import NutritionCard from './components/ingredients/NutritionCard';
 import { IngredientProps } from './components/ingredients/NutritionCard';
-import ReviewCard, { Review } from './components/community/reviewCard.tsx';
+import ReviewCard, { Review } from './components/community/ReviewCard';
 import { identity } from 'lodash';
+import ReviewForm from './components/form/Review';
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -89,53 +90,57 @@ const router = createBrowserRouter([
   },
 ]);
 
-const mockComments: Review[] = [
-  {
-    id: '001',
-    author: {
-      username: 'Alex B',
-      src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0WU10MyuUxOw4QSiIEzWPZn3sfytEl7Z4RA&s',
-    },
-    content: 'Parent comment.',
-    children: [
-      {
-        id: '002',
-        author: {
-          username: 'Bill K',
-          src: 'https://akns-images.eonline.com/eol_images/Entire_Site/2023013/rs_1024x759-230113124412-1024-Phineas-and-Ferb-perry.ct.jpg?fit=around%7C1024:759&output-quality=90&crop=1024:759;center,top',
-        },
-        content: 'First child comment',
-        children: [],
-      },
-      {
-        id: '003',
-        author: {
-          username: 'Cal A',
-          src: 'https://facts.net/wp-content/uploads/2023/09/22-facts-about-bubbles-the-powerpuff-girls-1694408222.jpg',
-        },
-        content: 'Second child comment',
-        children: [
-          {
-            id: '004',
-            author: {
-              username: 'Denny W',
-              src: 'path_to_denny_avatar.jpg',
-            },
-            content: 'Nested child comment',
-            children: [],
-          },
-        ],
-      },
-    ],
-  },
-];
+// const mockComments: Review[] = [
+//   {
+//     id: '001',
+//     author: {
+//       username: 'Alex B',
+//       src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0WU10MyuUxOw4QSiIEzWPZn3sfytEl7Z4RA&s',
+//     },
+//     content: 'Parent comment.',
+//     children: [
+//       {
+//         id: '002',
+//         author: {
+//           username: 'Bill K',
+//           src: 'https://akns-images.eonline.com/eol_images/Entire_Site/2023013/rs_1024x759-230113124412-1024-Phineas-and-Ferb-perry.ct.jpg?fit=around%7C1024:759&output-quality=90&crop=1024:759;center,top',
+//         },
+//         content: 'First child comment',
+//         children: [],
+//       },
+//       {
+//         id: '003',
+//         author: {
+//           username: 'Cal A',
+//           src: 'https://facts.net/wp-content/uploads/2023/09/22-facts-about-bubbles-the-powerpuff-girls-1694408222.jpg',
+//         },
+//         content: 'Second child comment',
+//         children: [
+//           {
+//             id: '004',
+//             author: {
+//               username: 'Denny W',
+//               src: 'path_to_denny_avatar.jpg',
+//             },
+//             content: 'Nested child comment',
+//             children: [],
+//           },
+//         ],
+//       },
+//     ],
+//   },
+// ];
+
+// const handleReviewSubmit = (content: string) => {
+//     console.log('Review submitted:', content);
+// };
 
 function App() {
   return (
     <ChakraBaseProvider theme={extendTheme(theme)}>
       <QueryClientProvider client={queryClient}>
-        {/* <ImageScan /> */}
         <RouterProvider router={router} />
+        {/* <ImageScan /> */}
         {/* <IndividualMeal
           recipeData={backendData}
           calories='340 kcal'
@@ -148,8 +153,11 @@ function App() {
               <ReviewCard key={review.id} review={review} />
           ))}
         </Box> */}
-      <ToastContainer autoClose={5000} limit={3} transition={Slide} />
-      <ReactQueryDevtools />
+        {/* <Box p="4">
+          <ReviewForm onSubmit={handleReviewSubmit} />
+        </Box> */}
+        <ToastContainer autoClose={5000} limit={3} transition={Slide} />
+        <ReactQueryDevtools />
       </QueryClientProvider>
     </ChakraBaseProvider>
   );
