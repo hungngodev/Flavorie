@@ -1,5 +1,5 @@
 import UserCard from '../components/users/InfoCard';
-import { Box, Button, Flex, Image, Grid, GridItem, Heading, Progress, Stack, Table, Tbody, Td, Text, Th, Thead, Tr, background } from '@chakra-ui/react';
+import { Box, Button, Flex, Image, Grid, GridItem, Heading, HStack, Progress, Spacer, Stack, Table, Tbody, Td, Text, Th, Thead, Tr, VStack, background } from '@chakra-ui/react';
 import React from 'react';
 import { PersonalProps } from '../components/users/InfoCard';
 import RecentMeals from '../components/meals/RecentMeals';
@@ -7,6 +7,8 @@ import { RecentMeal } from '../components/meals/RecentMeals';
 import { Bar, PolarArea } from 'react-chartjs-2';
 import { Chart, plugins, registerables, TooltipItem, ChartOptions } from 'chart.js';
 import TagSelect from '../components/meals/TagSelect';
+import { FaStar, FaUtensils, FaMedal, FaHeart, FaCheckCircle, FaListAlt } from 'react-icons/fa';
+import theme from '../style/theme';
 
 Chart.register(...registerables);
 export interface TableData {
@@ -87,7 +89,8 @@ const NutrientChart = (nutrients: NutrientData) => {
 
             if (nutrient === 'Vitamins') {
               return [`${label}: ${value}g`, 'Vitamin A: 2g', 'Vitamin B: 3g', 'Vitamin C: 3g', 'Vitamin D: 2g'];
-            } else if (nutrient === 'Minerals') {
+            } 
+            else if (nutrient === 'Minerals') {
               return [`${label}: ${value}g`, 'Iron: 2g', 'Calcium: 3g', 'Magnesium: 2g', 'Zinc: 1g'];
             }
             return `${label}: ${value}g`;
@@ -97,7 +100,20 @@ const NutrientChart = (nutrients: NutrientData) => {
     },
   };
 
-  return <PolarArea data={chartData} options={options} />;
+  return (
+    <Box
+      p="2"
+      borderRadius="md"
+      boxShadow="md"
+      bg="white"
+      h="380px"
+      alignItems="center"
+      flexDirection="column"
+      justifyContent="center"
+    >
+      <PolarArea data={chartData} options={options} />
+    </Box>
+  );
 };
 
 // Weekly summary 
@@ -112,28 +128,23 @@ const WeeklySummary = ({ weeklyProtein, weeklyCarb, weeklyFat }: WeeklyData) => 
 
   if (!hasData) {
     return (
-      <Box p={4} textAlign="center">
+      <Box p={2} textAlign="center">
         <Text fontSize="lg">We'll provide a summary after you log some meals.</Text>
       </Box>
     );
   }
 
   const chartData = {
-    labels: ['Protein, Carbs, Fats'],
+    labels: ['Protein', 'Carbs', 'Fats'],
     datasets: [
       {
-        label: 'Nutrients',
         data: [weeklyProtein, weeklyCarb, weeklyFat],
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.5)', 
-          'rgba(54, 162, 235, 0.5)', 
-          'rgba(255, 206, 86, 0.5)'],
-        borderColor: [
-          'rgba(255, 99, 132, 1)', 
-          'rgba(54, 162, 235, 1)', 
-          'rgba(255, 206, 86, 1)'
-        ],
+        backgroundColor: ['rgba(255, 99, 132, 0.5)', 'rgba(54, 162, 235, 0.5)', 'rgba(255, 206, 86, 0.5)'],
+        borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)'],
         borderWidth: 1,
+        barThickness: 12,
+        maxBarThickness: 15,
+        minBarThickness: 8,
       },
     ],
   };
@@ -141,13 +152,10 @@ const WeeklySummary = ({ weeklyProtein, weeklyCarb, weeklyFat }: WeeklyData) => 
   const options: ChartOptions<'bar'> = {
     indexAxis: 'y' as const,
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: 'bottom',
-      },
-      title: {
-        display: true,
-        text: 'Weekly Summary'
+        display: false,
       },
     },
     scales: {
@@ -157,11 +165,11 @@ const WeeklySummary = ({ weeklyProtein, weeklyCarb, weeklyFat }: WeeklyData) => 
       y: {
         beginAtZero: true,
       },
-    }
+    },
   };
 
   return (
-    <Box p="2" borderRadius="md" boxShadow="md" bg="white">
+    <Box p="1" borderRadius="md" boxShadow="md" bg="white" h="150px">
       <Bar data={chartData} options={options} />
     </Box>
     // <Box p={4} borderRadius="md" boxShadow="md" bg="white">
@@ -216,8 +224,8 @@ const WeeklyCaloriesChart = ({ data }: { data: WeeklyCalories[] }) => {
         backgroundColor: 'rgba(153, 102, 255, 0.5)',
         borderColor: 'rgba(153, 102, 255, 1)',
         borderWidth: 1,
-        barThickness: 20,
-        maxBarThickness: 30,
+        barThickness: 18,
+        maxBarThickness: 20,
         minBarThickness: 10,
       },
     ],
@@ -256,9 +264,11 @@ interface UserProps {
   info: PersonalProps;
   points: string;
   tags: string;
-  reviewsGiven: string;
-  recipesShared: string;
-  badgesEarned: string;
+  totalPosts: number;
+  recipesShared: number;
+  recipesRated: number;
+  totalPoints: number;
+  badgesEarned: number;
   recentMeals: RecentMeal[];
   protein: string;
   vitamins: string;
@@ -269,13 +279,36 @@ interface UserProps {
   weeklyCaloriesData: WeeklyCalories[];
 }
 
+const getBadgeLevel = (badgesEarned: number): string => {
+  if (badgesEarned >= 100) return 'Diamond';
+  if (badgesEarned >= 80) return 'Platinum';
+  if (badgesEarned >= 60) return 'Gold';
+  if (badgesEarned >= 30) return 'Silver';
+  return 'Bronze';
+};
+
+const getBadgeColor = (badgeLevel: string): string => {
+  switch (badgeLevel) {
+    case 'Diamond':
+      return 'blue.200';
+    case 'Platinum':
+      return 'base.300';
+    case 'Gold':
+      return 'yellow';
+    case 'Silver':
+      return 'base.400';
+    default:
+      return 'orange';
+  }
+};
+
 function User({
   mealData,
   info,
-  points,
-  tags,
-  reviewsGiven,
+  totalPosts,
   recipesShared,
+  recipesRated,
+  totalPoints,
   badgesEarned,
   recentMeals,
   protein,
@@ -288,6 +321,8 @@ function User({
 }: UserProps) {
   const nutrientData: NutrientData = { protein, carb, fat, vitamins, minerals };
   const { username } = info.avatar;
+  const badgeLevel = getBadgeLevel(badgesEarned);
+  const badgeColor = getBadgeColor(badgeLevel);
 
   return (
     <Grid templateRows="repeat(3, 1fr)" templateColumns="repeat(10, 3fr)" mt="5">
@@ -342,20 +377,108 @@ function User({
               </Tbody>
             </Table>
           </Box>
-          <Box mt="5" mb="4">
+          <Box mt="4" mb="5">
             <Heading mb="2" fontSize="22" fontWeight="bold">
-              Achievements
+              Statistics
             </Heading>
-            <Text ml="2">Total points: {points}</Text>
-            <Text ml="2">Recipes shared: {recipesShared}</Text>
-            <Text ml="2">Reviews given: {reviewsGiven}</Text>
-            <Text ml="2">Badges earned: {badgesEarned}</Text>
+            <VStack p={2} bg="white" h="110px" mb="2">
+              <HStack h="50px" w="100%" mb="2">
+                <Spacer />
+                <Box borderRadius="md" w="30%" border="1px" borderColor="base.100">
+                  <HStack ml="5">
+                    <FaListAlt size={24} color="lightblue" />
+                    <Box mr="2" mb="1">
+                      <Text ml="2" fontSize="lg" fontWeight="bold">
+                        {totalPosts}
+                      </Text>
+                      <Text ml="2" color="base.400" fontSize="14">
+                        Total posts
+                      </Text>
+                    </Box>
+                  </HStack>
+                </Box>
+                <Spacer />
+                <Box w="25%" borderRadius="md" border="1px" borderColor="base.100">
+                  <HStack ml="5">
+                    <FaUtensils size={24} color="gray" />
+                    <Box mr="2" mb="1">
+                      <Text ml="2" fontSize="lg" fontWeight="bold">
+                        {recipesShared}
+                      </Text>
+                      <Text ml="2" color="base.400" fontSize="14">
+                        Shares
+                      </Text>
+                    </Box>
+                  </HStack>
+                </Box>
+                <Spacer />
+                <Box w="35%" borderRadius="md" border="1px" borderColor="base.100">
+                  <HStack ml="5">
+                    <FaHeart size={24} color="pink" />
+                    <Box mr="2" mb="1">
+                      <Text ml="2" fontSize="lg" fontWeight="bold">
+                        {recipesRated}
+                      </Text>
+                      <Text ml="2" color="base.400" fontSize="14">
+                        Recipes rated
+                      </Text>
+                    </Box>
+                  </HStack>
+                </Box>
+                <Spacer />
+              </HStack>
+              <HStack h="50px" w="100%">
+                <Spacer />
+                <Box w="30%" borderRadius="md" border="1px" borderColor="base.100">
+                  <HStack ml="5">
+                    <FaStar size={24} color="gold" />
+                    <Box mr="2" mb="1">
+                      <Text ml="2" fontSize="lg" fontWeight="bold">
+                        {totalPoints}
+                      </Text>
+                      <Text ml="2" color="base.400" fontSize="14">
+                        Total points
+                      </Text>
+                    </Box>
+                  </HStack>
+                </Box>
+                <Spacer />
+                <Box w="25%" borderRadius="md" border="1px" borderColor="base.100">
+                  <HStack ml="5">
+                    <FaMedal size={24} color="gold" />
+                    <Box mr="2" mb="1">
+                      <Text ml="2" fontSize="lg" fontWeight="bold">
+                        {badgesEarned}
+                      </Text>
+                      <Text ml="2" color="base.400" fontSize="14">
+                        Badges
+                      </Text>
+                    </Box>
+                  </HStack>
+                </Box>
+                <Spacer />
+                <Box w="35%" borderRadius="md" border="1px" borderColor="base.100">
+                  <HStack ml="5">
+                    <FaCheckCircle size={24} color={badgeColor} />
+                    <Box mr="2" mb="1">
+                      <Text ml="2" fontSize="lg" fontWeight="bold">
+                        {badgeLevel}
+                      </Text>
+                      <Text ml="2" color="base.400" fontSize="14">
+                        Badge Level
+                      </Text>
+                    </Box>
+                  </HStack>
+                </Box>
+                <Spacer />
+              </HStack>
+            </VStack>
           </Box>
           {/* <Box>Allergies</Box> */}
         </Box>
       </GridItem>
-      <GridItem colSpan={3} ml="2">
-        <Box>
+      <GridItem rowSpan={1} colSpan={3} ml="2">
+        <Box flexDirection="column" alignItems="center" justifyContent="center">
           <Heading fontSize="22" fontWeight="bold" mt="10" mb="1">
             Daily Summary
           </Heading>
@@ -370,15 +493,15 @@ function User({
           <RecentMeals meals={recentMeals} />
         </Box>
       </GridItem>
-      <GridItem rowSpan={2} colSpan={3} mt="4" ml="2">
+      <GridItem rowSpan={2} colSpan={3} mt="1" ml="2">
         <Box>
-          <Heading fontSize="22" fontWeight="bold" mb={4}>
+          <Heading fontSize="22" fontWeight="bold" mb={2}>
             Weekly Summary
           </Heading>
           <Box>
             <WeeklySummary {...weeklySummaryData} />
           </Box>
-          <Box>
+          <Box mt="1">
             <WeeklyCaloriesChart data={weeklyCaloriesData} />
           </Box>
         </Box>

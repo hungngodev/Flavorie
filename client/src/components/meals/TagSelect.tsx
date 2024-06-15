@@ -78,7 +78,7 @@ const TagSelect = () => {
   }
   return (
     <>
-      <VStack spacing={4} align="start" marginBlock={4}>
+      <VStack spacing={3} align="start" marginBlock={3}>
         <Text fontSize="22" fontWeight="bold">
           Allergies:
         </Text>
@@ -113,7 +113,7 @@ const TagSelect = () => {
           ))}
         </HStack>
       </VStack>
-      <Button onClick={submitTags}>SubmitTags</Button>
+      <Button mt="1" onClick={submitTags}>SubmitTags</Button>
     </>
   );
 }
