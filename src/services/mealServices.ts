@@ -96,6 +96,10 @@ export const createMeal = async (data: any, source: string): Promise<Types.Objec
                 continue;
             }
             if (matchingIngredient) {
+                if (matchingIngredient.name.includes('.')) {
+                    matchingIngredient.name = matchingIngredient.name.replace('.', '');
+                }
+                await matchingIngredient.save();
                 newMeal.allIngredients.push(matchingIngredient);
                 newMeal.amount.set(matchingIngredient.name, ingredient.original);
             }

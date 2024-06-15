@@ -79,6 +79,93 @@ export async function classifyIngredient() {
     return outputs
 }
 
+export async function classifyIngredientByAisle() {
+    const aisles = await Ingredients.aggregate([
+        {
+            $project: {
+                name: 1,
+                allAisles: { $split: ["$aisle", ";"] },
+                id: 1,
+                myCagetory: 1,
+                original: 1,
+                originalName: 1,
+                amount: 1,
+                unit: 1,
+                unitShort: 1,
+                unitLong: 1,
+                possibleUnits: 1,
+                estimatedCost: 1,
+                consistency: 1,
+                shoppingListUnits: 1,
+                aisle: 1,
+                image: 1,
+                meta: 1,
+                nutrition: 1,
+                allergy: 1,
+                diet: 1,
+                categoryPath: 1,
+                relevance: 1
+            }
+        },
+        { $unwind: "$allAisles" },
+        {
+            $group: {
+                _id: "$allAisles",
+                ingredients: {
+                    $push: {
+                        _id: "$_id",
+                        id: "$id",
+                        myCagetory: "$myCagetory",
+                        original: "$original",
+                        originalName: "$originalName",
+                        name: "$name",
+                        amount: "$amount",
+                        unit: "$unit",
+                        unitShort: "$unitShort",
+                        unitLong: "$unitLong",
+                        possibleUnits: "$possibleUnits",
+                        estimatedCost: "$estimatedCost",
+                        consistency: "$consistency",
+                        shoppingListUnits: "$shoppingListUnits",
+                        aisle: "$aisle",
+                        image: "$image",
+                        meta: "$meta",
+                        nutrition: "$nutrition",
+                        allergy: "$allergy",
+                        diet: "$diet",
+                        categoryPath: "$categoryPath",
+                        relevance: "$relevance"
+                    }
+                }
+            }
+        },
+        { $sort: { _id: 1 } }
+    ]);
+    const results = [];
+    for (const aisle of aisles) {
+        results.push({
+            categoryName: aisle._id,
+            numberOfQueryKeys: aisle.ingredients.length / 2,
+            totalNumberOfIngredients: aisle.ingredients.length,
+            results: aisle.ingredients.map((ingredient: Ingredient) => ({
+                queryKey: ingredient.name,
+                ingredients: [{
+                    id: ingredient._id,
+                    name: ingredient.name,
+                    image: "https://img.spoonacular.com/ingredients_100x100/" + ingredient.image,
+                    category: ingredient.categoryPath,
+                    amount: ingredient.amount,
+                    unit: ingredient.unit,
+                    unitShort: ingredient.unitShort,
+                    nutrition: ingredient.nutrition
+                }]
+            })
+            )
+        })
+    }
+    return results
+}
+
 export async function findIngredients(query: string) {
     return await Ingredients.find(
         {

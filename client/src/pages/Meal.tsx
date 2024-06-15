@@ -49,7 +49,7 @@ function Meal() {
   return (
     <Flex flexDir={'column'} width={'100%'} height={'100%'}>
       <Specialty />
-      <SearchBar />
+      <SearchBar autoCompleteLink="/meal/autocomplete" />
       {status === 'pending' ? (
         <Flex justifyContent={'center'} alignItems={'center'} height={'100%'}>
           <l-miyagi size="150" stroke="3.5" speed="0.9" color="black"></l-miyagi>

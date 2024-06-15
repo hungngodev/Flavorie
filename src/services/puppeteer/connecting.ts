@@ -1,22 +1,19 @@
+import dotenv from 'dotenv';
 import puppeteer from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
-import { executablePath } from 'puppeteer';
-import dotenv from 'dotenv';
 dotenv.config();
 
 puppeteer.use(StealthPlugin());
 
-const groceryGenerating = async () => {
+export const groceryGenerating = async (groceryList: string[]) => {
     // Launch the browser and open a new blank page
     const browser = await puppeteer.launch({
-        headless: false,
         defaultViewport: null,
+        headless: false,
         args: [],
         userDataDir: "/Users/hung/Library/Application Support/Google/Chrome/Profile 2",
         executablePath: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
     });
-
-
     const page = await browser.newPage();
 
     await page.setUserAgent(
@@ -78,8 +75,7 @@ const groceryGenerating = async () => {
     await page.waitForSelector(nextButtonSelector);
     await new Promise(resolve => setTimeout(resolve, 500));
     await page.click(nextButtonSelector);
-    const groceryList = ['milk', 'sugar', 'bread', 'eggs', 'butter', 'cheese', 'chicken', 'beef', 'pork', 'fish']
-    for (let i = 1; i < 10; i++) {
+    for (let i = 1; i < groceryList.length; i++) {
         const searchBarButton = `div.e-1hudhoo > div.e-1awx5o3 > div.e-124dr7b > button`;
         await page.waitForSelector(searchBarButton);
         await page.click(searchBarButton);
@@ -116,10 +112,9 @@ const groceryGenerating = async () => {
     await context.overridePermissions(currentURl, ['clipboard-read'])
     const copiedText = await page.evaluate(`(async () => await navigator.clipboard.readText())()`)
     console.log(copiedText);
+    await browser.close();
     return copiedText;
 };
-groceryGenerating();
-
 
 const groceryListNames: string[] = [
     "My Big Y Shopping List",

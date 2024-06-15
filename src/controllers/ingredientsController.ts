@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { ServerError } from '../errors/customErrors.ts';
 import User from '../models/UserModel.ts';
-import { classifyIngredient } from '../services/ingredientServices.ts';
+import { classifyIngredient, classifyIngredientByAisle } from '../services/ingredientServices.ts';
 import { getAllIngredientsAPI } from '../services/spoonacular/spoonacularServices.ts';
 
 export const getAllIngredients = async (req: Request, res: Response) => {
@@ -18,12 +18,18 @@ export const getAllIngredients = async (req: Request, res: Response) => {
         }
     }
     try {
-        const classifiedIngredients = await classifyIngredient()
+        const aisle = await classifyIngredientByAisle();
         res.status(StatusCodes.OK).json({
-            category: category !== '/' ? classifiedIngredients.filter((SubCategory) => SubCategory.categoryName === category) : classifiedIngredients,
+            category: category !== '/' ? aisle.filter((SubCategory) => SubCategory.categoryName === category) : aisle,
             allergy,
             diet,
-        })
+        });
+        // const classifiedIngredients = await classifyIngredient()
+        // res.status(StatusCodes.OK).json({
+        //     category: category !== '/' ? classifiedIngredients.filter((SubCategory) => SubCategory.categoryName === category) : classifiedIngredients,
+        //     allergy,
+        //     diet,
+        // })
     }
     catch (e) {
         console.error('Error classifying ingredients:', e)

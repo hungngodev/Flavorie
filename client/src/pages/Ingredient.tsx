@@ -3,7 +3,7 @@ import { QueryClient, useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { waveform } from 'ldrs';
 import { LottieRefCurrentProps } from 'lottie-react';
-import { Calendar, Flag, Home, Layers, LayoutDashboard, Refrigerator, StickyNote } from 'lucide-react';
+import { Home, Refrigerator } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { Params, useLoaderData, useParams } from 'react-router-dom';
@@ -70,8 +70,8 @@ export type Category = {
 };
 
 export default function Ingredient() {
-  const { category } = useParams<{ category: string }>();
-  const { data: queryData, status } = useQuery(allIngredientsQuery(category ?? ''));
+  const { category: currentCategory } = useParams<{ category: string }>();
+  const { data: queryData, status } = useQuery(allIngredientsQuery(currentCategory ?? ''));
   const ingredientData = queryData?.data.category[0];
   const cartData = useLoaderData() as
     | {
@@ -87,95 +87,23 @@ export default function Ingredient() {
         };
       }
     | undefined;
-
-  const categories = [
-    {
-      index: 1,
-      icon: <Home size={20} />,
-      text: 'Meats',
-      alert: true,
-      active: category === 'meat',
-      link: '/ingredients/meat',
+  const categories = ingredientData?.results.map(
+    (category: {
+      categoryName: string;
+      numberOfQueryKeys: number;
+      totalNumberOfIngredients: number;
+      results: SubCategory[];
+    }) => {
+      return {
+        index: 1,
+        icon: <Home size={20} />,
+        text: category.categoryName,
+        alert: true,
+        active: category.categoryName === currentCategory,
+        link: `/ingredients/${category.categoryName}`,
+      };
     },
-    {
-      index: 2,
-      icon: <LayoutDashboard size={20} />,
-      text: 'Vegetables',
-      active: category === 'vegetable',
-      link: '/ingredients/vegetable',
-    },
-    {
-      index: 3,
-      icon: <Flag size={20} />,
-      text: 'Dairy',
-      active: category === 'dairy',
-      link: '/ingredients/dairy',
-    },
-    {
-      index: 4,
-      icon: <Flag size={20} />,
-      text: 'Sauce',
-      active: category === 'sauce',
-      link: '/ingredients/sauce',
-    },
-    {
-      index: 5,
-      icon: <Flag size={20} />,
-      text: 'Grain',
-      active: category === 'grain',
-      link: '/ingredients/grain',
-    },
-    {
-      index: 6,
-      icon: <StickyNote size={20} />,
-      text: 'Fruits',
-      alert: true,
-      active: category === 'fruit',
-      link: '/ingredients/fruit',
-    },
-    {
-      index: 7,
-      icon: <Calendar size={20} />,
-      text: 'Nuts',
-      active: category === 'nut',
-      link: '/ingredients/nut',
-    },
-    {
-      index: 8,
-      icon: <Flag size={20} />,
-      text: 'Egg',
-      active: category === 'egg',
-      link: '/ingredients/egg',
-    },
-    {
-      index: 9,
-      icon: <Flag size={20} />,
-      text: 'Seafoods',
-      active: category === 'seafood',
-      link: '/ingredients/seafood',
-    },
-    {
-      index: 10,
-      icon: <Flag size={20} />,
-      text: 'Powders',
-      active: category === 'powder',
-      link: '/ingredients/powder',
-    },
-    {
-      index: 11,
-      icon: <Layers size={20} />,
-      text: 'Spices',
-      active: category === 'spice',
-      link: '/ingredients/spice',
-    },
-    {
-      index: 12,
-      icon: <Flag size={20} />,
-      text: 'Sweets',
-      active: category === 'sweet',
-      link: '/ingredients/sweet',
-    },
-  ];
+  );
   const fridgeWidth = '300';
   const { getButtonProps, getDisclosureProps, isOpen } = useDisclosure();
   const [hidden, setHidden] = useState(!isOpen);
