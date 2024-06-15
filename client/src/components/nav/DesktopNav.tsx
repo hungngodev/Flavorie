@@ -89,7 +89,7 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
           {auth.currentUser.status !== 'authenticated' ? (
             <>
               <Button fontSize={'sm'} fontWeight={400} variant={'link'}>
-                <Link to="/login">Sign In</Link>
+                <Link to={`/login?redirect=${location.pathname}`}>Sign In</Link>
               </Button>
               <Button
                 display={{ base: 'none', md: 'inline-flex' }}
