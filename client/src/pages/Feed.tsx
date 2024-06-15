@@ -8,7 +8,13 @@ const style = {
 
 const Feed = () => {
   return (
-    <Box width="100%" height="100%" overflow="auto" backgroundColor="blackAlpha.50" paddingX="30%">
+    <Box
+      width="100%"
+      height="100%"
+      overflow="auto"
+      backgroundColor="blackAlpha.50"
+      paddingX={{ base: 0, lg: '10%', xl: '20%' }}
+    >
       {MockPosts.map((post) => (
         <Post key={post.id} postData={post} isDisplayed />
       ))}

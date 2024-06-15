@@ -59,24 +59,35 @@ export const MockPosts: Array<PostObjectType> = [
     id: 'post1',
     author: {
       avatar: 'https://github.com/shadcn.png',
-      name: 'user1',
+      name: 'Vienhere',
     },
     header: 'Delicious Homemade Pizza',
     body: 'Tried a new recipe for homemade pizza and it turned out amazing! The crust is crispy, and the cheese is perfectly melted. Highly recommend giving this a try.',
     media: [
       {
         type: 'image',
-        url: 'https://i.pinimg.com/564x/3a/70/7b/3a707b7160f5ec185f8f917872dfb8b6.jpg',
+        url: 'https://images.pexels.com/photos/25315989/pexels-photo-25315989/free-photo-of-paintings-of-cats-eye-and-a-cat.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
         metadata: ['homemade', 'pizza', 'cheese'],
       },
       {
         type: 'image',
-        url: 'https://i.pinimg.com/564x/3a/70/7b/3a707b7160f5ec185f8f917872dfb8b6.jpg',
+        url: 'https://i.pinimg.com/564x/1e/df/24/1edf24e5c5b046d576aecef67c6f5fd1.jpg',
         metadata: ['homemade', 'pizza', 'cheese'],
       },
       {
         type: 'image',
-        url: 'https://i.pinimg.com/564x/3a/70/7b/3a707b7160f5ec185f8f917872dfb8b6.jpg',
+        url: 'https://i.pinimg.com/564x/1e/df/24/1edf24e5c5b046d576aecef67c6f5fd1.jpg',
+        metadata: ['homemade', 'pizza', 'cheese'],
+      },
+      {
+        type: 'image',
+        url: 'https://i.pinimg.com/564x/1e/df/24/1edf24e5c5b046d576aecef67c6f5fd1.jpg',
+        metadata: ['homemade', 'pizza', 'cheese'],
+      },
+
+      {
+        type: 'image',
+        url: 'https://i.pinimg.com/564x/90/e0/6f/90e06fbd8b13a89af70a62b61161431c.jpg',
         metadata: ['homemade', 'pizza', 'cheese'],
       },
     ],
