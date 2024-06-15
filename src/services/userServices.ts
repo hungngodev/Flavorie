@@ -53,12 +53,8 @@ export async function modifyOrdinaryInfo(userId: string, reqInfo: User): Promise
 }
 
 
-export async function getUserItems(userId: string, type: string): Promise<UserItem[]> {
-    const items = await ItemModel.find({ userId: userId, type: type }).populate<
-        {
-            itemId: Ingredient
-        }
-    >('itemId');
+export async function getUserItems(userId: string, type: string) {
+    const items = await ItemModel.find({ userId: userId, type: type }).populate('itemId');
     return items;
 }
 

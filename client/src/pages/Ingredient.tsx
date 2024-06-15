@@ -6,7 +6,7 @@ import { LottieRefCurrentProps } from 'lottie-react';
 import { Calendar, Flag, Home, Layers, LayoutDashboard, Refrigerator, StickyNote } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { Params, useParams } from 'react-router-dom';
+import { Params, useLoaderData, useParams } from 'react-router-dom';
 import { Cart, CategorySidebar, IngredientsMain } from '../components';
 import { Nutrition } from '../components/ingredients/NutritionCard';
 import customFetch from '../utils/customFetch';
@@ -33,7 +33,8 @@ export const loader =
   (queryClient: QueryClient) =>
   async ({ params }: { params: Params }) => {
     queryClient.ensureQueryData(allIngredientsQuery(params.category ?? ''));
-    return null;
+    const data = await customFetch.get('/user/cart');
+    return data;
   };
 
 export type CartData = {
@@ -41,7 +42,6 @@ export type CartData = {
     id: string;
     name: string;
     image: string;
-    category: string;
     quantity: string;
   }[];
 };
@@ -73,6 +73,20 @@ export default function Ingredient() {
   const { category } = useParams<{ category: string }>();
   const { data: queryData, status } = useQuery(allIngredientsQuery(category ?? ''));
   const ingredientData = queryData?.data.category[0];
+  const cartData = useLoaderData() as
+    | {
+        data: {
+          cart: {
+            itemId: {
+              _id: string;
+              name: string;
+              image: string;
+            };
+            quantity: string;
+          }[];
+        };
+      }
+    | undefined;
 
   const categories = [
     {
@@ -169,7 +183,16 @@ export default function Ingredient() {
 
   const { control, handleSubmit, watch, setValue } = useForm<CartData>({
     defaultValues: {
-      cart: [],
+      cart: cartData
+        ? cartData.data.cart.map((item) => {
+            return {
+              id: item.itemId._id,
+              name: item.itemId.name,
+              image: 'https://img.spoonacular.com/ingredients_100x100/' + item.itemId.image,
+              quantity: item.quantity,
+            };
+          })
+        : [],
     },
   });
   const { fields, append, remove } = useFieldArray({
@@ -187,7 +210,6 @@ export default function Ingredient() {
         id: ingredientData.id,
         name: ingredientData.name,
         image: ingredientData.image,
-        category: ingredientData.category,
         quantity: '1',
       });
     lottieCartRef.current?.playSegments([150, 185]);
@@ -196,7 +218,27 @@ export default function Ingredient() {
     remove(index);
   };
   const onSubmit = () => {
-    handleSubmit((data: CartData) => console.log('data', data))();
+    handleSubmit((data: CartData) => {
+      console.log(data);
+      const results = data.cart.map((item) => {
+        return {
+          itemId: item.id,
+          quantity: parseInt(item.quantity),
+          unit: 'unit',
+          userId: '',
+          type: 'cart',
+        };
+      });
+      customFetch.patch(
+        '/user/cart',
+        {
+          cart: results,
+        },
+        {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        },
+      );
+    })();
   };
   const lottieCartRef = useRef<LottieRefCurrentProps>(null);
   return (

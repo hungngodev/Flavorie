@@ -15,7 +15,9 @@ import Lottie, { LottieRefCurrentProps } from 'lottie-react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { RefObject, useRef } from 'react';
 import { Control, Controller, FieldArrayWithId } from 'react-hook-form';
+import { toast } from 'react-toastify';
 import { Cart } from '../../assets/animations';
+import { useAuth } from '../../hooks';
 import { CartData } from '../../pages/Ingredient';
 
 type CartProps = {
@@ -27,6 +29,7 @@ type CartProps = {
 };
 
 export default function CartToBuy({ removeFunction, onSubmit, fields, control, lottieCartRef }: CartProps) {
+  const auth = useAuth();
   const scrollCartRef = useRef<HTMLDivElement>(null);
   function scroll(direction: 'up' | 'down', distance: number) {
     if (scrollCartRef.current) {
@@ -60,8 +63,12 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
         <button
           onClick={(e) => {
             e.preventDefault();
-            onSubmit();
-            lottieCartRef.current?.playSegments([0, 135]);
+            if (auth.currentUser.status === 'authenticated') {
+              onSubmit();
+              lottieCartRef.current?.playSegments([0, 135]);
+            } else {
+              toast.error('Please login to save your cart', { position: 'top-right' });
+            }
           }}
         >
           <Lottie
@@ -71,6 +78,7 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
             autoPlay={false}
             lottieRef={lottieCartRef}
           />
+          Save
         </button>
         <IconButton
           icon={<ChevronDown />}

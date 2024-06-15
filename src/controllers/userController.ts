@@ -32,7 +32,7 @@ export const getLeftOver = async (req: Request, res: Response) => {
 }
 
 export const updateCart = async (req: Request, res: Response) => {
-    await modifyUserItems(req.user.userId, req.body, 'cart');
+    await modifyUserItems(req.user.userId, req.body.cart, 'cart');
     res.status(StatusCodes.OK).send({ msg: 'update cart' });
 };
 
