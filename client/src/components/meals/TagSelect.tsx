@@ -51,7 +51,6 @@ const colorScheme = {
     text: 'orange.800',
   },
 };
-
 const TagSelect = () => {
   const [selectedTags, setSelectedTags] = useState<Set<PreferenceType>>(new Set([]));
 
@@ -76,6 +75,13 @@ const TagSelect = () => {
     }
     console.log(tagRequest);
   }
+  
+// interface TagSelectProps {
+//   handleSelect: (tag : PreferenceType) => void;
+//   selectedTags: Set<PreferenceType>;
+// }
+// const TagSelect: React.FC<TagSelectProps> = ({handleSelect, selectedTags}) => {
+
   return (
     <>
       <VStack spacing={3} align="start" marginBlock={3}>
@@ -89,7 +95,6 @@ const TagSelect = () => {
               type={type}
               onClick={() => handleSelect(type)}
               border={selectedTags.has(type) ? '2px' : '0px'}
-              // change component color and background base on whether it is an allergy or diet
               bgColor={colorScheme.allergy.background}
               color={colorScheme.allergy.text}
               icon={Icons[type]}

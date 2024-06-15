@@ -4,20 +4,20 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
-import HomeLayout from './layouts/HomeLayout';
-import { loader as ingredientsLoader } from './pages/Ingredient';
-import { loader as mealsLoader } from './pages/Meal';
-import { loader as recipeLoader } from './pages/Recipe';
+import HomeLayout from './layouts/HomeLayout.tsx';
+import { loader as ingredientsLoader } from './pages/Ingredient.tsx';
+import { loader as mealsLoader } from './pages/Meal.tsx';
+import { loader as recipeLoader } from './pages/Recipe.tsx';
 import { Ingredient, Login, Main, Meal, Recipe, Register, User } from './pages/index';
 import theme from './style/theme';
 import IndividualMeal from './pages/Recipe';
-import { Dish } from './components/meals/ImageSlide'
-import User from './pages/User';
+// import User from './pages/User';
 import { TableData } from './pages/User';
 import { BackendData, transformToDishes } from './utils/mealDataTransform';
 import { MealProps } from './pages/Recipe';
 import ImageScan from './components/ingredients/ImageScan';
-
+import NutritionCard from './components/ingredients/NutritionCard';
+import { IngredientProps } from './components/ingredients/NutritionCard';
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -76,7 +76,12 @@ const router = createBrowserRouter([
       },
       {
         path: 'community',
-        element: <div>Community</div>,
+        children: [
+          {
+            index: true,
+            element: <div>Community</div>,
+          },
+        ],
       },
       {
         path: 'profile',
@@ -190,47 +195,41 @@ const router = createBrowserRouter([
 //     },
 //   ];
 
-//   const weeklyData = {
-//     weeklyProtein: 70, 
-//     weeklyCarb: 50, 
-//     weeklyFat: 30, 
-//   };
-
-//   const weeklyCalories = [
-//     { date: 'Mon', weeklyCalories: '200' },
-//     { date: 'Tue', weeklyCalories: '250' },
-//     { date: 'Wed', weeklyCalories: '300' },
-//     { date: 'Thu', weeklyCalories: '280' },
-//     { date: 'Fri', weeklyCalories: '350' },
-//     { date: 'Sat', weeklyCalories: '400' },
-//     { date: 'Sun', weeklyCalories: '370' },
-//   ];
-
-//   const dashboardProps = {
-//     mealData: Dailydata,
-//     info: userInfo,
-//     totalPosts: '5',
-//     recipesShared: '8',
-//     recipesRated: '10',
-//     totalPoints: '50',
-//     badgesEarned: '4',
-//     recentMeals: recentMeals,
-//     protein: '210',
-//     vitamins: '48',
-//     carb: '190',
-//     fat: '120',
-//     minerals: '42',
-//     weeklySummaryData: weeklyData,
-//     weeklyCaloriesData: weeklyCalories
-//   }
-//   return  <User {...dashboardProps}/>;
+//   return (
+//     <IndividualMeal
+//       individualMeal={sampleMeal}
+//       title="Sample Meal Title"
+//       overview="This is an overview of the sample meal."
+//       totalTime="45 mins"
+//       servings="4"
+//       calories="500"
+//       averageStar='5'
+//       numReviews='1'
+//     />
+//   );
 // };
 
 function App() {
   return (
     <ChakraBaseProvider theme={extendTheme(theme)}>
       <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
+        {/* <ImageScan /> */}
+        {/* <RouterProvider router={router} /> */}
+        {/* <IndividualMeal
+          individualMeal={individualMeal}
+          title={backendData.title}
+          overview={backendData.instruction}
+          image={backendData.imageUrl}
+          source={backendData.source}
+          totalTime="20 minutes"
+          servings="4 servings"
+          calories="150 kcal"
+          averageStar="4.5"
+          numReviews="10"
+          tags={backendData.tags}
+        /> */}
+
+        {/* <NutritionCard {...mockdata} /> */}
         <ToastContainer autoClose={5000} limit={3} transition={Slide} />
         <ReactQueryDevtools />
         {/* <PersonalDashboardWrapper /> */}
@@ -239,4 +238,3 @@ function App() {
   );
 }
 export default App;
-

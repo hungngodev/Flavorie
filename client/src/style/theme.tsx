@@ -34,6 +34,7 @@ const theme = {
       400: '#000000',
     },
     brown: {
+      20: '#F6F5F2',
       100: 'B79E8F',
       300: '604F44',
       400: '3A2B22',
@@ -59,7 +60,6 @@ const theme = {
     },
     Button: {
       baseStyle: {
-        letterSpacing: 'widest',
         fontWeight: 'normal',
         userSelect: 'none',
       },
