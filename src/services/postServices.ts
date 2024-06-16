@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import { Document, Types } from "mongoose";
 import { BadRequestError, ServerError } from "../errors/customErrors.ts";
 import PostModel, { Post } from "../models/Post.ts";
 import UserModel from "../models/UserModel.ts";
@@ -17,9 +17,38 @@ export const getSinglePostDocument = async (
   }
 };
 
+export const getFeedDocument = async (
+  page: number = 1,
+  limit: number = 20,
+): Promise<Document[]> => {
+  const postLists = await PostModel.find({ privacy: { $ne: "private" } })
+    .sort({
+      createdAt: -1,
+      updatedAt: -1,
+      reactCount: -1,
+      reviewCount: -1,
+      location: -1,
+    })
+    .populate({ path: "author", select: "name avatar location " })
+    .skip((page - 1) * limit)
+    .limit(limit);
+  if (postLists.length === 0) throw new ServerError("Failed to get posts");
+
+  return postLists.map(post => post.toJSON() as Document);
+};
+
 export const buildPostDocument = async (postBody: Post): Promise<string> => {
   try {
-    const { author, header, body, media, privacy, location } = postBody;
+    const {
+      author,
+      header,
+      body,
+      media,
+      privacy,
+      location,
+      reviewCount,
+      reactCount,
+    } = postBody;
     const getUser = await UserModel.findById(author);
 
     if (!getUser) {
@@ -35,6 +64,8 @@ export const buildPostDocument = async (postBody: Post): Promise<string> => {
       media: media,
       privacy: privacy,
       location: location,
+      reviewCount: reviewCount,
+      reactCount: reactCount,
     };
     const newPost = await PostModel.create(postData);
     if (!newPost) {

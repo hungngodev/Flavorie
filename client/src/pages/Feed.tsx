@@ -1,12 +1,26 @@
-import { Post } from '../components/community/post/index';
-import { MockPosts } from '../components/community/post/MockPosts';
 import { Box } from '@chakra-ui/react';
+import { useState } from 'react';
+import { z } from 'zod';
+import { MockPosts } from '../components/community/post/MockPosts';
+import { Post } from '../components/community/post/index';
 
 const style = {
   backgroundColor: 'gray.50',
 };
 
+const FeedRequest = z.object({
+  page: z.number().optional(),
+  limits: z.number().optional(),
+});
+type FeedRequestType = z.infer<typeof FeedRequest>;
 const Feed = () => {
+  const [page, setPage] = useState(1);
+  // useEffect(() => {
+  //   const generateFeed = async () => {
+  //     const request: FeedRequestType = { page: page, limits: 20 };
+  //     const newsfeedDocuments = await customFetch.get('/community/newsfeed', { data: request });
+  //   };
+  // }, []);
   return (
     <Box
       width="100%"

@@ -1,11 +1,13 @@
 // postController.ts
 import { Request, RequestHandler, Response } from "express";
 import { StatusCodes } from "http-status-codes";
+import { Types } from "mongoose";
 import { PostError } from "../errors/customErrors.ts";
 import { Post } from "../models/Post.ts";
 import {
   buildPostDocument,
   deletePostDocument,
+  getFeedDocument,
   updatePostDocument,
 } from "../services/postServices.ts";
 
@@ -57,6 +59,25 @@ export const postService = async (req: Request, res: Response) => {
       throw new PostError("Post service failed");
     }
     return res.status(StatusCodes.OK).json(response);
+  } catch (err) {
+    if (err instanceof Error) {
+      return res.status(StatusCodes.CONFLICT).json({ error: err.message });
+    } else {
+      return res
+        .status(StatusCodes.CONFLICT)
+        .json({ error: `Unexpected error: ${err}` });
+    }
+  }
+};
+
+export const newFeedController = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.user;
+    const { page, limit } = req.body;
+    const feed = await getFeedDocument(page, limit);
+    return res
+      .status(StatusCodes.OK)
+      .json({ message: "Feed retrieved", data: feed });
   } catch (err) {
     if (err instanceof Error) {
       return res.status(StatusCodes.CONFLICT).json({ error: err.message });
