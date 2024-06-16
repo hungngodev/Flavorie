@@ -1,10 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
 import {
     BadRequestError,
+    ForbiddenError,
     UnauthenticatedError,
     UnauthorizedError,
 } from '../errors/customErrors.js';
 import { verifyJWT } from '../utils/tokenUtils.js';
+import Review from '@/models/Review.js';
 
 declare global {
     namespace Express {
@@ -58,3 +60,22 @@ export const checkForTestUser = (req: Request, res: Response, next: NextFunction
     if ((req as any).user?.testUser) throw new BadRequestError('Demo User. Read Only!');
     next();
 };
+
+export const authorizeReviewOwner = async (req: Request, res: Response, next: NextFunction) => {
+    const { reviewId } = req.params;
+    const userId = req.user?.userId;
+
+    if (!userId) {
+        throw new UnauthenticatedError("Authentication invalid");
+    }
+
+    const review = await Review.findById(reviewId);
+    if (!review) {
+        return res.status(404).send({error: 'Review not found'});
+    }
+
+    if (review.userId.toString() !== userId) {
+        throw new ForbiddenError('You do not have You do not have permission to perform this action');
+    }
+    next();
+}

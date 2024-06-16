@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import z from "zod";
 import { BadRequestError } from "../errors/customErrors.ts";
-import { ReviewSchema } from "../models/Review.ts"
 import ExpressError from "../utils/ExpressError";
 
 // login
@@ -47,15 +46,7 @@ export const validateRegisterInput = (
         } 
 };
 
-export const validateReview = (req: Request, res: Response, next: NextFunction) => {
-    const { error } = ReviewSchema.validate(req.body);
-    if (error) {
-        const msg = error.details.map(el => el.message).join(',');
-        throw new ExpressError(msg, 400);
-    } else {
-        next();
-    }
-};
+
 
 // mock data for register
 // const sampleRegis = {
