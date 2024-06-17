@@ -262,8 +262,6 @@ const WeeklyCaloriesChart = ({ data }: { data: WeeklyCalories[] }) => {
 interface UserProps {
   mealData: TableData[];
   info: PersonalProps;
-  points: string;
-  tags: string;
   totalPosts: number;
   recipesShared: number;
   recipesRated: number;
@@ -325,20 +323,20 @@ function User({
   const badgeColor = getBadgeColor(badgeLevel);
 
   return (
-    <Grid templateRows="repeat(3, 1fr)" templateColumns="repeat(10, 3fr)" mt="5">
-      <GridItem rowSpan={3} colSpan={3} objectFit="cover" ml="2" mr="2">
+    <Grid templateRows="repeat(3, 1fr)" templateColumns="repeat(10, 3fr)" mt="3">
+      <GridItem rowSpan={3} colSpan={3} objectFit="cover" ml="2" mr="4">
         <Box height="100%" width="100%">
           <UserCard {...info} />
           <TagSelect />
         </Box>
       </GridItem>
-      <GridItem colSpan={4} mr="2">
+      <GridItem colSpan={4} ml="2" mr="2">
         <Box>
           <Box mb="2" display="flex" flexDirection="column" justifyContent="flex-start">
             <Heading fontSize="20" fontWeight="bold" mt="1">
               Hi {username},
             </Heading>
-            <Text mt="2">Welcome back! Let's check the nutrition of your meals for today.</Text>
+            <Text mt="1">Welcome back! Let's check the nutrition of your meals for today.</Text>
           </Box>
           <Box
             mb="2"
@@ -347,7 +345,7 @@ function User({
             display="flex"
             flexDirection="column"
             justifyContent="flex-end"
-            mt="5"
+            mt="4"
           >
             <Table variant="simple" fontSize="14">
               <Thead>
@@ -377,123 +375,122 @@ function User({
               </Tbody>
             </Table>
           </Box>
-          <Box mt="4" mb="5">
+          <Box mt="4" mb="3">
             <Heading mb="2" fontSize="22" fontWeight="bold">
               Statistics
             </Heading>
-            <VStack p={2} bg="white" h="110px" mb="2">
-              <HStack h="50px" w="100%" mb="2">
-                <Spacer />
-                <Box borderRadius="md" w="30%" border="1px" borderColor="base.100">
-                  <HStack ml="5">
-                    <FaListAlt size={24} color="lightblue" />
-                    <Box mr="2" mb="1">
-                      <Text ml="2" fontSize="lg" fontWeight="bold">
-                        {totalPosts}
-                      </Text>
-                      <Text ml="2" color="base.400" fontSize="14">
-                        Total posts
-                      </Text>
-                    </Box>
-                  </HStack>
-                </Box>
-                <Spacer />
-                <Box w="25%" borderRadius="md" border="1px" borderColor="base.100">
-                  <HStack ml="5">
-                    <FaUtensils size={24} color="gray" />
-                    <Box mr="2" mb="1">
-                      <Text ml="2" fontSize="lg" fontWeight="bold">
-                        {recipesShared}
-                      </Text>
-                      <Text ml="2" color="base.400" fontSize="14">
-                        Shares
-                      </Text>
-                    </Box>
-                  </HStack>
-                </Box>
-                <Spacer />
-                <Box w="35%" borderRadius="md" border="1px" borderColor="base.100">
-                  <HStack ml="5">
-                    <FaHeart size={24} color="pink" />
-                    <Box mr="2" mb="1">
-                      <Text ml="2" fontSize="lg" fontWeight="bold">
-                        {recipesRated}
-                      </Text>
-                      <Text ml="2" color="base.400" fontSize="14">
-                        Recipes rated
-                      </Text>
-                    </Box>
-                  </HStack>
-                </Box>
-                <Spacer />
-              </HStack>
-              <HStack h="50px" w="100%">
-                <Spacer />
-                <Box w="30%" borderRadius="md" border="1px" borderColor="base.100">
-                  <HStack ml="5">
-                    <FaStar size={24} color="gold" />
-                    <Box mr="2" mb="1">
-                      <Text ml="2" fontSize="lg" fontWeight="bold">
-                        {totalPoints}
-                      </Text>
-                      <Text ml="2" color="base.400" fontSize="14">
-                        Total points
-                      </Text>
-                    </Box>
-                  </HStack>
-                </Box>
-                <Spacer />
-                <Box w="25%" borderRadius="md" border="1px" borderColor="base.100">
-                  <HStack ml="5">
-                    <FaMedal size={24} color="gold" />
-                    <Box mr="2" mb="1">
-                      <Text ml="2" fontSize="lg" fontWeight="bold">
-                        {badgesEarned}
-                      </Text>
-                      <Text ml="2" color="base.400" fontSize="14">
-                        Badges
-                      </Text>
-                    </Box>
-                  </HStack>
-                </Box>
-                <Spacer />
-                <Box w="35%" borderRadius="md" border="1px" borderColor="base.100">
-                  <HStack ml="5">
-                    <FaCheckCircle size={24} color={badgeColor} />
-                    <Box mr="2" mb="1">
-                      <Text ml="2" fontSize="lg" fontWeight="bold">
-                        {badgeLevel}
-                      </Text>
-                      <Text ml="2" color="base.400" fontSize="14">
-                        Badge Level
-                      </Text>
-                    </Box>
-                  </HStack>
-                </Box>
-                <Spacer />
-              </HStack>
-            </VStack>
+            <Box borderRadius="md" boxShadow="md" p="4" border="1px" borderColor="base.100">
+              <VStack bg="white">
+                <HStack h="50px" w="100%" mb="2">
+                  <Box borderRadius="md" w="32%" border="1px" borderColor="base.100">
+                    <HStack ml="5">
+                      <FaListAlt size={24} color="lightblue" />
+                      <Box mr="2" mb="1">
+                        <Text ml="2" fontSize="lg" fontWeight="bold">
+                          {totalPosts}
+                        </Text>
+                        <Text ml="2" color="base.400" fontSize="14">
+                          Total posts
+                        </Text>
+                      </Box>
+                    </HStack>
+                  </Box>
+                  <Spacer />
+                  <Box w="26%" borderRadius="md" border="1px" borderColor="base.100">
+                    <HStack ml="5">
+                      <FaUtensils size={24} color="gray" />
+                      <Box mr="2" mb="1">
+                        <Text ml="2" fontSize="lg" fontWeight="bold">
+                          {recipesShared}
+                        </Text>
+                        <Text ml="2" color="base.400" fontSize="14">
+                          Shares
+                        </Text>
+                      </Box>
+                    </HStack>
+                  </Box>
+                  <Spacer />
+                  <Box w="36%" borderRadius="md" border="1px" borderColor="base.100">
+                    <HStack ml="5">
+                      <FaHeart size={24} color="pink" />
+                      <Box mr="2" mb="1">
+                        <Text ml="2" fontSize="lg" fontWeight="bold">
+                          {recipesRated}
+                        </Text>
+                        <Text ml="2" color="base.400" fontSize="14">
+                          Recipes rated
+                        </Text>
+                      </Box>
+                    </HStack>
+                  </Box>
+                </HStack>
+                <HStack h="50px" w="100%">
+                  <Box w="32%" borderRadius="md" border="1px" borderColor="base.100">
+                    <HStack ml="5">
+                      <FaStar size={24} color="gold" />
+                      <Box mr="2" mb="1">
+                        <Text ml="2" fontSize="lg" fontWeight="bold">
+                          {totalPoints}
+                        </Text>
+                        <Text ml="2" color="base.400" fontSize="14">
+                          Total points
+                        </Text>
+                      </Box>
+                    </HStack>
+                  </Box>
+                  <Spacer />
+                  <Box w="26%" borderRadius="md" border="1px" borderColor="base.100">
+                    <HStack ml="5">
+                      <FaMedal size={24} color="gold" />
+                      <Box mr="2" mb="1">
+                        <Text ml="2" fontSize="lg" fontWeight="bold">
+                          {badgesEarned}
+                        </Text>
+                        <Text ml="2" color="base.400" fontSize="14">
+                          Badges
+                        </Text>
+                      </Box>
+                    </HStack>
+                  </Box>
+                  <Spacer />
+                  <Box w="36%" borderRadius="md" border="1px" borderColor="base.100">
+                    <HStack ml="5">
+                      <FaCheckCircle size={24} color={badgeColor} />
+                      <Box mr="2" mb="1">
+                        <Text ml="2" fontSize="lg" fontWeight="bold">
+                          {badgeLevel}
+                        </Text>
+                        <Text ml="2" color="base.400" fontSize="14">
+                          Badge Level
+                        </Text>
+                      </Box>
+                    </HStack>
+                  </Box>
+                  
+                </HStack>
+              </VStack>
+            </Box>
           </Box>
           {/* <Box>Allergies</Box> */}
         </Box>
       </GridItem>
-      <GridItem rowSpan={1} colSpan={3} ml="2">
+      <GridItem rowSpan={1} colSpan={3} ml="4">
         <Box flexDirection="column" alignItems="center" justifyContent="center">
-          <Heading fontSize="22" fontWeight="bold" mt="10" mb="1">
+          <Heading fontSize="22" fontWeight="bold" mt="5" mb="1">
             Daily Summary
           </Heading>
           <NutrientChart {...nutrientData} />
         </Box>
       </GridItem>
-      <GridItem rowSpan={2} colSpan={4} mt="3">
+      <GridItem rowSpan={2} colSpan={4} ml="2" mr="2" mt="1">
         <Box>
-          <Heading fontSize="22" fontWeight="bold" mb={4}>
+          <Heading fontSize="22" fontWeight="bold" mb={2}>
             Recent Meals
           </Heading>
           <RecentMeals meals={recentMeals} />
         </Box>
       </GridItem>
-      <GridItem rowSpan={2} colSpan={3} mt="1" ml="2">
+      <GridItem rowSpan={2} colSpan={3} mt="2" ml="4">
         <Box>
           <Heading fontSize="22" fontWeight="bold" mb={2}>
             Weekly Summary
