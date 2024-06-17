@@ -1,9 +1,6 @@
 // postController.ts
 import { NextFunction, Request, RequestHandler, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { Types } from "mongoose";
-import { PostError } from "../errors/customErrors.ts";
-import { Post } from "../models/Post.ts";
 import {
   buildPostDocument,
   deletePostDocument,
