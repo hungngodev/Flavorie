@@ -7,6 +7,7 @@ import { catchAsync } from '../utils/catchAsync.js';
 import { getAllNotifications } from '../controllers/notificationController.ts';
 import { getNotificationCount } from '../controllers/notificationController.ts';
 import { getNotificationById } from '../controllers/notificationController.ts';
+import { getSuggestionIngredients } from '../controllers/ingredientsController.ts';
 const upload = multer({ storage });
 
 const router = Router();
@@ -27,4 +28,5 @@ router.route('/likedMeals')
 router.route('/notifications/cnt').get(authenticateUser, catchAsync(getNotificationCount))
 router.route('/notifications').get(authenticateUser, catchAsync(getAllNotifications))
 router.route('/notifications/:id').get(authenticateUser, catchAsync(getNotificationById))
+router.route('/ingredients/suggestions').get(authenticateUser, catchAsync(getSuggestionIngredients))
 export default router;

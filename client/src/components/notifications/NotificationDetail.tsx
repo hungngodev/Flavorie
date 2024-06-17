@@ -23,7 +23,10 @@ const NotificationDetail: React.FC = () => {
                     {notificationDetail.message.title}
                 </Heading>
                 <VStack spacing={4} align="stretch">
-                    <Text>{JSON.stringify(notificationDetail.message.data, null, 2)}</Text>
+                    {/* <Text>{JSON.stringify(notificationDetail.message.data, null, 2)}</Text> */}
+                    {notificationDetail.message.data?.map((noti) => (
+                        <Text>{noti.name}</Text>
+                    ))}
                 </VStack>
             </>
         ) : (

@@ -20,7 +20,7 @@ const getAllNotifications = async (req: Request, res: Response) => {
         return res.status(400).json({error: "User not found"})
     }
     try {
-        const notifications = await NotificationModel.find({userId: userId, status: false}).sort({timestamp: -1})
+        const notifications = await NotificationModel.find({userId: userId}).sort({timestamp: -1})
         return res.status(200).json({notifications})
     } catch(error) {
         return res.status(500).json({error: "Cannot display notifications"})

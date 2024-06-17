@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import NotificationContext, { Notification } from '../contexts/NotificationContext.tsx';
+import NotificationContext, { Notification, NotificationSchema } from '../contexts/NotificationContext.tsx';
 import useAuth from '../hooks/useAuth.tsx';
 import useToast from '../hooks/useToast.tsx';
 import socket from '../socket/socketio.tsx';
@@ -39,14 +39,22 @@ const NotificationProvider: React.FC<NotificationContextProviderProps> = ({
   }, [notifyError]);
 
   // get notification detail 
-  const fetchNotificationById = async (id: string) => {
+  const fetchNotificationById = async (id: string): Promise<Notification | null> => {
     try {
       const response = await axios.get(`http://localhost:5100/api/user/notifications/${id}`, { withCredentials: true });
-      console.log(response.data.currNotification);
-      setNotificationDetail(response.data.currNotification);
+      // console.log(response.data.currNotification);
+      const parsedData = NotificationSchema.safeParse(response.data.currNotification)
+      if (parsedData.success){
+        setNotificationDetail(parsedData.data);
+        // console.log(parsedData.data)
+        return parsedData.data
+      } else {
+        return null
+      }
     } catch (error) {
       toast.error('Cannot find notification');
       console.log(error);
+      return null;
     }
   };
 
@@ -56,9 +64,9 @@ const NotificationProvider: React.FC<NotificationContextProviderProps> = ({
 
       fetchNotifications();
       socket.on('updateNotificationRead', (notificationId) => {
-        setNotifications((prevNotis) =>
-          prevNotis.filter((noti) => (noti._id !== notificationId)),
-        );
+        // setNotifications((prevNotis) =>
+        //   prevNotis.filter((noti) => (noti._id !== notificationId)),
+        // );
         setCntNotifications((prevCount) => prevCount - 1);
       });
       socket.on('updateNotificationDelete', (notificationId, wasUnread) => {

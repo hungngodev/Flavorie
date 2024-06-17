@@ -94,7 +94,7 @@ const setUpSocketIO = (server: any) => {
                 const notificationCount = await NotificationModel.countDocuments({ userId: new mongoose.Types.ObjectId(userId), status: false })
                 socket.emit('countNotification', notificationCount)
 
-                const allNotifications = await NotificationModel.find({ userId: new mongoose.Types.ObjectId(userId), status: false}).sort({ timestamp: -1 })
+                const allNotifications = await NotificationModel.find({ userId: new mongoose.Types.ObjectId(userId)}).sort({ timestamp: -1 })
 
                 socket.emit('displayNotifications', allNotifications)
             }

@@ -52,7 +52,7 @@ def get_ingredients(mongo_client):
     ingredient_cursor = list(ingredient_collection.find({}))
     ingredient_names = [ingredient['name'] for ingredient in ingredient_cursor]
     # ingredient_oid = {ingredient['name']: str(ingredient['_id']) for ingredient in ingredient_cursor.rewind()}
-    ingredient_img = {ingredient['name']: ingredient.get('image' , 'No image') for ingredient in ingredient_cursor}
+    ingredient_img = {ingredient['name']: "https://img.spoonacular.com/ingredients_250x250/" + ingredient.get('image' , 'No image') for ingredient in ingredient_cursor}
     return ingredient_names, ingredient_img
     
 # Build ANNOY index

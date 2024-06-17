@@ -3,7 +3,7 @@ import  useAuth  from "../../hooks/useAuth.tsx";
 import { useState, useEffect } from "react";
 import { Notification } from "../../contexts/NotificationContext.tsx";
 import { Box, Button, Text, Heading, VStack, IconButton, Link } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { formatDistanceToNow } from 'date-fns';
 
@@ -12,15 +12,17 @@ const NotificationList = () => {
     const auth= useAuth()
     const [showData, setShowData] = useState<string | null>(null)
     const [isAutheticate, setIsAuthenticate] = useState(false)
-
-    
-    const handleClick = (notification: Notification) => {
+    const navigate  = useNavigate()
+    const handleClick = async (notification: Notification) => {
         const notificationId = notification._id;
         setShowData(showData === notificationId ? null : notificationId);
         if (!notification.status) {
             markAsRead(notificationId);
         }
-        fetchNotificationById(notificationId)
+        const data = await fetchNotificationById(notificationId)
+        if (data){
+            navigate(`/receipts/${notificationId}`)
+        }
     };
 
     const handleDelete = (notification: Notification) => {
@@ -53,17 +55,18 @@ const NotificationList = () => {
                             justifyContent="space-between"
                             alignItems="center"
                             _hover={{ bg: "gray.50" }}
-                            
+                            onClick={() => handleClick(noti)}
                         >
                             <Box flex="1" textAlign="left" >
-                                    <Link as={RouterLink}to={`/notifications/${noti._id}`} onClick={() => handleClick(noti)}>
+                                
+                                    {/* <Link as={RouterLink}to={`/receipts/${noti._id}`} onClick={() => handleClick(noti)}> */}
                                         <Text fontWeight={noti.status ? "normal" : "bold"}>
                                             {noti.message.title}
                                         </Text>
                                         <Text>
                                         {formatDistanceToNow(new Date(noti.timestamp), { addSuffix: true })}
                                         </Text>
-                                    </Link>
+                                    {/* </Link> */}
                                 </Box>
                             
                             
