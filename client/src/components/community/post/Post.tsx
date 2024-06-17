@@ -1,5 +1,5 @@
 import { Card, CardBody, CardFooter, CardHeader, Text, Heading, VStack, Image } from '@chakra-ui/react';
-import React from 'react';
+import React, { memo } from 'react';
 import { PostObjectType } from './MockPosts';
 import PostFooter from './PostFooter';
 import PostHeader from './PostHeader';
@@ -10,7 +10,7 @@ interface PostProps {
   isDisplayed?: boolean;
 }
 
-const Post: React.FC<PostProps> = ({ postData, isDisplayed }) => {
+const Post: React.FC<PostProps> = memo<PostProps>(({ postData, isDisplayed }) => {
   return (
     <>
       {isDisplayed && (
@@ -56,6 +56,6 @@ const Post: React.FC<PostProps> = ({ postData, isDisplayed }) => {
       )}
     </>
   );
-};
+});
 
 export default Post;

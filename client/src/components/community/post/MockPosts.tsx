@@ -1,16 +1,26 @@
 import { z } from 'zod';
 
-// Define your schemas
+
 const BaseObject = z
   .object({
     id: z.string().optional(),
     author: z.object({
+      id: z.string().optional(),
       avatar: z.string().optional(),
       name: z.string(),
     }),
     body: z.string().optional(),
   })
   .required();
+
+export const MediaObject = z
+  .object({
+    type: z.enum(['image', 'video']),
+    url: z.string(),
+    metadata: z.array(z.string()).optional(),
+    description: z.string().optional(),
+  })
+  .required({ type: true, url: true });
 
 export const ReactObject = BaseObject.extend({
   body: z.enum(['like', 'dislike']),
@@ -25,18 +35,29 @@ type ReviewType = z.infer<typeof BaseReview> & {
 };
 
 export const ReviewObject: z.ZodType<ReviewType> = BaseReview.extend({
+  //id: z.string().optional(),
+  //author: z.object({
+  //  id: z.string().optional(),
+  //  location: z.string().optional(),
+  //  avatar: z.string().optional(),
+  //  name: z.string(),
+  //}),
+  // body: z.string().optional(),
+  postid: z.string(),
   reviews: z.lazy(() => ReviewObject.array()),
-});
-
-export const MediaObject = z.object({
-  type: z.enum(['image', 'video']),
-  url: z.string(),
-  metadata: z.array(z.string()).optional(),
-  description: z.string().optional(),
+  media: z.array(MediaObject).optional(),
 });
 
 export const PostObject = BaseObject.extend({
+  //id: z.string().optional(),
+  //author: z.object({
+  //  id: z.string().optional(),
+  //  location: z.string().optional(),
+  //  avatar: z.string().optional(),
+  //  name: z.string(),
+  //}),
   header: z.string(),
+  // body: z.string().optional(),
   media: z.array(MediaObject),
   location: z.string(),
   privacy: z.enum(['public', 'private', 'friend']),

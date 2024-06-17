@@ -129,38 +129,42 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, ...props })
         )}
       </Box>
 
-      <IconButton
-        aria-label="previous-image-button"
-        icon={<ChevronLeftIcon fontSize={'1.25em'} color="white" />}
-        onClick={handlePrevSlide}
-        position="absolute"
-        top="50%"
-        left={0}
-        isRound={true}
-        size="lg"
-        opacity={0.75}
-        ml={2}
-        isDisabled={currentIndex === 0}
-        backgroundColor="blackAlpha.500"
-        _hover={{ backgroundColor: 'blackAlpha.700' }}
-        _active={{ backgroundColor: 'blackAlpha.700' }}
-      />
-      <IconButton
-        aria-label="next-image-button"
-        icon={<ChevronRightIcon fontSize={'1.25em'} color="white" />}
-        onClick={handleNextSlide}
-        position="absolute"
-        top="50%"
-        right={0}
-        isRound={true}
-        size="lg"
-        opacity={0.75}
-        mr={2}
-        isDisabled={currentIndex === childrenCount - 1}
-        backgroundColor="blackAlpha.500"
-        _hover={{ backgroundColor: 'blackAlpha.700' }}
-        _active={{ backgroundColor: 'blackAlpha.700' }}
-      />
+      {childrenCount > 1 && (
+        <IconButton
+          aria-label="previous-image-button"
+          icon={<ChevronLeftIcon fontSize={'1.25em'} color="white" />}
+          onClick={handlePrevSlide}
+          position="absolute"
+          top="50%"
+          left={0}
+          isRound={true}
+          size="lg"
+          opacity={0.75}
+          ml={2}
+          isDisabled={currentIndex === 0}
+          backgroundColor="blackAlpha.500"
+          _hover={{ backgroundColor: 'blackAlpha.700' }}
+          _active={{ backgroundColor: 'blackAlpha.700' }}
+        />
+      )}
+      {childrenCount > 1 && (
+        <IconButton
+          aria-label="next-image-button"
+          icon={<ChevronRightIcon fontSize={'1.25em'} color="white" />}
+          onClick={handleNextSlide}
+          position="absolute"
+          top="50%"
+          right={0}
+          isRound={true}
+          size="lg"
+          opacity={0.75}
+          mr={2}
+          isDisabled={currentIndex === childrenCount - 1}
+          backgroundColor="blackAlpha.500"
+          _hover={{ backgroundColor: 'blackAlpha.700' }}
+          _active={{ backgroundColor: 'blackAlpha.700' }}
+        />
+      )}
     </Box>
   );
 };

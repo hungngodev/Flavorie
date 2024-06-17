@@ -12,24 +12,6 @@ interface PostFooterProps extends StackProps {
   isLiked?: boolean;
 }
 
-const FooterButtons = [
-  {
-    name: 'Like',
-    icon: ThumbsUp,
-    content: [] as z.infer<typeof ReactObject>[],
-  },
-  {
-    name: 'Review',
-    icon: MessageCircle,
-    content: [] as z.infer<typeof ReviewObject>[],
-  },
-  {
-    name: 'Share',
-    icon: Share2,
-    content: [] as string[],
-  },
-];
-
 const PostFooter = memo<PostFooterProps>(({ reacts, reviews, shares, ...props }) => {
   const auth = useAuth();
   const [visible, setVisible] = useState(auth.currentUser.status === 'authenticated');
@@ -39,9 +21,23 @@ const PostFooter = memo<PostFooterProps>(({ reacts, reviews, shares, ...props })
   }, [auth.currentUser.status]);
 
   // Update content of FooterButtons based on props
-  FooterButtons[0].content = reacts;
-  FooterButtons[1].content = reviews;
-  FooterButtons[2].content = shares;
+  const FooterButtons = [
+    {
+      name: 'Like',
+      icon: ThumbsUp,
+      content: reacts ?? [],
+    },
+    {
+      name: 'Review',
+      icon: MessageCircle,
+      content: reviews ?? [],
+    },
+    {
+      name: 'Share',
+      icon: Share2,
+      content: shares ?? [],
+    },
+  ];
 
   return (
     <HStack gap={4} width="100%" justifyContent="flex-start" alignItems="center" {...props}>
@@ -51,7 +47,7 @@ const PostFooter = memo<PostFooterProps>(({ reacts, reviews, shares, ...props })
             <Tooltip label={button.name} gap={2}>
               <IconButton aria-label={`${button.name}-button`} icon={<button.icon />} variant="ghost" isRound={true} />
             </Tooltip>
-            <Text>{button.content.length}</Text>
+            <Text>{button.content?.length ?? 0}</Text>
           </HStack>
         ))
       ) : (

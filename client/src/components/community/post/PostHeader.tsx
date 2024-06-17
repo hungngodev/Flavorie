@@ -38,7 +38,7 @@ const PostHeader = memo<PostHeaderProps>(({ avatar, author, date, privacy, locat
         <Text fontWeight="semibold" fontSize="lg">
           {author}
         </Text>
-        <Text fontSize="md">{parseDate(date)}</Text>
+        {/* <Text fontSize="md">{parseDate(date)}</Text> */}
       </VStack>
     </HStack>
     <Menu>
