@@ -3,10 +3,10 @@ import { QueryClient, useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { waveform } from 'ldrs';
 import { LottieRefCurrentProps } from 'lottie-react';
-import { Home, Refrigerator } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { Params, useLoaderData, useParams } from 'react-router-dom';
+import { FaShoppingCart } from 'react-icons/fa';
+import { Params, useParams } from 'react-router-dom';
 import { Cart, CategorySidebar, IngredientsMain } from '../components';
 import { Nutrition } from '../components/ingredients/NutritionCard';
 import customFetch from '../utils/customFetch';
@@ -29,12 +29,20 @@ const allIngredientsQuery = (category: string) => {
   };
 };
 
-export const loader =
-  (queryClient: QueryClient) =>
-  async ({ params }: { params: Params }) => {
-    queryClient.ensureQueryData(allIngredientsQuery(params.category ?? ''));
+const cartQuery = {
+  queryKey: ['cart'],
+  queryFn: async () => {
     const data = await customFetch.get('/user/cart');
     return data;
+  },
+};
+
+export const loader =
+  (queryClient: QueryClient) =>
+  ({ params }: { params: Params }) => {
+    queryClient.ensureQueryData(allIngredientsQuery(params.category ?? ''));
+    queryClient.ensureQueryData(cartQuery);
+    return null;
   };
 
 export type CartData = {
@@ -70,69 +78,42 @@ export type Category = {
 };
 
 export default function Ingredient() {
-  const { category: currentCategory } = useParams<{ category: string }>();
-  const { data: queryData, status } = useQuery(
-    allIngredientsQuery(currentCategory !== undefined ? currentCategory : '/'),
-  );
-  console.log(status);
+  let { category: currentCategory } = useParams<{ category: string }>();
+  currentCategory = currentCategory === undefined ? '/' : currentCategory;
+  const { data: queryData, status } = useQuery(allIngredientsQuery(currentCategory));
   const ingredientData = queryData?.data.category[0];
-  const cartData = useLoaderData() as
-    | {
-        data: {
-          cart: {
-            itemId: {
-              _id: string;
-              name: string;
-              image: string;
-            };
-            quantity: string;
-          }[];
-        };
-      }
-    | undefined;
+  const { data: cartData, status: cartStatus } = useQuery(cartQuery);
 
-  const fridgeWidth = '300';
+  const fridgeWidth = '500';
   const { getButtonProps, getDisclosureProps, isOpen } = useDisclosure();
   const [hidden, setHidden] = useState(!isOpen);
   const [expanded, setExpanded] = useState(false);
   const lottieCartRef = useRef<LottieRefCurrentProps>(null);
+
   const { control, handleSubmit, watch, setValue } = useForm<CartData>({
     defaultValues: {
-      cart: cartData
-        ? cartData.data.cart.map((item) => {
-            return {
-              id: item.itemId._id,
-              name: item.itemId.name,
-              image: 'https://img.spoonacular.com/ingredients_100x100/' + item.itemId.image,
-              quantity: item.quantity,
-            };
-          })
-        : [],
+      cart: [],
     },
   });
+  useEffect(() => {
+    if (cartStatus === 'success') {
+      setValue(
+        'cart',
+        cartData.data.cart.map((item: { itemId: { _id: string; name: string; image: string }; quantity: string }) => {
+          return {
+            id: item.itemId._id,
+            name: item.itemId.name,
+            image: item.itemId.image,
+            quantity: item.quantity,
+          };
+        }),
+      );
+    }
+  }, [cartData, cartStatus, setValue]);
+  console.log(cartData, cartStatus);
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'cart',
-  });
-  const { data: categoriesData } = useQuery({
-    queryKey: ['categories'],
-    queryFn: async () => {
-      const data = await customFetch('/ingredient', {
-        params: {
-          sideBar: true,
-        },
-      });
-      return data;
-    },
-  });
-  const categories = categoriesData?.data.categories.map((categoryName: string) => {
-    return {
-      index: 1,
-      icon: <Home size={20} />,
-      text: categoryName,
-      active: categoryName === currentCategory,
-      link: `/ingredients/${categoryName}`,
-    };
   });
   const currentCart = watch('cart');
   const addFunction = (ingredientData: Ingredient) => {
@@ -152,6 +133,7 @@ export default function Ingredient() {
   const removeFunction = (index: number) => {
     remove(index);
   };
+
   const onSubmit = () => {
     handleSubmit((data: CartData) => {
       console.log(data);
@@ -195,10 +177,14 @@ export default function Ingredient() {
         aria-label="Done"
         fontSize="20px"
         {...getButtonProps()}
-        icon={<Refrigerator />}
+        icon={<FaShoppingCart />}
       />
 
-      <CategorySidebar categories={categories} expanded={expanded} setExpanded={() => setExpanded((cur) => !cur)} />
+      <CategorySidebar
+        currentCategory={currentCategory}
+        expanded={expanded}
+        setExpanded={() => setExpanded((cur) => !cur)}
+      />
       <div className="relative z-0 h-full w-full overflow-auto transition-all">
         <Flex width="100%" height="100%" direction={'column'} gap={4} justifyContent={'center'} alignItems={'center'}>
           {status === 'pending' ? (

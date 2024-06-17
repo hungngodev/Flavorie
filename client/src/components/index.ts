@@ -14,3 +14,6 @@ export { default as TagSelect } from "./meals/TagSelect";
 export { default as CustomMenu } from "./form/CustomMenu";
 export { default as CustomNumberInput } from "./form/CustomNumberInput";
 export { default as CustomTextInput } from "./form/CustomTextInput";
+export { default as Tabs } from './ui/Tabs';
+export { default as TracingBeam } from './ui/TracingBeam'
+export { default as AutoSlider } from './ui/ImageAutoSlider'

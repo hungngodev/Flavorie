@@ -8,7 +8,6 @@ import {
   NumberIncrementStepper,
   NumberInput,
   NumberInputField,
-  NumberInputStepper,
   VStack,
 } from '@chakra-ui/react';
 import Lottie, { LottieRefCurrentProps } from 'lottie-react';
@@ -91,13 +90,33 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
         />
       </HStack>
 
-      <form>
-        <VStack spacing={8} width={'100%'} height={'67vh'} overflowY={'auto'} overflowX={'hidden'}>
+      <form
+        style={{
+          width: 'full',
+          height: 'full',
+        }}
+      >
+        <VStack
+          spacing={8}
+          width={'100%'}
+          height={'65vh'}
+          px={6}
+          overflowY={'auto'}
+          overflowX={'hidden'}
+          alignItems={'center'}
+          alignContent={'center'}
+        >
           {fields.map((item, index) => {
             return (
-              <HStack width={'100%'} spacing={4} key={index} minWidth={'3rem'} flexShrink={0}>
-                <Image src={item.image} alt={item.name} height={'10vh'} width={'9vh'} rounded={'xl'} />
-                <Flex direction={'column'} justifyContent={'center'} gap={2} width={'5vw'}>
+              <HStack spacing={6} key={index} minWidth={'3rem'} flexShrink={0}>
+                <Image
+                  src={'https://img.spoonacular.com/ingredients_100x100/' + item.image}
+                  alt={item.name}
+                  height={'full'}
+                  width={'6vw'}
+                  rounded={'xl'}
+                />
+                <Flex direction={'column'} justifyContent={'center'} alignItems={'center'} gap={2} width={'5vw'}>
                   <Controller
                     render={({ field: { ref, ...restField } }) => (
                       <HStack spacing={4}>
@@ -106,14 +125,14 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
                           {...restField}
                           min={1}
                           max={50}
-                          size="sm"
+                          size="md"
                           format={(n) => (typeof n === 'string' ? parseInt(n) : n)}
                         >
-                          <NumberInputField ref={ref} name={restField.name} type="number" />
-                          <NumberInputStepper flexDir={'row'} marginRight={'5px'} padding={'1px'}>
-                            <NumberIncrementStepper style={{ background: 'transparent' }} />
-                            <NumberDecrementStepper />
-                          </NumberInputStepper>
+                          <Flex gap={1}>
+                            <NumberIncrementStepper style={{ background: 'transparent', border: 'none' }} />
+                            <NumberInputField ref={ref} name={restField.name} type="number" minWidth={'4.5rem'} />
+                            <NumberDecrementStepper style={{ background: 'transparent', border: 'none' }} />
+                          </Flex>
                         </NumberInput>
                       </HStack>
                     )}
@@ -131,6 +150,7 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
                     aria-label="delete"
                     colorScheme="pink"
                     size="xs"
+                    minWidth={'full'}
                     variant="solid"
                     onClick={() => removeFunction(index)}
                   />

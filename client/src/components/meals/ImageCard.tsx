@@ -10,6 +10,7 @@ import {
   Image,
   Stack,
   Text,
+  useTheme,
 } from '@chakra-ui/react';
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -31,6 +32,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
   // const handleSeeMore = () => {
   //   window.open(imageProps.infoLink, '_blank');
   // };
+  const theme = useTheme();
   const { currentUser } = useAuth();
   const handleLike = () => {
     if (currentUser.status === 'authenticated') {
@@ -40,7 +42,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
     }
   };
   return (
-    <Card maxW="sm" boxShadow="md" borderRadius="md" variant={'outline'}>
+    <Card maxW="sm" boxShadow="md" borderRadius="xl" variant={'outline'} bgColor={theme.colors.palette_indigo}>
       <CardBody>
         <Image
           src={imageProps.src}
@@ -52,17 +54,14 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
         <Stack mt="2" spacing="1">
           <Box height={'52px'}>
             <Heading size="lg" fontSize="23" fontWeight="bold">
-              {imageProps.title}
+              {imageProps.title.toString().slice(0, 40)}
             </Heading>
           </Box>
           {imageProps.description && (
             <Box height={'60px'}>
-              <Text w="full">{imageProps.description.replace(/<\/[^>]+(>|$)/g, '')}</Text>
+              <Text w="full">{imageProps.description.replace(/<[^>]*>/g, '').slice(0, 90) + '...'}</Text>
             </Box>
           )}
-          {/* <Text color="blue.350" fontSize="28">
-            {imageProps.price}
-          </Text> */}
         </Stack>
       </CardBody>
       <Divider borderColor="base.200" />

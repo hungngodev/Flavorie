@@ -1,13 +1,12 @@
 import { Flex } from '@chakra-ui/react';
 import { QueryClient, useQuery } from '@tanstack/react-query';
-import { miyagi } from 'ldrs';
+import Lottie from 'lottie-react';
 import { Params, useLoaderData } from 'react-router-dom';
+import { Ingredient } from '../assets/animations';
 import { ListOfMeals } from '../components';
 import { SearchBar } from '../components/ingredients/SearchBar';
 import { Specialty } from '../components/meals/Specialty';
 import customFetch from '../utils/customFetch';
-
-miyagi.register();
 
 // Default values shown
 export interface Meal {
@@ -47,18 +46,22 @@ function Meal() {
   const { data: queryData, status } = useQuery(allMealsQuery(params as { [key: string]: string }));
   const mealData = queryData?.data;
   return (
-    <Flex flexDir={'column'} width={'100%'} height={'100%'}>
+    <Flex flexDir={'column'} width={'100%'} height={'100%'} alignItems={'center'}>
       <Specialty />
       <SearchBar autoCompleteLink="/meal/autocomplete" />
       {status === 'pending' ? (
         <Flex justifyContent={'center'} alignItems={'center'} height={'100%'}>
-          <l-miyagi size="150" stroke="3.5" speed="0.9" color="black"></l-miyagi>
+          <Lottie animationData={Ingredient} loop={true} style={{ height: 600 }} />,
         </Flex>
       ) : (
         <div>
-          {Object.entries(mealData).map((entry, index) => {
-            return <ListOfMeals key={index} Type={entry[0].toString()} meals={entry[1] as Meal[]} />;
-          })}
+          {Object.entries(mealData).map((entry, index) =>
+            (entry[1] as Meal[]).length > 0 ? (
+              <ListOfMeals key={index} Type={entry[0].toString()} meals={entry[1] as Meal[]} />
+            ) : (
+              <></>
+            ),
+          )}
         </div>
       )}
     </Flex>

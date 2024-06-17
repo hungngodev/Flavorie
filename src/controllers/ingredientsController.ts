@@ -18,8 +18,9 @@ export const getAllIngredients = async (req: Request, res: Response) => {
         }
     }
     try {
-        const classifiedIngredients = await classifyIngredientByAisle();
+        const classifiedIngredients = await classifyIngredient();
         if (sideBar) return res.status(StatusCodes.OK).json({ categories: classifiedIngredients.map((SubCategory) => SubCategory.categoryName) });
+        console.log(classifiedIngredients.map((SubCategory) => SubCategory.categoryName))
         return res.status(StatusCodes.OK).json({
             category: category !== '/' ? classifiedIngredients.filter((SubCategory) => SubCategory.categoryName === category) : classifiedIngredients,
             categories: classifiedIngredients.map((SubCategory) => SubCategory.categoryName),

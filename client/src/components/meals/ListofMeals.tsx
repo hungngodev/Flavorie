@@ -35,13 +35,10 @@ export function ListofMeals({ Type, meals }: MealTypeProps) {
       }
     });
   }, []);
-  const truncateDescription = (description: string): string => {
-    return description.length > 60 ? `${description.substring(0, 60)}...` : description;
-  };
 
   const scrollRefs = useRef<(HTMLDivElement | null)[]>([]);
   return (
-    <VStack spacing={1} width={'100%'} height={'fit'} marginBottom={'2vh'} alignItems="center">
+    <VStack spacing={1} width={'95vw'} height={'fit'} marginBottom={'2vh'} alignItems="center">
       <Hero title="" boldTitle={Type} />
       <HStack width={'92%'} justifyContent={'center'} alignItems={'center'} marginTop={'1vh'}>
         <IconButton
@@ -55,13 +52,14 @@ export function ListofMeals({ Type, meals }: MealTypeProps) {
           marginLeft={'2vh'}
         />
         <HStack
-          spacing={2}
+          spacing={8}
           overflowY={'hidden'}
           overflowX={'auto'}
-          width={'95%'}
+          width={'100%'}
           ref={(el) => (scrollRefs.current[0] = el as HTMLDivElement)}
           className="no-scroll-bar"
           justifyContent="flex-start"
+          py={5}
         >
           {meals.map((meal, index) => (
             <Box key={index} flexShrink={0} width={'38vh'}>
@@ -69,7 +67,7 @@ export function ListofMeals({ Type, meals }: MealTypeProps) {
                 imageProps={{
                   src: meal.image,
                   title: meal.title,
-                  description: truncateDescription(meal.description ?? ''),
+                  description: meal.description,
                   category: meal.category,
                   // price: meal.price,
                   infoLink: `/meals/${meal.id}`,

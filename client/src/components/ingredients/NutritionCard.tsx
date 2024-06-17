@@ -1,4 +1,4 @@
-import { Box, Heading, Tag, TagLabel, TagLeftIcon, Text, VStack } from '@chakra-ui/react';
+import { Box, Flex, Heading, Tag, TagLabel, TagLeftIcon, Text } from '@chakra-ui/react';
 import React from 'react';
 import { LuBeef, LuDroplet, LuFlame, LuSprout, LuWheat } from 'react-icons/lu';
 
@@ -92,14 +92,14 @@ const NutritionCard: React.FC<IngredientProps> = ({ amount, unitShort, nutrition
       iconcolor: 'purple.500',
     },
   ];
-
   return (
-    <Box boxShadow="md" borderRadius="md" p={2} display="inline-block">
+    <Box borderRadius="md" display="inline-block">
       <Heading as="h3" fontSize="15" mb={2} textAlign="left" fontWeight="bold">
         Nutrition per {amount}
         {unitShort}
       </Heading>
-      <VStack spacing={2} alignItems="left" align="center">
+
+      <Flex flexWrap={'wrap'} gap={2} alignItems="left" align="center">
         {tags.every((tag) => tag.value !== undefined) && tags.some((tag) => tag.value !== 0) ? (
           tags.map((tag, index) => (
             <Tag
@@ -136,7 +136,7 @@ const NutritionCard: React.FC<IngredientProps> = ({ amount, unitShort, nutrition
         ) : (
           <Text>No nutrition information available</Text>
         )}
-      </VStack>
+      </Flex>
     </Box>
   );
 };

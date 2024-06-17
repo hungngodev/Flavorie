@@ -104,7 +104,9 @@ export const SearchBar = ({ autoCompleteLink }: { autoCompleteLink: string }) =>
                 </div>
               ))
             ) : (
-              <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
+              <div className="mt-4">
+                <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
+              </div>
             ))}
         </Flex>
       </VStack>

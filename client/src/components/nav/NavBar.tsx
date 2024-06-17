@@ -1,4 +1,4 @@
-import { Box, useBreakpointValue, useColorModeValue } from '@chakra-ui/react';
+import { Box, useBreakpointValue, useColorModeValue, useTheme } from '@chakra-ui/react';
 import { DesktopNav } from './DesktopNav';
 import { MobileNav } from './MobileNav';
 export interface NavItem {
@@ -41,14 +41,15 @@ export default function NavBar() {
     base: <MobileNav NavItems={NAV_ITEMS} />,
     md: <DesktopNav NavItems={NAV_ITEMS} />,
   });
+  const theme = useTheme();
   return (
     <Box
       position="sticky"
       top="0"
       zIndex={19}
       width={'100%'}
-      bg={useColorModeValue('green.200', 'gray.800')}
-      color={useColorModeValue('gray.600', 'white')}
+      bg={theme.colors.palette_blue}
+      color={'white'}
       minH={'60px'}
       py={{ base: 2 }}
       px={{ base: 4 }}

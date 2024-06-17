@@ -1,4 +1,4 @@
-import { Button, HStack, Heading, IconButton, Text, VStack } from '@chakra-ui/react';
+import { HStack, Heading, IconButton, Text, VStack } from '@chakra-ui/react';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { useRef } from 'react';
 import { Category, Ingredient } from '../../pages/Ingredient';
@@ -30,33 +30,46 @@ export function IngredientsMain({ addFunction, data }: IngredientsMainProps) {
 
   const scrollRefs = useRef<(HTMLDivElement | null)[]>([]);
   return (
-    <VStack spacing={10} overflowY={'auto'} overflowX={'hidden'} width={'95%'} height={'fit'} marginBottom={'1vh'}>
+    <VStack spacing={6} overflowY={'auto'} overflowX={'hidden'} width={'95%'} height={'fit'} marginBottom={'1vh'}>
       <Hero title="" boldTitle={data.categoryName.toUpperCase()} />
       <Text fontSize={'1.5rem'}>{data.totalNumberOfIngredients} Ingredients</Text>
       {data.results.map((subCategory, index) => (
-        <VStack width="100%" key={index + subCategory.queryKey}>
-          <Button variant={'outline'} colorScheme={'teal'}>
-            <Heading as="h1" size="4xl" noOfLines={1} fontSize={'2rem'}>
-              {subCategory.queryKey}
+        <VStack width="100%" key={index + subCategory.queryKey} alignItems={'start'} mt="2">
+          <HStack justifyContent={'space-between'} width="95%">
+            <Heading as="h1" size="4xl" noOfLines={1} fontSize={'1.5rem'} fontFamily={'monospace'} fontWeight="bold">
+              {subCategory.queryKey.charAt(0).toUpperCase() + subCategory.queryKey.slice(1)}
             </Heading>
-          </Button>
+            <HStack gap={2}>
+              <IconButton
+                icon={<ChevronLeftIcon />}
+                aria-label="left"
+                onClick={() => scroll('left', 500, index)}
+                variant="solid"
+                colorScheme="blue"
+                size="xs"
+                height="50%"
+              />
+              <IconButton
+                icon={<ChevronRightIcon />}
+                aria-label="left"
+                onClick={() => scroll('right', 500, index)}
+                variant="solid"
+                colorScheme="blue"
+                size="xs"
+                height="50%"
+              />
+            </HStack>
+          </HStack>
           <HStack width={'95%'} justifyContent={'center'} alignItems={'center'}>
-            <IconButton
-              icon={<ChevronLeftIcon />}
-              aria-label="left"
-              onClick={() => scroll('left', 500, index)}
-              variant="solid"
-              colorScheme="blue"
-              size="xs"
-              height="50%"
-            />
             <HStack
-              spacing={4}
+              spacing={6}
               overflowY={'hidden'}
               overflowX={'auto'}
               width={'100%'}
+              height={'20vh'}
+              alignItems={'start'}
               ref={(el) => (scrollRefs.current[index] = el as HTMLDivElement)}
-              className="no-scroll-bar "
+              className="no-scroll-bar"
             >
               {subCategory.ingredients.map((ingredient, innerIndex) => (
                 <IngredientCard
@@ -66,7 +79,7 @@ export function IngredientsMain({ addFunction, data }: IngredientsMainProps) {
                   title={ingredient.name}
                   category={ingredient.category}
                   height="8vw"
-                  width="8vw"
+                  width="12vw"
                   onClick={() => {
                     addFunction(ingredient);
                   }}
@@ -76,15 +89,6 @@ export function IngredientsMain({ addFunction, data }: IngredientsMainProps) {
                 />
               ))}
             </HStack>
-            <IconButton
-              icon={<ChevronRightIcon />}
-              aria-label="left"
-              onClick={() => scroll('right', 500, index)}
-              variant="solid"
-              colorScheme="blue"
-              size="xs"
-              height="50%"
-            />
           </HStack>
         </VStack>
       ))}

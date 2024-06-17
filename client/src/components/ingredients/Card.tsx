@@ -8,7 +8,6 @@ import {
   PopoverBody,
   PopoverCloseButton,
   PopoverContent,
-  PopoverHeader,
   PopoverTrigger,
   chakra,
 } from '@chakra-ui/react';
@@ -29,16 +28,16 @@ type CardProps = {
 };
 function Card({ id, imgLink, title, height, width, onClick, amount, unitShort, nutrition }: CardProps) {
   return (
-    <Flex alignItems="center" gap={5} justifyContent="center">
-      <Flex direction="column" w={'full'} justifyContent="end" alignItems="center" mx="auto">
+    <Flex alignItems="center" justifyContent="center">
+      <Flex direction="column" w={'full'} justifyContent="start" alignItems="center" mx="auto">
         <Image
-          bg="gray.300"
-          h={height}
-          minWidth={width}
+          height={height}
+          maxWidth={width}
           rounded="xl"
           shadow="md"
           bgSize="cover"
           bgPos="center"
+          bgColor="white"
           src={'https://img.spoonacular.com/ingredients_100x100/' + imgLink}
           onError={async (e) =>
             ((e.target as HTMLImageElement).src = (
@@ -88,7 +87,6 @@ function Card({ id, imgLink, title, height, width, onClick, amount, unitShort, n
           <PopoverContent>
             <PopoverArrow />
             <PopoverCloseButton />
-            <PopoverHeader>Nutrition Information</PopoverHeader>
             <PopoverBody>
               <NutritionCard amount={amount} unitShort={unitShort} nutrition={nutrition} />
             </PopoverBody>
