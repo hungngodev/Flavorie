@@ -20,7 +20,7 @@ export const createReview = async (req: Request, res: Response) => {
         if (parentReview) {
             const parent = await Review.findById(parentReview);
             if (parent) {
-                parent.childrenReview.push(review._id);
+                parent.childrenReview.push(review);
                 await parent.save();
             }
         }
