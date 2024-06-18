@@ -1,24 +1,12 @@
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
-import {
-  Box,
-  Button,
-  Flex,
-  Progress,
-  VStack,
-  useMediaQuery,
-  useTheme,
-  IconButton,
-  HStack,
-  StackProps,
-  Icon,
-  Image,
-} from '@chakra-ui/react';
+import { Box, HStack, Icon, IconButton, Image, StackProps } from '@chakra-ui/react';
 
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
-import { motion, useAnimation, useMotionValue, useAnimationControls, Transition } from 'framer-motion';
+import { motion, useAnimationControls } from 'framer-motion';
 import { GoDotFill } from 'react-icons/go';
 import { MediaObjectType } from './MockPosts';
+
 interface ImageSliderProps extends StackProps {
   slides: MediaObjectType[];
 }
@@ -30,6 +18,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, ...props })
   const containerRef = useRef<HTMLDivElement | null>(null);
   const childrenContainerRef = useRef<HTMLDivElement | null>(null);
   const slideShift = useAnimationControls();
+
   useEffect(() => {
     const updateDimensions = () => {
       if (containerRef.current) {
@@ -72,7 +61,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, ...props })
   return (
     <Box
       position="relative"
-      backgroundImage={slides[currentIndex].url}
+      backgroundImage={slides[currentIndex]?.url.toString()}
       backgroundRepeat="no-repeat"
       backgroundSize="cover"
       ref={containerRef}
