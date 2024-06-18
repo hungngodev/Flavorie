@@ -1,5 +1,5 @@
 import mongoose, { Types } from "mongoose";
-import { Review } from "./Review"
+import { Review } from "./Review";
 
 export interface Media {
   type: "image" | "video" | "file";
@@ -8,13 +8,13 @@ export interface Media {
 }
 export type Privacy = "public" | "private" | "friend";
 
-interface Post extends mongoose.Document {
-  id: string;
+export interface Post extends mongoose.Document {
   author: Types.ObjectId;
   header: string;
   body: string;
   media: Media[];
   privacy: Privacy;
+  location: string;
   review: Types.DocumentArray<Review>;
   //react: Types.DocumentArray<React>;
   reviewCount: number;
@@ -24,11 +24,6 @@ interface Post extends mongoose.Document {
 interface PostModel extends mongoose.Model<Post> {}
 const PostSchema = new mongoose.Schema<Post, PostModel>(
   {
-    id: {
-      type: String,
-      required: true,
-      unique: true,
-    },
     author: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
@@ -41,6 +36,9 @@ const PostSchema = new mongoose.Schema<Post, PostModel>(
     body: {
       type: String,
       required: true,
+    },
+    location: {
+      type: String,
     },
     media: [
       {
@@ -64,10 +62,12 @@ const PostSchema = new mongoose.Schema<Post, PostModel>(
       required: true,
       default: "public",
     },
-    review: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Review",
-    }],
+    review: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Review",
+      },
+    ],
     reviewCount: {
       type: Number,
       default: 0,
