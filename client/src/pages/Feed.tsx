@@ -1,39 +1,20 @@
 import { Box } from '@chakra-ui/react';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useInView } from 'react-intersection-observer';
-import { z } from 'zod';
-import { PostObjectType } from '../components/community/post/MockPosts';
+import { PostObjectType, PostResponseObjectType } from '../components/community/post/MockPosts';
 import Post from '../components/community/post/Post';
 import customFetch from '../utils/customFetch';
 
-const style = {
-  backgroundColor: 'gray.50',
-};
-
-const NewsFeedRequest = z.object({
-  page: z.number().optional(),
-  limits: z.number().optional(),
-});
-type NewsFeedRequestType = z.infer<typeof NewsFeedRequest>;
-
-// function newsfeedLoader(page: any, limits: number = 10) {
-//   return useQuery({
-//     queryKey: ['newsfeed', page],
-//     queryFn: async () => {
-//       const request: NewsFeedRequestType = { page: page, limits: 10 };
-//     },
-//   });
-// }
-
 const Feed = () => {
-  const { data, error, status, isError, fetchNextPage } = useInfiniteQuery({
+  const [posts, setPosts] = useState<PostObjectType[]>([]);
+  const { data, error, status, isError, fetchNextPage, hasNextPage } = useInfiniteQuery({
     queryKey: ['newsfeed'],
     queryFn: async ({
       pageParam = 1,
     }: {
       pageParam: number;
-    }): Promise<{ data: any[]; currentPage: number; nextPage: number | null }> => {
+    }): Promise<{ data: PostResponseObjectType[]; currentPage: number; nextPage: number | null }> => {
       const fetch = await customFetch.get(`/community/feed?page=${pageParam}&limit=10`);
       return {
         data: fetch.data.posts,
@@ -50,10 +31,18 @@ const Feed = () => {
     if (inView) fetchNextPage();
   }, [inView]);
 
-  const parseData = (data: any) => {
+  useEffect(() => {
+    if (status === 'success' && data) {
+      const postload = data?.pages.flatMap((page) => parsePost(page.data));
+      setPosts(postload ?? []);
+    }
+  }, [data]);
+
+  // convert backend data to frontend data
+  const parsePost = (backEndPosts: PostResponseObjectType[]) => {
     if (!data) return [];
 
-    const newFeed: PostObjectType[] = data.map((post: any) => ({
+    const frontEndPosts: PostObjectType[] = backEndPosts.map((post: any) => ({
       id: post._id,
       author: {
         id: post.author._id,
@@ -72,10 +61,10 @@ const Feed = () => {
       location: post.location,
       privacy: post.privacy,
       reviews: [],
-      react: [],
+      reacts: [],
       date: post.createdAt,
     }));
-    return newFeed;
+    return frontEndPosts;
   };
 
   return (
@@ -87,11 +76,10 @@ const Feed = () => {
       paddingX={{ base: 0, lg: '10%', xl: '20%' }}
     >
       {status === 'success' &&
-        data?.pages.map((page) => {
-          console.log(page);
-          return parseData(page.data).map((post) => <Post key={post.id} postData={post} isDisplayed />);
+        posts.map((post) => {
+          return <Post key={post.id} postData={post} isDisplayed />;
         })}
-      <div ref={ref}>Here</div>
+      <Box ref={ref} height="1px"></Box>
     </Box>
   );
 };

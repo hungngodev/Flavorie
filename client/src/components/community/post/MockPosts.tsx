@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-
 const BaseObject = z
   .object({
     id: z.string().optional(),
@@ -48,6 +47,9 @@ export const ReviewObject: z.ZodType<ReviewType> = BaseReview.extend({
   media: z.array(MediaObject).optional(),
 });
 
+const Privacy = z.enum(['public', 'private', 'friend']);
+
+// schema for front end post
 export const PostObject = BaseObject.extend({
   //id: z.string().optional(),
   //author: z.object({
@@ -60,10 +62,10 @@ export const PostObject = BaseObject.extend({
   // body: z.string().optional(),
   media: z.array(MediaObject),
   location: z.string(),
-  privacy: z.enum(['public', 'private', 'friend']),
+  privacy: Privacy,
   reviews: z.array(ReviewObject),
   reacts: z.array(ReactObject),
-  shares: z.array(z.string()),
+  shares: z.array(z.string()).optional(),
   date: z.date(),
 }).required({
   author: true,
@@ -71,9 +73,30 @@ export const PostObject = BaseObject.extend({
   body: true,
 });
 
+// schema for back end post
+export const PostResponseObject = z.object({
+  _id: z.string(),
+  author: z.object({
+    _id: z.string(),
+    name: z.string(),
+    avatar: z.string(),
+    location: z.string(),
+  }),
+  header: z.string(),
+  body: z.string(),
+  location: z.string(),
+  privacy: Privacy,
+  media: z.array(MediaObject.extend({ _id: z.string() })),
+  reactCount: z.number(),
+  reviewCount: z.number(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  _v: z.number(),
+});
+
 export type MediaObjectType = z.infer<typeof MediaObject>;
 export type PostObjectType = z.infer<typeof PostObject>;
-
+export type PostResponseObjectType = z.infer<typeof ReactObject>;
 // Define the mock data array
 export const MockPosts: Array<PostObjectType> = [
   {
