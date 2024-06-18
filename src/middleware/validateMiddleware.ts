@@ -1,11 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import z from "zod";
 import { BadRequestError } from "../errors/customErrors.ts";
+import { ReviewSchema } from "../models/Review.ts"
+import ExpressError from "../utils/ExpressError";
 
 // login
 export const logInData = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
+    email: z.string().email(),
+    password: z.string().min(6),
 });
 
 export const validateLoginInput = (req: Request, res: Response, next: NextFunction) => {
@@ -43,6 +45,16 @@ export const validateRegisterInput = (
             console.error("Error caught in validateRegisterInput:", error);
             throw new BadRequestError('Password does not match');
         } 
+};
+
+export const validateReview = (req: Request, res: Response, next: NextFunction) => {
+    const { error } = ReviewSchema.validate(req.body);
+    if (error) {
+        const msg = error.details.map(el => el.message).join(',');
+        throw new ExpressError(msg, 400);
+    } else {
+        next();
+    }
 };
 
 // mock data for register
