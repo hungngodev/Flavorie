@@ -5,6 +5,7 @@ import {
   buildPostDocument,
   deletePostDocument,
   getFeedDocument,
+  reactPostDocument,
   updatePostDocument,
 } from "../services/postServices.ts";
 
@@ -53,20 +54,41 @@ export const deletePostController = PostErorHandler(async (req, res) => {
   return res.status(StatusCodes.OK).json({ message: "Post deleted" });
 });
 
-export const newFeedController = async (req: Request, res: Response) => {
-  try {
-    const { page, limit } = req.body;
-    const feed = await getFeedDocument(page, limit);
-    return res
-      .status(StatusCodes.OK)
-      .json({ message: "Feed retrieved", posts: feed });
-  } catch (err) {
-    if (err instanceof Error) {
-      return res.status(StatusCodes.CONFLICT).json({ error: err.message });
-    } else {
-      return res
-        .status(StatusCodes.CONFLICT)
-        .json({ error: `Unexpected error: ${err}` });
-    }
+// export const newFeedController = async (req: Request, res: Response) => {
+//   try {
+//     const { page, limit } = req.body;
+//     const feed = await getFeedDocument(page, limit);
+//     return res
+//       .status(StatusCodes.OK)
+//       .json({ message: "Feed retrieved", posts: feed });
+//   } catch (err) {
+//     if (err instanceof Error) {
+//       return res.status(StatusCodes.CONFLICT).json({ error: err.message });
+//     } else {
+//       return res
+//         .status(StatusCodes.CONFLICT)
+//         .json({ error: `Unexpected error: ${err}` });
+//     }
+//   }
+// };
+
+export const newFeedController = PostErorHandler(async (req, res) => {
+  const { page, limit } = req.body;
+  const feed = await getFeedDocument(page, limit);
+  if (!feed) {
+    return null;
   }
-};
+  return res
+    .status(StatusCodes.OK)
+    .json({ message: "Feed retrieved", posts: feed });
+});
+
+export const reactPostController = PostErorHandler(async (req, res) => {
+  const { postid } = req.params;
+  const { userId } = req.user;
+  const post = await reactPostDocument(userId, postid);
+  if (!post) {
+    return null;
+  }
+  return res.status(StatusCodes.OK).json({ message: "Post liked", post: post });
+});

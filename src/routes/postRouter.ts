@@ -4,6 +4,7 @@ import {
   createPostController,
   deletePostController,
   newFeedController,
+  reactPostController,
   updatePostController,
 } from "../controllers/postController.ts";
 import { checkUser } from "../middleware/authMiddleware.ts";
@@ -34,5 +35,6 @@ router.delete(
   apiLimiter,
   deletePostController,
 );
+router.post("/post/react/:postid", checkUser, apiLimiter, reactPostController);
 
 export default router;

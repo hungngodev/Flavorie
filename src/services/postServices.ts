@@ -154,3 +154,27 @@ export const deletePostDocument = async (postId: string) => {
     throw new ServerError(`${err}`);
   }
 };
+
+export const reactPostDocument = async (
+  userId: string,
+  postId: string,
+): Promise<Array<Types.ObjectId>> => {
+  try {
+    const post = await PostModel.findById(postId);
+    if (!post) throw new PostError("Post not found");
+
+    const alreadyLiked = post.react.some(id => id.equals(userId));
+
+    if (alreadyLiked) {
+      post.reactCount -= 1;
+      post.react.pull(userId);
+    } else {
+      post.reactCount += 1;
+      post.react.push(new Types.ObjectId(userId));
+    }
+    await post.save();
+    return post.react;
+  } catch (err) {
+    throw new ServerError(`${err}`);
+  }
+};

@@ -1,5 +1,6 @@
 import mongoose, { Types } from "mongoose";
-import { Review } from "./Review";
+import { Review } from "./Review.ts";
+import { User } from "./UserModel.ts";
 
 export interface Media {
   type: "image" | "video" | "file";
@@ -16,7 +17,7 @@ export interface Post extends mongoose.Document {
   privacy: Privacy;
   location: string;
   review: Types.DocumentArray<Review>;
-  //react: Types.DocumentArray<React>;
+  react: Types.DocumentArray<Types.ObjectId>;
   reviewCount: number;
   reactCount: number;
 }
@@ -66,6 +67,12 @@ const PostSchema = new mongoose.Schema<Post, PostModel>(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Review",
+      },
+    ],
+    react: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
       },
     ],
     reviewCount: {
