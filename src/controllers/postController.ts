@@ -1,9 +1,6 @@
 // postController.ts
-import { Request, RequestHandler, Response } from "express";
+import { NextFunction, Request, RequestHandler, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { Types } from "mongoose";
-import { PostError } from "../errors/customErrors.ts";
-import { Post } from "../models/Post.ts";
 import {
   buildPostDocument,
   deletePostDocument,
@@ -11,73 +8,58 @@ import {
   updatePostDocument,
 } from "../services/postServices.ts";
 
-const createPostController = async (req: Request) => {
+const PostErorHandler = (fn: RequestHandler): RequestHandler => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      return await fn(req, res, next);
+    } catch (err) {
+      if (err instanceof Error) {
+        return res.status(StatusCodes.CONFLICT).json({ error: err.message });
+      } else {
+        return res
+          .status(StatusCodes.CONFLICT)
+          .json({ error: `Unexpected error: ${err}` });
+      }
+    }
+  };
+};
+
+export const createPostController = PostErorHandler(async (req, res) => {
   const postBody = req.body;
   const createdPost = await buildPostDocument(postBody);
   if (!createdPost) {
     return null;
   }
-  return { message: "Post created", data: createdPost };
-};
+  return res
+    .status(StatusCodes.OK)
+    .json({ message: "Post created", post: createdPost });
+});
 
-const updatePostController = async (req: Request) => {
+export const updatePostController = PostErorHandler(async (req, res) => {
   const postBody = req.body;
   const { postid } = req.params;
   const updatedPost = await updatePostDocument(postid, postBody);
   if (!updatedPost) {
     return null;
   }
-  return {
-    message: "Post updated",
-    data: updatedPost,
-  };
-};
+  return res
+    .status(StatusCodes.OK)
+    .json({ message: "Post updated", post: updatedPost });
+});
 
-const deletePostController = async (req: Request) => {
+export const deletePostController = PostErorHandler(async (req, res) => {
   const { postid } = req.params;
   await deletePostDocument(postid);
-  return { message: "Post deleted" };
-};
-
-export const postService = async (req: Request, res: Response) => {
-  try {
-    let response;
-    switch (req.method) {
-      case "POST":
-        response = await createPostController(req);
-        break;
-      case "PUT":
-        response = await updatePostController(req);
-        break;
-      case "DELETE":
-        response = await deletePostController(req);
-        break;
-      default:
-        response = { message: "Invalid request" };
-    }
-    if (!response) {
-      throw new PostError("Post service failed");
-    }
-    return res.status(StatusCodes.OK).json(response);
-  } catch (err) {
-    if (err instanceof Error) {
-      return res.status(StatusCodes.CONFLICT).json({ error: err.message });
-    } else {
-      return res
-        .status(StatusCodes.CONFLICT)
-        .json({ error: `Unexpected error: ${err}` });
-    }
-  }
-};
+  return res.status(StatusCodes.OK).json({ message: "Post deleted" });
+});
 
 export const newFeedController = async (req: Request, res: Response) => {
   try {
-    const { userId } = req.user;
-    const { page, limit } = req.body;
-    const feed = await getFeedDocument(page, limit);
+    const { page, limit } = req.query;
+    const feed = await getFeedDocument(Number(page), Number(limit));
     return res
       .status(StatusCodes.OK)
-      .json({ message: "Feed retrieved", data: feed });
+      .json({ message: "Feed retrieved", posts: feed });
   } catch (err) {
     if (err instanceof Error) {
       return res.status(StatusCodes.CONFLICT).json({ error: err.message });

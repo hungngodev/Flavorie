@@ -21,6 +21,7 @@ export const getFeedDocument = async (
   page: number = 1,
   limit: number = 20,
 ): Promise<Document[]> => {
+  console.log(`page number is ${page}`);
   const postLists = await PostModel.find({ privacy: { $ne: "private" } })
     .sort({
       createdAt: -1,

@@ -1,8 +1,10 @@
 import { Router } from "express";
 import rateLimiter from "express-rate-limit";
 import {
+  createPostController,
+  deletePostController,
   newFeedController,
-  postService,
+  updatePostController,
 } from "../controllers/postController.ts";
 import { checkUser } from "../middleware/authMiddleware.ts";
 import { checkAuthor } from "../middleware/postMiddleware.ts";
@@ -17,20 +19,20 @@ const apiLimiter = rateLimiter({
 
 router.get("/");
 router.get("/feed", checkUser, apiLimiter, newFeedController);
-router.post("/post", checkUser, apiLimiter, postService);
+router.post("/post", checkUser, apiLimiter, createPostController);
 router.put(
   "/post/:postid",
   checkUser,
   catchAsync(checkAuthor),
   apiLimiter,
-  postService,
+  updatePostController,
 );
 router.delete(
   "/post/:postid",
   checkUser,
   catchAsync(checkAuthor),
   apiLimiter,
-  postService,
+  deletePostController,
 );
 
 export default router;
