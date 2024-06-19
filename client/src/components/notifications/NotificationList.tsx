@@ -55,18 +55,17 @@ const NotificationList = () => {
                             justifyContent="space-between"
                             alignItems="center"
                             _hover={{ bg: "gray.50" }}
-                            onClick={() => handleClick(noti)}
                         >
                             <Box flex="1" textAlign="left" >
                                 
-                                    {/* <Link as={RouterLink}to={`/receipts/${noti._id}`} onClick={() => handleClick(noti)}> */}
+                                    <Link as={RouterLink} onClick={() => handleClick(noti)}>
                                         <Text fontWeight={noti.status ? "normal" : "bold"}>
                                             {noti.message.title}
                                         </Text>
                                         <Text>
                                         {formatDistanceToNow(new Date(noti.timestamp), { addSuffix: true })}
                                         </Text>
-                                    {/* </Link> */}
+                                    </Link>
                                 </Box>
                             
                             
