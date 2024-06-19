@@ -1,7 +1,8 @@
 import { Box, Text } from '@chakra-ui/react';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { QueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useEffect, useRef, useState } from 'react';
+import { Params } from 'react-router-dom';
 import { PostObjectType, PostResponseObjectType, parsePost } from '../components/community/post/MockPosts';
 import Post from '../components/community/post/Post';
 import customFetch from '../utils/customFetch';
@@ -18,6 +19,16 @@ const fetchFeed = async ({
     nextPage: pageParam + 1,
   };
 };
+
+export const loader =
+  (queryClient: QueryClient) =>
+  () =>
+  async ({ params }: { params: Params }) => {
+    queryClient.ensureQueryData({
+      queryKey: ['newsfeed'],
+      queryFn: async () => await customFetch.get(`/community/feed?page=1&limit=5`),
+    });
+  };
 
 const Feed = () => {
   const parentRef = useRef<HTMLDivElement>(null);
