@@ -73,27 +73,27 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, ...props })
         background="transparent"
         backdropFilter="blur(30px) brightness(0.65)"
       >
-        <HStack m={0} p={0} gap={0} as={motion.div} animate={slideShift} alignItems="center" ref={childrenContainerRef}>
+        <HStack
+          m={0}
+          p={0}
+          gap={0}
+          as={motion.div}
+          animate={slideShift}
+          alignItems="center"
+          ref={childrenContainerRef}
+          maxHeight="70dvh"
+        >
           {slides.map((slide, index) => (
-            <Box
-              key={index}
-              flex="0 0 auto"
-              width={`${windowWidth}px`}
-              maxHeight="min(50dvh, max-content)"
-              marginInline="auto"
-              rounded="lg"
-            >
+            <Box key={index} flex="0 0 auto" width={`${windowWidth}px`} marginInline="auto" rounded="lg">
               <Image
                 key={`${slide.url}-${index}`}
                 src={slide.url}
                 alt={slide.description ?? `post-image - ${slide.url} - ${index}`}
                 objectFit="cover"
-                height="100%"
                 justifySelf="center"
                 alignSelf="center"
                 marginInline="auto"
                 zIndex={2}
-                marginBlock={2}
                 rounded="lg"
               />
             </Box>

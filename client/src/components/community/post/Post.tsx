@@ -32,7 +32,7 @@ const Post = memo(
         <>
           {isDisplayed && (
             <Card marginBlock={4} {...containerProps} height="auto" ref={ref}>
-              <CardHeader paddingBottom={2} {...headerProps}>
+              <CardHeader paddingBottom={0} {...headerProps}>
                 <PostHeader
                   avatar={postData.author.avatar}
                   author={postData.author.name}
@@ -41,8 +41,8 @@ const Post = memo(
                   location={postData.location}
                 />
               </CardHeader>
-              <CardBody paddingBlock={0} {...bodyProps}>
-                <VStack gap={6} alignItems="start">
+              <CardBody {...bodyProps}>
+                <VStack gap={2} alignItems="start" marginBottom={2}>
                   <Heading size="lg">{postData.header}</Heading>
                   <Text>{postData.body}</Text>
                 </VStack>
