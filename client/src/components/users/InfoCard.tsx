@@ -2,8 +2,7 @@ import { EditIcon } from '@chakra-ui/icons';
 import { Avatar, Box, Card, CardBody, Divider, Flex, HStack, Heading, IconButton, Text } from '@chakra-ui/react';
 import React from 'react';
 
-interface UserProps {
-  userInfoProps: {
+export interface PersonalProps {
     avatar: {
       src: string;
       username: string;
@@ -16,22 +15,22 @@ interface UserProps {
       country: string;
       zipcode?: string;
     };
-  };
-}
+};
 
-const UserCard: React.FC<UserProps> = ({ userInfoProps }) => {
+
+const UserCard: React.FC<PersonalProps> = ({ avatar, email, phone, address }) => {
   return (
     <Card maxW="md">
       <Flex ml="4" mt="4" mr="4" mb="4">
         <Flex flex="1" gap="4" alignItems="center" flexWrap="wrap">
           <HStack>
-            <Avatar size="2xl" name={userInfoProps.avatar.username} src={userInfoProps.avatar.src} />
+            <Avatar size="2xl" name={avatar.username} src={avatar.src} />
             <Box ml="4">
               <Heading size="md" fontWeight="bold">
-                {userInfoProps.avatar.username}
+                {avatar.username}
               </Heading>
               <Text>
-                {userInfoProps.address.city}, {userInfoProps.address.state}
+                {address.city}, {address.state}
               </Text>
             </Box>
           </HStack>
@@ -52,12 +51,12 @@ const UserCard: React.FC<UserProps> = ({ userInfoProps }) => {
             <Text color="base.300">Zipcode</Text>
           </Box>
           <Box w="240px">
-            <Text>{userInfoProps.email}</Text>
-            <Text>{userInfoProps.phone}</Text>
-            <Text>{userInfoProps.address.city}</Text>
-            <Text>{userInfoProps.address.state}</Text>
-            <Text>{userInfoProps.address.country}</Text>
-            <Text>{userInfoProps.address.zipcode}</Text>
+            <Text>{email}</Text>
+            <Text>{phone}</Text>
+            <Text>{address.city}</Text>
+            <Text>{address.state}</Text>
+            <Text>{address.country}</Text>
+            <Text>{address.zipcode}</Text>
           </Box>
         </HStack>
       </CardBody>
