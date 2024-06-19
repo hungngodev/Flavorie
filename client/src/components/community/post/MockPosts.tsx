@@ -97,6 +97,35 @@ export const PostResponseObject = z.object({
 export type MediaObjectType = z.infer<typeof MediaObject>;
 export type PostObjectType = z.infer<typeof PostObject>;
 export type PostResponseObjectType = z.infer<typeof ReactObject>;
+
+export const parsePost = (backEndPosts: PostResponseObjectType[]) => {
+  if (!backEndPosts) return [];
+
+  const frontEndPosts: PostObjectType[] = backEndPosts.map((post: any) => ({
+    id: post._id,
+    author: {
+      id: post.author._id,
+      name: post.author.name,
+      location: post.author.location,
+      avatar: post.author.avatar,
+    },
+    header: post.header,
+    body: post.body,
+    media: post.media.map((media: any) => ({
+      type: media.type,
+      url: media.url,
+      metadata: media.metadata,
+      description: media.description ?? 'Image of post',
+    })),
+    location: post.location,
+    privacy: post.privacy,
+    reviews: [],
+    reacts: [],
+    date: post.createdAt,
+  }));
+  return frontEndPosts;
+};
+
 // Define the mock data array
 export const MockPosts: Array<PostObjectType> = [
   {

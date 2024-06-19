@@ -27,7 +27,6 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, ...props })
           setChildrenCount(childrenContainerRef.current.childNodes.length);
         }
       }
-      console.log(childrenCount, windowWidth);
     };
 
     updateDimensions();
@@ -65,6 +64,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, ...props })
       backgroundRepeat="no-repeat"
       backgroundSize="cover"
       ref={containerRef}
+      rounded="lg"
     >
       <Box
         position="relative"
@@ -75,7 +75,14 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, ...props })
       >
         <HStack m={0} p={0} gap={0} as={motion.div} animate={slideShift} alignItems="center" ref={childrenContainerRef}>
           {slides.map((slide, index) => (
-            <Box key={index} flex="0 0 auto" width={`${windowWidth}px`} maxHeight="70dvh" marginInline="auto">
+            <Box
+              key={index}
+              flex="0 0 auto"
+              width={`${windowWidth}px`}
+              maxHeight="min(50dvh, max-content)"
+              marginInline="auto"
+              rounded="lg"
+            >
               <Image
                 key={`${slide.url}-${index}`}
                 src={slide.url}
@@ -86,6 +93,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, ...props })
                 alignSelf="center"
                 marginInline="auto"
                 zIndex={2}
+                marginBlock={2}
                 rounded="lg"
               />
             </Box>

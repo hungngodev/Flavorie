@@ -8,7 +8,7 @@ import { ReactObject, ReviewObject } from './MockPosts';
 interface PostFooterProps extends StackProps {
   reacts: z.infer<typeof ReactObject>[];
   reviews: z.infer<typeof ReviewObject>[];
-  shares: string[];
+  shares?: string[];
   isLiked?: boolean;
 }
 
