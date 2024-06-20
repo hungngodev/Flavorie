@@ -1,8 +1,11 @@
 import { Request, Response } from "express";
 import Review from "../models/Review";
+import Post from "../models/Post";
+import { isDataView } from "util/types";
 
 export const createReview = async (req: Request, res: Response) => {
-    const { content, postId, parentReview } = req.body;
+    const { content, parentReview } = req.body;
+    const postId = req.params.postId
     const userId = req.user.userId;
 
     if (!userId) {
@@ -16,6 +19,12 @@ export const createReview = async (req: Request, res: Response) => {
             content,
             parentReview
         });
+
+        const post = await Post.findById(postId);
+        if (post) {
+            post.review.push(review);
+            await post.save();
+        }
 
         if (parentReview) {
             const parent = await Review.findById(parentReview);
@@ -43,9 +52,8 @@ export const updateReview = async (req: Request, res: Response) => {
     }
 
     try {
-        const review = await Review.findByIdAndUpdate(id, 
-            { content }, 
-            { new: true, runValidators: true });
+        const review = await Review.findByIdAndUpdate(id);
+
         if (review?.userId.toString() !== userId) {
             return res.status(403).send({ error: 'Forbidden' });
         }
@@ -64,12 +72,25 @@ export const updateReview = async (req: Request, res: Response) => {
 
 export const deleteReview = async (req: Request, res: Response) => {
     const { reviewId } = req.params;
+    const postId = req.params.postId;
 
     try {
-        const review = await Review.findByIdAndDelete(reviewId);
-        res.status(200).send(review);
+        const review = await Review.findById(reviewId);
+        await Post.findByIdAndUpdate(postId, {
+            $pull: {review: reviewId}
+        });
+
+        if (review?.parentReview) {
+            await Review.findByIdAndUpdate(review.parentReview, {
+                $pull: {childrenReview: reviewId}
+            });
+        }
+
+        await Review.findByIdAndDelete(reviewId);
+
+        return res.status(200).send({ message: 'Delete review successfully'});
     }
     catch (error) {
-        res.status(400).send(error);
+        return res.status(400).send(error);
     } 
 };  

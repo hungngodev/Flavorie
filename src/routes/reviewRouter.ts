@@ -6,8 +6,8 @@ import { createReview, updateReview, deleteReview } from "../controllers/reviewC
 
 const router = Router();
 
-router.post('/', authenticateUser, catchAsync(createReview));
+router.post('/:postId', authenticateUser, catchAsync(createReview));
 router.put('/', authenticateUser, authorizeReviewOwner, catchAsync(updateReview));
-router.delete('/:reviewId', authenticateUser, authorizeReviewOwner, catchAsync(deleteReview));
+router.delete('/:postId/:reviewId', authenticateUser, authorizeReviewOwner, catchAsync(deleteReview));
 
 export default router;
