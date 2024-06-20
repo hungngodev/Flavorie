@@ -1,6 +1,7 @@
 const theme = {
   colors: {
     base: {
+      20: '#EEEEEE',
       50: '#eceff1',
       100: '#cfd8dc',
       200: '#b0bec5',
@@ -34,13 +35,23 @@ const theme = {
       400: '#000000',
     },
     brown: {
-      20: '#F6F5F2',
-      100: 'B79E8F',
-      300: '604F44',
-      400: '3A2B22',
+      20: '#F9F9F9',
+      50: '#F6F5F2',
+      100: '#B79E8F',
+      300: '#604F44',
+      400: '#3A2B22',
     },
+    pink: {
+      300: '#FFAAC9',
+      400: '#FF8FB1',
+    },
+    palette_purple: '#736CED',
+    palette_indigo: '#9F9FED',
+    palette_lavender: '#D4C1EC',
+    palette_pink: '#FFC0CB',
+    palette_blue: '#BDE0FE',
 
-    // CDB6A8 #1B1212
+    light_purple: '#fef9ff',
   },
   components: {
     Heading: {

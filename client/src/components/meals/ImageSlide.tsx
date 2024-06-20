@@ -5,7 +5,9 @@ import { useEffect, useRef } from 'react';
 //import { capsFirst } from "../utils/index.tsx";
 import { ReactNode } from 'react';
 import ChakraCarousel from './ChakraCarousel';
-
+import theme from '../../style/theme';
+import Lottie from 'lottie-react';
+// import { Livecook } from '../../assets/animations';
 export interface Ingredient {
   id: number;
   name: string;
@@ -71,7 +73,6 @@ interface IngredientsProps {
   ingredients: Ingredient[];
 }
 
-
 export const IngredientsList = ({ ingredients }: IngredientsProps) => {
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
@@ -85,10 +86,10 @@ export const IngredientsList = ({ ingredients }: IngredientsProps) => {
     <Box ref={scrollRef} maxHeight="220px" overflowY="auto" p={1}>
       {ingredients.map((ingredient, index) => (
         <HStack key={index} mb={4} alignItems="center">
-          <Box bg="white" boxSize="40px" borderRadius="full" mr="2">
+          <Box bg="white" boxSize="40px" borderRadius="full" ml="2" mr="1">
             <Image src={ingredient.image} alt={ingredient.name} boxSize="40px" borderRadius="full"/>
           </Box>
-          <Text>{ingredient.name}</Text>
+          <Text color="pink.400">{ingredient.name}</Text>
         </HStack>
       ))}
     </Box>
@@ -98,37 +99,69 @@ interface ImageSlideProps {
   backendData: BackendData;
 }
 
+interface TitleSlide {
+  type: 'title';
+  title: string;
+  description: string;
+  ingredients: never[];
+  equipment: never[];
+}
+
+interface DetailSlide {
+  type: 'detail';
+  title: string;
+  description: string;
+  ingredients: Ingredient[];
+  equipment: Equipment[];
+}
+
+type Slide = TitleSlide | DetailSlide;
+
+// interface Slide {
+//   type: 'title' | 'detail';
+//   title: string;
+//   description: string;
+//   ingredients: Ingredient[];
+//   equipment: Equipment[];
+// }
+
 function ImageSlide({ backendData }: ImageSlideProps) {
-  const colorLevels = ['base.50', 'base.100', 'base.200', 'base.300', 'base.400', 'base.500', 'base.600'];
+  // const colorLevels = ['base.50', 'base.100', 'base.200', 'base.300', 'base.400', 'base.500', 'base.600'];
 
-  const slides = backendData.analyzeInstruction.flatMap((instruction, instructionIndex) => {
-    return instruction.steps.map((step, stepIndex) => {
-      const bgColor = colorLevels[(instructionIndex) % colorLevels.length];
-      const title = instruction.name;
-      const description = step.step;
+  const slides: Slide[] = backendData.analyzeInstruction.flatMap((instruction, instructionIndex) => {
+    // const bgColor = colorLevels[instructionIndex % colorLevels.length];
+    const instructionSlides: Slide[] = [
+      {
+        type: 'title' as const,
+        title: `${instructionIndex + 1}. ${instruction.name}`,
+        description: '',
+        ingredients: [],
+        equipment: [],
+      },
+      ...instruction.steps.map((step, stepIndex) => ({
+        type: 'detail' as const,
+        title: '',
+        description: step.step,
+        ingredients: step.ingredients,
+        equipment: step.equipment,
+      })),
+    ];
 
-      // ingredients
-      const ingredients = step.ingredients.map((ingredient) => ({
-        id: ingredient.id,
-        image: ingredient.image || '',
-        name: ingredient.name || '',
-        localizedName: ingredient.localizedName,
-      }));
+      // // ingredients
+      // const ingredients = step.ingredients.map((ingredient) => ({
+      //   id: ingredient.id,
+      //   image: ingredient.image || '',
+      //   name: ingredient.name || '',
+      //   localizedName: ingredient.localizedName,
+      // }));
 
-      // equipment
-      const equipment = step.equipment.map((equip) => ({
-        image: equip.image || '',
-        name: equip.name || '',
-      }));
+      // // equipment
+      // const equipment = step.equipment.map((equip) => ({
+      //   image: equip.image || '',
+      //   name: equip.name || '',
+      // }));
 
-      return {
-        title,
-        description,
-        bgColor,
-        ingredients,
-        equipment,
-      };
-    });
+      return instructionSlides;;
   });
 
   return (
@@ -144,7 +177,7 @@ function ImageSlide({ backendData }: ImageSlideProps) {
         xxl: '87.5rem',
       }}
     >
-      <ChakraCarousel gap={30}>
+      <ChakraCarousel gap={25}>
         {slides.map((slide, index) => (
           <Flex
             key={index}
@@ -153,51 +186,69 @@ function ImageSlide({ backendData }: ImageSlideProps) {
             justifyContent="flex-start"
             overflow="hidden"
             color="black.200"
-            bg={slide.bgColor}
+            bg="base.50"
             rounded={5}
             flex={1}
             p={5}
           >
-            <Heading fontSize={{ base: 'xl', md: '2xl' }} fontWeight="bold" mb="3" textAlign="center" w="full">
+            {/* <Heading fontSize={{ base: 'xl', md: '2xl' }} fontWeight="bold" mb="3" textAlign="center" w="full">
               {slide.title}
-            </Heading>
-            <Grid mt="4" templateRows="repeat(2)" templateColumns="repeat(3, 2fr)" width="100%">
-              <GridItem>
-                <Box borderRadius="md" boxShadow="md" bg="brown.20">
-                  <Heading fontSize="20" fontWeight="bold" ml="2" mt="2" mb="2">
-                    Ingredients
-                  </Heading>
-                  <IngredientsList ingredients={slide.ingredients} />
-                </Box>
-              </GridItem>
-              <GridItem rowSpan={2} colSpan={2} ml="4">
-                <VStack mb={2} textAlign="left" display="flex" flexDirection="column" justifyContent="flex-start">
-                  <Heading fontSize="20" fontWeight="bold">
-                    Instruction
-                  </Heading>
-                  <Text w="full" textAlign="justify">
-                    {slide.description}
-                  </Text>
-                </VStack>
-              </GridItem>
-              <GridItem mt="4">
-                <Box borderRadius="md" boxShadow="md" bg="brown.20">
-                  <Heading fontSize="20" fontWeight="bold" ml="2" mt="2" mb="2">
-                    Equipment
-                  </Heading>
-                  <Box p={1}>
-                    {slide.equipment.map((equip, index) => (
-                      <HStack mb={4} key={index}>
-                        <Box bg="white" boxSize="40px" borderRadius="full" mr="2">
-                          <Image src={equip.image} alt={equip.name} boxSize="40px" borderRadius="full" />
-                        </Box>
-                        <Text>{equip.name}</Text>
-                      </HStack>
-                    ))}
+            </Heading> */}
+            {slide.type === 'title' ? (
+              <>
+                <Heading
+                  fontSize={{ base: 'xl', md: '2xl' }}
+                  fontWeight="bold"
+                  mb="5"
+                  mt="4"
+                  textAlign="center"
+                  w="full"
+                >
+                  {slide.title}
+                </Heading>
+                {/* <Lottie animationData={Livecook} style={{ height: 200, width: 200 }} /> */}
+              </>
+            ) : (
+              <Grid mt="4" mb="4" templateRows="repeat(2)" templateColumns="repeat(3, 2fr)" width="100%">
+                <GridItem>
+                  <Box borderRadius="md" boxShadow="md" bg="brown.20">
+                    <Heading fontSize="20" fontWeight="bold" ml="2" p="2" mb="1">
+                      Ingredients
+                    </Heading>
+                    <IngredientsList ingredients={slide.ingredients} />
                   </Box>
-                </Box>
-              </GridItem>
-            </Grid>
+                </GridItem>
+                <GridItem rowSpan={2} colSpan={2} ml="6">
+                  <VStack mb={2} textAlign="left" display="flex" flexDirection="column" justifyContent="flex-start">
+                    <Heading fontSize="20" fontWeight="bold">
+                      Instruction
+                    </Heading>
+                    <Text w="full" textAlign="justify">
+                      {slide.description}
+                    </Text>
+                  </VStack>
+                </GridItem>
+                {slide.equipment.length > 0 && (
+                  <GridItem mt="4">
+                    <Box borderRadius="md" boxShadow="md" bg="brown.20">
+                      <Heading fontSize="20" fontWeight="bold" ml="2" p="2" mb="1">
+                        Equipment
+                      </Heading>
+                      <Box p={1}>
+                        {slide.equipment.map((equip, index) => (
+                          <HStack mb={3} key={index}>
+                            <Box bg="white" boxSize="40px" borderRadius="full" ml="2" mr="1">
+                              <Image src={equip.image} alt={equip.name} boxSize="40px" borderRadius="full" />
+                            </Box>
+                            <Text color="pink.400">{equip.name}</Text>
+                          </HStack>
+                        ))}
+                      </Box>
+                    </Box>
+                  </GridItem>
+                )}
+              </Grid>
+            )}
           </Flex>
         ))}
       </ChakraCarousel>

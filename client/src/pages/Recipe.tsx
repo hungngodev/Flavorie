@@ -8,6 +8,8 @@ import ImageSlide from '../components/meals/ImageSlide';
 import customFetch from '../utils/customFetch';
 import { Tag, TagLabel } from '@chakra-ui/react';
 import { BackendData } from '../components/meals/ImageSlide';
+import theme from '../style/theme';
+
 
 waveform.register();
 
@@ -145,7 +147,7 @@ const IndividualMeal: React.FC<IndividualMealProps> = ({ recipeData, calories, a
             alignItems="center"
             >
             <Box ml="10" mr="10" textAlign="center" alignItems="center" display="flex" flexDirection="column">
-                <Box
+                {/* <Box
                 width="80px"
                 height="36px"
                 bg="black"
@@ -159,7 +161,7 @@ const IndividualMeal: React.FC<IndividualMealProps> = ({ recipeData, calories, a
                 textAlign="center"
                 >
                 RECIPES
-                </Box>
+                </Box> */}
                 <Heading
                 mb="3"
                 mt="4"
@@ -171,7 +173,7 @@ const IndividualMeal: React.FC<IndividualMealProps> = ({ recipeData, calories, a
                 >
                 {recipeData.title}
                 </Heading>
-                <Text justifyContent="center" alignItems="center" fontSize={26}>
+                <Text justifyContent="center" alignItems="center" color="base.500" fontSize={26}>
                 {recipeData.description}
                 </Text>
                 <HStack mt="2" justifyContent="center" alignItems="center" fontSize="14">
@@ -189,16 +191,16 @@ const IndividualMeal: React.FC<IndividualMealProps> = ({ recipeData, calories, a
                 </HStack>
                 <HStack justifyContent="flex-end" width="100%" mt={8}>
                 <ButtonGroup spacing={2} mb={10}>
-                    <Button rightIcon={<FaSave />} bg="base.50">
+                    <Button rightIcon={<FaSave />}  bg="base.50">
                     Save
                     </Button>
-                    <Button rightIcon={<FaStar />} bg="base.50">
+                    <Button rightIcon={<FaStar />}  bg="base.50">
                     Rate
                     </Button>
-                    <Button rightIcon={<FaPrint />} bg="base.50">
+                    <Button rightIcon={<FaPrint />}  bg="base.50">
                     Print
                     </Button>
-                    <Button rightIcon={<FaShareAlt />} bg="base.50">
+                    <Button rightIcon={<FaShareAlt />}  bg="base.50">
                     Share
                     </Button>
                 </ButtonGroup>
@@ -227,10 +229,10 @@ const IndividualMeal: React.FC<IndividualMealProps> = ({ recipeData, calories, a
                     }}
                 >
                     <Text fontSize="18">
-                    <Box as="span" fontSize="20" fontWeight="bold">
-                        Total time:
-                    </Box>
-                    <Box>{totalTime} minutes</Box>
+                        <Box as="span" fontSize="20" fontWeight="bold">
+                            Total time:
+                        </Box>
+                        <Box>{totalTime} minutes</Box>
                     </Text>
                 </Box>
                 <Box
