@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { PostError } from "../errors/customErrors.ts";
 import PostModel from "../models/Post.ts";
+import UserModel from "../models/UserModel.ts";
 
 export const checkAuthor = async (
   req: Request,
@@ -15,6 +16,22 @@ export const checkAuthor = async (
     if (post.author.toString() !== req.user.userId) {
       throw new PostError("Invalid author request");
     }
+    req.body.author = post.author;
+  }
+  next();
+};
+
+export const bindAuthor = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (req.user) {
+    const author = await UserModel.findById(req.user.userId);
+    if (!author) {
+      throw new PostError("Author not found");
+    }
+    req.body.author = req.user.userId;
   }
   next();
 };
