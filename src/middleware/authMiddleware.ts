@@ -6,7 +6,7 @@ import {
     UnauthorizedError,
 } from '../errors/customErrors.js';
 import { verifyJWT } from '../utils/tokenUtils.js';
-import Review from '@/models/Review.js';
+import Review from '../models/Review.js';
 
 declare global {
     namespace Express {
@@ -66,16 +66,22 @@ export const authorizeReviewOwner = async (req: Request, res: Response, next: Ne
     const userId = req.user?.userId;
 
     if (!userId) {
-        throw new UnauthenticatedError("Authentication invalid");
+        return res.status(401).send("Authentication invalid"); // Use 401 for unauthorized access
     }
 
-    const review = await Review.findById(reviewId);
-    if (!review) {
-        return res.status(404).send({error: 'Review not found'});
-    }
+    try {
+        const review = await Review.findById(reviewId);
+        if (!review) {
+        return res.status(404).send({ error: "Review not found" });
+        }
 
-    if (review.userId.toString() !== userId) {
-        throw new ForbiddenError('You do not have You do not have permission to perform this action');
+        if (review.userId.toString() !== userId) {
+        return res.status(403).send("You do not have permission to perform this action");
+        }
+
+        return next();
+
+    } catch (error) {
+        return res.status(500).send("Server error");
     }
-    next();
-}
+};

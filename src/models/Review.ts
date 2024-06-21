@@ -5,7 +5,6 @@ import { NextFunction, Request, Response } from "express";
 import ExpressError from "../utils/ExpressError";
 
 export interface Review extends mongoose.Document {
-    is: string;
     userId: mongoose.Types.ObjectId;
     postId: mongoose.Types.ObjectId;
     content: string;
@@ -17,11 +16,6 @@ export interface Review extends mongoose.Document {
 type ReviewModel = mongoose.Model<Review>;
 export const ReviewSchema = new mongoose.Schema<Review, ReviewModel>(
     {
-        id: {
-            type: String,
-            required: true,
-            unique: true,
-        },
         userId: { 
             type: mongoose.Schema.Types.ObjectId, 
             ref: "User", 
