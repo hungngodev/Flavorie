@@ -17,9 +17,9 @@ import { FaUserCircle } from 'react-icons/fa';
 // import parseDate from '../../../utils/parseDate';
 
 interface PostHeaderProps extends StackProps {
-  avatar: string | undefined;
+  avatar?: string;
   author: string;
-  date: Date;
+  date?: Date;
   privacy: 'public' | 'private' | 'friend';
   location?: string;
 }

@@ -10,24 +10,24 @@ import {
   InputProps,
   InputRightElement,
   HStack,
+  Textarea,
+  TextareaProps,
 } from '@chakra-ui/react';
 import React from 'react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 
-interface CustomInputProps<T extends FieldValues> extends InputProps {
+interface CustomTextareaInput<T extends FieldValues> extends TextareaProps {
   isInValid?: boolean;
   label?: string;
   helperText?: string;
   errorText?: string;
-  fieldprops: Partial<ControllerRenderProps<T, any>>;
-  leftIcon?: React.ReactNode;
-  rightIcon?: React.ReactNode;
+  fieldProps: ControllerRenderProps<T, any>;
   containerProps?: FormControlProps;
   control?: React.ReactNode;
 }
 
-const CustomTextInput: React.ForwardRefRenderFunction<HTMLInputElement, CustomInputProps<FieldValues>> = (
-  { label, helperText, errorText, isInValid, leftIcon, rightIcon, containerProps, control, fieldprops, ...props },
+const CustomTextareaInput: React.ForwardRefRenderFunction<HTMLInputElement, CustomTextareaInput<FieldValues>> = (
+  { label, helperText, errorText, isInValid, containerProps, control, fieldProps, ...props },
   forwardedRef,
 ) => {
   return (
@@ -39,20 +39,10 @@ const CustomTextInput: React.ForwardRefRenderFunction<HTMLInputElement, CustomIn
         {control}
       </HStack>
       <FormHelperText>{helperText}</FormHelperText>
-      <InputGroup>
-        {leftIcon && <InputLeftElement pointerEvents="none" children={leftIcon} />}
-        <Input
-          {...props}
-          type={props.type ?? 'text'}
-          variant={props.variant ?? 'outline'}
-          {...fieldprops}
-          ref={fieldprops?.ref ?? forwardedRef}
-        />
-        {rightIcon && <InputRightElement pointerEvents="none" children={rightIcon} />}
-      </InputGroup>
+      <Textarea {...fieldProps} ref={forwardedRef} {...props} variant={props.variant ?? 'outline'} />
       <FormErrorMessage>{errorText}</FormErrorMessage>
     </FormControl>
   );
 };
 
-export default React.forwardRef(CustomTextInput);
+export default React.forwardRef(CustomTextareaInput);

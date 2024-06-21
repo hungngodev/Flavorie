@@ -25,11 +25,10 @@ import parseOption, { OptionMenuType } from '../../utils/parseOption';
 import CustomNumberInput from '../form/CustomNumberInput';
 import CustomTextInput from '../form/CustomTextInput';
 import { ReceiptFormProps } from './ReceiptForm';
-import {useCallback} from "react";
-import {useQuery, QueryClient} from "@tanstack/react-query";
-import {Params} from "react-router-dom"
-import customFetch from "../../utils/customFetch"
-
+import { useCallback } from 'react';
+import { useQuery, QueryClient } from '@tanstack/react-query';
+import { Params } from 'react-router-dom';
+import customFetch from '../../utils/customFetch';
 
 // ! to be updated later
 export const updateSuggestionQuery = (id?: any) => {
@@ -107,13 +106,13 @@ function ReceiptField<T extends ZodType<any, any, any>>({
   });
 
   const updateReceipt = useDebouncedCallback((val: any) => {
-    if(val === ""){
+    if (val === '') {
       return;
     }
 
     const updateData: Array<{ name: string; img: string }> = [];
 
-    // fake fetch 
+    // fake fetch
     CustomFetch.get(`https://jsonplaceholder.typicode.com/posts/${Math.floor(Math.random() * 50)}`)
       .then((response) => {
         setMenuSuggestion({
@@ -126,9 +125,11 @@ function ReceiptField<T extends ZodType<any, any, any>>({
           name: val,
           suggested: {
             display: true,
-            items: updateData.map(item => ({
+            items: updateData.map((item) => ({
               name: item.name,
-              img: item?.img ?? 'https://img.freepik.com/free-photo/fried-chicken-breast-with-vegetables_140725-4650.jpg?t=st=1717211148~exp=1717214748~hmac=35aff48267e7d35f50f03fdd12473c2606c90b4f0a73eb45e2d4a51cfb44d0d8&w=740',
+              img:
+                item?.img ??
+                'https://img.freepik.com/free-photo/fried-chicken-breast-with-vegetables_140725-4650.jpg?t=st=1717211148~exp=1717214748~hmac=35aff48267e7d35f50f03fdd12473c2606c90b4f0a73eb45e2d4a51cfb44d0d8&w=740',
             })),
           },
         });
@@ -167,7 +168,7 @@ function ReceiptField<T extends ZodType<any, any, any>>({
             name={`receipts.${index}.name` as FieldPath<z.infer<T>>}
             render={({ field: { ...fieldProps } }) => (
               <CustomTextInput
-                fieldProps={fieldProps}
+                fieldprops={fieldProps}
                 label="Name"
                 value={watch(`receipts.${index}.name` as Path<z.infer<T>>)}
                 isDisabled={!field.suggested.display}
@@ -184,7 +185,7 @@ function ReceiptField<T extends ZodType<any, any, any>>({
                   fieldProps.onChange(value);
                 }}
                 onBlur={(e) => {
-                  toggleChange()
+                  toggleChange();
                 }}
                 control={
                   <Tooltip
@@ -256,7 +257,7 @@ function ReceiptField<T extends ZodType<any, any, any>>({
             name={`receipts.${index}.quantity` as FieldPath<z.infer<T>>}
             render={({ field: { ...fieldProps } }) => (
               <CustomNumberInput
-                fieldProps={fieldProps}
+                fieldprops={fieldProps}
                 value={watch(`receipts.${index}.quantity` as Path<z.infer<T>>)}
                 onChange={(valueString) => {
                   fieldProps.onChange(Number(valueString));

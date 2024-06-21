@@ -6,10 +6,10 @@ import { FaHeart } from 'react-icons/fa';
 import { FaRegHeart } from 'react-icons/fa6';
 import { z } from 'zod';
 import { useAuth } from '../../../hooks/index';
-import { ReactObject, ReviewObject } from './MockPosts';
+import { ReactObject, ReviewObject } from './types';
 interface PostFooterProps extends StackProps {
-  reacts: z.infer<typeof ReactObject>[];
-  reviews: z.infer<typeof ReviewObject>[];
+  reacts?: z.infer<typeof ReactObject>[];
+  reviews?: z.infer<typeof ReviewObject>[];
   shares?: string[];
   isLiked?: boolean;
   reactPost?: () => void;
@@ -17,13 +17,13 @@ interface PostFooterProps extends StackProps {
 
 const PostFooter = memo<PostFooterProps>(({ reacts, reviews, shares, reactPost, ...props }) => {
   const auth = useAuth();
-  const [visible, setVisible] = useState(auth.currentUser.status === 'authenticated');
+  // const [visible, setVisible] = useState(auth.currentUser.status === 'authenticated');
   const [like, setLike] = useState<boolean>(false);
   const likeControl = useAnimationControls();
 
-  useEffect(() => {
-    setVisible(auth.currentUser.status === 'authenticated');
-  }, [auth.currentUser.status]);
+  // useEffect(() => {
+  //   setVisible(auth.currentUser.status === 'authenticated');
+  // }, [auth.currentUser.status]);
 
   // Update content of FooterButtons based on props
   const FooterButtons = [

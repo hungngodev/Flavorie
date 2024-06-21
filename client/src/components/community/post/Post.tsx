@@ -13,7 +13,7 @@ import {
 } from '@chakra-ui/react';
 import { forwardRef, memo } from 'react';
 import ImageSlider from './ImageSlider';
-import { PostObjectType } from './MockPosts';
+import { PostObjectType } from './types';
 import PostFooter from './PostFooter';
 import PostHeader from './PostHeader';
 
