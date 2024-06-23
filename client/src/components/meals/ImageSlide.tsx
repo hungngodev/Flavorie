@@ -1,32 +1,72 @@
 import { Box, Container, Flex, Grid, GridItem, HStack, Heading, Image, Text, VStack } from '@chakra-ui/react';
-import { ReactNode, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import ChakraCarousel from './ChakraCarousel';
 
-interface Ingredient {
-  ingredientImage: string;
-  ingredientName: string;
+export interface Ingredient {
+  id: number;
+  name: string;
+  localizedName: string;
+  image: string;
 }
+interface Equipment {
+  id: number;
+  name: string;
+  localizedName: string;
+  image: string;
+  temperature?: {
+    number: number;
+    unit: string;
+  };
+}
+interface Length {
+  number: number;
+  unit: string;
+}
+interface Step {
+  number: number;
+  step: string;
+  ingredients: Ingredient[];
+  equipment: Equipment[];
+  length?: Length;
+}
+
+export interface AnalyzeInstruction {
+  name: string;
+  steps: Step[];
+}
+
+export interface BackendData {
+  title: string;
+  imageUrl: string;
+  allIngredients: Ingredient[];
+  amount: Map<string, string>;
+  tags: string[];
+  source: 'themealdb' | 'spoonacular' | 'user';
+  instruction: string;
+  analyzeInstruction: AnalyzeInstruction[];
+  id: string;
+  videoLink?: string;
+  description: string;
+  price: string;
+  readyInMinutes: string;
+  servings: number;
+  dishTypes: string[];
+  taste: {
+    sweetness: number;
+    saltiness: number;
+    sourness: number;
+    bitterness: number;
+    savoriness: number;
+    fattiness: number;
+    spiciness: number;
+  };
+}
+
 
 interface IngredientsProps {
   ingredients: Ingredient[];
 }
 
-interface Equipment {
-  equipmentImage: string;
-  equipmentName: string;
-}
-
-export interface Dish {
-  ingredients: Ingredient[];
-  title: string;
-  description: string;
-  bgColor: string;
-  equipment: Equipment[];
-}
-
-type DishesProps = {
-  dishes: Dish[];
-};
 
 export const IngredientsList = ({ ingredients }: IngredientsProps) => {
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -43,20 +83,55 @@ export const IngredientsList = ({ ingredients }: IngredientsProps) => {
         <HStack key={index} mb={4} alignItems="center">
           <Box bg="white" boxSize="40px" borderRadius="full" mr="2">
             <Image
-              src={ingredient.ingredientImage}
-              alt={ingredient.ingredientName}
+              src={ingredient.name}
+              alt={ingredient.image}
               boxSize="40px"
               borderRadius="full"
             />
           </Box>
-          <Text>{ingredient.ingredientName}</Text>
+          <Text>{ingredient.name}</Text>
         </HStack>
       ))}
     </Box>
   );
 };
+interface ImageSlideProps {
+  backendData: BackendData;
+}
 
-function ImageSlide({ dishes }: DishesProps): ReactNode {
+function ImageSlide({ backendData }: ImageSlideProps) {
+  const colorLevels = ['base.50', 'base.100', 'base.200', 'base.300', 'base.400', 'base.500', 'base.600'];
+
+  const slides = backendData.analyzeInstruction.flatMap((instruction, instructionIndex) => {
+    return instruction.steps.map((step) => {
+      const bgColor = colorLevels[(instructionIndex) % colorLevels.length];
+      const title = instruction.name;
+      const description = step.step;
+
+      // ingredients
+      const ingredients = step.ingredients.map((ingredient) => ({
+        id: ingredient.id,
+        image: ingredient.image || '',
+        name: ingredient.name || '',
+        localizedName: ingredient.localizedName,
+      }));
+
+      // equipment
+      const equipment = step.equipment.map((equip) => ({
+        image: equip.image || '',
+        name: equip.name || '',
+      }));
+
+      return {
+        title,
+        description,
+        bgColor,
+        ingredients,
+        equipment,
+      };
+    });
+  });
+
   return (
     <Container
       py={4}
@@ -71,7 +146,7 @@ function ImageSlide({ dishes }: DishesProps): ReactNode {
       }}
     >
       <ChakraCarousel gap={30}>
-        {dishes.map((dish: Dish, index: number) => (
+        {slides.map((slide, index) => (
           <Flex
             key={index}
             boxShadow="rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px"
@@ -79,13 +154,13 @@ function ImageSlide({ dishes }: DishesProps): ReactNode {
             justifyContent="flex-start"
             overflow="hidden"
             color="black.200"
-            bg={dish.bgColor}
+            bg={slide.bgColor}
             rounded={5}
             flex={1}
             p={5}
           >
             <Heading fontSize={{ base: 'xl', md: '2xl' }} fontWeight="bold" mb="3" textAlign="center" w="full">
-              {dish.title}
+              {slide.title}
             </Heading>
             <Grid mt="4" templateRows="repeat(2)" templateColumns="repeat(3, 2fr)" width="100%">
               <GridItem>
@@ -93,7 +168,7 @@ function ImageSlide({ dishes }: DishesProps): ReactNode {
                   <Heading fontSize="20" fontWeight="bold" ml="2" mt="2" mb="2">
                     Ingredients
                   </Heading>
-                  <IngredientsList ingredients={dish.ingredients} />
+                  <IngredientsList ingredients={slide.ingredients} />
                 </Box>
               </GridItem>
               <GridItem rowSpan={2} colSpan={2} ml="4">
@@ -103,7 +178,7 @@ function ImageSlide({ dishes }: DishesProps): ReactNode {
                     Instruction
                   </Heading>
                   <Text w="full" textAlign="justify">
-                    {dish.description}
+                    {slide.description}
                   </Text>
                 </VStack>
               </GridItem>
@@ -113,25 +188,17 @@ function ImageSlide({ dishes }: DishesProps): ReactNode {
                     Equipment
                   </Heading>
                   <Box p={1}>
-                    {dish.equipment.map((equip) => (
-                      <HStack mb={4}>
+                    {slide.equipment.map((equip, index) => (
+                      <HStack mb={4} key={index}>
                         <Box bg="white" boxSize="40px" borderRadius="full" mr="2">
-                          <Image
-                            src={equip.equipmentImage}
-                            alt={equip.equipmentName}
-                            boxSize="40px"
-                            borderRadius="full"
-                          />
+                          <Image src={equip.image} alt={equip.name} boxSize="40px" borderRadius="full" />
                         </Box>
-                        <Text>{equip.equipmentName}</Text>
+                        <Text>{equip.name}</Text>
                       </HStack>
                     ))}
                   </Box>
                 </Box>
               </GridItem>
-              {/* <Flex justifyContent="space-between">
-              <HStack spacing={2}></HStack>
-            </Flex> */}
             </Grid>
           </Flex>
         ))}

@@ -21,7 +21,7 @@ const VideoPlayer = ({
 
   return (
     <div>
-      <video ref={localVideoRef} autoPlay muted />
+      <video ref={localVideoRef} autoPlay muted /> 
       <video ref={remoteVideoRef} autoPlay />
     </div>
   );

@@ -16,6 +16,7 @@ import postRouter from "./routes/postRouter.ts";
 import receiptScanRouter from "./routes/receiptScanRouter.ts";
 import userRouter from "./routes/userRouter.ts";
 import bugRouter from "./routes/bugRouter.ts";
+import reviewRouter from "./routes/reviewRouter.ts";
 
 
 dotenv.config();
@@ -49,6 +50,7 @@ app.use("/api/meal", mealRouter);
 app.use("/api/ingredient", ingredientRouter);
 app.use("/api/scan-receipt", receiptScanRouter)
 app.use("/api/community", postRouter);
+app.use("/api/community/reviews", reviewRouter);
 app.use("/api/bug", bugRouter)
 
 // app.use("*", (req, res) => {
@@ -66,4 +68,5 @@ try {
   console.log(error);
   process.exit(1);
 }
+
 // console.log('server started');

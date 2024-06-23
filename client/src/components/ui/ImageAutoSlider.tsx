@@ -26,6 +26,8 @@ const AutoSlider = ({
   const theme = useTheme();
   console.log(theme);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [loadedImages, setLoadedImages] = useState<string[]>([]);
+
   const handleNext = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1 === images.length ? 0 : prevIndex + 1));
   };
@@ -33,7 +35,26 @@ const AutoSlider = ({
   const handlePrevious = () => {
     setCurrentIndex((prevIndex) => (prevIndex - 1 < 0 ? images.length - 1 : prevIndex - 1));
   };
-
+  useEffect(() => {
+    loadImages();
+  }, []);
+ 
+  const loadImages = () => {
+    const loadPromises = images.map((image) => {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.src = image.image;
+        img.onload = () => resolve(image);
+        img.onerror = reject;
+      });
+    });
+ 
+    Promise.all(loadPromises)
+      .then((loadedImages) => {
+        setLoadedImages(loadedImages as string[]);
+      })
+      .catch((error) => console.error("Failed to load images", error));
+  };
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'ArrowRight') {
@@ -89,7 +110,7 @@ const AutoSlider = ({
       },
     },
   };
-
+  const areImagesLoaded = loadedImages.length > 0;
   return (
     <div
       className={cn('relative flex h-full w-full items-center justify-center overflow-hidden', className)}
@@ -97,7 +118,7 @@ const AutoSlider = ({
         perspective: '1000px',
       }}
     >
-      {overlay && (
+      {areImagesLoaded && overlay && (
         <div className={cn('absolute left-20 z-40', overlayClassName)}>
           <motion.div
             initial="initial"
@@ -136,8 +157,9 @@ const AutoSlider = ({
           </motion.div>
         </div>
       )}
-
-      <AnimatePresence>
+      { 
+        areImagesLoaded &&       
+        <AnimatePresence>
         <motion.img
           key={currentIndex}
           src={images[currentIndex].image}
@@ -155,6 +177,7 @@ const AutoSlider = ({
           variants={slideVariants}
         ></motion.div>
       </AnimatePresence>
+      }
     </div>
   );
 };
