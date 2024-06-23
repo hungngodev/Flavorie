@@ -158,7 +158,8 @@ function ReceiptField<T extends ZodType<any, any, any>>({
           alignSelf="flex-start"
           borderRadius="lg"
           width="90%"
-          src={field.suggested.items[0].img}
+          // src={field.suggested.items[0].img}
+          src={watch(`receipts.${index}.suggested.items[0].img` as Path<z.infer<T>>) ?? field?.image}
           alt="receipt image"
         />
       </GridItem>

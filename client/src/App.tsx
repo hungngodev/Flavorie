@@ -962,20 +962,24 @@ const mockdata: IngredientProps = {
 
 function App() {
   return (
+    
     <ChakraBaseProvider theme={extendTheme(theme)}>
+      <ToastProvider>
       <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+      <NutritionCard {...mockdata} />
+        <ToastContainer autoClose={5000} limit={3} transition={Slide} />
+        <ReactQueryDevtools />
+      </QueryClientProvider>
+      </ToastProvider>
         {/* <ImageScan /> */}
-        <RouterProvider router={router} />
         {/* <IndividualMeal
           recipeData={backendData}
           calories='340 kcal'
           averageStar="4.5"
           numReviews="3"
         /> */}
-        <NutritionCard {...mockdata} />
-        <ToastContainer autoClose={5000} limit={3} transition={Slide} />
-        <ReactQueryDevtools />
-      </QueryClientProvider>
+        
     </ChakraBaseProvider>
   );
 }
