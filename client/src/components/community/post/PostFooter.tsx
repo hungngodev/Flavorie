@@ -1,25 +1,39 @@
 import { HStack, IconButton, StackProps, Text, Tooltip } from '@chakra-ui/react';
 import { motion, useAnimationControls } from 'framer-motion';
 import { MessageCircle, Share2 } from 'lucide-react';
-import { memo, useEffect, useState } from 'react';
+import { memo, useState } from 'react';
 import { FaHeart } from 'react-icons/fa';
 import { FaRegHeart } from 'react-icons/fa6';
 import { z } from 'zod';
 import { useAuth } from '../../../hooks/index';
+import customFetch from '../../../utils/customFetch';
 import { ReactObject, ReviewObject } from './types';
+
 interface PostFooterProps extends StackProps {
+  postid: string;
   reacts?: z.infer<typeof ReactObject>[];
   reviews?: z.infer<typeof ReviewObject>[];
   shares?: string[];
   isLiked?: boolean;
-  reactPost?: () => void;
 }
 
-const PostFooter = memo<PostFooterProps>(({ reacts, reviews, shares, reactPost, ...props }) => {
+const PostFooter = memo<PostFooterProps>(({ reacts, reviews, shares, postid, ...props }) => {
   const auth = useAuth();
   // const [visible, setVisible] = useState(auth.currentUser.status === 'authenticated');
   const [like, setLike] = useState<boolean>(false);
   const likeControl = useAnimationControls();
+  const likePost = async () => {
+    try {
+      const likeRequest = await customFetch.post(`/community/post/react/${postid}`);
+      console.dir(likeRequest);
+      if (likeRequest.status === 200) {
+        setLike((like) => !like);
+        likeControl.start({ scale: [1, 1.2, 1], transition: { duration: 0.2, ease: 'easeInOut' } });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   // useEffect(() => {
   //   setVisible(auth.currentUser.status === 'authenticated');
@@ -43,13 +57,6 @@ const PostFooter = memo<PostFooterProps>(({ reacts, reviews, shares, reactPost, 
       content: shares ?? [],
     },
   ];
-  const handleLike = () => {
-    setLike((like) => !like);
-    likeControl.start({ scale: [1, 1.2, 1], transition: { duration: 0.2, ease: 'easeInOut' } });
-    if (reactPost !== undefined) {
-      reactPost();
-    }
-  };
   return (
     <HStack gap={4} width="100%" justifyContent="flex-start" alignItems="center" {...props}>
       {FooterButtons.map((button, index) => (
@@ -73,7 +80,7 @@ const PostFooter = memo<PostFooterProps>(({ reacts, reviews, shares, reactPost, 
               isRound={true}
               animate={button.name === 'React' ? likeControl : ''}
               color={button.name === 'React' ? (like ? 'red.500' : 'blackAlpha.800') : 'blackAlpha.800'}
-              onClick={button.name === 'React' ? () => handleLike() : () => {}}
+              onClick={button.name === 'React' ? () => likePost() : () => {}}
               _hover={{ backgroundColor: 'transparent' }}
               _active={{ backgroundColor: 'transparent' }}
               _focus={{ backgroundColor: 'transparent' }}

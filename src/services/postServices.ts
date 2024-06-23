@@ -1,6 +1,10 @@
 import { v2 as cloudinary } from "cloudinary";
 import { Document, Types } from "mongoose";
-import { BadRequestError, ServerError } from "../errors/customErrors.ts";
+import {
+  BadRequestError,
+  PostError,
+  ServerError,
+} from "../errors/customErrors.ts";
 import PostModel, { Post } from "../models/Post.ts";
 import UserModel from "../models/UserModel.ts";
 
@@ -141,6 +145,30 @@ export const deletePostDocument = async (postId: string) => {
     if (deletedPost.deletedCount === 0) {
       throw new ServerError("Failed to delete post");
     }
+  } catch (err) {
+    throw new ServerError(`${err}`);
+  }
+};
+
+export const reactPostDocument = async (
+  userId: string,
+  postId: string,
+): Promise<Array<Types.ObjectId>> => {
+  try {
+    const post = await PostModel.findById(postId);
+    if (!post) throw new PostError("Post not found");
+
+    const alreadyLiked = post.react.some(id => id.equals(userId));
+
+    if (alreadyLiked) {
+      post.reactCount -= 1;
+      post.react.pull(userId);
+    } else {
+      post.reactCount += 1;
+      post.react.push(new Types.ObjectId(userId));
+    }
+    await post.save();
+    return post.react;
   } catch (err) {
     throw new ServerError(`${err}`);
   }

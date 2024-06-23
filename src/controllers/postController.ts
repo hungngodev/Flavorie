@@ -5,6 +5,7 @@ import {
   buildPostDocument,
   deletePostDocument,
   getFeedDocument,
+  reactPostDocument,
   updatePostDocument,
 } from "../services/postServices.ts";
 
@@ -28,9 +29,6 @@ const PostErorHandler = (fn: RequestHandler): RequestHandler => {
 export const createPostController = PostErorHandler(async (req, res) => {
   const postBody = req.body;
   const postFiles = req.files;
-  console.log("at controller");
-  console.log(postBody);
-  console.log(postFiles);
   const createdPost = await buildPostDocument(postFiles, postBody);
   if (!createdPost) {
     return null;
@@ -75,3 +73,12 @@ export const newFeedController = async (req: Request, res: Response) => {
     }
   }
 };
+export const reactPostController = PostErorHandler(async (req, res) => {
+  const { postid } = req.params;
+  const { userId } = req.user;
+  const post = await reactPostDocument(userId, postid);
+  if (!post) {
+    return null;
+  }
+  return res.status(StatusCodes.OK).json({ message: "Post liked", post: post });
+});

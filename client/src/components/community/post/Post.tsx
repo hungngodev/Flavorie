@@ -13,9 +13,9 @@ import {
 } from '@chakra-ui/react';
 import { forwardRef, memo } from 'react';
 import ImageSlider from './ImageSlider';
-import { PostObjectType } from './types';
 import PostFooter from './PostFooter';
 import PostHeader from './PostHeader';
+import { PostObjectType } from './types';
 
 interface PostProps extends StackProps {
   postData: PostObjectType;
@@ -49,7 +49,12 @@ const Post = memo(
                 <ImageSlider slides={postData.media} />
               </CardBody>
               <CardFooter {...footerProps}>
-                <PostFooter reacts={postData.reacts} reviews={postData.reviews} shares={postData.shares} />
+                <PostFooter
+                  reacts={postData.reacts}
+                  reviews={postData.reviews}
+                  shares={postData.shares}
+                  postid={postData.id}
+                />
               </CardFooter>
             </Card>
           )}

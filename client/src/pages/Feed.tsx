@@ -76,7 +76,6 @@ const Feed = () => {
     if (status === 'success' && data) {
       const postload = data?.pages.flatMap((page) => parsePost(page.data));
       setPosts(postload ?? []);
-      // console.log('posts', posts);
     }
   }, [data, fetchNextPage, status]);
 
@@ -93,7 +92,6 @@ const Feed = () => {
     >
       <PostFormCard
         updateFeed={(arg) => {
-          console.log(arg);
           setPosts((prev) => arg.concat(prev));
         }}
       />
