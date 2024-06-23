@@ -167,7 +167,7 @@ function App() {
       <ToastProvider>
       <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
-      <NutritionCard {...mockdata} />
+      {/* <NutritionCard {...mockdata} /> */}
         <ToastContainer autoClose={5000} limit={3} transition={Slide} />
         <ReactQueryDevtools />
       </QueryClientProvider>
@@ -188,9 +188,7 @@ function App() {
         {/* <Box p="4">
           <ReviewForm onSubmit={handleReviewSubmit} />
         </Box> */}
-        <ToastContainer autoClose={5000} limit={3} transition={Slide} />
-        <ReactQueryDevtools />
-      </QueryClientProvider>
+        
     </ChakraBaseProvider>
   );
 }
