@@ -1,17 +1,6 @@
-import { createContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { v4 as uuidV4 } from "uuid";
-
-interface UserValue {
-    userId: string;
-    userName: string;
-    setUserName: (userName: string) => void;
-}
-
-export const UserContext = createContext<UserValue>({
-    userId: "",
-    userName: "",
-    setUserName: () => {},
-});
+import UserContext from "../contexts/userContext";
 
 export const UserProvider= ({ children }: {
     children: React.ReactNode;

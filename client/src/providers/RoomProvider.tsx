@@ -1,51 +1,32 @@
+import Peer from "peerjs";
 import {
-    createContext,
     useEffect,
-    useState,
     useReducer,
-    useContext,
+    useState
 } from "react";
 import { useNavigate } from "react-router-dom";
-import Peer from "peerjs";
-import { peersReducer, PeerState } from "../reducers/peerReducer";
-import {
-    addPeerStreamAction,
-    addPeerNameAction,
-    removePeerStreamAction,
-    addAllPeersAction,  
-} from "../reducers/peerActions";
 import socketIOClient from "socket.io-client";
-import { UserContext } from "./UserProvider";
-import { IPeer } from "../types/peer"
+import RoomContext from '../contexts/roomContext';
+import useUser from '../hooks/useUser';
+import {
+    addAllPeersAction,
+    addPeerNameAction,
+    addPeerStreamAction,
+    removePeerStreamAction,
+} from "../reducers/peerActions";
+import { peersReducer } from "../reducers/peerReducer";
+import { IPeer } from "../types/peer";
 
 export const WS = "http://localhost:8080";
 export const ws = socketIOClient(WS);
 
-
-interface RoomValue {
-    stream?: MediaStream;
-    screenStream?: MediaStream;
-    peers: PeerState;
-    shareScreen: () => void;
-    roomId: string;
-    setRoomId: (id: string) => void;
-    screenSharingId: string;
-}
-
-export const RoomContext = createContext<RoomValue>({
-    peers: {},
-    shareScreen: () => {},
-    setRoomId: () => {},
-    screenSharingId: "",
-    roomId: "",
-});
 
 
 export const RoomProvider= ({ children }: {
     children: React.ReactNode;
 }) => {
     const navigate = useNavigate();
-    const { userName, userId } = useContext(UserContext);
+    const { userName, userId } = useUser();
     const [me, setMe] = useState<Peer>();
     const [stream, setStream] = useState<MediaStream>();
     const [screenStream, setScreenStream] = useState<MediaStream>();

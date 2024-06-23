@@ -7,7 +7,7 @@ import HomeLayout from './layouts/HomeLayout';
 import { loader as ingredientsLoader } from './pages/Ingredient.tsx';
 import { loader as mealsLoader } from './pages/Meal.tsx';
 import { loader as recipeLoader } from './pages/Recipe';
-import { Ingredient, IngredientLanding, Login, Main, Meal, Recipe, Register, User } from './pages/index';
+import { Ingredient, IngredientLanding, Login, Main, Meal, Recipe, Register, User, Meeting, Room } from './pages/index';
 import theme from './style/theme';
 
 export const queryClient = new QueryClient({
@@ -79,6 +79,19 @@ const router = createBrowserRouter([
         path: 'profile',
         element: <User />,
       },
+      {
+        path: 'meeting',
+        children: [
+          {
+            index: true,
+            element: <Meeting />,
+          },
+          {
+            path: ':roomId',
+            element: <Room />,
+          }
+        ],
+      }
     ],
   },
 ]);
