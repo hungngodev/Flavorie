@@ -16,8 +16,9 @@ export const MediaObject = z
   .object({
     type: z.enum(['image', 'video']),
     url: z.string(),
-    metadata: z.array(z.string()).optional(),
-    description: z.string().optional(),
+    file: z.instanceof(File).optional(),
+    metadata: z.array(z.any()),
+    description: z.string(),
   })
   .required({ type: true, url: true });
 

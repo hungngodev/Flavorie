@@ -14,6 +14,7 @@ const PostErorHandler = (fn: RequestHandler): RequestHandler => {
       return await fn(req, res, next);
     } catch (err) {
       if (err instanceof Error) {
+        console.log(err.message);
         return res.status(StatusCodes.CONFLICT).json({ error: err.message });
       } else {
         return res
@@ -26,7 +27,11 @@ const PostErorHandler = (fn: RequestHandler): RequestHandler => {
 
 export const createPostController = PostErorHandler(async (req, res) => {
   const postBody = req.body;
-  const createdPost = await buildPostDocument(postBody);
+  const postFiles = req.files;
+  console.log("at controller");
+  console.log(postBody);
+  console.log(postFiles);
+  const createdPost = await buildPostDocument(postFiles, postBody);
   if (!createdPost) {
     return null;
   }

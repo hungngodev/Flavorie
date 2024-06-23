@@ -1,17 +1,20 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, memo } from 'react';
 
-import { Box, HStack, Icon, IconButton, Image, StackProps } from '@chakra-ui/react';
+import { Box, HStack, Icon, IconButton, Image, StackProps, Button } from '@chakra-ui/react';
 
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { motion, useAnimationControls } from 'framer-motion';
 import { GoDotFill } from 'react-icons/go';
-import { MediaObjectType } from './MockPosts';
+import { MediaObjectType } from './types';
+import { X } from 'lucide-react';
 
 interface ImageSliderProps extends StackProps {
   slides: MediaObjectType[];
+  onClose?: (arg?: any) => void;
 }
 
-const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, ...props }) => {
+const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, onClose, ...props }) => {
+  const [imageSlides, setImageSlides] = useState<MediaObjectType[]>(slides);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [windowWidth, setWindowWidth] = useState(0);
   const [childrenCount, setChildrenCount] = useState(0);
@@ -24,7 +27,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, ...props })
       if (containerRef.current) {
         setWindowWidth(containerRef.current.clientWidth);
         if (childrenContainerRef.current) {
-          setChildrenCount(childrenContainerRef.current.childNodes.length);
+          setChildrenCount(imageSlides.length);
         }
       }
     };
@@ -37,6 +40,10 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, ...props })
       window.removeEventListener('resize', updateDimensions);
     };
   }, []);
+  useEffect(() => {
+    setImageSlides(slides);
+    setChildrenCount(slides.length);
+  }, [slides]);
 
   useEffect(() => {
     slideShift.start({
@@ -48,7 +55,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, ...props })
         mass: 3,
       },
     });
-  }, [currentIndex]);
+  }, [currentIndex, childrenCount]);
 
   const handleNextSlide = () => {
     setCurrentIndex((prev) => Math.min(prev + 1, childrenCount - 1));
@@ -60,42 +67,53 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, ...props })
   return (
     <Box
       position="relative"
-      backgroundImage={slides[currentIndex]?.url.toString()}
+      // backgroundImage={slides[currentIndex]?.url.toString()}
       backgroundRepeat="no-repeat"
       backgroundSize="cover"
       ref={containerRef}
       rounded="lg"
+      id="image-slider-container"
     >
       <Box
         position="relative"
         overflow="hidden"
         rounded="lg"
-        background="transparent"
-        backdropFilter="blur(30px) brightness(0.65)"
+        // background="transparent"
+        // backdropFilter="blur(30px) brightness(0.65)"
+        id="image-slider-background"
       >
-        <HStack
-          m={0}
-          p={0}
-          gap={0}
-          as={motion.div}
-          animate={slideShift}
-          alignItems="center"
-          ref={childrenContainerRef}
-          maxHeight="70dvh"
-        >
-          {slides.map((slide, index) => (
+        <HStack m={0} p={0} gap={0} as={motion.div} animate={slideShift} alignItems="center" ref={childrenContainerRef}>
+          {imageSlides.map((slide, index) => (
             <Box key={index} flex="0 0 auto" width={`${windowWidth}px`} marginInline="auto" rounded="lg">
-              <Image
-                key={`${slide.url}-${index}`}
-                src={slide.url}
-                alt={slide.description ?? `post-image - ${slide.url} - ${index}`}
-                objectFit="cover"
-                justifySelf="center"
-                alignSelf="center"
-                marginInline="auto"
-                zIndex={2}
-                rounded="lg"
-              />
+              {slide.type === 'image' ? (
+                <Image
+                  key={`${slide.url}-${index}`}
+                  src={slide.url}
+                  alt={slide.description ?? `post-image - ${slide.url} - ${index}`}
+                  objectFit="cover"
+                  justifySelf="center"
+                  alignSelf="center"
+                  marginInline="auto"
+                  zIndex={2}
+                  rounded="lg"
+                  maxHeight="100%"
+                />
+              ) : (
+                <Box
+                  as="video"
+                  key={`${slide.url}-${index}`}
+                  src={slide.url}
+                  controls
+                  objectFit="cover"
+                  justifySelf="center"
+                  alignSelf="center"
+                  marginInline="auto"
+                  zIndex={2}
+                  rounded="lg"
+                  maxHeight="100%"
+                  width="100%"
+                />
+              )}
             </Box>
           ))}
         </HStack>
@@ -123,6 +141,20 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, ...props })
               />
             ))}
           </HStack>
+        )}
+        {onClose && (
+          <Button
+            onClick={(e) => {
+              onClose(currentIndex);
+              setCurrentIndex((cur) => Math.max(cur - 1, 0));
+            }}
+            leftIcon={<X />}
+            position="absolute"
+            top={1}
+            right={1}
+          >
+            Remove
+          </Button>
         )}
       </Box>
 

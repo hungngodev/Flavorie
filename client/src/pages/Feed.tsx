@@ -3,10 +3,11 @@ import { QueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useEffect, useRef, useState } from 'react';
 import { Params } from 'react-router-dom';
-import { PostObjectType, PostResponseObjectType, parsePost } from '../components/community/post/MockPosts';
+import { PostObjectType, PostResponseObjectType, parsePost } from '../components/community/post/types';
 import Post from '../components/community/post/Post';
 import customFetch from '../utils/customFetch';
-
+import PostFormCard from '../components/community/post/form/PostFormCard';
+import { useAuth } from '../hooks/index';
 const fetchFeed = async ({
   pageParam = 1,
 }: {
@@ -79,6 +80,7 @@ const Feed = () => {
     }
   }, [data, fetchNextPage, status]);
 
+  const { currentUser } = useAuth();
   // ! to test the cache and dynamic resize
   // useEffect(() => {
   //   scrollVirtualizer.measurementsCache.forEach((item) => console.log(`item: ${item.index}, size: ${item.size}`));
@@ -92,10 +94,10 @@ const Feed = () => {
       height="100dvh"
       overflow="auto"
       backgroundColor="blackAlpha.50"
-      border="3px solid blue"
       paddingX={{ base: 0, lg: '10%', xl: '20%' }}
     >
-      <Box width="100%" position="relative" height={`${scrollVirtualizer.getTotalSize()}px`} border="1px solid red">
+      <PostFormCard />
+      <Box width="100%" position="relative" height={`${scrollVirtualizer.getTotalSize()}px`}>
         {scrollVirtualizer.getVirtualItems().map((virtualItem) => {
           const isLoaderRow = virtualItem.index > posts.length - 1;
           const post = posts[virtualItem.index];

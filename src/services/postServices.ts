@@ -1,3 +1,4 @@
+import { v2 as cloudinary } from "cloudinary";
 import { Document, Types } from "mongoose";
 import { BadRequestError, ServerError } from "../errors/customErrors.ts";
 import PostModel, { Post } from "../models/Post.ts";
@@ -38,7 +39,10 @@ export const getFeedDocument = async (
   return postLists.map(post => post.toJSON() as Document);
 };
 
-export const buildPostDocument = async (postBody: Post): Promise<string> => {
+export const buildPostDocument = async (
+  postFiles: any,
+  postBody: Post,
+): Promise<string> => {
   try {
     const {
       author,
@@ -50,24 +54,41 @@ export const buildPostDocument = async (postBody: Post): Promise<string> => {
       reviewCount,
       reactCount,
     } = postBody;
+    console.log("at service");
+    console.log(postBody);
+
     const getUser = await UserModel.findById(author);
 
     if (!getUser) {
+      console.log("no user");
       throw new BadRequestError("Invalid author");
     }
     if (!body || !header) {
+      console.log("no data");
       throw new BadRequestError("Missing information");
     }
+    let parsedMedia = [];
+    console.log(postFiles);
+    if (postFiles && postFiles.length > 0) {
+      parsedMedia = postFiles.map((file: any) => ({
+        type: file.mimetype.startsWith("image") ? "image" : "video",
+        url: file.path,
+        metadata: [file.fieldname, file.originalname],
+        description: file.originalName,
+      }));
+    }
+    console.log(parsedMedia);
     const postData = {
       author: author,
       header: header,
       body: body,
-      media: media,
+      media: parsedMedia,
       privacy: privacy,
       location: location,
       reviewCount: reviewCount,
       reactCount: reactCount,
     };
+    console.log(postData);
     const newPost = await PostModel.create(postData);
     if (!newPost) {
       throw new ServerError("Failed to create post");

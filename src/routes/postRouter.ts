@@ -1,5 +1,6 @@
 import { Router } from "express";
 import rateLimiter from "express-rate-limit";
+import multer from "multer";
 import {
   createPostController,
   deletePostController,
@@ -8,7 +9,10 @@ import {
 } from "../controllers/postController.ts";
 import { checkUser } from "../middleware/authMiddleware.ts";
 import { bindAuthor, checkAuthor } from "../middleware/postMiddleware.ts";
+import { storage } from "../services/cloudinary/cloudinaryServices.ts";
 import { catchAsync } from "../utils/catchAsync.ts";
+
+const upload = multer({ storage });
 
 const router = Router();
 const apiLimiter = rateLimiter({
@@ -19,7 +23,15 @@ const apiLimiter = rateLimiter({
 
 router.get("/");
 router.get("/feed", checkUser, apiLimiter, newFeedController);
-router.post("/post", checkUser, bindAuthor, apiLimiter, createPostController);
+router.post(
+  "/post",
+  apiLimiter,
+  checkUser,
+  upload.array("media"),
+  bindAuthor,
+
+  createPostController,
+);
 router.put(
   "/post/:postid",
   checkUser,

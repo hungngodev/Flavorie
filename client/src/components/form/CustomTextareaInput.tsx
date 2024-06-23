@@ -39,7 +39,7 @@ const CustomTextareaInput: React.ForwardRefRenderFunction<HTMLInputElement, Cust
         {control}
       </HStack>
       <FormHelperText>{helperText}</FormHelperText>
-      <Textarea {...fieldProps} ref={forwardedRef} {...props} variant={props.variant ?? 'outline'} />
+      <Textarea {...fieldProps} ref={forwardedRef} {...props} variant={props.variant ?? 'outline'} resize="none" />
       <FormErrorMessage>{errorText}</FormErrorMessage>
     </FormControl>
   );

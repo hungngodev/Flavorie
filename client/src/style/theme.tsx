@@ -1,3 +1,4 @@
+import { FaUserCircle } from 'react-icons/fa';
 const theme = {
   colors: {
     base: {
@@ -39,15 +40,19 @@ const theme = {
       300: '604F44',
       400: '3A2B22',
     },
-
-    // CDB6A8 #1B1212
+    palette_purple: '#736CED',
+    palette_indigo: '#9F9FED',
+    palette_lavender: '#D4C1EC',
+    palette_pink: '#FFC0CB',
+    palette_blue: '#BDE0FE',
   },
   components: {
     Heading: {
       baseStyle: {
         fontFamily: 'inherit',
-        fontWeight: 'normal',
+        fontWeight: 'semibold',
         color: 'inherit',
+        fontSize: 'lg',
       },
     },
     Text: {
@@ -63,6 +68,9 @@ const theme = {
         fontWeight: 'normal',
         userSelect: 'none',
       },
+    },
+    Avatar: {
+      icon: FaUserCircle,
     },
   },
 };
