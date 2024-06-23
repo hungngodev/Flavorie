@@ -26,7 +26,7 @@ import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Camera, Ellipsis, Images, SmilePlus, X } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import Webcam from 'react-webcam';
 import { z } from 'zod';
@@ -35,9 +35,10 @@ import customFetch from '../../../../utils/customFetch';
 import CustomTextInput from '../../../form/CustomTextInput';
 import CustomTextareaInput from '../../../form/CustomTextareaInput';
 import ImageSlider from '../ImageSlider';
-import { MediaObjectType } from '../types';
+import { MediaObjectType, parsePost } from '../types';
+import { PostFormCardProps } from './PostFormCard';
 
-interface PostFormExpandProps {
+interface PostFormExpandProps extends PostFormCardProps {
   isOpen: boolean;
   onClose: () => void;
 }
@@ -52,7 +53,7 @@ export const PostRequest = z.object({
 
 type PostRequestType = z.infer<typeof PostRequest>;
 
-const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose }) => {
+const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, updateFeed }) => {
   const [previewMedia, setPreviewMedia] = useState<MediaObjectType[]>([]);
 
   const webCamRef = useRef<Webcam>(null);
@@ -70,13 +71,16 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose }) => {
     formData.append('location', data.location);
 
     data.media.forEach((mediaObj) => {
-      formData.append('media', mediaObj.file); // Ensure the field name matches the one expected by multer
+      formData.append('media', mediaObj.file);
     });
 
     try {
-      console.log(data);
-      const response = await customFetch.post('/community/post', formData);
-      console.log(response);
+      await customFetch.post('/community/post', formData).then((res) => {
+        console.log(res);
+        const newPost = parsePost([res.data.post]);
+        updateFeed(newPost);
+        onClose();
+      });
     } catch (error) {
       console.error('Error posting data:', error);
     }
@@ -100,9 +104,6 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose }) => {
     },
     shouldFocusError: true,
   });
-  useEffect(() => {
-    console.log(errors);
-  }, [errors]);
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -130,6 +131,7 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose }) => {
     }
   };
 
+  // I have no idea what this is but basically it makes the result of capturing the webcam image into a file
   const capture = useCallback(() => {
     if (webCamRef.current) {
       const imageSrc = webCamRef.current.getScreenshot();

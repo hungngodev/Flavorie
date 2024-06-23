@@ -42,7 +42,7 @@ export const getFeedDocument = async (
 export const buildPostDocument = async (
   postFiles: any,
   postBody: Post,
-): Promise<string> => {
+): Promise<Document> => {
   try {
     const {
       author,
@@ -54,21 +54,18 @@ export const buildPostDocument = async (
       reviewCount,
       reactCount,
     } = postBody;
-    console.log("at service");
-    console.log(postBody);
 
     const getUser = await UserModel.findById(author);
 
     if (!getUser) {
-      console.log("no user");
       throw new BadRequestError("Invalid author");
     }
     if (!body || !header) {
-      console.log("no data");
       throw new BadRequestError("Missing information");
     }
+
+    // the media field in backend will only store the url of the image on cloudinary
     let parsedMedia = [];
-    console.log(postFiles);
     if (postFiles && postFiles.length > 0) {
       parsedMedia = postFiles.map((file: any) => ({
         type: file.mimetype.startsWith("image") ? "image" : "video",
@@ -77,7 +74,7 @@ export const buildPostDocument = async (
         description: file.originalName,
       }));
     }
-    console.log(parsedMedia);
+
     const postData = {
       author: author,
       header: header,
@@ -88,12 +85,17 @@ export const buildPostDocument = async (
       reviewCount: reviewCount,
       reactCount: reactCount,
     };
-    console.log(postData);
     const newPost = await PostModel.create(postData);
     if (!newPost) {
       throw new ServerError("Failed to create post");
     }
-    return newPost._id as string;
+    const returnPost = await PostModel.findById(newPost._id).populate({
+      path: "author",
+      select: "name avatar location ",
+    });
+
+    // Return the newly created post to reload the newfeed
+    return returnPost as Document;
   } catch (error) {
     throw new ServerError(`${error}`);
   }

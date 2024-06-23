@@ -1,34 +1,26 @@
-import { useAuth } from '../../../../hooks/index';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { PostObject, PostObjectType } from '../types';
-import { useState, memo } from 'react';
-import customFetch from '../../../../utils/customFetch';
-import { Images, SmilePlus, Camera } from 'lucide-react';
-import { useTheme } from '@chakra-ui/react';
 import {
+  Avatar,
+  Button,
   Card,
   CardBody,
-  CardHeader,
   CardFooter,
-  HStack,
-  VStack,
-  Button,
-  Textarea,
-  Input,
-  Text,
   Divider,
-  Avatar,
-  useDisclosure,
+  HStack,
   StackProps,
-  IconButton,
-  Box,
-  Tooltip,
+  useDisclosure,
+  useTheme,
 } from '@chakra-ui/react';
+import { Camera, Images, SmilePlus } from 'lucide-react';
+import { memo, useState } from 'react';
+import { useAuth } from '../../../../hooks/index';
+import { PostObjectType } from '../types';
 import PostFormExpand from './PostFormExpand';
 
-interface PostFormCardProps extends StackProps {}
+export interface PostFormCardProps extends StackProps {
+  updateFeed: (arg: PostObjectType[]) => void;
+}
 
-const PostFormCard = memo<PostFormCardProps>(() => {
+const PostFormCard = memo<PostFormCardProps>(({ updateFeed }) => {
   const [selectedButton, setSelectedButton] = useState<string | null>(null);
   const theme = useTheme();
   const Buttons = [
@@ -73,7 +65,7 @@ const PostFormCard = memo<PostFormCardProps>(() => {
                 {`What are you thinking today ${currentUser.username}?`}
               </Button>
             </HStack>
-            <PostFormExpand isOpen={isOpen} onClose={onClose} selectedButton={selectedButton} />
+            <PostFormExpand isOpen={isOpen} onClose={onClose} updateFeed={updateFeed} />
           </CardBody>
           <Divider color="blackAlpha.300" />
           <CardFooter paddingBlock={2}>
