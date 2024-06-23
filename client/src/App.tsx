@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
-import HomeLayout from './layouts/HomeLayout';
+import {HomeLayout, MeetingLayout, RoomLayout} from './layouts';
 import { loader as ingredientsLoader } from './pages/Ingredient.tsx';
 import { loader as mealsLoader } from './pages/Meal.tsx';
 import { loader as recipeLoader } from './pages/Recipe';
@@ -81,6 +81,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'meeting',
+        element:<MeetingLayout />,
         children: [
           {
             index: true,
@@ -88,7 +89,13 @@ const router = createBrowserRouter([
           },
           {
             path: 'room/:id',
-            element: <Room />,
+            element: <RoomLayout />,
+            children: [
+              {
+                index: true,
+                element: <Room />,
+              },
+            ],
           }
         ],
       }

@@ -48,8 +48,11 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: 'http://localhost:5173',
-    credentials: true
+    credentials: true,
+    methods: ["GET", "POST"],
+
 }, 
+
 maxHttpBufferSize: 1e8
 });
 
@@ -87,7 +90,7 @@ const port = process.env.PORT || 5100;
 
 try {
   await mongoose.connect(process.env.MONGODB_URL ?? "");
-  app.listen(port, () => {
+  server.listen(port, () => {
     console.log(`server running on PORT ${port}...`);
   });
 } catch (error) {

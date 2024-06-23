@@ -11,12 +11,10 @@ export const UserProvider= ({ children }: {
     );
 
     useEffect(() => {
-        const userName = uuidV4();
         localStorage.setItem("userName", userName);
     }, [userName]);
 
     useEffect(() => {
-        const userId = uuidV4();
         localStorage.setItem("userId", userId);
     }, [userId]);
 

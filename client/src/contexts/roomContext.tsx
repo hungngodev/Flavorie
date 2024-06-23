@@ -1,5 +1,6 @@
 import React from 'react';
 import {PeerState} from '../reducers/peerReducer';
+import {Peer} from 'peerjs';
 
 export type RoomContextType = {
     stream?: MediaStream;
@@ -9,6 +10,7 @@ export type RoomContextType = {
     roomId: string;
     setRoomId: (id: string) => void;
     screenSharingId: string;
+    me?: Peer;
 };
 
 const RoomContext = React.createContext<RoomContextType>({

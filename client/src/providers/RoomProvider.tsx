@@ -96,13 +96,12 @@ export const ws = io(WS, {
 
     useEffect(() => {
         
-        const peer = new Peer(userId, {
+        const peer = new Peer("", {
             host: "localhost",
             port: 9001,
             path:'/'
         });
         setMe(peer);
-
         try {
             navigator.mediaDevices
                 .getUserMedia({ video: true, audio: true })
@@ -144,6 +143,7 @@ export const ws = io(WS, {
     useEffect(() => {
         if (!me) return;
         if (!stream) return;
+    
         ws.on("user-joined", ({ peerId, userName: name }) => {
             console.log("user-joined", peerId, name);
             const call = me.call(peerId, stream, {
@@ -181,6 +181,7 @@ export const ws = io(WS, {
                 roomId,
                 setRoomId,
                 screenSharingId,
+                me,
             }}
         >
             {children}

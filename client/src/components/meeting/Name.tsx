@@ -6,7 +6,10 @@ export const NameInput: React.FC = () => {
         <input
             className="border rounded-md p-2 h-10 my-2 w-full"
             placeholder="Enter your name"
-            onChange={(e) => setUserName(e.target.value)}
+            onChange={(e) => {
+                setUserName(e.target.value)
+                console.log(e.target.value)
+            }}
             value={userName}
         />
     );

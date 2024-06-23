@@ -14,10 +14,12 @@ const ChatProvider= ({ children }: {
 
 }) => {
     const [chat, chatDispatch] = useReducer(chatReducer, {
-        messages: [],
+        messages: [
+
+        ],
         isChatOpen: false,
     });
-
+   
     const sendMessage = (message: string, roomId: string, author: string) => {
         const messageData: IMessage = {
             content: message,

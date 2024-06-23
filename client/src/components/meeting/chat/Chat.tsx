@@ -5,10 +5,9 @@ import { ChatInput } from "./ChatInput";
 
 export const Chat: React.FC = () => {
     const { chat } = useChat();
-
     return (
         <div
-            className="flex flex-col h-full justify-between"
+            className="flex flex-col  justify-between"
             data-testid="chat"
         >
             <div>

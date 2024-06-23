@@ -1,21 +1,20 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Chat, ChatButton, NameInput, ShareScreenButton, VideoPlayer } from "../components/meeting";
-import {useChat, useRoom, useUser} from "../hooks";
+import { useChat, useRoom, useUser } from "../hooks";
 import { ws } from '../providers/RoomProvider';
 import { PeerState } from "../reducers/peerReducer";
-import ChatProvider from "../providers/ChatProvider";
 
  const Room = () => {
     const { id } = useParams();
-    const { stream, screenStream, peers, shareScreen, screenSharingId, setRoomId } = useRoom();
-
+    const { stream, screenStream, peers, shareScreen, screenSharingId, setRoomId, me } = useRoom();
     const { userName, userId } = useUser();
     const { toggleChat, chat } = useChat();
-
     useEffect(() => {
+        console.log("peerId", me?.id);
+        console.log("UserId", userId);
         if (stream)
-            ws.emit("join-room", { roomId: id, peerId: userId, userName });
+            ws.emit("join-room", { roomId: id, peerId: me?.id, userName });
     }, [id, userId, stream, userName]);
 
     useEffect(() => {
@@ -28,9 +27,8 @@ import ChatProvider from "../providers/ChatProvider";
             : peers[screenSharingId]?.stream;
 
     const { [screenSharingId]: sharing, ...peersToShow } = peers;
-    console.log(sharing);
     return (
-        <ChatProvider>
+
         <div className="flex flex-col min-h-screen">
             <div className="bg-red-500 p-4 text-white">Room id {id}</div>
             <div className="flex grow">
@@ -53,8 +51,8 @@ import ChatProvider from "../providers/ChatProvider";
 
                     {Object.values(peersToShow as PeerState)
                         .filter((peer) => !!peer.stream)
-                        .map((peer) => (
-                            <div key={peer.peerId}>
+                        .map((peer, index) => (
+                            <div key={peer.peerId + index}>
                                 <VideoPlayer stream={peer.stream} />
                                 <div>{peer.userName}</div>
                             </div>
@@ -68,10 +66,13 @@ import ChatProvider from "../providers/ChatProvider";
             </div>
             <div className="h-28 fixed bottom-0 p-6 w-full flex items-center justify-center border-t-2 bg-white">
                 <ShareScreenButton onClick={shareScreen} />
-                <ChatButton onClick={toggleChat} />
+                <ChatButton onClick={()=>{
+
+                    toggleChat()
+                    }} />
             </div>
         </div>
-        </ChatProvider>
+
     );
 };
 

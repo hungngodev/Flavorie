@@ -110,7 +110,6 @@ export default function Ingredient() {
       );
     }
   }, [cartData, cartStatus, setValue]);
-  console.log(cartData, cartStatus);
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'cart',
