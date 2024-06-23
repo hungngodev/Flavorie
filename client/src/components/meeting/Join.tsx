@@ -1,5 +1,5 @@
 import { NameInput } from "./Name";
-import { Button } from "./common/Button";
+import { Button } from "./Button";
 import { ws } from '../../providers/RoomProvider';
 
 const Join: React.FC = () => {

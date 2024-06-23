@@ -5,7 +5,7 @@ import {
     useState
 } from "react";
 import { useNavigate } from "react-router-dom";
-import socketIOClient from "socket.io-client";
+import {io} from "socket.io-client";
 import RoomContext from '../contexts/roomContext';
 import useUser from '../hooks/useUser';
 import {
@@ -17,12 +17,15 @@ import {
 import { peersReducer } from "../reducers/peerReducer";
 import { IPeer } from "../types/peer";
 
-export const WS = "http://localhost:8080";
-export const ws = socketIOClient(WS);
+export const WS = "http://localhost:5100";
+export const ws = io(WS, {
+    withCredentials: true,
+    autoConnect: true,
+});
 
 
 
-export const RoomProvider= ({ children }: {
+ const RoomProvider= ({ children }: {
     children: React.ReactNode;
 }) => {
     const navigate = useNavigate();
@@ -184,3 +187,4 @@ export const RoomProvider= ({ children }: {
         </RoomContext.Provider>
     );
 };
+export default RoomProvider;

@@ -17,6 +17,9 @@ import receiptScanRouter from "./routes/receiptScanRouter.ts";
 import userRouter from "./routes/userRouter.ts";
 import bugRouter from "./routes/bugRouter.ts";
 import reviewRouter from "./routes/reviewRouter.ts";
+import http from "http";
+import { Server } from "socket.io";
+import { roomHandler } from "./handler/roomHandler.ts";
 
 
 dotenv.config();
@@ -29,12 +32,35 @@ if (process.env.NODE_ENV === "development") {
 }
 app.use(express.static(path.resolve(__dirname, "./client/dist")));
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
 app.use(mongoSanitize());
+
+
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: 'http://localhost:5173',
+    credentials: true
+}, 
+maxHttpBufferSize: 1e8
+});
+
+io.on("connection", (socket) => {
+    console.log("a user connected");
+    roomHandler(socket);
+    socket.on("disconnect", () => {
+        console.log("user disconnected");
+    });
+});
+
 
 app.get("/", (req, res) => {
   res.send("Hello World");

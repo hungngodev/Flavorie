@@ -1,14 +1,13 @@
-import { useContext, useState } from "react";
-import { ChatContext } from "../../context/ChatContext";
-import { RoomContext } from "../../context/RoomContext";
-import { UserContext } from "../../context/UserContext";
-import { Button } from "../common/Button";
+import { useState } from "react";
+import { useChat, useRoom, useUser } from '../../../hooks';
+
+import { Button } from "../Button";
 
 export const ChatInput: React.FC = () => {
     const [message, setMessage] = useState("");
-    const { sendMessage } = useContext(ChatContext);
-    const { userId } = useContext(UserContext);
-    const { roomId } = useContext(RoomContext);
+    const { sendMessage } = useChat();
+    const { userId } = useUser();
+    const { roomId } = useRoom();
     return (
         <div>
             <form

@@ -87,7 +87,7 @@ const router = createBrowserRouter([
             element: <Meeting />,
           },
           {
-            path: ':roomId',
+            path: 'room/:id',
             element: <Room />,
           }
         ],

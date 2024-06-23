@@ -1,5 +1,4 @@
-import useRoom from "../../../hooks/useRoom";
-import useUser from "../../../hooks/useUser";
+import {useRoom, useUser} from '../../../hooks';
 import { IMessage } from "../../../types/chat";
 import { cn } from "../../../utils/cn";
 

@@ -1,4 +1,4 @@
-import { Button } from "./common/Button";
+import { Button } from "./Button";
 
 export const ChatButton: React.FC<{ onClick: () => void }> = ({ onClick }) => {
     return (

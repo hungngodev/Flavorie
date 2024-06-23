@@ -1,11 +1,10 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Chat, ChatButton, NameInput, ShareScreenButton, VideoPlayer } from "../components/meeting";
-import useChat from "../hooks/useChat";
-import useRoom from '../hooks/useRoom';
-import useUser from '../hooks/useUser';
+import {useChat, useRoom, useUser} from "../hooks";
 import { ws } from '../providers/RoomProvider';
 import { PeerState } from "../reducers/peerReducer";
+import ChatProvider from "../providers/ChatProvider";
 
  const Room = () => {
     const { id } = useParams();
@@ -31,6 +30,7 @@ import { PeerState } from "../reducers/peerReducer";
     const { [screenSharingId]: sharing, ...peersToShow } = peers;
     console.log(sharing);
     return (
+        <ChatProvider>
         <div className="flex flex-col min-h-screen">
             <div className="bg-red-500 p-4 text-white">Room id {id}</div>
             <div className="flex grow">
@@ -71,6 +71,7 @@ import { PeerState } from "../reducers/peerReducer";
                 <ChatButton onClick={toggleChat} />
             </div>
         </div>
+        </ChatProvider>
     );
 };
 

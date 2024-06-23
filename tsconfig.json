@@ -1,5 +1,7 @@
 {
-  "include": ["src/**/*"],
+  "include": ["src/**/*",
+  "peerjs/**/*"
+],
   "compilerOptions": {
     "resolveJsonModule": true,
     "lib": [

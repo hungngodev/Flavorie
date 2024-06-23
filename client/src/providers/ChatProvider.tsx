@@ -9,7 +9,7 @@ import { chatReducer } from "../reducers/chatReducer";
 import { IMessage } from "../types/chat";
 import { ws } from "./RoomProvider";
 
-export const ChatProvider= ({ children }: {
+const ChatProvider= ({ children }: {
     children: React.ReactNode;
 
 }) => {
@@ -60,3 +60,5 @@ export const ChatProvider= ({ children }: {
         </ChatContext.Provider>
     );
 };
+
+export default ChatProvider;

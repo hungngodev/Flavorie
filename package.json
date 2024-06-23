@@ -9,8 +9,9 @@
     "build": "npx tsc",
     "server": "nodemon --watch 'src/**/*' -e ts --exec \"node --no-warnings --loader ts-node/esm ./src/index.ts\" ",
     "client": "cd client && npm run dev",
+    "peerjs": "cd peerjs && npm run dev",
     "scan-receipts": "cd scan-receipts && python3 app.py",
-    "dev": "concurrently --kill-others-on-fail  \"npm run server\" \"npm run client\""
+    "dev": "concurrently --kill-others-on-fail \"npm run peerjs\" \"npm run server\" \"npm run client\" "
   },
   "keywords": [],
   "author": "",
@@ -57,6 +58,8 @@
     "react-hook-form": "^7.51.4",
     "react-router-dom": "^6.22.3",
     "react-toastify": "^10.0.5",
+    "socket.io": "^4.7.5",
+    "uuid": "^10.0.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
@@ -69,6 +72,7 @@
     "@types/morgan": "^1.9.9",
     "@types/node": "^20.12.2",
     "@types/react": "^18.3.1",
+    "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^5.52.0",
     "autoprefixer": "^10.4.19",
     "eslint-config-prettier": "^9.1.0",
