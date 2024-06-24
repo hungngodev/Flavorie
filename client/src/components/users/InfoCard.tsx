@@ -10,7 +10,7 @@ export interface PersonalProps {
       src: string;
       username: string;
     };
-    firstname: string;
+    name: string;
     lastname: string;
     email: string;
     phone: string;
@@ -22,12 +22,12 @@ export interface PersonalProps {
     };
 };
 
-const UserCard: React.FC<PersonalProps> = ({ avatar, firstname, lastname, email, phone, address }) => {
+const UserCard: React.FC<PersonalProps> = ({ avatar, name, lastname, email, phone, address }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     avatar: avatar.src,
     username: avatar.username,
-    firstname,
+    name,
     lastname,
     email,
     phone,
@@ -39,31 +39,76 @@ const UserCard: React.FC<PersonalProps> = ({ avatar, firstname, lastname, email,
 
   const toast = useToast();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const { name, value } = e.target;
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     [name]: value,
+  //   }));
+  // };
 
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData((prev) => ({
-          ...prev,
-          avatar: reader.result as string,
-        }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  // const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   if (e.target.files && e.target.files[0]) {
+  //     const file = e.target.files[0];
+  //     const reader = new FileReader();
+  //     reader.onloadend = () => {
+  //       setFormData((prev) => ({
+  //         ...prev,
+  //         avatar: reader.result as string,
+  //       }));
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+  // };
 
   const handleEditClick = () => setIsEditing(true);
 
-  const handleSaveClick = () => {
+  // const handleSaveClick = () => {
+  //   setIsEditing(false);
+  //   toast({
+  //     title: 'Profile updated.',
+  //     description: 'Your profile information has been successfully updated.',
+  //     status: 'success',
+  //     duration: 5000,
+  //     isClosable: true,
+  //   });
+  // };
+
+  // const handleCancelClick = () => {
+  //   setIsEditing(false);
+  //   setFormData({
+  //     avatar: avatar.src,
+  //     username: avatar.username,
+  //     name,
+  //     lastname,
+  //     email,
+  //     phone,
+  //     city: address.city,
+  //     state: address.state,
+  //     country: address.country,
+  //     zipcode: address.zipcode,
+  //   });
+  // };
+
+  const [userInfo, setUserInfo] = useState({
+    avatar: avatar.src,
+    username: avatar.username,
+    name,
+    lastname,
+    email,
+    phone,
+    city: address.city,
+    state: address.state,
+    country: address.country,
+    zipcode: address.zipcode,
+  });
+
+  const { handleSubmit, control, setValue, reset } = useForm({
+    defaultValues: userInfo,
+  });
+
+  const onSubmit = (data: any) => {
+    setUserInfo(data);
     setIsEditing(false);
     toast({
       title: 'Profile updated.',
@@ -73,21 +118,20 @@ const UserCard: React.FC<PersonalProps> = ({ avatar, firstname, lastname, email,
       isClosable: true,
     });
   };
-
   const handleCancelClick = () => {
     setIsEditing(false);
-    setFormData({
-      avatar: avatar.src,
-      username: avatar.username,
-      firstname,
-      lastname,
-      email,
-      phone,
-      city: address.city,
-      state: address.state,
-      country: address.country,
-      zipcode: address.zipcode,
-    });
+    reset(userInfo);
+  };
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setValue('avatar', reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -96,7 +140,7 @@ const UserCard: React.FC<PersonalProps> = ({ avatar, firstname, lastname, email,
         {/* <Flex ml="4" mt="4" mr="4" mb="2"> */}
         {isEditing ? (
           <Box position="absolute" top="2" right="2">
-            <Button size="sm" onClick={handleSaveClick} mr="2">
+            <Button size="sm" onClick={handleSubmit(onSubmit)} mr="2">
               Save
             </Button>
             <Button variant="outline" size="sm" onClick={handleCancelClick}>
@@ -109,7 +153,7 @@ const UserCard: React.FC<PersonalProps> = ({ avatar, firstname, lastname, email,
             color={theme.colors.palette_purple}
             aria-label="Edit"
             icon={<FaEllipsis />}
-            onClick={handleEditClick}
+            onClick={() => setIsEditing(true)}
             position="absolute"
             top="2"
             right="2"
@@ -121,7 +165,7 @@ const UserCard: React.FC<PersonalProps> = ({ avatar, firstname, lastname, email,
           <HStack>
             {isEditing ? (
               <Box position="relative" width="fit-content" mt="4">
-                <Avatar size="xl" name={formData.username} src={formData.avatar} />
+                <Avatar size="xl" name={userInfo.username} src={userInfo.avatar} />
                 <Box
                   position="absolute"
                   top="0"
@@ -149,21 +193,29 @@ const UserCard: React.FC<PersonalProps> = ({ avatar, firstname, lastname, email,
                 <Input id="avatar-upload" type="file" accept="image/*" onChange={handleAvatarChange} display="none" />
               </Box>
             ) : (
-              <Avatar size="xl" name={avatar.username} src={avatar.src} mt="4"/>
+              <Avatar size="xl" name={userInfo.username} src={userInfo.avatar} mt="4" />
             )}
             <Box ml="4" mt="4">
               <Heading mb="2" size="md" fontWeight="bold">
                 {isEditing ? (
-                  <Input value={formData.username} name="username" onChange={handleInputChange} h="25px" size="sm" />
+                  <Controller
+                    name="username"
+                    control={control}
+                    render={({ field }) => <Input {...field} h="25px" size="sm" />}
+                  />
                 ) : (
-                  avatar.username
+                  userInfo.username
                 )}
               </Heading>
               <Text>
                 {isEditing ? (
-                  <Input value={formData.email} name="email" onChange={handleInputChange} h="25px" size="sm" />
+                  <Controller
+                    name="email"
+                    control={control}
+                    render={({ field }) => <Input {...field} h="25px" size="sm" />}
+                  />
                 ) : (
-                  email
+                  userInfo.email
                 )}
               </Text>
             </Box>
@@ -176,38 +228,48 @@ const UserCard: React.FC<PersonalProps> = ({ avatar, firstname, lastname, email,
       <CardBody>
         <HStack spacing="20px" ml="19">
           <Box w="80px">
-            <Text color="base.300" mb="1">
-              Phone
-            </Text>
-            <Text color="base.300" mb="1">
-              City
-            </Text>
-            <Text color="base.300" mb="1">
-              State
-            </Text>
-            <Text color="base.300" mb="1">
-              Country
-            </Text>
-            <Text color="base.300" mb="1">
-              Zipcode
-            </Text>
+            <Text color="base.300" mb="1"> Phone </Text>
+            <Text color="base.300" mb="1"> City </Text>
+            <Text color="base.300" mb="1"> State </Text>
+            <Text color="base.300" mb="1"> Country </Text>
+            <Text color="base.300" mb="1"> Zipcode </Text>
           </Box>
           <Box w="240px">
             {isEditing ? (
               <>
-                <Input value={formData.phone} name="phone" onChange={handleInputChange} h="25px" mb="1" />
-                <Input value={formData.city} name="city" onChange={handleInputChange} h="25px" mb="1" />
-                <Input value={formData.state} name="state" onChange={handleInputChange} h="25px" mb="1" />
-                <Input value={formData.country} name="country" onChange={handleInputChange} h="25px" mb="1" />
-                <Input value={formData.zipcode} name="zipcode" onChange={handleInputChange} h="25px" mb="1" />
+                <Controller
+                  name="phone"
+                  control={control}
+                  render={({ field }) => <Input {...field} h="25px" mb="1" />}
+                />
+                <Controller
+                  name="city"
+                  control={control}
+                  render={({ field }) => <Input {...field} h="25px" mb="1" />}
+                />
+                <Controller
+                  name="state"
+                  control={control}
+                  render={({ field }) => <Input {...field} h="25px" mb="1" />}
+                />
+                <Controller
+                  name="country"
+                  control={control}
+                  render={({ field }) => <Input {...field} h="25px" mb="1" />}
+                />
+                <Controller
+                  name="zipcode"
+                  control={control}
+                  render={({ field }) => <Input {...field} h="25px" mb="1" />}
+                />
               </>
             ) : (
               <>
-                <Text mb="1">{phone}</Text>
-                <Text mb="1">{address.city}</Text>
-                <Text mb="1">{address.state}</Text>
-                <Text mb="1">{address.country}</Text>
-                <Text mb="1">{address.zipcode}</Text>
+                <Text mb="1">{userInfo.phone}</Text>
+                <Text mb="1">{userInfo.city}</Text>
+                <Text mb="1">{userInfo.state}</Text>
+                <Text mb="1">{userInfo.country}</Text>
+                <Text mb="1">{userInfo.zipcode}</Text>
               </>
             )}
           </Box>
