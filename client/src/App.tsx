@@ -6,9 +6,10 @@ import { Slide, ToastContainer } from 'react-toastify';
 import { IngredientProps } from './components/ingredients/NutritionCard';
 import HomeLayout from './layouts/HomeLayout';
 import { loader as FeedLoader } from './pages/Feed';
-import { Feed, Login, Main, Register, User } from './pages/index';
+import { Feed, Login, Main, Register, User, Receipt } from './pages/index';
 import theme from './style/theme';
-
+import { store as reduxStore } from './store/store';
+import { Provider as ReduxProvider } from 'react-redux';
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -81,6 +82,10 @@ const router = createBrowserRouter([
         path: 'feed',
         element: <Feed />,
         loader: FeedLoader(queryClient),
+      },
+      {
+        path: 'receipt',
+        element: <Receipt />,
       },
     ],
   },
@@ -937,19 +942,21 @@ const mockdata: IngredientProps = {
 function App() {
   return (
     <ChakraBaseProvider theme={extendTheme(theme)}>
-      <QueryClientProvider client={queryClient}>
-        {/* <ImageScan /> */}
-        <RouterProvider router={router} />
-        {/* <IndividualMeal
+      <ReduxProvider store={reduxStore}>
+        <QueryClientProvider client={queryClient}>
+          {/* <ImageScan /> */}
+          <RouterProvider router={router} />
+          {/* <IndividualMeal
           recipeData={backendData}
           calories='340 kcal'
           averageStar="4.5"
           numReviews="3"
         /> */}
-        {/* <NutritionCard {...mockdata} /> */}
-        <ToastContainer autoClose={5000} limit={3} transition={Slide} />
-        <ReactQueryDevtools />
-      </QueryClientProvider>
+          {/* <NutritionCard {...mockdata} /> */}
+          <ToastContainer autoClose={5000} limit={3} transition={Slide} />
+          <ReactQueryDevtools />
+        </QueryClientProvider>
+      </ReduxProvider>
     </ChakraBaseProvider>
   );
 }

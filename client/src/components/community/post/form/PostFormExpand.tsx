@@ -37,6 +37,8 @@ import CustomTextareaInput from '../../../form/CustomTextareaInput';
 import ImageSlider from '../ImageSlider';
 import { MediaObjectType, parsePost } from '../types';
 import { PostFormCardProps } from './PostFormCard';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchPost } from '../../../../slices/posts/CreatePost';
 
 interface PostFormExpandProps extends PostFormCardProps {
   isOpen: boolean;
@@ -51,7 +53,7 @@ export const PostRequest = z.object({
   location: z.string(),
 });
 
-type PostRequestType = z.infer<typeof PostRequest>;
+export type PostRequestType = z.infer<typeof PostRequest>;
 
 const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, updateFeed }) => {
   const [previewMedia, setPreviewMedia] = useState<MediaObjectType[]>([]);
@@ -61,23 +63,18 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, update
   const [useWebcam, setUseWebcam] = useState<boolean>(false);
   const { currentUser } = useAuth();
   const theme = useTheme();
-
+  const dispatch = useDispatch();
+  const postError = useSelector((state: any) => state.createPost.error);
   const submitPost: SubmitHandler<PostRequestType> = async (data) => {
-    const formData = new FormData();
-
-    formData.append('header', data.header);
-    formData.append('body', data.body);
-    formData.append('privacy', data.privacy);
-    formData.append('location', data.location);
-
-    data.media.forEach((mediaObj) => {
-      formData.append('media', mediaObj.file);
-    });
     try {
-      const response = await customFetch.post('/community/post', formData);
-      const newPost = parsePost([response.data.post]);
-      updateFeed(newPost);
-      onClose();
+      const response = await dispatch(fetchPost(data)); // Dispatch and await the async action
+      if (fetchPost.fulfilled.match(response)) {
+        const newPost = parsePost([response.payload]);
+        updateFeed(newPost);
+        onClose();
+      } else {
+        console.error('Error posting data:', response.error);
+      }
     } catch (error) {
       console.error('Error posting data:', error);
     }
