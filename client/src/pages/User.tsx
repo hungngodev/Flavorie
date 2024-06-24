@@ -106,7 +106,7 @@ const NutrientChart = (nutrients: NutrientData) => {
       borderRadius="md"
       boxShadow="md"
       bg="white"
-      h="380px"
+      objectFit="fill"
       alignItems="center"
       flexDirection="column"
       justifyContent="center"
@@ -323,8 +323,8 @@ function User({
   const badgeColor = getBadgeColor(badgeLevel);
 
   return (
-    <Grid templateRows="repeat(3, 1fr)" templateColumns="repeat(10, 3fr)" mt="3">
-      <GridItem rowSpan={3} colSpan={3} objectFit="cover" ml="2" mr="4">
+    <Grid templateRows="repeat(3, 2fr)" templateColumns="repeat(10, 3fr)" mt="3">
+      <GridItem rowSpan={3} colSpan={3} objectFit="cover" ml="4" mr="4">
         <Box height="100%" width="100%">
           <UserCard {...info} />
           <TagSelect />
@@ -375,16 +375,16 @@ function User({
               </Tbody>
             </Table>
           </Box>
-          <Box mt="4" mb="3">
+          <Box mt="3" mb="2">
             <Heading mb="2" fontSize="22" fontWeight="bold">
               Statistics
             </Heading>
-            <Box borderRadius="md" boxShadow="md" p="4" border="1px" borderColor="base.100">
+            <Box borderRadius="md" boxShadow="md" p="4" border="1px" borderColor={theme.colors.palette_lavender}>
               <VStack bg="white">
                 <HStack h="50px" w="100%" mb="2">
-                  <Box borderRadius="md" w="32%" border="1px" borderColor="base.100">
+                  <Box borderRadius="md" w="32%" border="1px" borderColor={theme.colors.palette_lavender}>
                     <HStack ml="5">
-                      <FaListAlt size={24} color="lightblue" />
+                      <FaListAlt size={24} color={theme.colors.palette_blue} />
                       <Box mr="2" mb="1">
                         <Text ml="2" fontSize="lg" fontWeight="bold">
                           {totalPosts}
@@ -396,7 +396,7 @@ function User({
                     </HStack>
                   </Box>
                   <Spacer />
-                  <Box w="26%" borderRadius="md" border="1px" borderColor="base.100">
+                  <Box w="26%" borderRadius="md" border="1px" borderColor={theme.colors.palette_lavender}>
                     <HStack ml="5">
                       <FaUtensils size={24} color="gray" />
                       <Box mr="2" mb="1">
@@ -410,7 +410,7 @@ function User({
                     </HStack>
                   </Box>
                   <Spacer />
-                  <Box w="36%" borderRadius="md" border="1px" borderColor="base.100">
+                  <Box w="36%" borderRadius="md" border="1px" borderColor={theme.colors.palette_lavender}>
                     <HStack ml="5">
                       <FaHeart size={24} color="pink" />
                       <Box mr="2" mb="1">
@@ -425,7 +425,7 @@ function User({
                   </Box>
                 </HStack>
                 <HStack h="50px" w="100%">
-                  <Box w="32%" borderRadius="md" border="1px" borderColor="base.100">
+                  <Box w="32%" borderRadius="md" border="1px" borderColor={theme.colors.palette_lavender}>
                     <HStack ml="5">
                       <FaStar size={24} color="gold" />
                       <Box mr="2" mb="1">
@@ -439,7 +439,7 @@ function User({
                     </HStack>
                   </Box>
                   <Spacer />
-                  <Box w="26%" borderRadius="md" border="1px" borderColor="base.100">
+                  <Box w="26%" borderRadius="md" border="1px" borderColor={theme.colors.palette_lavender}>
                     <HStack ml="5">
                       <FaMedal size={24} color="gold" />
                       <Box mr="2" mb="1">
@@ -453,7 +453,7 @@ function User({
                     </HStack>
                   </Box>
                   <Spacer />
-                  <Box w="36%" borderRadius="md" border="1px" borderColor="base.100">
+                  <Box w="36%" borderRadius="md" border="1px" borderColor={theme.colors.palette_lavender}>
                     <HStack ml="5">
                       <FaCheckCircle size={24} color={badgeColor} />
                       <Box mr="2" mb="1">
@@ -461,12 +461,11 @@ function User({
                           {badgeLevel}
                         </Text>
                         <Text ml="2" color="base.400" fontSize="14">
-                          Badge Level
+                          Badge level
                         </Text>
                       </Box>
                     </HStack>
                   </Box>
-                  
                 </HStack>
               </VStack>
             </Box>
@@ -474,23 +473,35 @@ function User({
           {/* <Box>Allergies</Box> */}
         </Box>
       </GridItem>
-      <GridItem rowSpan={1} colSpan={3} ml="4">
+      <GridItem rowSpan={3} colSpan={3} ml="4" mr="4">
         <Box flexDirection="column" alignItems="center" justifyContent="center">
-          <Heading fontSize="22" fontWeight="bold" mt="5" mb="1">
+          <Heading fontSize="22" fontWeight="bold" mt="2" mb="1">
             Daily Summary
           </Heading>
-          <NutrientChart {...nutrientData} />
+          <Box>
+            <NutrientChart {...nutrientData} />
+          </Box>
+        </Box>
+        <Box mt="4">
+          <Heading fontSize="22" fontWeight="bold" mb={1}>
+            Weekly Summary
+          </Heading>
+          <Box mb="2">
+            <WeeklySummary {...weeklySummaryData} />
+          </Box>
+          <WeeklyCaloriesChart data={weeklyCaloriesData} />
+        
         </Box>
       </GridItem>
-      <GridItem rowSpan={2} colSpan={4} ml="2" mr="2" mt="1">
+      <GridItem rowSpan={2} colSpan={4} ml="2" mr="2" mt="2">
         <Box>
-          <Heading fontSize="22" fontWeight="bold" mb={2}>
+          <Heading fontSize="22" fontWeight="bold" mb={1}>
             Recent Meals
           </Heading>
           <RecentMeals meals={recentMeals} />
         </Box>
       </GridItem>
-      <GridItem rowSpan={2} colSpan={3} mt="2" ml="4">
+      {/* <GridItem rowSpan={2} colSpan={3} mt="2" ml="4">
         <Box>
           <Heading fontSize="22" fontWeight="bold" mb={2}>
             Weekly Summary
@@ -502,7 +513,7 @@ function User({
             <WeeklyCaloriesChart data={weeklyCaloriesData} />
           </Box>
         </Box>
-      </GridItem>
+      </GridItem> */}
     </Grid>
   );
 }

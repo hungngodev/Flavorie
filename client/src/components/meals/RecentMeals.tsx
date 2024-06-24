@@ -1,6 +1,7 @@
 import React from 'react'; 
 import { Box, Heading, Image, Link, Text, HStack, VStack } from '@chakra-ui/react';
 import { useEffect, useRef } from 'react';
+import theme from '../../style/theme';
 
 export interface RecentMeal {
     image: string;
@@ -25,10 +26,9 @@ export function RecentMeals({ meals }: RecentMealsProps) {
 
     return (
         <VStack width={'full'} height={'400px'} mt={'1vh'} mb={'1vh'}>
-            <Box width="full" height="42px">
+            <Box width="full" height="40px">
                 <HStack bg="rgba(153, 102, 255, 0.3)" borderRadius="md" height="100%" width="100%" spacing={0}>
                     <Box
-                    borderBottom="1px solid lightgray"
                     textAlign="center"
                     height="100%"
                     width="55%"
@@ -40,7 +40,6 @@ export function RecentMeals({ meals }: RecentMealsProps) {
                     <Text fontWeight="bold">Meal</Text>
                     </Box>
                     <Box
-                    borderBottom="1px solid lightgray"
                     height="100%"
                     width="22%"
                     display="flex"
@@ -50,7 +49,6 @@ export function RecentMeals({ meals }: RecentMealsProps) {
                     <Text fontWeight="bold">Calories</Text>
                     </Box>
                     <Box
-                    borderBottom="1px solid lightgray"
                     textAlign="center"
                     height="100%"
                     width="23%"
@@ -62,7 +60,7 @@ export function RecentMeals({ meals }: RecentMealsProps) {
                     </Box>
                 </HStack>
             </Box>
-            <Box height="300px" width="full" overflowY="auto" ref={scrollRef} border="1px solid lightgray" borderTop="none">
+            <Box height="269px" width="full" overflowY="auto" ref={scrollRef} border="1px" borderColor={theme.colors.palette_lavender}  borderRadius="md">
             {meals.length > 0 ? (
                 meals.map((meal, index) => (
                 <Box
@@ -70,14 +68,15 @@ export function RecentMeals({ meals }: RecentMealsProps) {
                     display="flex"
                     alignItems="center"
                     bg="white"
-                    p={3}
-                    borderBottom="1px solid lightgray"
+                    p={2}
+                    borderBottom="1px"
+                    borderColor={theme.colors.palette_lavender}
                     _hover={{ bg: 'base.50', color: 'black' }}
                     width="full"
                 >
                     <Image src={meal.image} alt={meal.title} boxSize="50px" borderRadius="full" mr="4" />
                     <Box flex="1">
-                        <Link href={meal.infoLink} fontWeight="bold">
+                        <Link href={meal.infoLink} fontWeight="bold" color="purple.500">
                             {meal.title}
                         </Link>
                     </Box>
@@ -96,7 +95,7 @@ export function RecentMeals({ meals }: RecentMealsProps) {
                     <Text fontSize="lg" fontWeight="bold">
                         Let's get cooking!
                     </Text>
-                    <Text>Start adding your favorite meals to see them here.</Text>
+                    <Text fontSize="md" mt="2">Start adding your favorite meals to see them here.</Text>
                 </Box>
             )}
             </Box>

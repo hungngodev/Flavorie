@@ -547,6 +547,8 @@ const PersonalDashboardWrapper = () => {
       src: "../public/images/1989-Taylors-Version.webp",
       username: "Alex B",
     },
+    firstname: "Alex",
+    lastname: "B",
     email: "taylorswift@gmail.com",
     phone: "+1 (202) 444 1989",
     address: {
