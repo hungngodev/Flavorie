@@ -16,11 +16,9 @@ import { useAuth } from '../../../../hooks/index';
 import { PostObjectType } from '../types';
 import PostFormExpand from './PostFormExpand';
 
-export interface PostFormCardProps extends StackProps {
-  updateFeed: (arg: PostObjectType[]) => void;
-}
+export interface PostFormCardProps extends StackProps {}
 
-const PostFormCard = memo<PostFormCardProps>(({ updateFeed }) => {
+const PostFormCard = memo<PostFormCardProps>(() => {
   const [selectedButton, setSelectedButton] = useState<string | null>(null);
   const theme = useTheme();
   const Buttons = [
@@ -65,7 +63,7 @@ const PostFormCard = memo<PostFormCardProps>(({ updateFeed }) => {
                 {`What are you thinking today ${currentUser.username}?`}
               </Button>
             </HStack>
-            <PostFormExpand isOpen={isOpen} onClose={onClose} updateFeed={updateFeed} />
+            <PostFormExpand isOpen={isOpen} onClose={onClose} />
           </CardBody>
           <Divider color="blackAlpha.300" />
           <CardFooter paddingBlock={2}>

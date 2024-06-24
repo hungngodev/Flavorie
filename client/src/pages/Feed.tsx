@@ -8,6 +8,9 @@ import PostFormCard from '../components/community/post/form/PostFormCard';
 import { PostObjectType, PostResponseObjectType, parsePost } from '../components/community/post/types';
 import { useAuth } from '../hooks/index';
 import customFetch from '../utils/customFetch';
+import { useDispatch, useSelector } from 'react-redux';
+import { addPosts, selectPosts, selectPostsByIndex, selectPostsLength } from '../slices/posts/PostState';
+import { AppDispatch, RootState } from '../store/store';
 const fetchFeed = async ({
   pageParam = 1,
 }: {
@@ -33,8 +36,10 @@ export const loader =
 
 const Feed = () => {
   const parentRef = useRef<HTMLDivElement>(null);
-  const [posts, setPosts] = useState<PostObjectType[]>([]);
-
+  // const [posts, setPosts] = useState<PostObjectType[]>([]);
+  const dispatch = useDispatch<AppDispatch>();
+  const posts = useSelector((state: RootState) => selectPosts(state));
+  const postsLength = useSelector((state: RootState) => selectPostsLength(state));
   const { data, error, status, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: ['newsfeed'],
     queryFn: fetchFeed,
@@ -43,7 +48,7 @@ const Feed = () => {
   });
 
   const scrollVirtualizer = useVirtualizer({
-    count: posts.length,
+    count: postsLength,
     getScrollElement: () => parentRef.current,
     estimateSize: (index) => 400,
     gap: 50,
@@ -67,15 +72,15 @@ const Feed = () => {
       return;
     }
 
-    if (lastItem.index >= posts.length - 1 && hasNextPage && !isFetchingNextPage) {
+    if (lastItem.index >= postsLength - 1 && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
-  }, [hasNextPage, fetchNextPage, posts.length, isFetchingNextPage, scrollVirtualizer.getVirtualItems()]);
+  }, [hasNextPage, fetchNextPage, postsLength, isFetchingNextPage, scrollVirtualizer.getVirtualItems()]);
 
   useEffect(() => {
     if (status === 'success' && data) {
       const postload = data?.pages.flatMap((page) => parsePost(page.data));
-      setPosts(postload ?? []);
+      dispatch(addPosts(postload));
     }
   }, [data, fetchNextPage, status]);
 
@@ -91,13 +96,13 @@ const Feed = () => {
       paddingX={{ base: 0, lg: '10%', xl: '20%' }}
     >
       <PostFormCard
-        updateFeed={(arg) => {
-          setPosts((prev) => arg.concat(prev));
-        }}
+      // updateFeed={(arg) => {
+      //   setPosts((prev) => arg.concat(prev));
+      // }}
       />
       <Box width="100%" position="relative" height={`${scrollVirtualizer.getTotalSize()}px`}>
         {scrollVirtualizer.getVirtualItems().map((virtualItem) => {
-          const isLoaderRow = virtualItem.index > posts.length - 1;
+          const isLoaderRow = virtualItem.index > postsLength - 1;
           const post = posts[virtualItem.index];
           return isLoaderRow ? (
             hasNextPage ? (

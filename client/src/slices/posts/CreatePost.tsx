@@ -12,7 +12,7 @@ const initialState: PostState = {
   error: null,
 };
 
-export const fetchPost = createAsyncThunk('createPost/fetchPost', async (data: PostRequestType) => {
+export const createPost = createAsyncThunk('createPost/fetchPost', async (data: PostRequestType) => {
   const formData = new FormData();
 
   formData.append('header', data.header);
@@ -27,23 +27,23 @@ export const fetchPost = createAsyncThunk('createPost/fetchPost', async (data: P
   return response.data.post;
 });
 
-export const NewFeedSlice = createSlice({
+export const CreatePost = createSlice({
   name: 'createPost',
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchPost.pending, (state) => {
+      .addCase(createPost.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(fetchPost.fulfilled, (state) => {
+      .addCase(createPost.fulfilled, (state) => {
         state.status = 'succeeded';
       })
-      .addCase(fetchPost.rejected, (state, action) => {
+      .addCase(createPost.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error;
       });
   },
 });
 
-export default NewFeedSlice.reducer;
+export default CreatePost.reducer;

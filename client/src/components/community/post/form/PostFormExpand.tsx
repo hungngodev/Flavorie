@@ -38,7 +38,9 @@ import ImageSlider from '../ImageSlider';
 import { MediaObjectType, parsePost } from '../types';
 import { PostFormCardProps } from './PostFormCard';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchPost } from '../../../../slices/posts/CreatePost';
+import { createPost } from '../../../../slices/posts/CreatePost';
+import { AppDispatch, RootState } from '../../../../store/store';
+import { addPosts } from '../../../../slices/posts/PostState';
 
 interface PostFormExpandProps extends PostFormCardProps {
   isOpen: boolean;
@@ -55,25 +57,26 @@ export const PostRequest = z.object({
 
 export type PostRequestType = z.infer<typeof PostRequest>;
 
-const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, updateFeed }) => {
-  const [previewMedia, setPreviewMedia] = useState<MediaObjectType[]>([]);
-
-  const webCamRef = useRef<Webcam>(null);
-
-  const [useWebcam, setUseWebcam] = useState<boolean>(false);
-  const { currentUser } = useAuth();
+const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose }) => {
   const theme = useTheme();
-  const dispatch = useDispatch();
-  const postError = useSelector((state: any) => state.createPost.error);
+
+  const [previewMedia, setPreviewMedia] = useState<MediaObjectType[]>([]);
+  const webCamRef = useRef<Webcam>(null);
+  const [useWebcam, setUseWebcam] = useState<boolean>(false);
+
+  const { currentUser } = useAuth();
+
+  const dispatch = useDispatch<AppDispatch>();
+
   const submitPost: SubmitHandler<PostRequestType> = async (data) => {
     try {
-      const response = await dispatch(fetchPost(data)); // Dispatch and await the async action
-      if (fetchPost.fulfilled.match(response)) {
+      const response = await dispatch(createPost(data)); // Dispatch and await the async action
+      if (createPost.fulfilled.match(response)) {
         const newPost = parsePost([response.payload]);
-        updateFeed(newPost);
+        dispatch(addPosts(newPost));
         onClose();
       } else {
-        console.error('Error posting data:', response.error);
+        console.error('Error posting data:', response);
       }
     } catch (error) {
       console.error('Error posting data:', error);
