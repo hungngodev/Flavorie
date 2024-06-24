@@ -35,7 +35,7 @@ import customFetch from '../../../../utils/customFetch';
 import CustomTextInput from '../../../form/CustomTextInput';
 import CustomTextareaInput from '../../../form/CustomTextareaInput';
 import ImageSlider from '../ImageSlider';
-import { MediaObjectType, parsePost } from '../types';
+import { MediaObjectType, parsePost, PostRequest, PostRequestType } from '../types';
 import { PostFormCardProps } from './PostFormCard';
 import { useDispatch, useSelector } from 'react-redux';
 import { createPost } from '../../../../slices/posts/CreatePost';
@@ -46,16 +46,6 @@ interface PostFormExpandProps extends PostFormCardProps {
   isOpen: boolean;
   onClose: () => void;
 }
-
-export const PostRequest = z.object({
-  header: z.string().min(10, 'Title must be at least 10 characters').max(100, 'Title must not exceed 100 characters'),
-  body: z.string().min(1, 'Body is required'),
-  media: z.array(z.object({ file: z.instanceof(File) })),
-  privacy: z.enum(['public', 'private', 'friend']),
-  location: z.string(),
-});
-
-export type PostRequestType = z.infer<typeof PostRequest>;
 
 const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose }) => {
   const theme = useTheme();

@@ -12,15 +12,13 @@ const BaseObject = z
   })
   .required();
 
-export const MediaObject = z
-  .object({
-    type: z.enum(['image', 'video']),
-    url: z.string(),
-    file: z.instanceof(File).optional(),
-    metadata: z.array(z.any()),
-    description: z.string(),
-  })
-  .required({ type: true, url: true });
+export const MediaObject = z.object({
+  type: z.enum(['image', 'video']),
+  url: z.string(),
+  file: z.instanceof(File).optional(),
+  metadata: z.array(z.any()),
+  description: z.string(),
+});
 
 export const ReactObject = BaseObject.extend({
   body: z.enum(['like', 'dislike']),
@@ -64,7 +62,7 @@ export const PostObject = BaseObject.extend({
   location: z.string(),
   privacy: Privacy,
   reviews: z.array(ReviewObject).optional(),
-  reacts: z.array(ReactObject).optional(),
+  reacts: z.array(z.string()).optional(),
   shares: z.array(z.string()).optional(),
   date: z.date().optional(),
 }).required({
@@ -86,12 +84,23 @@ export const PostResponseObject = z.object({
   location: z.string(),
   privacy: Privacy,
   media: z.array(MediaObject.extend({ _id: z.string() })),
+  react: z.array(z.string()),
+  // review: z.array(ReviewObject.extend({ _id: z.string() })),
   reactCount: z.number(),
   reviewCount: z.number(),
   createdAt: z.date(),
   updatedAt: z.date(),
   _v: z.number(),
 });
+export const PostRequest = z.object({
+  header: z.string().min(10, 'Title must be at least 10 characters').max(100, 'Title must not exceed 100 characters'),
+  body: z.string().min(1, 'Body is required'),
+  media: z.array(z.object({ file: z.instanceof(File) })),
+  privacy: z.enum(['public', 'private', 'friend']),
+  location: z.string(),
+});
+
+export type PostRequestType = z.infer<typeof PostRequest>;
 
 export type MediaObjectType = z.infer<typeof MediaObject>;
 export type PostObjectType = z.infer<typeof PostObject>;
@@ -118,7 +127,7 @@ export const parsePost = (backEndPosts: PostResponseObjectType[]) => {
     location: post.location,
     privacy: post.privacy,
     reviews: [],
-    reacts: [],
+    reacts: post.react,
     date: post.createdAt,
   }));
   return frontEndPosts;

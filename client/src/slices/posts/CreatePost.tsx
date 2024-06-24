@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { PostRequestType } from '../../components/community/post/form/PostFormExpand';
+import { PostRequestType } from '../../components/community/post/types';
 import customFetch from '../../utils/customFetch';
 import { z } from 'zod';
 

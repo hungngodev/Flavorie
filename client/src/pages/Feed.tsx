@@ -9,7 +9,7 @@ import { PostObjectType, PostResponseObjectType, parsePost } from '../components
 import { useAuth } from '../hooks/index';
 import customFetch from '../utils/customFetch';
 import { useDispatch, useSelector } from 'react-redux';
-import { addPosts, selectPosts, selectPostsByIndex, selectPostsLength } from '../slices/posts/PostState';
+import { addPosts, selectPosts, selectPostsLength } from '../slices/posts/PostState';
 import { AppDispatch, RootState } from '../store/store';
 const fetchFeed = async ({
   pageParam = 1,
@@ -95,11 +95,7 @@ const Feed = () => {
       backgroundColor="blackAlpha.50"
       paddingX={{ base: 0, lg: '10%', xl: '20%' }}
     >
-      <PostFormCard
-      // updateFeed={(arg) => {
-      //   setPosts((prev) => arg.concat(prev));
-      // }}
-      />
+      <PostFormCard />
       <Box width="100%" position="relative" height={`${scrollVirtualizer.getTotalSize()}px`}>
         {scrollVirtualizer.getVirtualItems().map((virtualItem) => {
           const isLoaderRow = virtualItem.index > postsLength - 1;
@@ -123,6 +119,7 @@ const Feed = () => {
               marginInline="auto"
               width="100%"
               height="auto"
+              index={virtualItem.index}
             />
           );
         })}

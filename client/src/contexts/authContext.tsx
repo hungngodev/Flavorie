@@ -2,6 +2,7 @@ import React from 'react';
 
 export type AuthContextType = {
   currentUser: {
+    id: string, 
     username: string;
     avatar: string;
     email: string;
@@ -13,7 +14,8 @@ export type AuthContextType = {
 };
 
 const AuthContext = React.createContext<AuthContextType>({
-  currentUser: { username: '', avatar: '', email: '', location: 'my city', status: 'unauthenticated' },
+  currentUser: { 
+    id: '', username: '', avatar: '', email: '', location: 'my city', status: 'unauthenticated' },
   logout: () => {},
   setUser: () => {},
 });
