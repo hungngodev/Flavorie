@@ -58,9 +58,10 @@ export const buildPostDocument = async (
       reviewCount,
       reactCount,
     } = postBody;
+    // console.log(postFiles);
+    // console.log(postBody);
 
     const getUser = await UserModel.findById(author);
-
     if (!getUser) {
       throw new BadRequestError("Invalid author");
     }
@@ -83,7 +84,7 @@ export const buildPostDocument = async (
       author: author,
       header: header,
       body: body,
-      media: parsedMedia,
+      media: parsedMedia.length > 0 ? parsedMedia : media,
       privacy: privacy,
       location: location,
       reviewCount: reviewCount,
@@ -101,6 +102,7 @@ export const buildPostDocument = async (
     // Return the newly created post to reload the newfeed
     return returnPost as Document;
   } catch (error) {
+    console.log(error);
     throw new ServerError(`${error}`);
   }
 };

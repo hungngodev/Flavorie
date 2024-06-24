@@ -86,7 +86,7 @@ const PostFooter = memo<PostFooterProps>(({ reacts, reviews, shares, postid, ...
               _focus={{ backgroundColor: 'transparent' }}
             />
           </Tooltip>
-          <Text zIndex={2}>{button.content?.length ?? 0}</Text>
+          <Text zIndex={2}>{reacts?.length ?? 0}</Text>
         </HStack>
       ))}
     </HStack>

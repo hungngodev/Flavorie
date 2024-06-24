@@ -73,14 +73,11 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, update
     data.media.forEach((mediaObj) => {
       formData.append('media', mediaObj.file);
     });
-
     try {
-      await customFetch.post('/community/post', formData).then((res) => {
-        console.log(res);
-        const newPost = parsePost([res.data.post]);
-        updateFeed(newPost);
-        onClose();
-      });
+      const response = await customFetch.post('/community/post', formData);
+      const newPost = parsePost([response.data.post]);
+      updateFeed(newPost);
+      onClose();
     } catch (error) {
       console.error('Error posting data:', error);
     }
@@ -110,17 +107,17 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, update
     name: 'media',
   });
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'image' | 'video') => {
+  // add file to the useField and update the state for preview
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target || !e.target.files) {
       return;
     }
     const file = e.target.files[0];
-    console.log(file);
     if (file) {
       setPreviewMedia((prev) => [
         ...prev,
         {
-          type,
+          type: file.type.includes('image') ? 'image' : 'video',
           url: URL.createObjectURL(file),
           file,
           metadata: [],
@@ -128,6 +125,7 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, update
         },
       ]);
       append({ file: file });
+      console.log(previewMedia);
     }
   };
 
@@ -188,7 +186,7 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, update
                     <Avatar name={currentUser.username} src={currentUser.avatar} />
                     <CustomTextInput
                       placeholder="Title"
-                      fieldprops={fieldProps} // Replace "fieldprops" with "fieldProps"
+                      fieldprops={fieldProps}
                       variant="ghost"
                       fontSize="xl"
                       fontWeight="semibold"
@@ -277,7 +275,7 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, update
                   accept="image/*,video/*"
                   variant="ghost"
                   onChange={(e) => {
-                    handleFileUpload(e, 'image');
+                    handleFileUpload(e);
                   }}
                   sx={{
                     '::file-selector-button': {

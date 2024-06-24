@@ -1,6 +1,18 @@
-import { v2 as cloudinary } from "cloudinary";
+import { v2 as cloudinary, UploadApiResponse } from "cloudinary";
 import dotenv from "dotenv";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
+
+type ResourceType = "image" | "video";
+
+interface CloudinaryOptions {
+  resource_type: ResourceType;
+  chunk_size: number;
+  folder: string;
+  use_filename: boolean;
+  unique_filename: boolean;
+  overwrite: boolean;
+  eager: { quality: "auto"; format: "auto" }[];
+}
 
 if (process.env.NODE_ENV !== "production") {
   dotenv.config();
@@ -18,6 +30,9 @@ const storage = new CloudinaryStorage({
     return {
       folder: process.env.CLOUDINARY_FOLDER || "",
       allowedFormats: ["jpeg", "png", "jpg", "mp4", "avi", "mov"],
+      resource_type: "auto",
+      transformation: [{ quality: "auto", fetch_format: "auto" }],
+      chunk_size: 5000000, // 5MB
     };
   },
 });

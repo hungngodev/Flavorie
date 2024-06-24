@@ -8,12 +8,22 @@ import {
   reactPostController,
   updatePostController,
 } from "../controllers/postController.ts";
+import { PostError } from "../errors/customErrors.ts";
 import { checkUser } from "../middleware/authMiddleware.ts";
-import { bindAuthor, checkAuthor } from "../middleware/postMiddleware.ts";
+import {
+  bindAuthor,
+  checkAuthor,
+  handleMediaFiles,
+} from "../middleware/postMiddleware.ts";
 import { storage } from "../services/cloudinary/cloudinaryServices.ts";
 import { catchAsync } from "../utils/catchAsync.ts";
 
-const upload = multer({ storage });
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 1024 * 1024 * 10, // 500 MB limit
+  },
+});
 
 const router = Router();
 const apiLimiter = rateLimiter({
@@ -28,9 +38,10 @@ router.post(
   "/post",
   apiLimiter,
   checkUser,
-  upload.array("media"),
+  upload.array("media"), // req.body.media -> req.files
+  // req.user.userId -> req.body.author
+  // handleMediaFiles,
   bindAuthor,
-
   createPostController,
 );
 router.put(
