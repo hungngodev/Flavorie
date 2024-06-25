@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import z from "zod";
 import { BadRequestError } from "../errors/customErrors.ts";
 import { ReviewSchema } from "../models/Review.ts"
-import ExpressError from "../utils/ExpressError";
+import ExpressError from "../utils/ExpressError.ts";
 
 // login
 export const logInData = z.object({

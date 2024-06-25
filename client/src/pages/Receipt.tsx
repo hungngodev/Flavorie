@@ -14,7 +14,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { QueryClient } from '@tanstack/react-query';
 import { Focus } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { Params, useParams } from 'react-router-dom';
 import { z } from 'zod';
@@ -87,42 +87,52 @@ export type ReceiptRequest = z.infer<typeof ReceiptRequest>;
 const Receipt = () => {
   const {id} = useParams()
   const {notificationDetail, fetchNotificationById} = useNotification()
-  
   useEffect(() => {
         if (id){
             fetchNotificationById(id)
         }
     }, [id, fetchNotificationById])
+  
+    useEffect(() => {
+      if (notificationDetail){
+        localStorage.setItem('notificationDetail', JSON.stringify(notificationDetail.message.data))
+      }
+    }, [notificationDetail])
+
 
   const {
     control,
     handleSubmit,
     watch,
-    reset,
+    // reset,
     formState: { errors },
   } = useForm<ReceiptFieldType>({
     resolver: zodResolver(ReceiptFieldObject),
-    defaultValues: {
-      receipts:
-        notificationDetail?.message.data?.length
-          ? notificationDetail.message.data?.map((receipt: any) => {
-              return {
-                name: receipt.name.toLowerCase(),
-                quantity: receipt.quantity,
-                image: receipt['potential_matches'][0]['potential_image'],
-                price: receipt.price,
-                suggested: {
-                  display: false,
-                  items: receipt['potential_matches'].map((item: any) => ({
-                    name: item['potential_name'] ?? item,
-                    img: item['potential_image'] ?? defaultImg,
-                  })),
-                },
-              };
-            })
-          : [{ name: '', image: defaultImg, quantity: '0', price: '0.0', suggested: { display: false, items: [] } }],
-    },
+    defaultValues: 
+    {
+      receipts: 
+      localStorage.getItem('notificationDetail') ? 
+      JSON.parse(localStorage.getItem('notificationDetail')).map((receipt: any) => {
+        return {
+          name: receipt.name.toLowerCase(),
+          quantity: receipt.quantity,
+          image: receipt['potential_matches'][0]['potential_image'],
+          price: receipt.price,
+          suggested: {
+            display: false,
+            items: receipt['potential_matches'].map((item: any) => ({
+              name: item['potential_name'],
+              img: item['potential_image']
+            }))
+          }
+        }
+      }) : [{ name: '', image: defaultImg, quantity: '0', price: '0.0', suggested: { display: false, items: [] } }],
+  
+      
+    }
+
   });
+
 
   useEffect(() => {
     console.log(errors);
@@ -135,6 +145,7 @@ const Receipt = () => {
   // this function handles the submission of the form
   const submitReceipts: SubmitHandler<ReceiptFieldType> = (receiptResponse) => {
     console.log(receiptResponse);
+    localStorage.removeItem('notificationDetail')
     // actual submit logic will be added later
   };
 

@@ -107,6 +107,23 @@ function ReceiptField<T extends ZodType<any, any, any>>({
     options: parseOption(field.suggested.items.map((item: any) => item?.name)),
   });
 
+  const handleSuggestionChange = (newValue: any) => {
+    const selectedItem = field.suggested.items.find(item => item.name === newValue.value);
+    update(index, fields, {
+      name: newValue.value,
+      image: selectedItem.img,
+      suggested: {
+        ...field.suggested,
+        display: false,
+      },
+    });
+    setMenuSuggestion({
+      label: selectedItem.name,
+      options: parseOption(field.suggested.items.map((item: any) => item?.name))
+    })
+  };
+
+  //get data from input => set suggestion => set input
   const updateReceipt = useDebouncedCallback((val: any) => {
     if(val === ""){
       return;
@@ -159,7 +176,7 @@ function ReceiptField<T extends ZodType<any, any, any>>({
           borderRadius="lg"
           width="90%"
           // src={field.suggested.items[0].img}
-          src={watch(`receipts.${index}.suggested.items[0].img` as Path<z.infer<T>>) ?? field?.image}
+          src={watch(`receipts.${index}.suggested.items.img` as Path<z.infer<T>>) ?? field?.image}
           alt="receipt image"
         />
       </GridItem>
@@ -182,9 +199,10 @@ function ReceiptField<T extends ZodType<any, any, any>>({
                 paddingBlock={field.suggested.display ? '0.75em' : '0'}
                 fontSize="xl"
                 variant="ghost"
-                onChange={(value) => {
-                  updateReceipt(value.target.value);
-                  fieldProps.onChange(value);
+                onChange={(e) => {
+                  // updateReceipt(value.target.value);
+                  // fieldProps.onChange(e.target.value);
+                  update(index, fields, {name: e.target.value})
                 }}
                 onBlur={(e) => {
                   toggleChange()
@@ -227,7 +245,7 @@ function ReceiptField<T extends ZodType<any, any, any>>({
           <Controller
             control={control}
             name={`receipts.${index}.name` as FieldPath<z.infer<T>>}
-            render={({ field: { ...fieldProps } }) => {
+            render={({ field}) => {
               return (
                 <FormControl
                   border="1px"
@@ -241,9 +259,15 @@ function ReceiptField<T extends ZodType<any, any, any>>({
                     chakraStyles={menuStyles}
                     selectedOptionColor="teal"
                     defaultValue={menuSuggestion.options[0]}
+                    value={menuSuggestion.options.find(option => option.value === field.value) || menuSuggestion.options[0]}
+
                     options={[menuSuggestion]}
                     onChange={(newValue: any) => {
-                      fieldProps.onChange(newValue?.value);
+                      field.onChange(newValue.value)
+                      
+                      handleSuggestionChange(newValue);
+                      
+
                     }}
                   />
                 </FormControl>

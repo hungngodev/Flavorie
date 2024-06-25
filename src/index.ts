@@ -15,7 +15,7 @@ import ingredientRouter from "./routes/ingredientRouter.ts";
 import mealRouter from "./routes/mealRouter.ts";
 import userRouter from "./routes/userRouter.ts";
 import postRouter from "./routes/postRouter.ts";
-import reviewRouter from "./routes/reviewRouter.ts";
+// import reviewRouter from "./routes/reviewRouter.ts";
 
 import { createServer } from "http";
 import  {setUpSocketIO}  from "./socketio/socketio.ts";
@@ -65,7 +65,7 @@ app.use("/api/meal", mealRouter);
 app.use("/api/ingredient", ingredientRouter);
 // app.use("/api/scan-receipt", receiptScanRouter)
 app.use("/api/community", postRouter);
-app.use("/api/community/reviews", reviewRouter);
+// app.use("/api/community/reviews", reviewRouter);
 
 // app.use("*", (req, res) => {
 //   res.status(404).json({ msg: "not found" });

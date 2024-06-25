@@ -46,7 +46,8 @@ const NotificationProvider: React.FC<NotificationContextProviderProps> = ({
       const parsedData = NotificationSchema.safeParse(response.data.currNotification)
       if (parsedData.success){
         setNotificationDetail(parsedData.data);
-        // console.log(parsedData.data)
+        localStorage.setItem('notificationDetail', JSON.stringify(parsedData.data.message.data))
+        console.log(parsedData.data)
         return parsedData.data
       } else {
         return null
@@ -67,6 +68,9 @@ const NotificationProvider: React.FC<NotificationContextProviderProps> = ({
         // setNotifications((prevNotis) =>
         //   prevNotis.filter((noti) => (noti._id !== notificationId)),
         // );
+        setNotifications((prevNotis) => 
+          prevNotis.map((noti) => noti._id === notificationId ? {...noti, status: true} : noti)
+        )
         setCntNotifications((prevCount) => prevCount - 1);
       });
       socket.on('updateNotificationDelete', (notificationId, wasUnread) => {
