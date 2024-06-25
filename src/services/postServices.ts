@@ -1,4 +1,3 @@
-import { v2 as cloudinary } from "cloudinary";
 import { Document, Types } from "mongoose";
 import {
   BadRequestError,
@@ -6,7 +5,11 @@ import {
   ServerError,
 } from "../errors/customErrors.ts";
 import PostModel, { Post } from "../models/Post.ts";
+import ReviewModel from "../models/Review.ts";
 import UserModel from "../models/UserModel.ts";
+import parseMedia from "../utils/parseMedia.ts";
+import parsePublicId from "../utils/parsePublicId.ts";
+import { cloudinary } from "./cloudinary/cloudinaryServices.ts";
 
 export const getSinglePostDocument = async (
   postId: string,
@@ -48,16 +51,8 @@ export const buildPostDocument = async (
   postBody: Post,
 ): Promise<Document> => {
   try {
-    const {
-      author,
-      header,
-      body,
-      media,
-      privacy,
-      location,
-      reviewCount,
-      reactCount,
-    } = postBody;
+    const { author, header, body, privacy, location, reviewCount, reactCount } =
+      postBody;
     // console.log(postFiles);
     // console.log(postBody);
 
@@ -68,23 +63,13 @@ export const buildPostDocument = async (
     if (!body || !header) {
       throw new BadRequestError("Missing information");
     }
-
-    // the media field in backend will only store the url of the image on cloudinary
-    let parsedMedia = [];
-    if (postFiles && postFiles.length > 0) {
-      parsedMedia = postFiles.map((file: any) => ({
-        type: file.mimetype.startsWith("image") ? "image" : "video",
-        url: file.path,
-        metadata: [file.fieldname, file.originalname],
-        description: file.originalName,
-      }));
-    }
+    const mediaData = parseMedia(postFiles);
 
     const postData = {
       author: author,
       header: header,
       body: body,
-      media: parsedMedia.length > 0 ? parsedMedia : media,
+      media: mediaData,
       privacy: privacy,
       location: location,
       reviewCount: reviewCount,
@@ -108,30 +93,43 @@ export const buildPostDocument = async (
 };
 export const updatePostDocument = async (
   postId: string,
-  body: Partial<Post>,
-): Promise<string> => {
+  postBody: Partial<Post>,
+  postFiles: any,
+): Promise<Document> => {
+  const { author, header, body, privacy, location, react, review } = postBody;
   try {
-    if (!body) {
+    if (!postBody) {
       throw new BadRequestError("Missing data");
     }
-    if ("author" in body) {
+    if (author) {
       throw new BadRequestError("Cannot change author");
     }
+    const currentPost = await PostModel.findById(postId);
+
+    if (!currentPost) {
+      throw new PostError("Post not found");
+    }
+    const mediaData = parseMedia(postFiles);
     const updateData = {
-      header: body.header,
-      body: body.body,
-      media: body.media,
-      privacy: body.privacy,
-      location: body.location,
-      review: body.review,
+      header: header,
+      body: body,
+      media: [...currentPost.media, ...mediaData],
+      privacy: privacy,
+      location: location,
+      react: react,
+      review: review,
     };
+    console.log("update data", updateData);
+
     const updatedPost = await PostModel.findByIdAndUpdate(postId, updateData, {
       new: true,
     });
+
     if (!updatedPost) throw new ServerError("Failed to update post");
 
     await updatedPost.save();
-    return updatedPost._id as string;
+    // return the updated post document to update front end post
+    return updatedPost;
   } catch (err) {
     throw new ServerError(`${err}`);
   }
@@ -143,6 +141,46 @@ export const deletePostDocument = async (postId: string) => {
     if (!post) {
       throw new ServerError("Post not found");
     }
+
+    // delete all files in cloudinary
+    const mediaFiles = post.media;
+
+    mediaFiles.forEach(async file => {
+      if (!file.url) throw new ServerError("No valid url");
+      const publicId = parsePublicId(file.url);
+      await cloudinary.uploader.destroy(publicId, err => {
+        if (err) console.log(err);
+      });
+    });
+
+    const reviews = post.review;
+    const deleteQueue: Types.ObjectId[] = [];
+
+    // bfs to collect all review documents
+    while (reviews.length > 0) {
+      const queueSize = reviews.length;
+      for (let i = 0; i < queueSize; i++) {
+        const review = reviews.shift();
+        if (review) {
+          deleteQueue.push(review._id as Types.ObjectId);
+          if (review.childrenReview.length > 0) {
+            reviews.push(...review.childrenReview);
+          }
+        }
+      }
+    }
+    // use bulkwrite to send multiple delete operations in one batch, reducing network round-trips
+    if (deleteQueue.length > 0) {
+      const bulkOps = deleteQueue.map(reviewId => ({
+        deleteOne: { filter: { _id: reviewId } },
+      }));
+
+      const bulkResult = await ReviewModel.bulkWrite(bulkOps);
+      if (bulkResult.deletedCount !== deleteQueue.length) {
+        throw new PostError("Failed to delete some reviews");
+      }
+    }
+
     const deletedPost = await PostModel.deleteOne({ _id: postId });
     if (deletedPost.deletedCount === 0) {
       throw new ServerError("Failed to delete post");
@@ -151,6 +189,49 @@ export const deletePostDocument = async (postId: string) => {
     throw new ServerError(`${err}`);
   }
 };
+
+// export const deletePostDocument = async (postId: string) => {
+//   try {
+//     const post = await PostModel.findById(postId);
+//     if (!post) {
+//       throw new PostError("Post not found");
+//     }
+//     const reviews = post.review;
+//     const deleteQueue: Types.ObjectId[] = [];
+
+//     // bfs to collect all documents
+//     while (reviews.length > 0) {
+//       const queueSize = reviews.length;
+//       for (let i = 0; i < queueSize; i++) {
+//         const review = reviews.shift();
+//         if (review) {
+//           deleteQueue.push(review._id as Types.ObjectId);
+//           if (review.childrenReview.length > 0) {
+//             reviews.push(...review.childrenReview);
+//           }
+//         }
+//       }
+//     }
+
+//     // use bulkwrite to send multiple delete operations in one batch, reducing network round-trips
+//     if (deleteQueue.length > 0) {
+//       const bulkOps = deleteQueue.map(reviewId => ({
+//         deleteOne: { filter: { _id: reviewId } },
+//       }));
+
+//       const bulkResult = await ReviewModel.bulkWrite(bulkOps);
+//       if (bulkResult.deletedCount !== deleteQueue.length) {
+//         throw new PostError("Failed to delete some reviews");
+//       }
+//     }
+//     const deletedPost = await PostModel.deleteOne({ _id: postId });
+//     if (deletedPost.deletedCount === 0) {
+//       throw new PostError("Failed to delete post");
+//     }
+//   } catch (err) {
+//     throw new ServerError(`${err}`);
+//   }
+// };
 
 export const reactPostDocument = async (
   userId: string,
