@@ -1,10 +1,19 @@
 import { configureStore } from '@reduxjs/toolkit';
-import createPostReducer from '../slices/posts/CreatePost';
-import postsReducer from '../slices/posts/PostState';
+import {
+  createPostReducer,
+  postReducer,
+  likePostReducer,
+  editPostReducer,
+  deletePostReducer,
+} from '../slices/posts/index';
+
 export const store = configureStore({
   reducer: {
+    posts: postReducer,
     createPost: createPostReducer,
-    posts: postsReducer, // Add your createPost slice here
+    likePost: likePostReducer,
+    editPost: editPostReducer,
+    deletePost: deletePostReducer,
   },
 });
 
