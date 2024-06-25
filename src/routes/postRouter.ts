@@ -37,20 +37,24 @@ router.get("/feed", checkUser, apiLimiter, newFeedController);
 router.post(
   "/post",
   apiLimiter,
+  upload.array("media"),
   checkUser,
-  upload.array("media"), // req.body.media -> req.files
+  // req.body.media -> req.files
   // req.user.userId -> req.body.author
   // handleMediaFiles,
   bindAuthor,
   createPostController,
 );
+
 router.put(
   "/post/:postid",
+  apiLimiter,
+  upload.array("media"),
   checkUser,
   catchAsync(checkAuthor),
-  apiLimiter,
   updatePostController,
 );
+
 router.delete(
   "/post/:postid",
   checkUser,
@@ -58,6 +62,7 @@ router.delete(
   apiLimiter,
   deletePostController,
 );
+
 router.post("/post/react/:postid", checkUser, apiLimiter, reactPostController);
 
 export default router;

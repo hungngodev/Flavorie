@@ -10,6 +10,8 @@ export const checkAuthor = async (
   next: NextFunction,
 ) => {
   if (req.user) {
+    console.log(req.body);
+    console.log(req.files);
     const post = await PostModel.findOne({ _id: req.params.postid });
     if (!post) {
       throw new PostError("Post not found");
@@ -17,7 +19,6 @@ export const checkAuthor = async (
     if (post.author.toString() !== req.user.userId) {
       throw new PostError("Invalid author request");
     }
-    req.body.author = post.author;
   }
   next();
 };

@@ -40,8 +40,11 @@ export const createPostController = PostErorHandler(async (req, res) => {
 
 export const updatePostController = PostErorHandler(async (req, res) => {
   const postBody = req.body;
+  const postFiles = req.files;
   const { postid } = req.params;
-  const updatedPost = await updatePostDocument(postid, postBody);
+  console.log("at controller");
+  console.log(postBody, postFiles, postid);
+  const updatedPost = await updatePostDocument(postid, postBody, postFiles);
   if (!updatedPost) {
     return null;
   }
@@ -52,6 +55,7 @@ export const updatePostController = PostErorHandler(async (req, res) => {
 
 export const deletePostController = PostErorHandler(async (req, res) => {
   const { postid } = req.params;
+  console.log("delete request received");
   await deletePostDocument(postid);
   return res.status(StatusCodes.OK).json({ message: "Post deleted" });
 });
@@ -80,5 +84,7 @@ export const reactPostController = PostErorHandler(async (req, res) => {
   if (!post) {
     return null;
   }
-  return res.status(StatusCodes.OK).json({ message: "Post liked", post: post });
+  return res
+    .status(StatusCodes.OK)
+    .json({ message: "Post liked", reacts: post });
 });
