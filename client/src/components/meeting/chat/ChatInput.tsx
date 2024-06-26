@@ -1,7 +1,8 @@
+import { HStack, IconButton } from "@chakra-ui/react";
+import { Send } from "lucide-react";
 import { useState } from "react";
+import { Form } from "react-router-dom";
 import { useChat, useRoom, useUser } from '../../../hooks';
-
-import { Button } from "../Button";
 
 export const ChatInput: React.FC = () => {
     const [message, setMessage] = useState("");
@@ -9,43 +10,27 @@ export const ChatInput: React.FC = () => {
     const { userId } = useUser();
     const { roomId } = useRoom();
     return (
-        <div>
-            <form
+            <Form
                 onSubmit={(e) => {
                     e.preventDefault();
                     sendMessage(message, roomId, userId);
                     setMessage("");
                 }}
             >
-                <div className="flex ">
+               <HStack>
                     <textarea
                         className="border rounded"
                         onChange={(e) => setMessage(e.target.value)}
                         value={message}
                     />
-                    <Button
-                        testId="send-msg-button"
+                    <IconButton
                         type="submit"
                         className="bg-rose-400 p-4 mx-2 rounded-lg text-xl hover:bg-rose-600 text-white"
-                    >
-                        <svg
-                            style={{ transform: "rotate(90deg)" }}
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-6 w-6"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={2}
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                            />
-                        </svg>
-                    </Button>
-                </div>
-            </form>
-        </div>
+                        icon={<Send />}
+                        aria-label="Send message"
+                    />
+                </HStack>
+            </Form>
+
     );
 };

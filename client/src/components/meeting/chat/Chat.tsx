@@ -1,3 +1,4 @@
+import { VStack } from "@chakra-ui/react";
 import useChat from "../../../hooks/useChat";
 import { IMessage } from '../../../types/chat';
 import { ChatBubble } from "./ChatBubble";
@@ -6,11 +7,11 @@ import { ChatInput } from "./ChatInput";
 export const Chat: React.FC = () => {
     const { chat } = useChat();
     return (
-        <div
-            className="flex flex-col  justify-between"
-            data-testid="chat"
+        <VStack 
+        justify= "space-around"
+        h="100%"
         >
-            <div>
+            <VStack>
                 {chat.messages.map((message: IMessage) => (
                     <ChatBubble
                         message={message}
@@ -19,8 +20,8 @@ export const Chat: React.FC = () => {
                         }
                     />
                 ))}
-            </div>
+            </VStack>
             <ChatInput />
-        </div>
+        </VStack>
     );
 };

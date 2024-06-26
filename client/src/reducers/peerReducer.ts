@@ -1,27 +1,29 @@
-import { IPeer } from "../types/peer";
+import { IPeer } from '../types/peer';
 import {
+    ADD_ALL_PEERS,
+    ADD_PEER_CONNECTION_ID,
+    ADD_PEER_NAME,
     ADD_PEER_STREAM,
     REMOVE_PEER_STREAM,
-    ADD_PEER_NAME,
-    ADD_ALL_PEERS,
-} from "./peerActions";
+} from './peerActions';
 
-export type PeerState = Record<
-    string,
-    { stream?: MediaStream; userName?: string; peerId: string }
->;
+export type PeerState = Record<string, { stream?: MediaStream; userName?: string; userId: string }>;
 type PeerAction =
     | {
           type: typeof ADD_PEER_STREAM;
-          payload: { peerId: string; stream: MediaStream };
+          payload: { userId: string; stream: MediaStream };
       }
     | {
           type: typeof REMOVE_PEER_STREAM;
-          payload: { peerId: string };
+          payload: { userId: string };
       }
     | {
           type: typeof ADD_PEER_NAME;
-          payload: { peerId: string; userName: string };
+          payload: { userId: string; userName: string };
+      }
+    | {
+          type: typeof ADD_PEER_CONNECTION_ID;
+          payload: { userId: string; peerId: string };
       }
     | {
           type: typeof ADD_ALL_PEERS;
@@ -35,24 +37,32 @@ export const peersReducer = (state: PeerState, action: PeerAction) => {
         case ADD_PEER_STREAM:
             return {
                 ...state,
-                [action.payload.peerId]: {
-                    ...state[action.payload.peerId],
+                [action.payload.userId]: {
+                    ...state[action.payload.userId],
                     stream: action.payload.stream,
                 },
             };
         case ADD_PEER_NAME:
             return {
                 ...state,
-                [action.payload.peerId]: {
-                    ...state[action.payload.peerId],
+                [action.payload.userId]: {
+                    ...state[action.payload.userId],
                     userName: action.payload.userName,
+                },
+            };
+        case ADD_PEER_CONNECTION_ID:
+            return {
+                ...state,
+                [action.payload.userId]: {
+                    ...state[action.payload.userId],
+                    peerId: action.payload.peerId,
                 },
             };
         case REMOVE_PEER_STREAM:
             return {
                 ...state,
-                [action.payload.peerId]: {
-                    ...state[action.payload.peerId],
+                [action.payload.userId]: {
+                    ...state[action.payload.userId],
                     stream: undefined,
                 },
             };

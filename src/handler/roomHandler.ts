@@ -4,91 +4,93 @@ import { v4 as uuidV4 } from "uuid";
 const rooms: Record<string, Record<string, IUser>> = {};
 const chats: Record<string, IMessage[]> = {};
 interface IUser {
-    peerId: string;
-    userName: string;
+  userName: string;
+  userId: string;
+  peerId?: undefined | string;
 }
 interface IRoomParams {
-    roomId: string;
-    peerId: string;
+  roomId: string;
+  userId: string;
+  peerId?: string;
 }
 
 interface IJoinRoomParams extends IRoomParams {
-    userName: string;
+  userName: string;
+  userId: string;
 }
 interface IMessage {
-    content: string;
-    author?: string;
-    timestamp: number;
+  content: string;
+  author?: string;
+  timestamp: number;
 }
 
 export const roomHandler = (socket: Socket) => {
-    const createRoom = () => {
-        const roomId = uuidV4();
-        rooms[roomId] = {};
-        socket.emit("room-created", { roomId });
-        console.log("user created the room");
-    };
-    const joinRoom = ({ roomId, peerId, userName }: IJoinRoomParams) => {
-        if (!rooms[roomId]) rooms[roomId] = {};
-        if (!chats[roomId]) chats[roomId] = [];
-        socket.emit("get-messages", chats[roomId]);
-        console.log("user joined the room", roomId, peerId, userName);
-        rooms[roomId][peerId] = { peerId, userName };
-        socket.join(roomId);
-        socket.to(roomId).emit("user-joined", { peerId, userName });
-        socket.emit("get-users", {
-            roomId,
-            participants: rooms[roomId],
-        });
+  const createRoom = () => {
+    const roomId = uuidV4();
+    rooms[roomId] = {};
+    socket.emit("room-created", { roomId });
+    console.log("user created the room");
+  };
+  const joinRoom = ({ roomId, peerId, userName, userId }: IJoinRoomParams) => {
+    if (!rooms[roomId]) rooms[roomId] = {};
+    if (!chats[roomId]) chats[roomId] = [];
+    socket.emit("get-messages", chats[roomId]);
+    rooms[roomId][userId] = { userId, userName, peerId };
+    socket.join(roomId);
+    socket.to(roomId).emit("user-joined", { peerId, userName, userId });
+    socket.emit("get-users", {
+      roomId,
+      participants: rooms[roomId],
+    });
 
-        socket.on("disconnect", () => {
-            console.log("user left the room", peerId);
-            leaveRoom({ roomId, peerId });
-        });
-    };
+    socket.on("disconnect", () => {
+      console.log("user left the room", userId);
+      leaveRoom({ roomId, userId });
+    });
+  };
 
-    const leaveRoom = ({ peerId, roomId }: IRoomParams) => {
-        // rooms[roomId] = rooms[roomId]?.filter((id) => id !== peerId);
-        socket.to(roomId).emit("user-disconnected", peerId);
-    };
+  const leaveRoom = ({ userId, roomId }: IRoomParams) => {
+    // rooms[roomId] = rooms[roomId]?.filter((id) => id !== userId);
+    socket.to(roomId).emit("user-disconnected", userId);
+  };
 
-    const startSharing = ({ peerId, roomId }: IRoomParams) => {
-        console.log({ roomId, peerId });
-        socket.to(roomId).emit("user-started-sharing", peerId);
-    };
+  const startSharing = ({ userId, roomId }: IRoomParams) => {
+    console.log({ roomId, userId });
+    socket.to(roomId).emit("user-started-sharing", userId);
+  };
 
-    const stopSharing = (roomId: string) => {
-        socket.to(roomId).emit("user-stopped-sharing");
-    };
+  const stopSharing = (roomId: string) => {
+    socket.to(roomId).emit("user-stopped-sharing");
+  };
 
-    const addMessage = (roomId: string, message: IMessage) => {
-        console.log({ message });
-        if (chats[roomId]) {
-            chats[roomId].push(message);
-        } else {
-            chats[roomId] = [message];
-        }
-        socket.to(roomId).emit("add-message", message);
-    };
+  const addMessage = (roomId: string, message: IMessage) => {
+    console.log({ message });
+    if (chats[roomId]) {
+      chats[roomId].push(message);
+    } else {
+      chats[roomId] = [message];
+    }
+    socket.to(roomId).emit("add-message", message);
+  };
 
-    const changeName = ({
-        peerId,
-        userName,
-        roomId,
-    }: {
-        peerId: string;
-        userName: string;
-        roomId: string;
-    }) => {
-        if (rooms[roomId] && rooms[roomId][peerId]) {
-            rooms[roomId][peerId].userName = userName;
-            socket.to(roomId).emit("name-changed", { peerId, userName });
-        }
-    };
-    socket.on("create-room", createRoom);
-    socket.on("join-room", joinRoom);
-    socket.on("start-sharing", startSharing);
-    socket.on("stop-sharing", stopSharing);
-    socket.on("send-message", addMessage);
-    socket.on("change-name", changeName);
+  const changeName = ({
+    userId,
+    userName,
+    roomId,
+  }: {
+    userId: string;
+    userName: string;
+    roomId: string;
+  }) => {
+    if (rooms[roomId] && rooms[roomId][userId]) {
+      rooms[roomId][userId].userName = userName;
+      socket.to(roomId).emit("name-changed", { userId, userName });
+    }
+  };
+  socket.on("create-room", createRoom);
+  socket.on("join-room", joinRoom);
+  socket.on("start-sharing", startSharing);
+  socket.on("stop-sharing", stopSharing);
+  socket.on("send-message", addMessage);
+  socket.on("change-name", changeName);
 };
