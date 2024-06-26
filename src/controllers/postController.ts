@@ -42,8 +42,6 @@ export const updatePostController = PostErorHandler(async (req, res) => {
   const postBody = req.body;
   const postFiles = req.files;
   const { postid } = req.params;
-  console.log("at controller");
-  console.log(postBody, postFiles, postid);
   const updatedPost = await updatePostDocument(postid, postBody, postFiles);
   if (!updatedPost) {
     return null;

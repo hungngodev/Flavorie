@@ -91,44 +91,86 @@ export const buildPostDocument = async (
     throw new ServerError(`${error}`);
   }
 };
+
 export const updatePostDocument = async (
   postId: string,
-  postBody: Partial<Post>,
+  postBody: Partial<Post> & { remainingMedia: string[] },
   postFiles: any,
 ): Promise<Document> => {
-  const { author, header, body, privacy, location, react, review } = postBody;
-  try {
-    if (!postBody) {
-      throw new BadRequestError("Missing data");
-    }
-    if (author) {
-      throw new BadRequestError("Cannot change author");
-    }
-    const currentPost = await PostModel.findById(postId);
+  const {
+    author,
+    header,
+    body,
+    privacy,
+    location,
+    react,
+    review,
+    remainingMedia,
+  } = postBody;
 
-    if (!currentPost) {
-      throw new PostError("Post not found");
+  try {
+    console.log(postBody);
+    console.log(postFiles);
+    if (!postBody || !body || !header)
+      throw new BadRequestError("Missing data");
+    if (author) throw new BadRequestError("Cannot change author");
+
+    const currentPost = await PostModel.findById(postId);
+    if (!currentPost) throw new PostError("Post not found");
+
+    let parsedRemainingMedia: any[] = [];
+    if (remainingMedia && remainingMedia.length > 0) {
+      parsedRemainingMedia = remainingMedia.map(mediaString =>
+        JSON.parse(mediaString),
+      );
+    } else {
+      currentPost.media.forEach(media => {
+        const publicId = parsePublicId(media.url);
+        cloudinary.uploader.destroy(publicId, err => {
+          if (err) console.log(err);
+        });
+      });
     }
+
+    console.log("parsed remaining media", parsedRemainingMedia);
+
+    // Delete media files from Cloudinary
+    if (parsedRemainingMedia && parsedRemainingMedia.length > 0) {
+      currentPost.media.forEach(media => {
+        const isKept = parsedRemainingMedia.some(
+          file => file.url === media.url,
+        );
+        if (!isKept) {
+          const publicId = parsePublicId(media.url);
+          cloudinary.uploader.destroy(publicId, err => {
+            if (err) console.log(err);
+          });
+        }
+      });
+    }
+
     const mediaData = parseMedia(postFiles);
     const updateData = {
-      header: header,
-      body: body,
-      media: [...currentPost.media, ...mediaData],
-      privacy: privacy,
-      location: location,
-      react: react,
-      review: review,
+      header,
+      body,
+      media: [...parsedRemainingMedia, ...mediaData].filter(
+        post => !post.url.startsWith("blob"),
+      ),
+      privacy,
+      location,
+      react,
+      review,
     };
+
     console.log("update data", updateData);
 
     const updatedPost = await PostModel.findByIdAndUpdate(postId, updateData, {
       new: true,
     });
-
     if (!updatedPost) throw new ServerError("Failed to update post");
 
     await updatedPost.save();
-    // return the updated post document to update front end post
+
     return updatedPost;
   } catch (err) {
     throw new ServerError(`${err}`);
@@ -142,12 +184,22 @@ export const deletePostDocument = async (postId: string) => {
       throw new ServerError("Post not found");
     }
 
+    console.log(post._id);
     // delete all files in cloudinary
     const mediaFiles = post.media;
+    const allUrls = mediaFiles.map(file => file.url);
 
-    mediaFiles.forEach(async file => {
-      if (!file.url) throw new ServerError("No valid url");
-      const publicId = parsePublicId(file.url);
+    const allValidUrls = allUrls.map(url => {
+      if (!url) return false;
+      const publicId = parsePublicId(url);
+      return !!publicId; // ensure the publicId is valid (non-empty)
+    });
+    if (allValidUrls.length !== mediaFiles.length) {
+      throw new ServerError("One or more media files have invalid URLs");
+    }
+
+    allUrls.forEach(async file => {
+      const publicId = parsePublicId(file);
       await cloudinary.uploader.destroy(publicId, err => {
         if (err) console.log(err);
       });
