@@ -11,16 +11,13 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { forwardRef, memo } from 'react';
-import ImageSlider from './ImageSlider';
-import PostFooter from './PostFooter';
-import PostHeader from './PostHeader';
-import { PostObjectType } from './types';
+import { forwardRef, memo, useState, useEffect } from 'react';
+import { ImageSlider, PostHeader, PostFooter } from './index';
+import { PostObjectType, PostEditObjectType, BasePostProps } from './types';
+import useAuth from '../../../hooks/useAuth';
 
-interface PostProps extends StackProps {
+interface PostProps extends StackProps, BasePostProps {
   postData: PostObjectType;
-  index: number;
-  isDisplayed?: boolean;
   headerProps?: CardHeaderProps;
   bodyProps?: CardBodyProps;
   footerProps?: CardFooterProps;
@@ -28,7 +25,46 @@ interface PostProps extends StackProps {
 
 const Post = memo(
   forwardRef<HTMLDivElement, PostProps>(
-    ({ postData, isDisplayed, headerProps, bodyProps, footerProps, index, ...containerProps }, ref) => {
+    ({ postData, headerProps, bodyProps, footerProps, index, ...containerProps }, ref) => {
+      const auth = useAuth();
+      const { id } = auth.currentUser;
+
+      const [canUpdate, setCanUpdate] = useState(postData.author.id === id);
+      const [isDisplayed, setIsDisplayed] = useState(postData.privacy === 'public');
+      const [isLiked, setIsLiked] = useState(postData.reacts?.includes(id));
+
+      const [preloadPost, setPreloadPost] = useState<PostEditObjectType>({
+        header: postData.header ?? '',
+        body: postData.body ?? '',
+        privacy: postData.privacy ?? 'public',
+        location: postData.location ?? '',
+        media: [],
+        savedPreviewMedia: postData.media ?? [],
+      });
+
+      useEffect(() => {
+        setPreloadPost({
+          header: postData.header ?? '',
+          body: postData.body ?? '',
+          privacy: postData.privacy ?? 'public',
+          location: postData.location ?? '',
+          media: [],
+          savedPreviewMedia: postData.media ?? [],
+        });
+      }, [postData]);
+
+      useEffect(() => {
+        setCanUpdate(postData.author.id === id);
+      }, [auth.currentUser, postData]);
+
+      useEffect(() => {
+        setIsDisplayed(postData.privacy === 'public');
+      }, [postData]);
+
+      useEffect(() => {
+        setIsLiked(postData.reacts?.includes(id));
+      }, [postData.reacts, id]);
+
       return (
         <>
           {isDisplayed && (
@@ -41,6 +77,9 @@ const Post = memo(
                   privacy={postData.privacy}
                   location={postData.location}
                   index={index}
+                  canUpdate={canUpdate}
+                  preloadPost={preloadPost}
+                  postId={postData.id}
                 />
               </CardHeader>
               <CardBody {...bodyProps}>
@@ -51,7 +90,15 @@ const Post = memo(
                 <ImageSlider slides={postData.media} />
               </CardBody>
               <CardFooter {...footerProps}>
-                <PostFooter index={index} postid={postData.id} />
+                <PostFooter
+                  isLiked={isLiked}
+                  index={index}
+                  postId={postData.id}
+                  canUpdate={canUpdate}
+                  reacts={postData.reacts}
+                  reviews={postData.reviews}
+                  shares={postData.shares}
+                />
               </CardFooter>
             </Card>
           )}

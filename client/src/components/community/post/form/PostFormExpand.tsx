@@ -35,35 +35,40 @@ import customFetch from '../../../../utils/customFetch';
 import CustomTextInput from '../../../form/CustomTextInput';
 import CustomTextareaInput from '../../../form/CustomTextareaInput';
 import ImageSlider from '../ImageSlider';
-import { MediaObjectType, parsePost, PostRequest, PostRequestType, PostEditObjectType, PostObjectType } from '../types';
+import {
+  MediaObjectType,
+  parsePost,
+  PostRequest,
+  PostRequestType,
+  PostEditObjectType,
+  PostObjectType,
+  BasePostProps,
+} from '../types';
 
 import { PostFormCardProps } from './PostFormCard';
 import { useDispatch, useSelector } from 'react-redux';
 import { createRequest } from '../../../../slices/posts/CreatePost';
 import { AppDispatch, RootState } from '../../../../store/store';
-import { addPosts, updatePost, selectPostsByIndex, updateMediaPost } from '../../../../slices/posts/PostState';
-import { editRequest } from '../../../../slices/posts/EditPost';
+import { addPosts, updatePost, selectPostsByIndex } from '../../../../slices/posts/PostState';
+import { updateRequest } from '../../../../slices/posts/EditPost';
 
-interface PostFormExpandProps extends PostFormCardProps {
+interface PostFormExpandProps extends BasePostProps {
   isOpen: boolean;
   onClose: () => void;
   preload?: PostEditObjectType | null;
-  action: 'edit' | 'create';
+  action: 'update' | 'create';
   index: number;
 }
 
-const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, action, preload, index }) => {
+const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, action, preload, index, postId }) => {
   const theme = useTheme();
-  const post = useSelector<RootState, PostObjectType | undefined>((state: RootState) =>
-    selectPostsByIndex(index)(state),
-  );
-  const postId = post?.id;
+
+  const webCamRef = useRef<Webcam>(null);
+  const [useWebcam, setUseWebcam] = useState<boolean>(false);
 
   const [previewMedia, setPreviewMedia] = useState<MediaObjectType[]>(
     preload && preload.savedPreviewMedia ? preload.savedPreviewMedia : [],
   );
-  const webCamRef = useRef<Webcam>(null);
-  const [useWebcam, setUseWebcam] = useState<boolean>(false);
 
   const { currentUser } = useAuth();
 
@@ -76,7 +81,7 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, action
         case 'create':
           request = await dispatch(createRequest(data));
           break;
-        case 'edit':
+        case 'update':
           if (postId) {
             const newFormData = new FormData();
             newFormData.append('header', data.header);
@@ -94,11 +99,9 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, action
               }
             });
 
-            console.log(newFormData.getAll('media'));
-
             console.log(newFormData);
 
-            request = await dispatch(editRequest({ postId, newFormData }));
+            request = await dispatch(updateRequest({ postId, newFormData }));
           }
           break;
       }
@@ -109,8 +112,7 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, action
           case 'create':
             dispatch(addPosts({ post: newPost }));
             break;
-          case 'edit':
-            // dispatch(updateMediaPost({ postIndex: index, media: previewMedia }));
+          case 'update':
             dispatch(updatePost({ post: newPost, postIndex: index }));
             break;
         }
