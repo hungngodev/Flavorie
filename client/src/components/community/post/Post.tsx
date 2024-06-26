@@ -19,6 +19,7 @@ import { PostObjectType } from './types';
 
 interface PostProps extends StackProps {
   postData: PostObjectType;
+  index: number;
   isDisplayed?: boolean;
   headerProps?: CardHeaderProps;
   bodyProps?: CardBodyProps;
@@ -27,7 +28,7 @@ interface PostProps extends StackProps {
 
 const Post = memo(
   forwardRef<HTMLDivElement, PostProps>(
-    ({ postData, isDisplayed, headerProps, bodyProps, footerProps, ...containerProps }, ref) => {
+    ({ postData, isDisplayed, headerProps, bodyProps, footerProps, index, ...containerProps }, ref) => {
       return (
         <>
           {isDisplayed && (
@@ -39,6 +40,7 @@ const Post = memo(
                   date={postData.date}
                   privacy={postData.privacy}
                   location={postData.location}
+                  index={index}
                 />
               </CardHeader>
               <CardBody {...bodyProps}>
@@ -49,12 +51,7 @@ const Post = memo(
                 <ImageSlider slides={postData.media} />
               </CardBody>
               <CardFooter {...footerProps}>
-                <PostFooter
-                  reacts={postData.reacts}
-                  reviews={postData.reviews}
-                  shares={postData.shares}
-                  postid={postData.id}
-                />
+                <PostFooter index={index} postid={postData.id} />
               </CardFooter>
             </Card>
           )}

@@ -5,11 +5,11 @@ import { PostRequestType } from '../../components/community/post/types';
 
 interface EditRequestPayload {
   postId: string;
-  data: any;
+  newFormData: any;
 }
 
-export const editRequest = createAsyncThunk('editPost/edit', async ({ postId, data }: EditRequestPayload) => {
-  const response = await customFetch.put(`/community/post/${postId}`, data);
+export const editRequest = createAsyncThunk('editPost/edit', async ({ postId, newFormData }: EditRequestPayload) => {
+  const response = await customFetch.put(`/community/post/${postId}`, newFormData);
   return { post: response.data.post };
 });
 

@@ -34,7 +34,7 @@ const PostFooter = memo<PostFooterProps>(({ index, postid, ...props }) => {
     try {
       const likepost = await dispatch(likeRequest(postid));
       if (likeRequest.fulfilled.match(likepost)) {
-        dispatch(reactPost({ postId: postid, reacts: likepost.payload.reacts }));
+        dispatch(reactPost({ postIndex: index, reacts: likepost.payload.reacts }));
         likeControl.start({ scale: [1, 1.2, 1], transition: { duration: 0.2, ease: 'easeInOut' } });
       } else {
         console.error('Error posting data:', likepost);

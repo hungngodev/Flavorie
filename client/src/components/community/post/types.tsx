@@ -1,5 +1,4 @@
 import { z } from 'zod';
-
 const BaseObject = z
   .object({
     id: z.string().optional(),
@@ -92,6 +91,7 @@ export const PostResponseObject = z.object({
   updatedAt: z.date(),
   _v: z.number(),
 });
+
 export const PostRequest = z.object({
   header: z.string().min(10, 'Title must be at least 10 characters').max(100, 'Title must not exceed 100 characters'),
   body: z.string().min(1, 'Body is required'),
@@ -100,11 +100,19 @@ export const PostRequest = z.object({
   location: z.string(),
 });
 
+export const PostEditObject = PostRequest.extend({
+  savedPreviewMedia: z.array(MediaObject).optional(),
+});
+
 export type PostRequestType = z.infer<typeof PostRequest>;
 
 export type MediaObjectType = z.infer<typeof MediaObject>;
+
 export type PostObjectType = z.infer<typeof PostObject>;
+
 export type PostResponseObjectType = z.infer<typeof PostResponseObject>;
+
+export type PostEditObjectType = z.infer<typeof PostEditObject>;
 
 export const parsePost = (backEndPosts: PostResponseObjectType[]) => {
   if (!backEndPosts) return [];

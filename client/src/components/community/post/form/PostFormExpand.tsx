@@ -35,22 +35,33 @@ import customFetch from '../../../../utils/customFetch';
 import CustomTextInput from '../../../form/CustomTextInput';
 import CustomTextareaInput from '../../../form/CustomTextareaInput';
 import ImageSlider from '../ImageSlider';
-import { MediaObjectType, parsePost, PostRequest, PostRequestType } from '../types';
+import { MediaObjectType, parsePost, PostRequest, PostRequestType, PostEditObjectType, PostObjectType } from '../types';
+
 import { PostFormCardProps } from './PostFormCard';
 import { useDispatch, useSelector } from 'react-redux';
-import { createPost } from '../../../../slices/posts/CreatePost';
+import { createRequest } from '../../../../slices/posts/CreatePost';
 import { AppDispatch, RootState } from '../../../../store/store';
-import { addPosts } from '../../../../slices/posts/PostState';
+import { addPosts, updatePost, selectPostsByIndex, updateMediaPost } from '../../../../slices/posts/PostState';
+import { editRequest } from '../../../../slices/posts/EditPost';
 
 interface PostFormExpandProps extends PostFormCardProps {
   isOpen: boolean;
   onClose: () => void;
+  preload?: PostEditObjectType | null;
+  action: 'edit' | 'create';
+  index: number;
 }
 
-const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose }) => {
+const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, action, preload, index }) => {
   const theme = useTheme();
+  const post = useSelector<RootState, PostObjectType | undefined>((state: RootState) =>
+    selectPostsByIndex(index)(state),
+  );
+  const postId = post?.id;
 
-  const [previewMedia, setPreviewMedia] = useState<MediaObjectType[]>([]);
+  const [previewMedia, setPreviewMedia] = useState<MediaObjectType[]>(
+    preload && preload.savedPreviewMedia ? preload.savedPreviewMedia : [],
+  );
   const webCamRef = useRef<Webcam>(null);
   const [useWebcam, setUseWebcam] = useState<boolean>(false);
 
@@ -60,13 +71,52 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose }) => {
 
   const submitPost: SubmitHandler<PostRequestType> = async (data) => {
     try {
-      const response = await dispatch(createPost(data)); // Dispatch and await the async action
-      if (createPost.fulfilled.match(response)) {
-        const newPost = parsePost([response.payload]);
-        dispatch(addPosts(newPost));
+      let request;
+      switch (action) {
+        case 'create':
+          request = await dispatch(createRequest(data));
+          break;
+        case 'edit':
+          if (postId) {
+            const newFormData = new FormData();
+            newFormData.append('header', data.header);
+            newFormData.append('body', data.body);
+            newFormData.append('privacy', data.privacy);
+            newFormData.append('location', data.location);
+
+            data.media.forEach((mediaObj: any) => {
+              newFormData.append('media', mediaObj.file);
+            });
+
+            previewMedia.forEach((mediaObj) => {
+              if (!mediaObj.url.startsWith('blob')) {
+                newFormData.append('remainingMedia', JSON.stringify(mediaObj));
+              }
+            });
+
+            console.log(newFormData.getAll('media'));
+
+            console.log(newFormData);
+
+            request = await dispatch(editRequest({ postId, newFormData }));
+          }
+          break;
+      }
+
+      if (createRequest.fulfilled.match(request)) {
+        const newPost = parsePost([request.payload.post]);
+        switch (action) {
+          case 'create':
+            dispatch(addPosts({ post: newPost }));
+            break;
+          case 'edit':
+            // dispatch(updateMediaPost({ postIndex: index, media: previewMedia }));
+            dispatch(updatePost({ post: newPost, postIndex: index }));
+            break;
+        }
         onClose();
       } else {
-        console.error('Error posting data:', response);
+        console.error('Error posting data:', request);
       }
     } catch (error) {
       console.error('Error posting data:', error);
@@ -82,13 +132,21 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose }) => {
     watch,
   } = useForm<PostRequestType>({
     resolver: zodResolver(PostRequest),
-    defaultValues: {
-      header: '',
-      body: '',
-      media: [],
-      privacy: 'public',
-      location: currentUser.location ?? '',
-    },
+    defaultValues: preload
+      ? {
+          header: preload.header,
+          body: preload.body,
+          media: [],
+          privacy: preload.privacy ?? 'public',
+          location: preload.location ?? '',
+        }
+      : {
+          header: '',
+          body: '',
+          media: [],
+          privacy: 'public',
+          location: currentUser.location ?? '',
+        },
     shouldFocusError: true,
   });
 

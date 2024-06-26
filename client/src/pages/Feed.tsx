@@ -80,7 +80,7 @@ const Feed = () => {
   useEffect(() => {
     if (status === 'success' && data) {
       const postload = data?.pages.flatMap((page) => parsePost(page.data));
-      dispatch(addPosts(postload));
+      dispatch(addPosts({ post: postload }));
     }
   }, [data, fetchNextPage, status]);
 
