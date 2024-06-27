@@ -55,11 +55,12 @@ export const roomHandler = (socket: Socket) => {
   };
 
   const startSharing = ({ userId, roomId }: IRoomParams) => {
-    console.log({ roomId, userId });
+    console.log("sharing started", userId);
     socket.to(roomId).emit("user-started-sharing", userId);
   };
 
-  const stopSharing = (roomId: string) => {
+  const stopSharing = ({ roomId }: { roomId: string }) => {
+    console.log("leaving room", roomId);
     socket.to(roomId).emit("user-stopped-sharing");
   };
 

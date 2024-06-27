@@ -1,5 +1,4 @@
 import { Button, HStack, IconButton, VStack } from '@chakra-ui/react';
-import { useTheme } from '@emotion/react';
 import { Clipboard, MessageSquare, MonitorUp } from 'lucide-react';
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
@@ -13,10 +12,8 @@ const Room = () => {
     const { stream, screenStream, peers, shareScreen, screenSharingId, setRoomId, me } = useRoom();
     const { userName, userId } = useUser();
     const { toggleChat, chat } = useChat();
-    const theme = useTheme();
 
     useEffect(() => {
-        console.log(me?.id);
         if (stream) ws.emit('join-room', { roomId: id, peerId: me?.id, userName, userId });
     }, [id, me?.id, stream, userName, userId]);
 
@@ -24,7 +21,12 @@ const Room = () => {
         setRoomId(id || '');
     }, [id, setRoomId]);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    useEffect(() => {
+        console.log(screenSharingId);
+    }, [screenSharingId]);
     const { [screenSharingId]: sharing, ...peersToShow } = peers;
+    // console.log(sharing);
 
     const screenSharingVideo = screenSharingId === userId ? screenStream : peers[screenSharingId]?.stream;
 
