@@ -42,13 +42,13 @@ const ReviewForm: React.FC<InputProps> =({ avatar, onSubmit }) => {
                                     value={content}
                                     placeholder="Leave your comment here"
                                     border="1px"
-                                    borderColor={theme.colors.palette_lavender}
+                                    borderColor={theme.colors.palette_indigo}
                                     />
                                     {error && (
                                         <Box color="red.500" mt={2}>{error}</Box>
                                     )}
                                 </FormControl>
-                                <HStack spacing={1} alignSelf="end">
+                                <HStack spacing={2} alignSelf="end">
                                     <Button variant="outline" borderColor={theme.colors.palette_indigo} color={theme.colors.palette_purple} fontWeight="bold" onClick={() => setContent('')}>
                                     Cancel
                                     </Button>

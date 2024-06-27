@@ -78,6 +78,8 @@ const theme = {
           },
         },
         outline: {
+          borderColor: '#9F9FED', // indigo
+          color: '#736CED', // purple
           _hover: {
             bg: '#fef9ff',
           },
@@ -90,12 +92,13 @@ const theme = {
     Textarea: {
       variants: {
         outline: {
-          borderColor: '#D4C1EC',
+          borderColor: '#9F9FED',
           _focus: {
-            borderColor: '#736CED',
+            borderColor: '#736CED', // purple
           },
         },
       },
+      
     },
   },
 };
