@@ -7,14 +7,18 @@ import {
   CardHeader,
   CardHeaderProps,
   Heading,
+  Spinner,
   StackProps,
   Text,
   VStack,
+  useTheme,
 } from '@chakra-ui/react';
-import { forwardRef, memo, useState, useEffect } from 'react';
-import { ImageSlider, PostHeader, PostFooter } from './index';
-import { PostObjectType, PostEditObjectType, BasePostProps } from './types';
+import { forwardRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import useAuth from '../../../hooks/useAuth';
+import { selectPosts } from '../../../slices/posts/PostState';
+import { ImageSlider, PostFooter, PostHeader } from './index';
+import { BasePostProps, PostObjectType } from './types';
 
 interface PostProps extends StackProps, BasePostProps {
   postData: PostObjectType;
@@ -23,89 +27,59 @@ interface PostProps extends StackProps, BasePostProps {
   footerProps?: CardFooterProps;
 }
 
-const Post = memo(
-  forwardRef<HTMLDivElement, PostProps>(
-    ({ postData, headerProps, bodyProps, footerProps, index, ...containerProps }, ref) => {
-      const auth = useAuth();
-      const { id } = auth.currentUser;
+const Post = forwardRef<HTMLDivElement, PostProps>(
+  ({ postData, headerProps, bodyProps, footerProps, index, postId, ...containerProps }, ref) => {
+    const theme = useTheme();
 
-      const [canUpdate, setCanUpdate] = useState(postData.author.id === id);
-      const [isDisplayed, setIsDisplayed] = useState(postData.privacy === 'public');
-      const [isLiked, setIsLiked] = useState(postData.reacts?.includes(id));
+    const auth = useAuth();
+    const posts = useSelector(selectPosts);
+    const post = posts[index]; // Get post data from redux state
 
-      const [preloadPost, setPreloadPost] = useState<PostEditObjectType>({
-        header: postData.header ?? '',
-        body: postData.body ?? '',
-        privacy: postData.privacy ?? 'public',
-        location: postData.location ?? '',
-        media: [],
-        savedPreviewMedia: postData.media ?? [],
-      });
+    const { id } = auth.currentUser;
+    const [loading, setLoading] = useState(false);
 
-      useEffect(() => {
-        setPreloadPost({
-          header: postData.header ?? '',
-          body: postData.body ?? '',
-          privacy: postData.privacy ?? 'public',
-          location: postData.location ?? '',
-          media: [],
-          savedPreviewMedia: postData.media ?? [],
-        });
-      }, [postData]);
+    return (
+      <Card
+        marginBlock={4}
+        {...containerProps}
+        height="auto"
+        ref={ref}
+        position="relative"
+        backdropBlur={loading && 'blur(10px)'}
+        pointerEvents={loading ? 'none' : 'auto'}
+        opacity={loading ? 0.5 : 1}
+      >
+        <CardHeader paddingBottom={0} {...headerProps}>
+          <PostHeader postId={post.id} index={index} setLoading={setLoading} />
+        </CardHeader>
 
-      useEffect(() => {
-        setCanUpdate(postData.author.id === id);
-      }, [auth.currentUser, postData]);
+        <CardBody {...bodyProps}>
+          <VStack gap={2} alignItems="start" marginBottom={2}>
+            <Heading size="lg">{post.header}</Heading>
+            <Text>{post.body}</Text>
+          </VStack>
+          {post.media.length > 0 && <ImageSlider slides={post.media} />}
+        </CardBody>
+        <CardFooter {...footerProps}>
+          <PostFooter index={index} postId={post.id} setLoading={setLoading} />
+        </CardFooter>
 
-      useEffect(() => {
-        setIsDisplayed(postData.privacy === 'public');
-      }, [postData]);
-
-      useEffect(() => {
-        setIsLiked(postData.reacts?.includes(id));
-      }, [postData.reacts, id]);
-
-      return (
-        <>
-          {isDisplayed && (
-            <Card marginBlock={4} {...containerProps} height="auto" ref={ref}>
-              <CardHeader paddingBottom={0} {...headerProps}>
-                <PostHeader
-                  avatar={postData.author.avatar}
-                  author={postData.author.name}
-                  date={postData.date}
-                  privacy={postData.privacy}
-                  location={postData.location}
-                  index={index}
-                  canUpdate={canUpdate}
-                  preloadPost={preloadPost}
-                  postId={postData.id}
-                />
-              </CardHeader>
-              <CardBody {...bodyProps}>
-                <VStack gap={2} alignItems="start" marginBottom={2}>
-                  <Heading size="lg">{postData.header}</Heading>
-                  <Text>{postData.body}</Text>
-                </VStack>
-                <ImageSlider slides={postData.media} />
-              </CardBody>
-              <CardFooter {...footerProps}>
-                <PostFooter
-                  isLiked={isLiked}
-                  index={index}
-                  postId={postData.id}
-                  canUpdate={canUpdate}
-                  reacts={postData.reacts}
-                  reviews={postData.reviews}
-                  shares={postData.shares}
-                />
-              </CardFooter>
-            </Card>
-          )}
-        </>
-      );
-    },
-  ),
+        {loading && (
+          <Spinner
+            marginInline="auto"
+            size="xl"
+            thickness="4px"
+            speed="0.65s"
+            emptyColor="gray.200"
+            color={theme.colors.palette_indigo}
+            position="absolute"
+            top="50%"
+            left="50%"
+          />
+        )}
+      </Card>
+    );
+  },
 );
 
 export default Post;

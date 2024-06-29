@@ -26,31 +26,20 @@ import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Camera, Ellipsis, Images, SmilePlus, X } from 'lucide-react';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import Webcam from 'react-webcam';
-import { z } from 'zod';
 import { useAuth } from '../../../../hooks/index';
-import customFetch from '../../../../utils/customFetch';
 import CustomTextInput from '../../../form/CustomTextInput';
 import CustomTextareaInput from '../../../form/CustomTextareaInput';
 import ImageSlider from '../ImageSlider';
-import {
-  MediaObjectType,
-  parsePost,
-  PostRequest,
-  PostRequestType,
-  PostEditObjectType,
-  PostObjectType,
-  BasePostProps,
-} from '../types';
+import { BasePostProps, MediaObjectType, PostEditObjectType, PostRequest, PostRequestType, parsePost } from '../types';
 
-import { PostFormCardProps } from './PostFormCard';
 import { useDispatch, useSelector } from 'react-redux';
 import { createRequest } from '../../../../slices/posts/CreatePost';
-import { AppDispatch, RootState } from '../../../../store/store';
-import { addPosts, updatePost, selectPostsByIndex } from '../../../../slices/posts/PostState';
-import { updateRequest } from '../../../../slices/posts/EditPost';
+import { addPosts, updatePost } from '../../../../slices/posts/PostState';
+import { selectUpdateStatus, updateRequest } from '../../../../slices/posts/UpdatePost';
+import { AppDispatch } from '../../../../store/store';
 
 interface PostFormExpandProps extends BasePostProps {
   isOpen: boolean;
@@ -58,9 +47,18 @@ interface PostFormExpandProps extends BasePostProps {
   preload?: PostEditObjectType | null;
   action: 'update' | 'create';
   index: number;
+  setLoading?: (arg?: any) => void;
 }
 
-const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, action, preload, index, postId }) => {
+const PostFormExpand: React.FC<PostFormExpandProps> = ({
+  isOpen,
+  onClose,
+  action,
+  preload,
+  index,
+  postId,
+  setLoading,
+}) => {
   const theme = useTheme();
 
   const webCamRef = useRef<Webcam>(null);
@@ -71,15 +69,17 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, action
   );
 
   const { currentUser } = useAuth();
+  const updateStatus = useSelector(selectUpdateStatus);
 
   const dispatch = useDispatch<AppDispatch>();
 
   const submitPost: SubmitHandler<PostRequestType> = async (data) => {
     try {
-      let request;
       switch (action) {
         case 'create':
-          request = await dispatch(createRequest(data));
+          await dispatch(createRequest(data))
+            .then((res: any) => dispatch(addPosts({ post: parsePost([res.payload.post]) })))
+            .then(() => onClose());
           break;
         case 'update':
           if (postId) {
@@ -101,29 +101,22 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, action
 
             console.log(newFormData);
 
-            request = await dispatch(updateRequest({ postId, newFormData }));
+            await dispatch(updateRequest({ postId, newFormData }))
+              .then((res: any) => dispatch(updatePost({ post: parsePost([res.payload.post]), postIndex: index })))
+              .then(() => onClose());
           }
           break;
-      }
-
-      if (createRequest.fulfilled.match(request)) {
-        const newPost = parsePost([request.payload.post]);
-        switch (action) {
-          case 'create':
-            dispatch(addPosts({ post: newPost }));
-            break;
-          case 'update':
-            dispatch(updatePost({ post: newPost, postIndex: index }));
-            break;
-        }
-        onClose();
-      } else {
-        console.error('Error posting data:', request);
       }
     } catch (error) {
       console.error('Error posting data:', error);
     }
   };
+  useEffect(() => {
+    if (updateStatus === 'loading' && setLoading) {
+      console.log('Loading...');
+      setLoading(() => true);
+    }
+  }, [updateStatus, dispatch]);
 
   const {
     control,

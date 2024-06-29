@@ -1,42 +1,38 @@
-import { HStack, IconButton, StackProps, StatLabel, Text, Tooltip } from '@chakra-ui/react';
+import { HStack, IconButton, StackProps, Text, Tooltip } from '@chakra-ui/react';
 import { motion, useAnimationControls } from 'framer-motion';
 import { MessageCircle, Share2 } from 'lucide-react';
-import { memo, useState } from 'react';
+import { memo } from 'react';
 import { FaHeart } from 'react-icons/fa';
 import { FaRegHeart } from 'react-icons/fa6';
-import { z } from 'zod';
-import { useAuth } from '../../../hooks/index';
-import customFetch from '../../../utils/customFetch';
-import { ReactObject, ReviewObject, BasePostProps } from './types';
-import { RootState, AppDispatch } from '../../../store/store';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectIsPostLikedByUser, selectReactsByPostId, reactPost } from '../../../slices/posts/PostState';
+import useAuth from '../../../hooks/useAuth';
 import { likeRequest } from '../../../slices/posts/LikePost';
-
+import { reactPost, selectPosts } from '../../../slices/posts/PostState';
+import { AppDispatch } from '../../../store/store';
+import { BasePostProps } from './types';
 interface PostFooterProps extends StackProps, BasePostProps {
   // right now reacts are just a list of ids, no clear schema for reviews and shares yet
-  reacts: string[] | undefined;
-  reviews: z.infer<typeof ReviewObject>[] | undefined;
-  shares: string[] | undefined;
-  canUpdate: boolean;
-  isLiked: boolean | undefined;
+  // isLiked: boolean | undefined;
+  setLoading?: (arg?: any) => void;
 }
 
-const PostFooter = memo<PostFooterProps>(({ index, postId, reacts, reviews, shares, isLiked, ...props }) => {
+const PostFooter = memo<PostFooterProps>(({ index, postId, ...props }) => {
+  const auth = useAuth();
+  const { id } = auth.currentUser;
+
   const dispatch = useDispatch<AppDispatch>();
-  // const reacts = useSelector((state: RootState) => selectReactsByPostId(postId)(state));
-  // const isLiked = useSelector((state: RootState) => selectIsPostLikedByUser(postId, id)(state));
+  const post = useSelector(selectPosts)[index];
+  const reacts = useSelector(selectPosts)[index].reacts;
+  const isLiked = useSelector(selectPosts)[index].reacts?.includes(id) ?? false;
 
   const likeControl = useAnimationControls();
   const likePost = async () => {
     try {
-      const likepost = await dispatch(likeRequest(postId ?? ''));
-      if (likeRequest.fulfilled.match(likepost)) {
-        dispatch(reactPost({ postIndex: index, reacts: likepost.payload.reacts }));
+      await dispatch(likeRequest(postId)).then((res: any) => {
+        console.log(res);
         likeControl.start({ scale: [1, 1.2, 1], transition: { duration: 0.2, ease: 'easeInOut' } });
-      } else {
-        console.error('Error posting data:', likepost);
-      }
+        dispatch(reactPost({ postIndex: index, reacts: res.payload.reacts }));
+      });
     } catch (error) {
       console.log(error);
     }
@@ -47,17 +43,17 @@ const PostFooter = memo<PostFooterProps>(({ index, postId, reacts, reviews, shar
     {
       name: 'React',
       icon: FaRegHeart,
-      content: reacts ?? [],
+      content: post.reacts ?? [],
     },
     {
       name: 'Review',
       icon: MessageCircle,
-      content: reviews ?? [],
+      content: post.reviews ?? [],
     },
     {
       name: 'Share',
       icon: Share2,
-      content: shares ?? [],
+      content: post.shares ?? [],
     },
   ];
   return (

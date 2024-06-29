@@ -17,15 +17,23 @@ export const PostSlice = createSlice({
     getFeed: (state: PostState, action: PayloadAction<{ posts: PostObjectType[] }>) => {
       state.posts = [...action.payload.posts];
     },
+
     addPosts: (state: PostState, action: PayloadAction<{ post: PostObjectType[] }>) => {
       const newPosts = action.payload.post.concat(state.posts);
-      console.log(newPosts);
       return { posts: newPosts };
     },
 
     reactPost: (state: PostState, action: PayloadAction<{ postIndex: number; reacts: Array<string> }>) => {
       const { postIndex, reacts } = action.payload;
-      state.posts[postIndex].reacts = reacts;
+
+      const updatedPost = { ...state.posts[postIndex] };
+
+      updatedPost.reacts = [...reacts];
+
+      const updatedPosts = [...state.posts];
+      updatedPosts[postIndex] = updatedPost;
+
+      state.posts = updatedPosts;
     },
 
     updatePost: (state: PostState, action: PayloadAction<{ postIndex: number; post: PostObjectType[] }>) => {
@@ -46,8 +54,8 @@ export const PostSlice = createSlice({
 
 export const { addPosts, reactPost, updatePost, deletePost, getFeed } = PostSlice.actions;
 
-export const selectPosts = (state: RootState) => state.posts.posts;
+export const selectPosts = (state: RootState) => state.posts.posts as PostObjectType[];
 
-export const selectPostsByIndex = (index: number) => (state: RootState) => state.posts.posts[index];
+export const selectPostsByIndex = (index: number) => (state: RootState) => state.posts.posts[index] as PostObjectType;
 
 export default PostSlice.reducer;

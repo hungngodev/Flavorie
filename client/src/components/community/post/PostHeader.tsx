@@ -13,79 +13,91 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { Bookmark, CircleAlert, Ellipsis, EyeOff, History, Trash } from 'lucide-react';
-import { memo, useState, useEffect } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { FaUserCircle } from 'react-icons/fa';
-import useAuth from '../../../hooks/useAuth';
 import PostFormExpand from './form/PostFormExpand';
 // import parseDate from '../../../utils/parseDate';
-import { RootState, AppDispatch } from '../../../store/store';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateRequest } from '../../../slices/posts/EditPost';
-import { deleteRequest } from '../../../slices/posts/DeletePost';
-import { selectPostPreloadByIndex, selectPostsByIndex, deletePost } from '../../../slices/posts/PostState';
-import { PostEditObjectType, BasePostProps } from './types';
+import useAuth from '../../../hooks/useAuth';
+import { deleteRequest, selectDeleteStatus } from '../../../slices/posts/DeletePost';
+import { deletePost, selectPosts } from '../../../slices/posts/PostState';
+import { AppDispatch } from '../../../store/store';
+import { BasePostProps, PostEditObjectType } from './types';
 
 interface PostHeaderProps extends BasePostProps, StackProps {
   avatar?: string;
-  author: string;
+  author?: string;
   date?: Date;
-  privacy: 'public' | 'private' | 'friend';
+  privacy?: 'public' | 'private' | 'friend';
   location?: string;
-  canUpdate: boolean;
+  canupdate?: boolean;
   preloadPost?: PostEditObjectType;
+  setLoading: (arg?: any) => void;
 }
 
 const PostHeader = memo<PostHeaderProps>(
-  ({ avatar, author, date, privacy, location, index, canUpdate, postId, preloadPost, ...props }) => {
+  ({ avatar, author, date, privacy, location, index, canupdate, postId, setLoading, ...props }) => {
+    const auth = useAuth();
+    const { id } = auth.currentUser;
+
     const dispatch = useDispatch<AppDispatch>();
-    // const post = useSelector((state: RootState) => selectPostsByIndex(index)(state));
+    const post = useSelector(selectPosts)[index];
+    const deleteStatus: string = useSelector(selectDeleteStatus);
 
-    // const post = useSelector<RootState, { id: string } | undefined>((state: RootState) =>
-    //   selectPostsByIndex(index)(state),
-    // );
+    const [canUpdate, setCanUpdate] = useState(post.author.id === id);
+    const [preloadPost, setPreloadPost] = useState<PostEditObjectType>({
+      header: post.header ?? '',
+      body: post.body ?? '',
+      privacy: post.privacy ?? 'public',
+      location: post.location ?? '',
+      media: [],
+      savedPreviewMedia: post.media ?? [],
+    });
 
-    // const [preloadPost, setPreloadPost] = useState<PostEditObjectType>({
-    //   header: post.header ?? '',
-    //   body: post.body ?? '',
-    //   privacy: post.privacy ?? 'public',
-    //   location: post.location ?? '',
-    //   media: [],
-    //   savedPreviewMedia: post.media ?? [],
-    // });
+    useEffect(() => {
+      setPreloadPost(() => ({
+        header: post.header ?? '',
+        body: post.body ?? '',
+        privacy: post.privacy ?? 'public',
+        location: post.location ?? '',
+        media: [],
+        savedPreviewMedia: post.media ?? [],
+      }));
+      setCanUpdate(post.author.id === id);
+    }, [dispatch, auth.currentUser.id, post]);
+
+    useEffect(() => {
+      if (deleteStatus === 'loading' && postId === post.id) {
+        console.log('Loading...');
+        setLoading(() => true);
+      }
+      if (deleteStatus === 'succeeded' && postId === post.id) {
+        console.log('succeeded');
+        setLoading(() => false);
+      }
+    }, [deleteStatus]);
+
     const { isOpen, onOpen, onClose } = useDisclosure();
-
-    // useEffect(() => {
-    //   setPreloadPost({
-    //     header: post.header ?? '',
-    //     body: post.body ?? '',
-    //     privacy: post.privacy ?? 'public',
-    //     location: post.location ?? '',
-    //     media: [],
-    //     savedPreviewMedia: post.media ?? [],
-    //   });
-    //   console.log(`PostHeader: ${post} `);
-    // }, [post]);
-
     return (
       <HStack width="100%" justifyContent="space-between" alignItems="center" {...props}>
         <PostFormExpand
           index={index}
+          postId={postId}
           action="update"
           preload={preloadPost}
           isOpen={isOpen}
           onClose={onClose}
-          postId={postId}
         />
         <HStack gap={4} alignItems="start">
           <Avatar
-            name={author}
+            name={post.author.name}
             src={avatar ?? 'https://github.com/shadcn.png'}
             aria-label="user-image"
             icon={<FaUserCircle />}
           />
           <VStack alignItems="start" height="auto" gap={0}>
             <Text fontWeight="semibold" fontSize="lg">
-              {author}
+              {post.author.name}
             </Text>
           </VStack>
         </HStack>
@@ -121,11 +133,10 @@ const PostHeader = memo<PostHeaderProps>(
               <MenuItem
                 icon={<Trash />}
                 command="⌘D"
-                onClick={() => {
-                  const request = dispatch(deleteRequest(postId));
-                  if (deleteRequest.fulfilled.match(request)) {
-                    dispatch(deletePost({ postIndex: index }));
-                  }
+                onClick={async () => {
+                  dispatch(deleteRequest(postId)).then(() => {
+                    dispatch(deletePost({ postId }));
+                  });
                 }}
               >
                 Delete
