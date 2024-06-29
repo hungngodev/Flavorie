@@ -29,6 +29,7 @@ import {useCallback} from "react";
 import {useQuery, QueryClient} from "@tanstack/react-query";
 import {Params} from "react-router-dom"
 import customFetch from "../../utils/customFetch"
+import { error } from 'console';
 
 
 // ! to be updated later
@@ -118,7 +119,7 @@ function ReceiptField<T extends ZodType<any, any, any>>({
       },
     });
     setMenuSuggestion({
-      label: selectedItem.name,
+      label: `${selectedItem.name}`,
       options: parseOption(field.suggested.items.map((item: any) => item?.name))
     })
   };
@@ -129,30 +130,48 @@ function ReceiptField<T extends ZodType<any, any, any>>({
       return;
     }
 
-    const updateData: Array<{ name: string; img: string }> = [];
-
+    // const updateData: Array<{ name: string; img: string }> = [];
+    CustomFetch.get(`http://localhost:5100/api/ingredients/suggestions?name=${val}`, {withCredentials: true})
+    .then((response) => {
+      const suggestions = response.data.filterSuggestions.map((item: any) => ({
+        name: item.name,
+        img: item.img
+      }))
+      setMenuSuggestion({
+        label: `${suggestions.length} suggestions for ${val}:`,
+        options: parseOption(suggestions.map(item => item.name))
+      })
+      update(index, fields, {
+        name: val, 
+        suggested: {
+          display: true,
+          items: suggestions
+        }
+      })
+    })
+    .catch((error) => console.log(error))
     // fake fetch 
     // user edit 
-    CustomFetch.get(`http://localhost:5100/api/ingredients/suggestions?name=${val}`, {withCredentials: true})
-      .then((response) => {
-        setMenuSuggestion({
-          label: `${watch(`receipts.${index}.suggested.items` as Path<z.infer<T>>)} suggestions for ${val}:` as string,
-          options: parseOption([response.data.title]),
-        });
-      })
-      .then(() => {
-        update(index, fields, {
-          name: val,
-          suggested: {
-            display: true,
-            items: updateData.map(item => ({
-              name: item.name,
-              img: item?.img ?? 'https://img.freepik.com/free-photo/fried-chicken-breast-with-vegetables_140725-4650.jpg?t=st=1717211148~exp=1717214748~hmac=35aff48267e7d35f50f03fdd12473c2606c90b4f0a73eb45e2d4a51cfb44d0d8&w=740',
-            })),
-          },
-        });
-      })
-      .catch((error) => console.log(error));
+  //   CustomFetch.get(`http://localhost:5100/api/ingredients/suggestions?name=${val}`, {withCredentials: true})
+  //     .then((response) => {
+  //       setMenuSuggestion({
+  //         label: `${watch(`receipts.${index}.suggested.items` as Path<z.infer<T>>)} suggestions for ${val}:` as string,
+  //         options: parseOption([response.data.filterSuggestions]),
+  //       });
+  //     })
+  //     .then(() => {
+  //       update(index, fields, {
+  //         name: val,
+  //         suggested: {
+  //           display: true,
+  //           items: updateData.map(item => ({
+  //             name: item.name,
+  //             img: item?.img ?? 'https://img.freepik.com/free-photo/fried-chicken-breast-with-vegetables_140725-4650.jpg?t=st=1717211148~exp=1717214748~hmac=35aff48267e7d35f50f03fdd12473c2606c90b4f0a73eb45e2d4a51cfb44d0d8&w=740',
+  //           })),
+  //         },
+  //       });
+  //     })
+  //     .catch((error) => console.log(error));
   }, 300);
 
   return (
@@ -202,7 +221,8 @@ function ReceiptField<T extends ZodType<any, any, any>>({
                 onChange={(e) => {
                   // updateReceipt(value.target.value);
                   // fieldProps.onChange(e.target.value);
-                  update(index, fields, {name: e.target.value})
+                  update(index, fields, {name: e.target.value});
+                  updateReceipt(e.target.value)
                 }}
                 onBlur={(e) => {
                   toggleChange()
@@ -262,6 +282,7 @@ function ReceiptField<T extends ZodType<any, any, any>>({
                     value={menuSuggestion.options.find(option => option.value === field.value) || menuSuggestion.options[0]}
 
                     options={[menuSuggestion]}
+                    // options={menuSuggestion.options}
                     onChange={(newValue: any) => {
                       field.onChange(newValue.value)
                       

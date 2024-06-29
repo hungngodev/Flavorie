@@ -45,6 +45,7 @@ export const defaultImg =
 
 const ReceiptObject = z
   .object({
+    id: z.string().optional(),
     name: z.string(),
     image: z.string(),
     quantity: z.coerce.string(),
@@ -137,13 +138,16 @@ const Receipt = () => {
   useEffect(() => {
     console.log(errors);
   }, [errors]);
+  
   const { fields, append, remove, update } = useFieldArray({
     control: control,
     name: 'receipts',
   });
+  
 
   // this function handles the submission of the form
   const submitReceipts: SubmitHandler<ReceiptFieldType> = (receiptResponse) => {
+    console.log("test")
     console.log(receiptResponse);
     localStorage.removeItem('notificationDetail')
     // actual submit logic will be added later
@@ -232,6 +236,7 @@ const Receipt = () => {
 
         <CardFooter>
           <VStack width="100%">
+          
             <Button
               fontSize="lg"
               letterSpacing="-0.005em"
