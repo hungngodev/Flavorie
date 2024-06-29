@@ -1,4 +1,5 @@
 import { Document, Types } from "mongoose";
+import { StringDecoder } from "string_decoder";
 import {
   BadRequestError,
   PostError,
@@ -30,7 +31,7 @@ export const getFeedDocument = async (
   limit: number = 20,
 ): Promise<Document[]> => {
   console.log(`page number is ${page}`);
-  const postLists = await PostModel.find({ privacy: { $ne: "private" } })
+  const postLists = await PostModel.find()
     .sort({
       createdAt: -1,
       updatedAt: -1,
@@ -42,7 +43,6 @@ export const getFeedDocument = async (
     .skip((page - 1) * limit)
     .limit(limit);
   if (postLists.length === 0) throw new ServerError("Failed to get posts");
-
   return postLists.map(post => post.toJSON() as Document);
 };
 
@@ -94,7 +94,7 @@ export const buildPostDocument = async (
 
 export const updatePostDocument = async (
   postId: string,
-  postBody: Partial<Post> & { remainingMedia: string[] },
+  postBody: Partial<Post> & { remainingMedia: string[] | string },
   postFiles: any,
 ): Promise<Document> => {
   const {
@@ -115,14 +115,14 @@ export const updatePostDocument = async (
       throw new BadRequestError("Missing data");
     if (author) throw new BadRequestError("Cannot change author");
 
-    const currentPost = await PostModel.findById(postId);
+    const currentPost: Post | null = await PostModel.findById(postId);
     if (!currentPost) throw new PostError("Post not found");
 
-    let parsedRemainingMedia: any[] = [];
+    let parsedRemainingMedia: any = [];
     if (remainingMedia && remainingMedia.length > 0) {
-      parsedRemainingMedia = remainingMedia.map(mediaString =>
-        JSON.parse(mediaString),
-      );
+      parsedRemainingMedia = Array.isArray(remainingMedia)
+        ? remainingMedia.map(mediaString => JSON.parse(mediaString))
+        : JSON.parse(remainingMedia);
     } else {
       currentPost.media.forEach(media => {
         const publicId = parsePublicId(media.url);
@@ -137,9 +137,9 @@ export const updatePostDocument = async (
     // Delete media files from Cloudinary
     if (parsedRemainingMedia && parsedRemainingMedia.length > 0) {
       currentPost.media.forEach(media => {
-        const isKept = parsedRemainingMedia.some(
-          file => file.url === media.url,
-        );
+        const isKept = Array.isArray(parsedRemainingMedia)
+          ? parsedRemainingMedia.some(file => file.url === media.url)
+          : parsedRemainingMedia.url === media.url;
         if (!isKept) {
           const publicId = parsePublicId(media.url);
           cloudinary.uploader.destroy(publicId, err => {
@@ -166,7 +166,7 @@ export const updatePostDocument = async (
 
     const updatedPost = await PostModel.findByIdAndUpdate(postId, updateData, {
       new: true,
-    });
+    }).populate("author", "id name avatar");
     if (!updatedPost) throw new ServerError("Failed to update post");
 
     await updatedPost.save();
