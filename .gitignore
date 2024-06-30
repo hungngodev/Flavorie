@@ -33,3 +33,5 @@ dist-ssr
 *.sw?
 
 src/scan-receipts/venv
+src/scan-receipts/venv
+src/scan-receipts/cc.en.300.bin.gz.part
