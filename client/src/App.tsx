@@ -1,26 +1,32 @@
-import { ChakraBaseProvider, extendTheme } from '@chakra-ui/react';
+import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { Provider as ReduxProvider } from 'react-redux';
 import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
 import HomeLayout from './layouts/HomeLayout';
+import { loader as FeedLoader } from './pages/Feed.tsx';
+import { loader as PostLoader } from './pages/FullPost.tsx';
 import { loader as ingredientsLoader } from './pages/Ingredient.tsx';
 import { loader as mealsLoader } from './pages/Meal.tsx';
+import Receipt from './pages/Receipt.tsx';
+import ReceiptScan from './pages/ReceiptScan.tsx';
 import { loader as recipeLoader } from './pages/Recipe.tsx';
 import {
+  Feed,
+  FullPost,
   Ingredient,
   IngredientLanding,
   Login,
   Main,
   Meal,
   Notifications,
-  Receipt,
-  ReceiptScan,
   Recipe,
   Register,
   User,
 } from './pages/index';
 import ToastProvider from './providers/ToastProvider.tsx';
+import { store as reduxStore } from './store/store';
 import theme from './style/theme';
 
 export const queryClient = new QueryClient({
@@ -84,10 +90,17 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <div>Community</div>,
+            element: <Feed />,
+            loader: FeedLoader(queryClient),
+          },
+          {
+            path: ':postId',
+            element: <FullPost />,
+            loader: PostLoader(queryClient),
           },
         ],
       },
+
       {
         path: 'profile',
         element: <User />,
@@ -115,18 +128,19 @@ const router = createBrowserRouter([
     ],
   },
 ]);
-
 function App() {
   return (
-    <ChakraBaseProvider theme={extendTheme(theme)}>
+    <ChakraProvider theme={extendTheme(theme)}>
       <ToastProvider>
-        <QueryClientProvider client={queryClient}>
-          <RouterProvider router={router} />
-          <ToastContainer autoClose={5000} limit={3} transition={Slide} />
-          <ReactQueryDevtools />
-        </QueryClientProvider>
+        <ReduxProvider store={reduxStore}>
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+            <ToastContainer autoClose={5000} limit={3} transition={Slide} />
+            <ReactQueryDevtools initialIsOpen={false} />
+          </QueryClientProvider>
+        </ReduxProvider>
       </ToastProvider>
-    </ChakraBaseProvider>
+    </ChakraProvider>
   );
 }
 export default App;

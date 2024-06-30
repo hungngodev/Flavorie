@@ -1,4 +1,5 @@
 import '@fontsource/reddit-mono'; // Defaults to weight 400
+import { FaUserCircle } from 'react-icons/fa';
 const theme = {
   useSystemColorMode: true,
   colors: {
@@ -46,7 +47,6 @@ const theme = {
     palette_lavender: '#D4C1EC',
     palette_pink: '#FFC0CB',
     palette_blue: '#BDE0FE',
-    // CDB6A8 #1B1212
   },
   fonts: {
     body: 'reddit-mono, sans-serif',
@@ -56,8 +56,9 @@ const theme = {
     Heading: {
       baseStyle: {
         fontFamily: 'inherit',
-        fontWeight: 'normal',
+        fontWeight: 'semibold',
         color: 'inherit',
+        fontSize: 'lg',
       },
     },
     Text: {
@@ -73,6 +74,9 @@ const theme = {
         fontWeight: 'normal',
         userSelect: 'none',
       },
+    },
+    Avatar: {
+      icon: FaUserCircle,
     },
   },
 };
