@@ -6,6 +6,7 @@ import { useForm, Controller } from 'react-hook-form';
 import theme from '../../style/theme';
 
 export interface PersonalProps {
+export interface PersonalProps {
     avatar: {
       src: string;
       username: string;
