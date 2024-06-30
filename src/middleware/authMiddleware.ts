@@ -23,6 +23,7 @@ declare global {
 export const authenticateUser = (req: Request, res: Response, next: NextFunction) => {
     const { token } = req.cookies;
     if (!token) throw new UnauthenticatedError('authentication invalid');
+    
 
     try {
         const { userId, role, ...res } = verifyJWT(token);

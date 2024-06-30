@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { ServerError } from '../errors/customErrors.ts';
 import User from '../models/UserModel.ts';
-import { classifyIngredient } from '../services/ingredientServices.ts';
+import { classifyIngredient, findIngredients } from '../services/ingredientServices.ts';
 import { findIngredientById, getAllIngredientsAPI } from '../services/spoonacular/spoonacularServices.ts';
 
 export const getAllIngredients = async (req: Request, res: Response) => {
@@ -44,6 +44,23 @@ export const getIndividualIngredient = async (req: Request, res: Response) => {
     const ingredientId = req.params.ingredientId;
     const ingredient = await findIngredientById('', parseInt(ingredientId));
     res.json({ ingredient }).status(StatusCodes.OK);
+}
+export const getSuggestionIngredients = async (req: Request, res: Response) => {
+    try {
+        const query = req.query.name as string
+        const formatedQuery = query.toLowerCase().trim()
+        const ingredientSuggestions = await findIngredients(formatedQuery)
+        const filterSuggestions = ingredientSuggestions.map((ingredient) => ({
+            name: ingredient.name,
+            img: ingredient.image
+        }))
+        res.json({filterSuggestions}).status(StatusCodes.OK)
+}
+catch(error){
+    console.log("Error when searching ingredients", error)
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new ServerError('Failed to search ingredients'))
+
+}
 }
 
 
