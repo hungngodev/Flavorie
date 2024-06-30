@@ -4,6 +4,7 @@ import { verifyJWT } from "../utils/tokenUtils.ts";
 import axios from "axios";
 import FormData from "form-data";
 import mongoose from "mongoose";
+import { roomHandler } from "../handler/roomHandler.ts";
 import NotificationModel from "../models/NotificationModel.ts";
 import { cloudinary } from "../services/cloudinary/cloudinaryServices.ts";
 
@@ -28,6 +29,7 @@ const setUpSocketIO = (server: any) => {
     cors: {
       origin: "http://localhost:5173",
       credentials: true,
+      methods: ["GET", "POST"],
     },
     maxHttpBufferSize: 1e8,
   });
@@ -36,6 +38,7 @@ const setUpSocketIO = (server: any) => {
   io.on("connection", (socket: Socket) => {
     console.log(socket);
     console.log("hello");
+    roomHandler(socket);
     //submit receipt
     socket.on("submitReceipt", async data => {
       console.log("submit receipt");

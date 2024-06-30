@@ -1,31 +1,11 @@
 'use client';
 
 import { ChevronRightIcon } from '@chakra-ui/icons';
-import { FaBell } from 'react-icons/fa';
 import {
-<<<<<<< HEAD
-  Avatar,
-  Box,
-  Button,
-  Circle,
-  Flex,
-  Icon,
-  Menu,
-  MenuButton,
-  MenuDivider,
-  MenuItem,
-  MenuList,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-  Stack,
-  Text,
-  useBreakpointValue,
-  useColorModeValue,
-=======
     Avatar,
     Box,
     Button,
+    Circle,
     Flex,
     Icon,
     Menu,
@@ -40,8 +20,8 @@ import {
     Text,
     useBreakpointValue,
     useColorModeValue,
->>>>>>> videoCall
 } from '@chakra-ui/react';
+import { FaBell } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import logo from '../../assets/logo.svg';
 import { useAuth } from '../../hooks';
@@ -49,18 +29,11 @@ import useNotification from '../../hooks/useNotification.tsx';
 import { NavItem } from './NavBar';
 
 export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
-<<<<<<< HEAD
-  const linkColor = useColorModeValue('gray.600', 'gray.200');
-  const linkHoverColor = useColorModeValue('gray.800', 'white');
-  const popoverContentBgColor = useColorModeValue('white', 'gray.800');
-  const auth = useAuth();
-  const { numberOfNotifications } = useNotification();
-=======
     const linkColor = useColorModeValue('gray.600', 'gray.200');
     const linkHoverColor = useColorModeValue('gray.800', 'white');
     const popoverContentBgColor = useColorModeValue('white', 'gray.800');
     const auth = useAuth();
->>>>>>> videoCall
+    const { numberOfNotifications } = useNotification();
 
     return (
         <>
@@ -136,103 +109,43 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
                             </Button>
                         </>
                     ) : (
-                        <Button
-                            display={{ base: 'none', md: 'inline-flex' }}
-                            fontSize={'sm'}
-                            fontWeight={600}
-                            color={'white'}
-                            bg={'pink.400'}
-                            onClick={auth.logout}
-                            _hover={{
-                                bg: 'pink.300',
-                            }}
-                        >
-                            Sign Out
-                        </Button>
+                        <>
+                            <Button
+                                display={{ base: 'none', md: 'inline-flex' }}
+                                fontSize={'sm'}
+                                fontWeight={600}
+                                color={'white'}
+                                bg={'pink.400'}
+                                onClick={auth.logout}
+                                _hover={{
+                                    bg: 'pink.300',
+                                }}
+                            >
+                                Sign Out
+                            </Button>
+                            <Box position="relative" display="inline-block">
+                                <Link to="/notifications">
+                                    <FaBell color="gray" size="24px" />
+                                    {numberOfNotifications > 0 && (
+                                        <Circle
+                                            size="17px"
+                                            bg="tomato"
+                                            color="white"
+                                            position="absolute"
+                                            top="-4px"
+                                            right="-6px"
+                                            fontSize="0.8rem"
+                                            display="flex"
+                                            alignItems="center"
+                                            justifyContent="center"
+                                        >
+                                            {numberOfNotifications}
+                                        </Circle>
+                                    )}
+                                </Link>
+                            </Box>
+                        </>
                     )}
-<<<<<<< HEAD
-                  </Popover>
-                </Box>
-              ))}
-            </Stack>
-          </Flex>
-        </Flex>
-        <Stack flex={{ base: 2, md: 0 }} justify={'flex-end'} direction={'row'} spacing={6}>
-          {auth.currentUser.status !== 'authenticated' ? (
-            <>
-              <Button fontSize={'sm'} fontWeight={400} variant={'link'}>
-                <Link to={`/login?redirect=${location.pathname}`}>Sign In</Link>
-              </Button>
-              <Button
-                display={{ base: 'none', md: 'inline-flex' }}
-                fontSize={'sm'}
-                fontWeight={600}
-                color={'white'}
-                bg={'pink.400'}
-                _hover={{
-                  bg: 'pink.300',
-                }}
-              >
-                <Link to="/register">Sign Up</Link>
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button
-                display={{ base: 'none', md: 'inline-flex' }}
-                fontSize={'sm'}
-                fontWeight={600}
-                color={'white'}
-                bg={'pink.400'}
-                onClick={auth.logout}
-                _hover={{
-                  bg: 'pink.300',
-                }}
-              >
-                Sign Out
-              </Button>
-              <Box position="relative" display="inline-block">
-                <Link to="/notifications">
-                  <FaBell color="gray" size="24px" />
-                  {numberOfNotifications > 0 && (
-                    <Circle
-                      size="17px"
-                      bg="tomato"
-                      color="white"
-                      position="absolute"
-                      top="-4px"
-                      right="-6px"
-                      fontSize="0.8rem"
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                    >
-                      {numberOfNotifications}
-                    </Circle>
-                  )}
-                </Link>
-              </Box>
-            </>
-          )}
-        </Stack>
-        {auth.currentUser.status === 'authenticated' && (
-          <Menu>
-            <MenuButton as={Button} rounded={'full'} variant={'link'} cursor={'pointer'} minW={0}>
-              <Avatar size={'sm'} height="50px" src={logo} />
-            </MenuButton>
-            <MenuList>
-              <MenuItem>
-                <Link to="/profile">Profile</Link>
-              </MenuItem>
-              <MenuDivider />
-              <MenuItem>Setting</MenuItem>
-            </MenuList>
-          </Menu>
-        )}
-      </Flex>
-    </>
-  );
-=======
                 </Stack>
                 {auth.currentUser.status === 'authenticated' && (
                     <Menu>
@@ -251,7 +164,6 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
             </Flex>
         </>
     );
->>>>>>> videoCall
 };
 
 const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {

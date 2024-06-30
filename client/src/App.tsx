@@ -4,8 +4,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Provider as ReduxProvider } from 'react-redux';
 import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
-<<<<<<< HEAD
-import HomeLayout from './layouts/HomeLayout';
+import { HomeLayout, MeetingLayout, RoomLayout } from './layouts';
 import { loader as FeedLoader } from './pages/Feed.tsx';
 import { loader as PostLoader } from './pages/FullPost.tsx';
 import { loader as ingredientsLoader } from './pages/Ingredient.tsx';
@@ -14,163 +13,156 @@ import Receipt from './pages/Receipt.tsx';
 import ReceiptScan from './pages/ReceiptScan.tsx';
 import { loader as recipeLoader } from './pages/Recipe.tsx';
 import {
-  Feed,
-  FullPost,
-  Ingredient,
-  IngredientLanding,
-  Login,
-  Main,
-  Meal,
-  Notifications,
-  Recipe,
-  Register,
-  User,
+    Feed,
+    FullPost,
+    Ingredient,
+    IngredientLanding,
+    Login,
+    Main,
+    Meal,
+    Meeting,
+    Notifications,
+    Recipe,
+    Register,
+    Room,
+    User,
 } from './pages/index';
 import ToastProvider from './providers/ToastProvider.tsx';
 import { store as reduxStore } from './store/store';
-=======
-import {HomeLayout, MeetingLayout, RoomLayout} from './layouts';
-import { loader as ingredientsLoader } from './pages/Ingredient.tsx';
-import { loader as mealsLoader } from './pages/Meal.tsx';
-import { loader as recipeLoader } from './pages/Recipe';
-import { Ingredient, IngredientLanding, Login, Main, Meal, Recipe, Register, User, Meeting, Room } from './pages/index';
->>>>>>> videoCall
 import theme from './style/theme';
 
 export const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5,
+    defaultOptions: {
+        queries: {
+            staleTime: 1000 * 60 * 5,
+        },
     },
-  },
 });
 
 const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <HomeLayout />,
-    children: [
-      {
-        index: true,
-        element: <Main />,
-      },
-      {
-        path: 'register',
-        element: <Register />,
-      },
-      {
-        path: 'login',
-        element: <Login />,
-      },
-      {
-        path: 'ingredients',
-        element: <Outlet />,
+    {
+        path: '/',
+        element: <HomeLayout />,
         children: [
-          {
-            index: true,
-            element: <IngredientLanding />,
-            loader: ingredientsLoader(queryClient),
-          },
-          {
-            path: ':category',
-            element: <Ingredient />,
-            loader: ingredientsLoader(queryClient),
-          },
-        ],
-      },
-      {
-        path: 'meals',
-        children: [
-          {
-            index: true,
-            element: <Meal />,
-            loader: mealsLoader(queryClient),
-          },
-          {
-            path: ':mealId',
-            element: <Recipe />,
-            loader: recipeLoader(queryClient),
-          },
-        ],
-      },
-      {
-        path: 'community',
-        children: [
-          {
-            index: true,
-            element: <Feed />,
-            loader: FeedLoader(queryClient),
-          },
-          {
-            path: ':postId',
-            element: <FullPost />,
-            loader: PostLoader(queryClient),
-          },
-        ],
-      },
-
-      {
-        path: 'profile',
-        element: <User />,
-      },
-      {
-<<<<<<< HEAD
-        path: 'upload-receipts',
-        element: <ReceiptScan />,
-      },
-      {
-        path: 'notifications',
-        element: <Notifications />,
-      },
-      {
-        path: 'receipts/:id',
-        element: <Receipt />,
-      },
-      // {
-      //   path: 'notifications/:id',
-      //   element: <NotificationDetailPage />
-      // }
-      // {
-      //   path: 'receipts-test',
-      //   element: <Receipt />
-      // }
-=======
-        path: 'meeting',
-        element:<MeetingLayout />,
-        children: [
-          {
-            index: true,
-            element: <Meeting />,
-          },
-          {
-            path: 'room/:id',
-            element: <RoomLayout />,
-            children: [
-              {
+            {
                 index: true,
-                element: <Room />,
-              },
-            ],
-          }
+                element: <Main />,
+            },
+            {
+                path: 'register',
+                element: <Register />,
+            },
+            {
+                path: 'login',
+                element: <Login />,
+            },
+            {
+                path: 'ingredients',
+                element: <Outlet />,
+                children: [
+                    {
+                        index: true,
+                        element: <IngredientLanding />,
+                        loader: ingredientsLoader(queryClient),
+                    },
+                    {
+                        path: ':category',
+                        element: <Ingredient />,
+                        loader: ingredientsLoader(queryClient),
+                    },
+                ],
+            },
+            {
+                path: 'meals',
+                children: [
+                    {
+                        index: true,
+                        element: <Meal />,
+                        loader: mealsLoader(queryClient),
+                    },
+                    {
+                        path: ':mealId',
+                        element: <Recipe />,
+                        loader: recipeLoader(queryClient),
+                    },
+                ],
+            },
+            {
+                path: 'community',
+                children: [
+                    {
+                        index: true,
+                        element: <Feed />,
+                        loader: FeedLoader(queryClient),
+                    },
+                    {
+                        path: ':postId',
+                        element: <FullPost />,
+                        loader: PostLoader(queryClient),
+                    },
+                ],
+            },
+
+            {
+                path: 'profile',
+                element: <User />,
+            },
+            {
+                path: 'upload-receipts',
+                element: <ReceiptScan />,
+            },
+            {
+                path: 'notifications',
+                element: <Notifications />,
+            },
+            {
+                path: 'receipts/:id',
+                element: <Receipt />,
+            },
+            // {
+            //   path: 'notifications/:id',
+            //   element: <NotificationDetailPage />
+            // }
+            // {
+            //   path: 'receipts-test',
+            //   element: <Receipt />
+            // }
+            {
+                path: 'meeting',
+                element: <MeetingLayout />,
+                children: [
+                    {
+                        index: true,
+                        element: <Meeting />,
+                    },
+                    {
+                        path: 'room/:id',
+                        element: <RoomLayout />,
+                        children: [
+                            {
+                                index: true,
+                                element: <Room />,
+                            },
+                        ],
+                    },
+                ],
+            },
         ],
-      }
->>>>>>> videoCall
-    ],
-  },
+    },
 ]);
 function App() {
-  return (
-    <ChakraProvider theme={extendTheme(theme)}>
-      <ToastProvider>
-        <ReduxProvider store={reduxStore}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-            <ToastContainer autoClose={5000} limit={3} transition={Slide} />
-            <ReactQueryDevtools initialIsOpen={false} />
-          </QueryClientProvider>
-        </ReduxProvider>
-      </ToastProvider>
-    </ChakraProvider>
-  );
+    return (
+        <ChakraProvider theme={extendTheme(theme)}>
+            <ToastProvider>
+                <ReduxProvider store={reduxStore}>
+                    <QueryClientProvider client={queryClient}>
+                        <RouterProvider router={router} />
+                        <ToastContainer autoClose={5000} limit={3} transition={Slide} />
+                        <ReactQueryDevtools initialIsOpen={false} />
+                    </QueryClientProvider>
+                </ReduxProvider>
+            </ToastProvider>
+        </ChakraProvider>
+    );
 }
 export default App;
