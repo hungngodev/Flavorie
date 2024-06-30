@@ -96,7 +96,7 @@ function ReceiptField<T extends ZodType<any, any, any>>({
   });
 
   const handleSuggestionChange = (newValue: any) => {
-    const selectedItem = field.suggested.items.find((item) => item.name === newValue.value);
+    const selectedItem = field.suggested.items.find((item: any) => item.name === newValue.value);
     update(index, fields, {
       id: selectedItem.oid,
       name: newValue.value,
