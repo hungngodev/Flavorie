@@ -16,13 +16,14 @@ import { QueryClient } from '@tanstack/react-query';
 import { Focus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
-import { Params, useParams } from 'react-router-dom';
+import { Params, useNavigate, useParams } from 'react-router-dom';
 import { z } from 'zod';
 import { mockReceipts } from '../components/ingredients/MockReceipt';
 import ReceiptField from '../components/ingredients/ReceiptField';
 import ReceiptForm from '../components/ingredients/ReceiptForm';
 import customFetch from '../utils/customFetch';
 import useNotification from '../hooks/useNotification';
+import useToast from '../hooks/useToast';
 
 export const scannedReceiptQuery = (id?: any) => {
   return {
@@ -89,6 +90,9 @@ export type ReceiptRequest = z.infer<typeof ReceiptRequest>;
 const Receipt = () => {
   const {id} = useParams()
   const {notificationDetail, fetchNotificationById} = useNotification()
+  const navigate = useNavigate()
+  const { notifyError } = useToast();
+
   useEffect(() => {
         if (id){
             fetchNotificationById(id)
@@ -165,9 +169,16 @@ const Receipt = () => {
     try {
       const response = await customFetch.patch('http://localhost:5100/api/user/left-over', transformData)
       console.log(response.data)
+      if (response.status === 200){
+        navigate('/')
+      }
+      else {
+        notifyError('Error submitting receipt. Please try again')
+      }
     }
     catch(e)  {
       console.log(e)
+      notifyError('Error submitting receipt. Please try again')
     }
     // actual submit logic will be added later
 

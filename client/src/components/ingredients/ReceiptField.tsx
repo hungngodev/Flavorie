@@ -224,8 +224,6 @@ function ReceiptField<T extends ZodType<any, any, any>>({
                     <IconButton
                       aria-label="edit-name"
                       backgroundColor="transparent"
-                      // icon={isEditing[index] ? <Check /> : <Pencil />}
-
                       icon={watch(`receipts.${index}.suggested.display` as Path<z.infer<T>>) ? <Check /> : <Pencil />}
                       onClick={toggleChange}
                       padding={1}
