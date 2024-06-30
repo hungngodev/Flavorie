@@ -7,7 +7,6 @@ import {
   CardHeader,
   CardHeaderProps,
   Heading,
-  Spinner,
   StackProps,
   Text,
   VStack,
@@ -33,10 +32,27 @@ const Post = forwardRef<HTMLDivElement, PostProps>(
 
     const auth = useAuth();
     const posts = useSelector(selectPosts);
-    const post = posts[index]; // Get post data from redux state
+    const post = posts[index!]; // Get post data from redux state
 
     const { id } = auth.currentUser;
     const [loading, setLoading] = useState(false);
+    // const [isVisible, setIsVisible] = useState(
+    // !post.hiddenTo?.includes(id) &&
+    //   (post.privacy === 'public' ||
+    //     post.privacy === 'friend' ||
+    //     (post.privacy === 'private' && post.author.id === id)),
+    // );
+
+    // useEffect(() => {
+    //   setIsVisible(
+    //     () =>
+    //       (!post.hiddenTo?.includes(id) && post.privacy === 'public') ||
+    //       post.privacy === 'friend' ||
+    //       (post.privacy === 'private' && post.author.id === id),
+    //   );
+    // }, [auth.currentUser.id, post, setIsVisible]);
+
+    // all hidden posts are stricttly hidden
 
     return (
       <Card
@@ -58,25 +74,11 @@ const Post = forwardRef<HTMLDivElement, PostProps>(
             <Heading size="lg">{post.header}</Heading>
             <Text>{post.body}</Text>
           </VStack>
-          {post.media.length > 0 && <ImageSlider slides={post.media} />}
+          {post.media.length > 0 && <ImageSlider action="direct" slides={post.media} postId={postId} />}
         </CardBody>
         <CardFooter {...footerProps}>
           <PostFooter index={index} postId={post.id} setLoading={setLoading} />
         </CardFooter>
-
-        {loading && (
-          <Spinner
-            marginInline="auto"
-            size="xl"
-            thickness="4px"
-            speed="0.65s"
-            emptyColor="gray.200"
-            color={theme.colors.palette_indigo}
-            position="absolute"
-            top="50%"
-            left="50%"
-          />
-        )}
       </Card>
     );
   },

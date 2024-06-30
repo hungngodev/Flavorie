@@ -255,7 +255,7 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({
               />
             </InputGroup>
 
-            <ImageSlider slides={previewMedia} onClose={handleFileRemove} marginBlock={2} />
+            <ImageSlider action="display" slides={previewMedia} onClose={handleFileRemove} marginBlock={2} />
 
             {useWebcam && (
               <Box position="relative" marginBlock={4}>

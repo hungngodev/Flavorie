@@ -12,7 +12,7 @@ import {
   VStack,
   useDisclosure,
 } from '@chakra-ui/react';
-import { Bookmark, CircleAlert, Ellipsis, EyeOff, History, Trash } from 'lucide-react';
+import { Bookmark, CircleAlert, Ellipsis, EyeOff, History, Pencil, Trash } from 'lucide-react';
 import { memo, useEffect, useState } from 'react';
 import { FaUserCircle } from 'react-icons/fa';
 import PostFormExpand from './form/PostFormExpand';
@@ -20,9 +20,11 @@ import PostFormExpand from './form/PostFormExpand';
 import { useDispatch, useSelector } from 'react-redux';
 import useAuth from '../../../hooks/useAuth';
 import { deleteRequest, selectDeleteStatus } from '../../../slices/posts/DeletePost';
-import { deletePost, selectPosts } from '../../../slices/posts/PostState';
+import { hideRequest, selectHideStatus } from '../../../slices/posts/HidePost';
+import { deletePost, selectPosts, updatePost } from '../../../slices/posts/PostState';
+import { saveRequest, selectSaveStatus } from '../../../slices/posts/SavePost';
 import { AppDispatch } from '../../../store/store';
-import { BasePostProps, PostEditObjectType } from './types';
+import { BasePostProps, PostEditObjectType, parsePost } from './types';
 
 interface PostHeaderProps extends BasePostProps, StackProps {
   avatar?: string;
@@ -32,7 +34,7 @@ interface PostHeaderProps extends BasePostProps, StackProps {
   location?: string;
   canupdate?: boolean;
   preloadPost?: PostEditObjectType;
-  setLoading: (arg?: any) => void;
+  setLoading?: (arg?: any) => void;
 }
 
 const PostHeader = memo<PostHeaderProps>(
@@ -43,6 +45,8 @@ const PostHeader = memo<PostHeaderProps>(
     const dispatch = useDispatch<AppDispatch>();
     const post = useSelector(selectPosts)[index];
     const deleteStatus: string = useSelector(selectDeleteStatus);
+    const saveStatus: string = useSelector(selectSaveStatus);
+    const hideStatus: string = useSelector(selectHideStatus);
 
     const [canUpdate, setCanUpdate] = useState(post.author.id === id);
     const [preloadPost, setPreloadPost] = useState<PostEditObjectType>({
@@ -67,15 +71,21 @@ const PostHeader = memo<PostHeaderProps>(
     }, [dispatch, auth.currentUser.id, post]);
 
     useEffect(() => {
-      if (deleteStatus === 'loading' && postId === post.id) {
-        console.log('Loading...');
+      if (
+        (deleteStatus === 'loading' || saveStatus === 'loading' || hideStatus === 'loading') &&
+        postId === post.id &&
+        setLoading
+      ) {
         setLoading(() => true);
       }
-      if (deleteStatus === 'succeeded' && postId === post.id) {
-        console.log('succeeded');
+      if (
+        (deleteStatus === 'succeeded' || saveStatus === 'succeeded' || hideStatus === 'succeeded') &&
+        postId === post.id &&
+        setLoading
+      ) {
         setLoading(() => false);
       }
-    }, [deleteStatus]);
+    }, [deleteStatus, saveStatus, hideStatus, postId]);
 
     const { isOpen, onOpen, onClose } = useDisclosure();
     return (
@@ -112,18 +122,34 @@ const PostHeader = memo<PostHeaderProps>(
           />
           <MenuList zIndex="200">
             {canUpdate && (
-              <MenuItem icon={<Bookmark />} command="⌘U" onClick={onOpen}>
+              <MenuItem icon={<Pencil />} command="⌘U" onClick={onOpen}>
                 Update post
               </MenuItem>
             )}
-            <MenuItem icon={<Bookmark />} command="⌘S">
+            <MenuItem
+              icon={<Bookmark />}
+              command="⌘S"
+              onClick={() => {
+                dispatch(saveRequest({ postId })).then((res: any) => {
+                  dispatch(updatePost({ postIndex: index, post: parsePost([res.payload.post]) }));
+                });
+              }}
+            >
               Save post
             </MenuItem>
             <MenuDivider />
             <MenuItem icon={<History />} command="⌘E">
               See edit history
             </MenuItem>
-            <MenuItem icon={<EyeOff />} command="⌘H">
+            <MenuItem
+              icon={<EyeOff />}
+              command="⌘H"
+              onClick={() => {
+                dispatch(hideRequest({ postId })).then((res: any) => {
+                  dispatch(updatePost({ postIndex: index, post: parsePost([res.payload.post]) }));
+                });
+              }}
+            >
               Hide
             </MenuItem>
             <MenuItem icon={<CircleAlert />} command="⌘R">

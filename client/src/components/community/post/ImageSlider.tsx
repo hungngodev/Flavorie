@@ -1,19 +1,23 @@
-import React, { useEffect, useRef, useState, memo } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
-import { Box, HStack, Icon, IconButton, Image, StackProps, Button } from '@chakra-ui/react';
+import { Box, Button, HStack, Icon, IconButton, Image, StackProps } from '@chakra-ui/react';
 
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { motion, useAnimationControls } from 'framer-motion';
-import { GoDotFill } from 'react-icons/go';
-import { MediaObjectType } from './types';
 import { X } from 'lucide-react';
+import { GoDotFill } from 'react-icons/go';
+import { useNavigate } from 'react-router-dom';
+import { MediaObjectType } from './types';
 
 interface ImageSliderProps extends StackProps {
   slides: MediaObjectType[];
   onClose?: (arg?: any) => void;
+  postId?: string;
+  action: 'display' | 'direct';
 }
 
-const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, onClose, ...props }) => {
+const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, onClose, postId, action, ...props }) => {
+  const navigate = useNavigate();
   const [imageSlides, setImageSlides] = useState<MediaObjectType[]>(slides);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [windowWidth, setWindowWidth] = useState(0);
@@ -97,6 +101,8 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, onClose, ..
                   zIndex={2}
                   rounded="lg"
                   maxHeight="100%"
+                  cursor="pointer"
+                  onClick={action === 'direct' ? () => navigate(`/community/${postId}`) : () => {}}
                 />
               ) : (
                 <Box

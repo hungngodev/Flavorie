@@ -1,10 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 import {
   createPostReducer,
-  postReducer,
-  likePostReducer,
-  editPostReducer,
   deletePostReducer,
+  editPostReducer,
+  hidePostReducer,
+  likePostReducer,
+  postReducer,
+  savePostReducer,
 } from '../slices/posts/index';
 
 export const store = configureStore({
@@ -14,6 +16,8 @@ export const store = configureStore({
     likePost: likePostReducer,
     editPost: editPostReducer,
     deletePost: deletePostReducer,
+    savePost: savePostReducer,
+    hidePost: hidePostReducer,
   },
 });
 

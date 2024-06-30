@@ -13,7 +13,6 @@ import {
 import { Camera, Images, SmilePlus } from 'lucide-react';
 import { memo, useState } from 'react';
 import { useAuth } from '../../../../hooks/index';
-import { PostObjectType } from '../types';
 import PostFormExpand from './PostFormExpand';
 
 export interface PostFormCardProps extends StackProps {}
@@ -63,7 +62,7 @@ const PostFormCard = memo<PostFormCardProps>(() => {
                 {`What are you thinking today ${currentUser.username}?`}
               </Button>
             </HStack>
-            <PostFormExpand index={0} isOpen={isOpen} onClose={onClose} action="create" />
+            <PostFormExpand postId="" index={0} isOpen={isOpen} onClose={onClose} action="create" />
           </CardBody>
           <Divider color="blackAlpha.300" />
           <CardFooter paddingBlock={2}>

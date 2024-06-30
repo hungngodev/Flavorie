@@ -54,8 +54,10 @@ export const PostSlice = createSlice({
 
 export const { addPosts, reactPost, updatePost, deletePost, getFeed } = PostSlice.actions;
 
-export const selectPosts = (state: RootState) => state.posts.posts as PostObjectType[];
+export const selectPosts = (state: RootState): PostObjectType[] => state.posts.posts;
 
 export const selectPostsByIndex = (index: number) => (state: RootState) => state.posts.posts[index] as PostObjectType;
 
+export const selectPostById = (postId: string) => (state: RootState) =>
+  state.posts.posts.find((post) => post.id === postId) as PostObjectType;
 export default PostSlice.reducer;
