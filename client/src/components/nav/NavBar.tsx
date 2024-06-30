@@ -34,6 +34,10 @@ const NAV_ITEMS: Array<NavItem> = [
       },
     ],
   },
+  {
+    label: 'Upload Receipts',
+    href: '/upload-receipts',
+  },
 ];
 
 export default function NavBar() {
@@ -41,6 +45,7 @@ export default function NavBar() {
     base: <MobileNav NavItems={NAV_ITEMS} />,
     md: <DesktopNav NavItems={NAV_ITEMS} />,
   });
+
   return (
     <Box
       position="sticky"
