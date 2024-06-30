@@ -1,3 +1,4 @@
+import { FaUserCircle } from 'react-icons/fa';
 const theme = {
   colors: {
     base: {
@@ -53,8 +54,9 @@ const theme = {
     Heading: {
       baseStyle: {
         fontFamily: 'inherit',
-        fontWeight: 'normal',
+        fontWeight: 'semibold',
         color: 'inherit',
+        fontSize: 'lg',
       },
     },
     Text: {
@@ -99,6 +101,9 @@ const theme = {
         },
       },
       
+    },
+    Avatar: {
+      icon: FaUserCircle,
     },
   },
 };
