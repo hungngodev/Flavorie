@@ -55,3 +55,11 @@ export class UserCreationError extends Error {
     }
 }
 
+export class ForbiddenError extends Error {
+    statusCode: number; // Add the statusCode property
+    constructor(message: string) {
+        super(message);
+        this.name = 'ForbiddenError';
+        this.statusCode = StatusCodes.FORBIDDEN;
+    }
+}
