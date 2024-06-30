@@ -16,8 +16,14 @@ import ingredientRouter from "./routes/ingredientRouter.ts";
 import mealRouter from "./routes/mealRouter.ts";
 import postRouter from "./routes/postRouter.ts";
 import reviewRouter from "./routes/reviewRouter.ts";
+<<<<<<< HEAD
 import userRouter from "./routes/userRouter.ts";
 // import reviewRouter from "./routes/reviewRouter.ts";
+=======
+import http from "http";
+import { Server } from "socket.io";
+import { roomHandler } from "./handler/roomHandler.ts";
+>>>>>>> videoCall
 
 import { createServer } from "http";
 import { setUpSocketIO } from "./socketio/socketio.ts";
@@ -32,6 +38,7 @@ if (process.env.NODE_ENV === "development") {
 }
 app.use(express.static(path.resolve(__dirname, "./client/dist")));
 
+<<<<<<< HEAD
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -41,14 +48,45 @@ app.use(
 
 const port = process.env.PORT || 5100;
 
+=======
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
+>>>>>>> videoCall
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
 app.use(mongoSanitize());
 
+<<<<<<< HEAD
 const server = createServer(app);
 setUpSocketIO(server);
+=======
+
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: 'http://localhost:5173',
+    credentials: true,
+    methods: ["GET", "POST"],
+
+}, 
+
+maxHttpBufferSize: 1e8
+});
+
+io.on("connection", (socket) => {
+    console.log("a user connected");
+    roomHandler(socket);
+    socket.on("disconnect", () => {
+        console.log("user disconnected");
+    });
+});
+
+>>>>>>> videoCall
 
 app.get("/", (req, res) => {
   res.send("Hello World");
@@ -73,11 +111,16 @@ app.use("/api/bug", bugRouter);
 
 try {
   await mongoose.connect(process.env.MONGODB_URL ?? "");
+<<<<<<< HEAD
   // app.listen(port, () => {
   //   console.log(`server running on PORT ${port}...`);
   // });
   server.listen(port, () => {
     console.log(`Server is running on PORT ${port}`);
+=======
+  server.listen(port, () => {
+    console.log(`server running on PORT ${port}...`);
+>>>>>>> videoCall
   });
 } catch (error) {
   console.log(error);

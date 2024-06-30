@@ -32,6 +32,10 @@ const NAV_ITEMS: Array<NavItem> = [
         subLabel: 'share your favorite recipe',
         href: '/',
       },
+      {label: 'Meeting',
+        subLabel: 'Cook with friends',
+        href: '/meeting',
+      }
     ],
   },
   {

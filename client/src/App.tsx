@@ -4,6 +4,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Provider as ReduxProvider } from 'react-redux';
 import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
+<<<<<<< HEAD
 import HomeLayout from './layouts/HomeLayout';
 import { loader as FeedLoader } from './pages/Feed.tsx';
 import { loader as PostLoader } from './pages/FullPost.tsx';
@@ -27,6 +28,13 @@ import {
 } from './pages/index';
 import ToastProvider from './providers/ToastProvider.tsx';
 import { store as reduxStore } from './store/store';
+=======
+import {HomeLayout, MeetingLayout, RoomLayout} from './layouts';
+import { loader as ingredientsLoader } from './pages/Ingredient.tsx';
+import { loader as mealsLoader } from './pages/Meal.tsx';
+import { loader as recipeLoader } from './pages/Recipe';
+import { Ingredient, IngredientLanding, Login, Main, Meal, Recipe, Register, User, Meeting, Room } from './pages/index';
+>>>>>>> videoCall
 import theme from './style/theme';
 
 export const queryClient = new QueryClient({
@@ -106,6 +114,7 @@ const router = createBrowserRouter([
         element: <User />,
       },
       {
+<<<<<<< HEAD
         path: 'upload-receipts',
         element: <ReceiptScan />,
       },
@@ -125,6 +134,27 @@ const router = createBrowserRouter([
       //   path: 'receipts-test',
       //   element: <Receipt />
       // }
+=======
+        path: 'meeting',
+        element:<MeetingLayout />,
+        children: [
+          {
+            index: true,
+            element: <Meeting />,
+          },
+          {
+            path: 'room/:id',
+            element: <RoomLayout />,
+            children: [
+              {
+                index: true,
+                element: <Room />,
+              },
+            ],
+          }
+        ],
+      }
+>>>>>>> videoCall
     ],
   },
 ]);

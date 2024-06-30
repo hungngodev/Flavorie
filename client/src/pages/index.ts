@@ -11,3 +11,10 @@ export { default as ReceiptScan } from './ReceiptScan';
 export { default as Recipe } from './Recipe';
 export { default as Register } from './Register';
 export { default as User } from './User';
+<<<<<<< HEAD
+=======
+export { default as Recipe } from './Recipe';
+export { default as IngredientLanding } from './IngredientLanding';
+export {default as Meeting} from './Meeting';
+export {default as Room } from './Room';
+>>>>>>> videoCall
