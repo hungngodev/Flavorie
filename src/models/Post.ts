@@ -18,8 +18,8 @@ export interface Post extends mongoose.Document {
   location: string;
   review: Types.DocumentArray<Review>;
   react: Types.DocumentArray<Types.ObjectId>;
-  reviewCount: number;
-  reactCount: number;
+  hiddenTo: Types.DocumentArray<Types.ObjectId>;
+  savedTo: Types.DocumentArray<Types.ObjectId>;
 }
 
 interface PostModel extends mongoose.Model<Post> {}
@@ -63,6 +63,18 @@ const PostSchema = new mongoose.Schema<Post, PostModel>(
     location: {
       type: String,
     },
+    hiddenTo: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    savedTo: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     review: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -75,14 +87,6 @@ const PostSchema = new mongoose.Schema<Post, PostModel>(
         ref: "User",
       },
     ],
-    reviewCount: {
-      type: Number,
-      default: 0,
-    },
-    reactCount: {
-      type: Number,
-      default: 0,
-    },
   },
   { timestamps: true },
 );

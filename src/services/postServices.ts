@@ -8,19 +8,21 @@ import {
 import PostModel, { Post } from "../models/Post.ts";
 import ReviewModel from "../models/Review.ts";
 import UserModel from "../models/UserModel.ts";
-import parseMedia from "../utils/parseMedia.ts";
-import parsePublicId from "../utils/parsePublicId.ts";
+import { parseMedia, parsePublicId, updateFieldArray } from "../utils/index.ts";
 import { cloudinary } from "./cloudinary/cloudinaryServices.ts";
 
-export const getSinglePostDocument = async (
+export const getPostDocumentById = async (
   postId: string,
 ): Promise<Document> => {
   try {
-    const post = await PostModel.findById(postId);
+    const post = await PostModel.findById(postId).populate({
+      path: "author",
+      select: "name avatar id ",
+    });
     if (!post) {
       throw new ServerError("Post not found");
     }
-    return post.toJSON() as Document;
+    return post as Document;
   } catch (err) {
     throw new ServerError(`${err}`);
   }
@@ -51,8 +53,7 @@ export const buildPostDocument = async (
   postBody: Post,
 ): Promise<Document> => {
   try {
-    const { author, header, body, privacy, location, reviewCount, reactCount } =
-      postBody;
+    const { author, header, body, privacy, location } = postBody;
     // console.log(postFiles);
     // console.log(postBody);
 
@@ -72,8 +73,6 @@ export const buildPostDocument = async (
       media: mediaData,
       privacy: privacy,
       location: location,
-      reviewCount: reviewCount,
-      reactCount: reactCount,
     };
     const newPost = await PostModel.create(postData);
     if (!newPost) {
@@ -109,8 +108,8 @@ export const updatePostDocument = async (
   } = postBody;
 
   try {
-    console.log(postBody);
-    console.log(postFiles);
+    // console.log(postBody);
+    // console.log(postFiles);
     if (!postBody || !body || !header)
       throw new BadRequestError("Missing data");
     if (author) throw new BadRequestError("Cannot change author");
@@ -132,30 +131,30 @@ export const updatePostDocument = async (
       });
     }
 
-    console.log("parsed remaining media", parsedRemainingMedia);
-
     // Delete media files from Cloudinary
-    if (parsedRemainingMedia && parsedRemainingMedia.length > 0) {
-      currentPost.media.forEach(media => {
-        const isKept = Array.isArray(parsedRemainingMedia)
-          ? parsedRemainingMedia.some(file => file.url === media.url)
-          : parsedRemainingMedia.url === media.url;
-        if (!isKept) {
-          const publicId = parsePublicId(media.url);
-          cloudinary.uploader.destroy(publicId, err => {
-            if (err) console.log(err);
-          });
-        }
-      });
-    }
+
+    currentPost.media.forEach(media => {
+      const isKept = Array.isArray(parsedRemainingMedia)
+        ? parsedRemainingMedia.some(file => file.url === media.url)
+        : parsedRemainingMedia.url === media.url;
+      if (!isKept) {
+        const publicId = parsePublicId(media.url);
+        cloudinary.uploader.destroy(publicId, err => {
+          if (err) console.log(err);
+        });
+      }
+    });
 
     const mediaData = parseMedia(postFiles);
     const updateData = {
       header,
       body,
-      media: [...parsedRemainingMedia, ...mediaData].filter(
-        post => !post.url.startsWith("blob"),
-      ),
+      media: [
+        ...(Array.isArray(parsedRemainingMedia)
+          ? parsedRemainingMedia
+          : [parsedRemainingMedia]),
+        ...mediaData,
+      ].filter(post => !post.url.startsWith("blob")),
       privacy,
       location,
       react,
@@ -184,7 +183,6 @@ export const deletePostDocument = async (postId: string) => {
       throw new ServerError("Post not found");
     }
 
-    console.log(post._id);
     // delete all files in cloudinary
     const mediaFiles = post.media;
     const allUrls = mediaFiles.map(file => file.url);
@@ -205,7 +203,7 @@ export const deletePostDocument = async (postId: string) => {
       });
     });
 
-    const reviews = post.review;
+    const reviews = [...post.review];
     const deleteQueue: Types.ObjectId[] = [];
 
     // bfs to collect all review documents
@@ -242,49 +240,6 @@ export const deletePostDocument = async (postId: string) => {
   }
 };
 
-// export const deletePostDocument = async (postId: string) => {
-//   try {
-//     const post = await PostModel.findById(postId);
-//     if (!post) {
-//       throw new PostError("Post not found");
-//     }
-//     const reviews = post.review;
-//     const deleteQueue: Types.ObjectId[] = [];
-
-//     // bfs to collect all documents
-//     while (reviews.length > 0) {
-//       const queueSize = reviews.length;
-//       for (let i = 0; i < queueSize; i++) {
-//         const review = reviews.shift();
-//         if (review) {
-//           deleteQueue.push(review._id as Types.ObjectId);
-//           if (review.childrenReview.length > 0) {
-//             reviews.push(...review.childrenReview);
-//           }
-//         }
-//       }
-//     }
-
-//     // use bulkwrite to send multiple delete operations in one batch, reducing network round-trips
-//     if (deleteQueue.length > 0) {
-//       const bulkOps = deleteQueue.map(reviewId => ({
-//         deleteOne: { filter: { _id: reviewId } },
-//       }));
-
-//       const bulkResult = await ReviewModel.bulkWrite(bulkOps);
-//       if (bulkResult.deletedCount !== deleteQueue.length) {
-//         throw new PostError("Failed to delete some reviews");
-//       }
-//     }
-//     const deletedPost = await PostModel.deleteOne({ _id: postId });
-//     if (deletedPost.deletedCount === 0) {
-//       throw new PostError("Failed to delete post");
-//     }
-//   } catch (err) {
-//     throw new ServerError(`${err}`);
-//   }
-// };
-
 export const reactPostDocument = async (
   userId: string,
   postId: string,
@@ -296,15 +251,66 @@ export const reactPostDocument = async (
     const alreadyLiked = post.react.some(id => id.equals(userId));
 
     if (alreadyLiked) {
-      post.reactCount -= 1;
       post.react.pull(userId);
     } else {
-      post.reactCount += 1;
       post.react.push(new Types.ObjectId(userId));
     }
     await post.save();
     return post.react;
   } catch (err) {
+    throw new ServerError(`${err}`);
+  }
+};
+
+export const savePostDocument = async (
+  postId: string,
+  userId: string,
+): Promise<Document> => {
+  try {
+    const post = await PostModel.findById(postId).populate({
+      path: "author",
+      select: "name id avatar",
+    });
+    const user = await UserModel.findById(userId);
+
+    if (!post || !user) throw new PostError("Post or user not found");
+
+    const updatedPost = await updateFieldArray(user.savedPost, postId);
+    if (!updatedPost) throw new ServerError("Failed to save post");
+    user.savedPost = updatedPost as Types.DocumentArray<Types.ObjectId>;
+    await user.save();
+
+    return post;
+  } catch (err) {
+    throw new ServerError(`${err}`);
+  }
+};
+
+export const hidePostDocument = async (
+  postId: string,
+  userId: string,
+): Promise<Document> => {
+  try {
+    const post = await PostModel.findById(postId).populate({
+      path: "author",
+      select: "name id avatar",
+    });
+    const user = await UserModel.findById(userId);
+    console.log("here");
+
+    if (!post || !user) throw new PostError("Post or user not found");
+    console.log(post.hiddenTo);
+    const updatedPost = await updateFieldArray(post.hiddenTo, userId);
+
+    if (!updatedPost) throw new ServerError("Failed to save post");
+    post.hiddenTo = updatedPost as Types.DocumentArray<Types.ObjectId>;
+    console.log(post.hiddenTo);
+    await post.save();
+    console.log(post);
+
+    return post;
+  } catch (err) {
+    console.log(err);
     throw new ServerError(`${err}`);
   }
 };

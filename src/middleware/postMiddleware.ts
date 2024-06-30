@@ -15,8 +15,10 @@ export const checkAuthor = async (
       throw new PostError("Post not found");
     }
     if (post.author.toString() !== req.user.userId) {
-      throw new PostError("Invalid author request");
+      throw new PostError("Author does not match");
     }
+  } else {
+    throw new PostError("No author");
   }
   next();
 };

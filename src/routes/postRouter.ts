@@ -4,8 +4,11 @@ import multer from "multer";
 import {
   createPostController,
   deletePostController,
+  getPostController,
+  hidePostController,
   newFeedController,
   reactPostController,
+  savePostController,
   updatePostController,
 } from "../controllers/postController.ts";
 import { PostError } from "../errors/customErrors.ts";
@@ -32,7 +35,7 @@ const apiLimiter = rateLimiter({
   message: { msg: "IP rate limit exceeded, retry in 15 minutes." },
 });
 
-router.get("/");
+router.get("/post/:postid", checkUser, apiLimiter, getPostController);
 router.get("/feed", checkUser, apiLimiter, newFeedController);
 router.post(
   "/post",
@@ -65,4 +68,7 @@ router.delete(
 
 router.post("/post/react/:postid", checkUser, apiLimiter, reactPostController);
 
+router.post("/post/save/:postid", apiLimiter, checkUser, savePostController);
+
+router.post("/post/hide/:postid", apiLimiter, checkUser, hidePostController);
 export default router;
