@@ -30,7 +30,7 @@ const ItemSchema = new mongoose.Schema<ItemDocument, ItemModel>({
     },
     unit: {
         type: String,
-        required: true,
+        // required: true,
     },
     type: {
         type: String,

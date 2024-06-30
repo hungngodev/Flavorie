@@ -43,7 +43,8 @@ function ReceiptForm<T extends ZodType<any, any, any>>({
           </Text>
       </CardHeader>
       <CardBody paddingInline={8}>
-        <form onSubmit={submit}>
+        <form onSubmit={submit}
+         >
           {fields.map((field, index) => (
             <FieldComponent
               control={control}
@@ -58,6 +59,7 @@ function ReceiptForm<T extends ZodType<any, any, any>>({
               watch={watch}
             />
           ))}
+          <Button type="submit">Console</Button>
         </form>
       </CardBody>
       <CardFooter>

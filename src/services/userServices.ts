@@ -63,7 +63,7 @@ export async function modifyUserItems(userId: string, items: Item[], type: strin
         const existingItem = await ItemModel.findOne({ userId: userId, itemId: item.itemId, type: type });
         if (existingItem) {
             existingItem.quantity = item.quantity;
-            existingItem.unit = item.unit;
+            // existingItem.unit = item.unit;
             await existingItem.save();
         } else {
             await ItemModel.create({ ...item, userId: userId, type: type });

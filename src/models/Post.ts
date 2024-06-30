@@ -9,7 +9,6 @@ export interface Media {
 export type Privacy = "public" | "private" | "friend";
 
 interface Post extends mongoose.Document {
-  id: string;
   author: Types.ObjectId;
   header: string;
   body: string;
@@ -24,11 +23,6 @@ interface Post extends mongoose.Document {
 interface PostModel extends mongoose.Model<Post> {}
 const PostSchema = new mongoose.Schema<Post, PostModel>(
   {
-    id: {
-      type: String,
-      required: true,
-      unique: true,
-    },
     author: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,

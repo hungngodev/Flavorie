@@ -34,6 +34,10 @@ const NAV_ITEMS: Array<NavItem> = [
       },
     ],
   },
+  {
+    label: 'Upload Receipts',
+    href: '/upload-receipts',
+  },
 ];
 
 export default function NavBar() {

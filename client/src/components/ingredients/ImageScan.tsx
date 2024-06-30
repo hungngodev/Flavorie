@@ -1,11 +1,18 @@
 import React, { useCallback, useRef, useState } from 'react';
 import Webcam from 'react-webcam';
 import { Box, Button, ButtonGroup, Flex, HStack, Image, VStack, Text } from '@chakra-ui/react';
+import socket from '../../socket/socketio.tsx';
+import useToast from '../../hooks/useToast.tsx';
+import useAuth from '../../hooks/useAuth.tsx';
+
 
 const CustomWebcam: React.FC = () => {
     const webcamRef = useRef<Webcam>(null); 
     const [imgSrc, setImgSrc] = useState<string | null>(null);
     const [message, setMessage] = useState<string | null>(null);
+    const {notifyError, notifySuccess, notifyWarning} = useToast()
+    const auth = useAuth()
+
 
     // capture photo
     const capture = useCallback(() => {
@@ -24,8 +31,14 @@ const CustomWebcam: React.FC = () => {
 
     // submit photo
     const submit = () => {
+        if (auth.currentUser.status === 'unauthenticated'){
+            notifyError('Please log in or sign up to submit receipt')
+            return;
+        }
         if (imgSrc) {
-            setMessage('Sucessfully submitted');
+            const filename = `webcam-photo-${Date.now()}.jpg`
+            socket?.emit('submitReceipt', {'base64': imgSrc, filename})
+            notifySuccess('Submit receipt successfully');
         }
     };
 
@@ -59,11 +72,11 @@ const CustomWebcam: React.FC = () => {
             )}
             </Box>
             {/* submission message */}
-            {message && (
+            {/* {message && (
                 <Text color="black.500" mt={3}>
                     {message}   
                 </Text>
-            )} 
+            )}  */}
         </Flex>
     );
 };
