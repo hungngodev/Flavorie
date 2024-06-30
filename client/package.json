@@ -14,8 +14,8 @@
     "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
-    "@hookform/resolvers": "^3.6.0",
     "@fontsource/reddit-mono": "^5.0.3",
+    "@hookform/resolvers": "^3.6.0",
     "@iconscout/unicons": "^4.0.8",
     "@motionone/utils": "^10.17.0",
     "@tanstack/react-query": "^5.37.1",
@@ -41,6 +41,7 @@
     "simplex-noise": "^4.0.1",
     "socket.io": "^4.7.5",
     "socket.io-client": "^4.7.5",
+    "table-pagination-chakra-ui": "^1.2.5",
     "tailwind-merge": "^2.3.0",
     "use-debounce": "^10.0.1",
     "zod": "^3.23.4"

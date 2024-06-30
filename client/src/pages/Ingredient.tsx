@@ -10,6 +10,7 @@ import { Params, useParams } from 'react-router-dom';
 import { Cart, CategorySidebar, IngredientsMain } from '../components';
 import { Nutrition } from '../components/ingredients/NutritionCard';
 import customFetch from '../utils/customFetch';
+// import { PaginationTable } from 'table-pagination-chakra-ui';
 
 waveform.register();
 

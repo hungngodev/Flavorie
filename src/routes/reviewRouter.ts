@@ -12,7 +12,7 @@ import { validateReview } from "../middleware/validateMiddleware.ts";
 import Review from "../models/Review.ts";
 import { catchAsync } from "../utils/catchAsync.ts";
 
-// const router = Router();
+const router = Router();
 
 router.post(
   "/:postId",
@@ -34,4 +34,4 @@ router.delete(
   catchAsync(deleteReview),
 );
 
-// export default router;
+export default router;
