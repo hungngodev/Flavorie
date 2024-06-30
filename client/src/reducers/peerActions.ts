@@ -7,6 +7,8 @@ export const ADD_PEER_NAME = 'ADD_PEER_NAME' as const;
 export const ADD_ALL_PEERS = 'ADD_ALL_PEERS' as const;
 export const ADD_PEER_CONNECTION_ID = 'ADD_PEER_CONNECTION_ID' as const;
 export const ADD_CALL_ACTION = 'ADD_CALL_ACTION' as const;
+export const TOGGLE_VIDEO = 'TOGGLE_VIDEO' as const;
+export const TOGGLE_MIC = 'TOGGLE_MIC' as const;
 
 export const addPeerStreamAction = (userId: string, stream: MediaStream) => ({
     type: ADD_PEER_STREAM,
@@ -33,4 +35,9 @@ export const addAllPeersAction = (peers: Record<string, IPeer>) => ({
 export const addCallAction = (userId: string, call: MediaConnection) => ({
     type: ADD_CALL_ACTION,
     payload: { userId, call },
+});
+
+export const toggleVideoAction = (userId: string) => ({
+    type: TOGGLE_VIDEO,
+    payload: { userId },
 });

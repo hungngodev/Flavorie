@@ -7,6 +7,7 @@ import {
     ADD_PEER_NAME,
     ADD_PEER_STREAM,
     REMOVE_PEER_STREAM,
+    TOGGLE_VIDEO,
 } from './peerActions';
 
 export type PeerState = Record<
@@ -16,6 +17,7 @@ export type PeerState = Record<
         userName?: string;
         userId: string;
         call: MediaConnection;
+        videoStatus?: boolean;
     }
 >;
 type PeerAction =
@@ -42,6 +44,10 @@ type PeerAction =
     | {
           type: typeof ADD_ALL_PEERS;
           payload: { peers: Record<string, IPeer> };
+      }
+    | {
+          type: typeof TOGGLE_VIDEO;
+          payload: { userId: string };
       };
 
 export const peersReducer = (state: PeerState, action: PeerAction) => {
@@ -89,6 +95,16 @@ export const peersReducer = (state: PeerState, action: PeerAction) => {
             };
         case ADD_ALL_PEERS:
             return { ...state, ...action.payload.peers };
+
+        case TOGGLE_VIDEO:
+            console.log(state[action.payload.userId].videoStatus);
+            return {
+                ...state,
+                [action.payload.userId]: {
+                    ...state[action.payload.userId],
+                    videoStatus: !state[action.payload.userId].videoStatus,
+                },
+            };
         default:
             return { ...state };
     }

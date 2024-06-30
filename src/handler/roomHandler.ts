@@ -64,6 +64,11 @@ export const roomHandler = (socket: Socket) => {
     socket.to(roomId).emit("user-stopped-sharing");
   };
 
+  const toggleVideo = ({ roomId, userId }: IRoomParams) => {
+    console.log("stopping video", userId);
+    socket.to(roomId).emit("user-toggle-video", userId);
+  };
+
   const addMessage = (roomId: string, message: IMessage) => {
     console.log({ message });
     if (chats[roomId]) {
@@ -94,4 +99,5 @@ export const roomHandler = (socket: Socket) => {
   socket.on("stop-sharing", stopSharing);
   socket.on("send-message", addMessage);
   socket.on("change-name", changeName);
+  socket.on("toggle-video", toggleVideo);
 };
