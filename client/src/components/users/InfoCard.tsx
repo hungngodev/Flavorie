@@ -136,7 +136,7 @@ const UserCard: React.FC<PersonalProps> = ({ avatar, name, lastname, email, phon
 
   return (
     <Card maxW="md" position="relative">
-      <Box p="4" position="relative">
+      <Box p="3" position="relative">
         {/* <Flex ml="4" mt="4" mr="4" mb="2"> */}
         {isEditing ? (
           <Box position="absolute" top="2" right="2">
