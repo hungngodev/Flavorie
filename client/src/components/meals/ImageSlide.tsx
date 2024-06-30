@@ -127,9 +127,26 @@ type Slide = TitleSlide | DetailSlide;
 
 function ImageSlide({ backendData }: ImageSlideProps) {
   // const colorLevels = ['base.50', 'base.100', 'base.200', 'base.300', 'base.400', 'base.500', 'base.600'];
+  const message = [
+    'Let’s get started! Gather your ingredients and set up your workspace. You’re on your way to creating something delicious!',
+    'Keep it up! Your dedication will pay off in a tasty dish.',
+    "You're on your way! Each step brings you closer to a delicious result.",
+    'Great progress! Every action you take is one step closer to success.',
+    "Halfway there! You're creating something wonderful. Enjoy the process!",
+    'You’re doing amazing! Stay focused and keep moving forward.',
+    'Patience pays off! Let your dish  to perfection, and soon you’ll enjoy a warm, delightful treat.',
+    "Keep the momentum! You're building flavors with each step.",
+    'You’re doing great! As your dish cooks, savor the wonderful aromas filling your kitchen. It’s a sign of good things to come!',
+    "You're almost there! Just a few more steps to perfection.",
+    'Stay motivated! Your effort is about to pay off.',
+    'Well done! Once your dish is plated, take a moment to admire your creation. You’ve worked hard and it shows!',
+    "Final stretch! You're so close to the finish line",
+    'Congratulations! Enjoy the delicious results of your hard work.',
+  ];
 
   const slides: Slide[] = backendData.analyzeInstruction.flatMap((instruction, instructionIndex) => {
     // const bgColor = colorLevels[instructionIndex % colorLevels.length];
+    const randomMessage = message[]
     const instructionSlides: Slide[] = [
       {
         type: 'title' as const,
