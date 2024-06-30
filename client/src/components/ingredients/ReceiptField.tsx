@@ -14,23 +14,18 @@ import {
   StatNumber,
   Tooltip,
 } from '@chakra-ui/react';
+import { QueryClient } from '@tanstack/react-query';
 import { ChakraStylesConfig, Select } from 'chakra-react-select';
 import { Check, MoveRight, Pencil, Trash } from 'lucide-react';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Controller, FieldPath, Path } from 'react-hook-form';
-import { useDebouncedCallback } from 'use-debounce';
+import { Params } from 'react-router-dom';
 import { ZodType, z } from 'zod';
-import CustomFetch from '../../utils/customFetch';
+import { default as CustomFetch, default as customFetch } from '../../utils/customFetch';
 import parseOption, { OptionMenuType } from '../../utils/parseOption';
 import CustomNumberInput from '../form/CustomNumberInput';
 import CustomTextInput from '../form/CustomTextInput';
 import { ReceiptFormProps } from './ReceiptForm';
-import {useCallback} from "react";
-import {useQuery, QueryClient} from "@tanstack/react-query";
-import {Params} from "react-router-dom"
-import customFetch from "../../utils/customFetch"
-import { error } from 'console';
-
 
 // ! to be updated later
 export const updateSuggestionQuery = (id?: any) => {
@@ -92,15 +87,7 @@ function ReceiptField<T extends ZodType<any, any, any>>({
   field,
   watch,
 }: ReceiptFieldProps<T>) {
-  const toggleChange = useCallback(() => {
-    update(index, fields, {
-      suggested: {
-        ...watch(`receipts.${index}.suggested` as Path<z.infer<T>>),
-        display: !watch(`receipts.${index}.suggested.display` as Path<z.infer<T>>),
-      },
-    });
-  }, [index, fields, update, watch])
-  // }, [watch(`receipts.${index}.suggested.display` as Path<z.infer<T>>)]);
+  const [isEditing, setIsEditing] = useState<{ [key: number]: boolean }>({});
 
   const [menuSuggestion, setMenuSuggestion] = useState<OptionMenuType>({
     label:
@@ -109,8 +96,9 @@ function ReceiptField<T extends ZodType<any, any, any>>({
   });
 
   const handleSuggestionChange = (newValue: any) => {
-    const selectedItem = field.suggested.items.find(item => item.name === newValue.value);
+    const selectedItem = field.suggested.items.find((item) => item.name === newValue.value);
     update(index, fields, {
+      id: selectedItem.oid,
       name: newValue.value,
       image: selectedItem.img,
       suggested: {
@@ -120,59 +108,58 @@ function ReceiptField<T extends ZodType<any, any, any>>({
     });
     setMenuSuggestion({
       label: `${selectedItem.name}`,
-      options: parseOption(field.suggested.items.map((item: any) => item?.name))
-    })
+      options: parseOption(field.suggested.items.map((item: any) => item?.name)),
+    });
   };
 
-  //get data from input => set suggestion => set input
-  const updateReceipt = useDebouncedCallback((val: any) => {
-    if(val === ""){
-      return;
-    }
+  const updateReceipt = useCallback(
+    (val: string) => {
+      if (val === '') {
+        return;
+      }
 
-    // const updateData: Array<{ name: string; img: string }> = [];
-    CustomFetch.get(`http://localhost:5100/api/ingredients/suggestions?name=${val}`, {withCredentials: true})
-    .then((response) => {
-      const suggestions = response.data.filterSuggestions.map((item: any) => ({
-        name: item.name,
-        img: item.img
-      }))
-      setMenuSuggestion({
-        label: `${suggestions.length} suggestions for ${val}:`,
-        options: parseOption(suggestions.map(item => item.name))
-      })
-      update(index, fields, {
-        name: val, 
-        suggested: {
-          display: true,
-          items: suggestions
-        }
-      })
-    })
-    .catch((error) => console.log(error))
-    // fake fetch 
-    // user edit 
-  //   CustomFetch.get(`http://localhost:5100/api/ingredients/suggestions?name=${val}`, {withCredentials: true})
-  //     .then((response) => {
-  //       setMenuSuggestion({
-  //         label: `${watch(`receipts.${index}.suggested.items` as Path<z.infer<T>>)} suggestions for ${val}:` as string,
-  //         options: parseOption([response.data.filterSuggestions]),
-  //       });
-  //     })
-  //     .then(() => {
-  //       update(index, fields, {
-  //         name: val,
-  //         suggested: {
-  //           display: true,
-  //           items: updateData.map(item => ({
-  //             name: item.name,
-  //             img: item?.img ?? 'https://img.freepik.com/free-photo/fried-chicken-breast-with-vegetables_140725-4650.jpg?t=st=1717211148~exp=1717214748~hmac=35aff48267e7d35f50f03fdd12473c2606c90b4f0a73eb45e2d4a51cfb44d0d8&w=740',
-  //           })),
-  //         },
-  //       });
-  //     })
-  //     .catch((error) => console.log(error));
-  }, 300);
+      CustomFetch.get(`http://localhost:5100/api/user/ingredients/suggestions?name=${val}`)
+        .then((response) => {
+          const updateData = response.data.filterSuggestions.map((item: any) => ({
+            name: item.name,
+            img: 'https://img.spoonacular.com/ingredients_250x250/' + item.img,
+          }));
+
+          setMenuSuggestion({
+            label: `${updateData.length} suggestions for ${val}:`,
+            options: parseOption(updateData),
+          });
+
+          update(index, fields, {
+            name: val,
+            suggested: {
+              display: true,
+              items: updateData,
+            },
+          });
+        })
+        .catch((error) => console.log(error));
+    },
+    [index, fields, update],
+  );
+
+  const toggleChange = useCallback(() => {
+    const currentDisplay = watch(`receipts.${index}.suggested.display` as Path<z.infer<T>>);
+    const inputValue = watch(`receipts.${index}.name` as Path<z.infer<T>>);
+
+    if (currentDisplay && isEditing[index]) {
+      updateReceipt(inputValue);
+      setIsEditing((prev) => ({ ...prev, [index]: false }));
+    } else {
+      setIsEditing((prev) => ({ ...prev, [index]: true }));
+    }
+    update(index, fields, {
+      suggested: {
+        ...watch(`receipts.${index}.suggested` as Path<z.infer<T>>),
+        display: !currentDisplay,
+      },
+    });
+  }, [watch, index, update, fields, updateReceipt, isEditing]);
 
   return (
     <Grid
@@ -194,7 +181,6 @@ function ReceiptField<T extends ZodType<any, any, any>>({
           alignSelf="flex-start"
           borderRadius="lg"
           width="90%"
-          // src={field.suggested.items[0].img}
           src={watch(`receipts.${index}.suggested.items.img` as Path<z.infer<T>>) ?? field?.image}
           alt="receipt image"
         />
@@ -219,13 +205,11 @@ function ReceiptField<T extends ZodType<any, any, any>>({
                 fontSize="xl"
                 variant="ghost"
                 onChange={(e) => {
-                  // updateReceipt(value.target.value);
-                  // fieldProps.onChange(e.target.value);
-                  update(index, fields, {name: e.target.value});
-                  updateReceipt(e.target.value)
+                  update(index, fields, { name: e.target.value });
+                  updateReceipt(e.target.value);
                 }}
                 onBlur={(e) => {
-                  toggleChange()
+                  toggleChange();
                 }}
                 control={
                   <Tooltip
@@ -240,10 +224,10 @@ function ReceiptField<T extends ZodType<any, any, any>>({
                     <IconButton
                       aria-label="edit-name"
                       backgroundColor="transparent"
+                      // icon={isEditing[index] ? <Check /> : <Pencil />}
+
                       icon={watch(`receipts.${index}.suggested.display` as Path<z.infer<T>>) ? <Check /> : <Pencil />}
-                      onClick={() => {
-                        toggleChange();
-                      }}
+                      onClick={toggleChange}
                       padding={1}
                       rounded="full"
                       size="sm"
@@ -265,7 +249,7 @@ function ReceiptField<T extends ZodType<any, any, any>>({
           <Controller
             control={control}
             name={`receipts.${index}.name` as FieldPath<z.infer<T>>}
-            render={({ field}) => {
+            render={({ field }) => {
               return (
                 <FormControl
                   border="1px"
@@ -279,16 +263,13 @@ function ReceiptField<T extends ZodType<any, any, any>>({
                     chakraStyles={menuStyles}
                     selectedOptionColor="teal"
                     defaultValue={menuSuggestion.options[0]}
-                    value={menuSuggestion.options.find(option => option.value === field.value) || menuSuggestion.options[0]}
-
+                    value={
+                      menuSuggestion.options.find((option) => option.value === field.value) || menuSuggestion.options[0]
+                    }
                     options={[menuSuggestion]}
-                    // options={menuSuggestion.options}
                     onChange={(newValue: any) => {
-                      field.onChange(newValue.value)
-                      
+                      field.onChange(newValue.value);
                       handleSuggestionChange(newValue);
-                      
-
                     }}
                   />
                 </FormControl>

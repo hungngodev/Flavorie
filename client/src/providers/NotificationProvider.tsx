@@ -47,7 +47,6 @@ const NotificationProvider: React.FC<NotificationContextProviderProps> = ({
       if (parsedData.success){
         setNotificationDetail(parsedData.data);
         localStorage.setItem('notificationDetail', JSON.stringify(parsedData.data.message.data))
-        // console.log(parsedData.data)
         return parsedData.data
       } else {
         return null

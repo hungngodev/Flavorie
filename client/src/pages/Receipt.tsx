@@ -56,6 +56,7 @@ const ReceiptObject = z
         z.object({
           name: z.coerce.string(),
           img: z.coerce.string(),
+          oid: z.coerce.string()
         }),
       ),
     }),
@@ -115,6 +116,7 @@ const Receipt = () => {
       localStorage.getItem('notificationDetail') ? 
       JSON.parse(localStorage.getItem('notificationDetail')).map((receipt: any) => {
         return {
+          id: receipt['potential_matches'][0]['potential_id'],
           name: receipt.name.toLowerCase(),
           quantity: receipt.quantity,
           image: receipt['potential_matches'][0]['potential_image'],
@@ -123,7 +125,8 @@ const Receipt = () => {
             display: false,
             items: receipt['potential_matches'].map((item: any) => ({
               name: item['potential_name'],
-              img: item['potential_image']
+              img: item['potential_image'],
+              oid: item['potential_id']
             }))
           }
         }
@@ -144,13 +147,30 @@ const Receipt = () => {
     name: 'receipts',
   });
   
+  const transformResponse = (data) => {
+    return data.receipts.map((item) => ({
+      itemId: item.id,
+      quantity: Number(item.quantity),
+      // status: 'leftOver'
+      // unit: item.price,
+    }));
+  }
 
   // this function handles the submission of the form
-  const submitReceipts: SubmitHandler<ReceiptFieldType> = (receiptResponse) => {
-    console.log("test")
+  const submitReceipts: SubmitHandler<ReceiptFieldType> = async (receiptResponse) => {
     console.log(receiptResponse);
     localStorage.removeItem('notificationDetail')
+    const transformData = transformResponse(receiptResponse)
+    console.log("Data will be sent: ", transformData)
+    try {
+      const response = await customFetch.patch('http://localhost:5100/api/user/left-over', transformData)
+      console.log(response.data)
+    }
+    catch(e)  {
+      console.log(e)
+    }
     // actual submit logic will be added later
+
   };
 
   const removeField = (index: number) => {

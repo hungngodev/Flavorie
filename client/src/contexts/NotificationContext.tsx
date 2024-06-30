@@ -1,16 +1,6 @@
 import React from 'react';
 import {z} from 'zod'
 
-// export interface Notification {
-//   _id: z.string(),
-//   userId: z.string(),
-//   status: z.boolean(),
-//   message: {
-//     title: z.string(),
-//     data?: z.record(z.any()).optional(),
-//   };
-//   timestamp: z.date()
-// }
 export const NotificationSchema = z.object({
   _id: z.string(),
   userId: z.string(),
@@ -23,7 +13,8 @@ export const NotificationSchema = z.object({
       quantity: z.string(),
       potential_matches: z.array(z.object({
         potential_name: z.string(),
-        potential_image: z.string()
+        potential_image: z.string(),
+        potential_id: z.string()
       }))
     })))
   }),
