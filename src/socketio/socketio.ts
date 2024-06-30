@@ -35,9 +35,10 @@ const setUpSocketIO = (server: any) => {
   io.use(authenticateSocketIO);
   io.on("connection", (socket: Socket) => {
     console.log(socket);
-
+    console.log("hello");
     //submit receipt
     socket.on("submitReceipt", async data => {
+      console.log("submit receipt");
       const { base64, filename } = data;
       try {
         // upload to Cloudinary
@@ -137,6 +138,10 @@ const setUpSocketIO = (server: any) => {
       } catch (error) {
         console.log("Error when deleting notifications", error);
       }
+    });
+
+    socket.on("sendToInstacart", async data => {
+      console.log("sendToInstacart", data);
     });
   });
 

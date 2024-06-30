@@ -62,9 +62,9 @@ export async function modifyOrdinaryInfo(
 }
 
 export async function getUserItems(userId: string, type: string) {
-  const items = await ItemModel.find({ userId: userId, type: type }).populate(
-    "itemId",
-  );
+  const items = await ItemModel.find({ userId: userId, type: type })
+    .populate(type)
+    .populate("userId");
   return items;
 }
 
@@ -73,7 +73,7 @@ export async function modifyUserItems(
   items: Item[],
   type: string,
 ): Promise<void> {
-  for (let item of items) {
+  for (const item of items) {
     const existingItem = await ItemModel.findOne({
       userId: userId,
       itemId: item.itemId,
@@ -88,7 +88,6 @@ export async function modifyUserItems(
     }
   }
   const existingItems = await ItemModel.find({ userId: userId, type: type });
-  console.log(items);
   for (const existingItem of existingItems) {
     const item = items.find(
       item => item.itemId.toString() === existingItem.itemId.toString(),
@@ -97,5 +96,24 @@ export async function modifyUserItems(
       console.log("deleting item");
       await ItemModel.findByIdAndDelete(existingItem._id);
     }
+  }
+}
+
+export async function toggleLikedItem(
+  userId: string,
+  itemId: string,
+  type: string,
+) {
+  const existingItem = await ItemModel.findOne({
+    userId: userId,
+    itemId: itemId,
+    type: "likedMeal",
+  });
+  if (existingItem) {
+    await ItemModel.findByIdAndDelete(existingItem._id);
+    return 0;
+  } else {
+    await ItemModel.create({ userId: userId, itemId: itemId, type: type });
+    return 1;
   }
 }

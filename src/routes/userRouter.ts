@@ -36,7 +36,10 @@ router
   .get(authenticateUser, catchAsync(getLeftOver))
   .patch(authenticateUser, catchAsync(updateLeftOver));
 
-router.route("/likedMeals");
+router
+  .route("/likedMeal")
+  .get(authenticateUser, catchAsync(getLikedMeals))
+  .post(authenticateUser, catchAsync(updateLikedMeals));
 
 router
   .route("/notifications/cnt")
