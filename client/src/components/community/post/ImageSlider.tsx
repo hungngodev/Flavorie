@@ -14,6 +14,7 @@ interface ImageSliderProps extends StackProps {
   onClose?: (arg?: any) => void;
   postId?: string;
   action: 'display' | 'direct';
+  children?: React.ReactNode;
 }
 
 const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, onClose, postId, action, ...props }) => {

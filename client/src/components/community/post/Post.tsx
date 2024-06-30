@@ -10,7 +10,6 @@ import {
   StackProps,
   Text,
   VStack,
-  useTheme,
 } from '@chakra-ui/react';
 import { forwardRef, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -27,14 +26,11 @@ interface PostProps extends StackProps, BasePostProps {
 }
 
 const Post = forwardRef<HTMLDivElement, PostProps>(
-  ({ postData, headerProps, bodyProps, footerProps, index, postId, ...containerProps }, ref) => {
-    const theme = useTheme();
-
+  ({ headerProps, bodyProps, footerProps, index, postId, ...containerProps }, ref) => {
     const auth = useAuth();
     const posts = useSelector(selectPosts);
     const post = posts[index!]; // Get post data from redux state
 
-    const { id } = auth.currentUser;
     const [loading, setLoading] = useState(false);
     // const [isVisible, setIsVisible] = useState(
     // !post.hiddenTo?.includes(id) &&

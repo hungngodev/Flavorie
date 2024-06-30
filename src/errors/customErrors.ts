@@ -1,17 +1,10 @@
-import { StatusCodes, StatusCodes } from "http-status-codes";
+import { StatusCodes } from "http-status-codes";
 
 interface CustomError extends Error {
-  statusCode: number;
   statusCode: number;
 }
 
 export class NotFoundError extends Error {
-  statusCode: number; // Add the statusCode property
-  constructor(message: string) {
-    super(message);
-    this.name = "NotFoundError";
-    this.statusCode = StatusCodes.NOT_FOUND;
-  }
   statusCode: number; // Add the statusCode property
   constructor(message: string) {
     super(message);
@@ -27,20 +20,8 @@ export class ServerError extends Error {
     this.name = "ServerError";
     this.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
   }
-  statusCode: number; // Add the statusCode property
-  constructor(message: string) {
-    super(message);
-    this.name = "ServerError";
-    this.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
-  }
 }
 export class BadRequestError extends Error {
-  statusCode: number; // Add the statusCode property
-  constructor(message: string) {
-    super(message);
-    this.name = "BadRequestError";
-    this.statusCode = StatusCodes.BAD_REQUEST;
-  }
   statusCode: number; // Add the statusCode property
   constructor(message: string) {
     super(message);
@@ -65,20 +46,8 @@ export class UnauthorizedError extends Error {
     this.name = "UnauthorizedError";
     this.statusCode = StatusCodes.FORBIDDEN;
   }
-  statusCode: number; // Add the statusCode property
-  constructor(message: string) {
-    super(message);
-    this.name = "UnauthorizedError";
-    this.statusCode = StatusCodes.FORBIDDEN;
-  }
 }
 export class UserCreationError extends Error {
-  statusCode: number; // Add the statusCode property
-  constructor(message: string) {
-    super(message);
-    this.name = "UserCreationError";
-    this.statusCode = StatusCodes.CONFLICT;
-  }
   statusCode: number; // Add the statusCode property
   constructor(message: string) {
     super(message);
@@ -93,5 +62,13 @@ export class ForbiddenError extends Error {
     super(message);
     this.name = "ForbiddenError";
     this.statusCode = StatusCodes.FORBIDDEN;
+  }
+}
+export class PostError extends Error {
+  statusCode: number;
+  constructor(message: string) {
+    super(message);
+    this.name = "PostError";
+    this.statusCode = StatusCodes.NOT_ACCEPTABLE;
   }
 }

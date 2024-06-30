@@ -67,7 +67,7 @@ const PostFormCard = memo<PostFormCardProps>(() => {
           <Divider color="blackAlpha.300" />
           <CardFooter paddingBlock={2}>
             <HStack gap={10} width="100%" justifyContent="flex-start">
-              {Buttons.map((button, index) => (
+              {Buttons.map((button) => (
                 <Button
                   aria-label={button.name}
                   leftIcon={<button.icon color={button.color} />}
