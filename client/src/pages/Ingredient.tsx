@@ -187,7 +187,7 @@ export default function Ingredient() {
         setExpanded={() => setExpanded((cur) => !cur)}
       />
       <div className="relative z-0 h-full w-full overflow-auto transition-all">
-        <Flex width="100%" height="100%" direction={'column'} gap={4} justifyContent={'center'} alignItems={'center'}>
+        <Flex width="100%" height="100%" direction={'column'} justifyContent={'center'} alignItems={'center'}>
           {status === 'pending' ? (
             <l-waveform size="100" stroke="3.5" speed="1" color="black"></l-waveform>
           ) : (
