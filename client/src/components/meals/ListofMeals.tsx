@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, HStack, IconButton, VStack } from '@chakra-ui/react';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { useEffect, useRef } from 'react';
@@ -63,7 +62,7 @@ export function ListofMeals({ Type, meals }: MealTypeProps) {
           py={5}
         >
           {meals.map((meal, index) => (
-            <Box key={index} flexShrink={0} width={'38vh'}>
+            <Box key={index + 'eachMeal'} flexShrink={0} width={'38vh'}>
               <ImageCard
                 imageProps={{
                   src: meal.image,
@@ -72,6 +71,9 @@ export function ListofMeals({ Type, meals }: MealTypeProps) {
                   category: meal.category,
                   // price: meal.price,
                   infoLink: `/meals/${meal.id}`,
+                  id: meal._id,
+                  numberOfLiked: meal.numberOfLiked,
+                  liked: meal.liked,
                 }}
               />
             </Box>

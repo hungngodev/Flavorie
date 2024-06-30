@@ -16,6 +16,8 @@ export interface Meal {
   description: string;
   image: string;
   category: string;
+  numberOfLiked: number;
+  liked?: boolean;
   // price: string;
 }
 
@@ -55,12 +57,11 @@ function Meal() {
         </Flex>
       ) : (
         <div>
-          {Object.entries(mealData).map((entry, index) =>
-            (entry[1] as Meal[]).length > 0 ? (
-              <ListOfMeals key={index} Type={entry[0].toString()} meals={entry[1] as Meal[]} />
-            ) : (
-              <></>
-            ),
+          {Object.entries(mealData).map(
+            (entry, index) =>
+              (entry[1] as Meal[]).length > 0 && (
+                <ListOfMeals key={index + 'listMeal'} Type={entry[0].toString()} meals={entry[1] as Meal[]} />
+              ),
           )}
         </div>
       )}

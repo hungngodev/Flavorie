@@ -9,6 +9,7 @@ import { FaShoppingCart } from 'react-icons/fa';
 import { Params, useParams } from 'react-router-dom';
 import { Cart, CategorySidebar, IngredientsMain } from '../components';
 import { Nutrition } from '../components/ingredients/NutritionCard';
+import { useAuth } from '../hooks';
 import customFetch from '../utils/customFetch';
 // import { PaginationTable } from 'table-pagination-chakra-ui';
 
@@ -84,12 +85,13 @@ export default function Ingredient() {
   const { data: queryData, status } = useQuery(allIngredientsQuery(currentCategory));
   const ingredientData = queryData?.data.category[0];
   const { data: cartData, status: cartStatus } = useQuery(cartQuery);
-
+  console.log(cartData);
   const fridgeWidth = '500';
   const { getButtonProps, getDisclosureProps, isOpen } = useDisclosure();
   const [hidden, setHidden] = useState(!isOpen);
   const [expanded, setExpanded] = useState(false);
   const lottieCartRef = useRef<LottieRefCurrentProps>(null);
+  const auth = useAuth();
 
   const { control, handleSubmit, watch, setValue } = useForm<CartData>({
     defaultValues: {
@@ -100,18 +102,17 @@ export default function Ingredient() {
     if (cartStatus === 'success') {
       setValue(
         'cart',
-        cartData.data.cart.map((item: { itemId: { _id: string; name: string; image: string }; quantity: string }) => {
+        cartData.data.cart.map((item: { cart: { _id: string; name: string; image: string }; quantity: string }) => {
           return {
-            id: item.itemId._id,
-            name: item.itemId.name,
-            image: item.itemId.image,
+            id: item.cart._id,
+            name: item.cart.name,
+            image: item.cart.image,
             quantity: item.quantity,
           };
         }),
       );
     }
   }, [cartData, cartStatus, setValue]);
-  console.log(cartData, cartStatus);
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'cart',
@@ -131,10 +132,6 @@ export default function Ingredient() {
       });
     lottieCartRef.current?.playSegments([150, 185]);
   };
-  const removeFunction = (index: number) => {
-    remove(index);
-  };
-
   const onSubmit = () => {
     handleSubmit((data: CartData) => {
       console.log(data);
@@ -158,6 +155,13 @@ export default function Ingredient() {
       );
     })();
   };
+  useEffect(() => {
+    if (auth.currentUser.status === 'authenticated') {
+      console.log('submitting');
+      onSubmit();
+    }
+  });
+
   return (
     <Box
       position="relative"
@@ -214,7 +218,7 @@ export default function Ingredient() {
       >
         <Cart
           fields={fields}
-          removeFunction={removeFunction}
+          removeFunction={remove}
           onSubmit={onSubmit}
           control={control}
           lottieCartRef={lottieCartRef}

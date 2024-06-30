@@ -14,18 +14,10 @@ interface IngredientLineProps {
 export default function IngredientLine({ subCategory, index, addFunction }: IngredientLineProps) {
   const scrollRefs = useRef<HTMLDivElement | null>();
   const [currentView, setCurrentView] = useState<number>(0);
-  const size = 7;
+  const size = 6;
   const view = 7;
   function scroll(direction: 'left' | 'right', distance: number, index: number) {
-    if (direction === 'left') {
-      if (currentView === 0) return;
-      setCurrentView(currentView - 1);
-    }
-    if (direction === 'right') {
-      if (currentView === size) return;
-      setCurrentView(currentView + 1);
-    }
-    // const scrollRef = scrollRefs.current;
+    const scrollRef = scrollRefs.current;
     // if (scrollRef) {
     //   if (direction === 'left') {
     //     scrollRef.scrollTo({
@@ -39,6 +31,14 @@ export default function IngredientLine({ subCategory, index, addFunction }: Ingr
     //     });
     //   }
     // }
+    if (direction === 'left') {
+      if (currentView === 0) return;
+      setCurrentView(currentView - 1);
+    }
+    if (direction === 'right') {
+      if (currentView === size) return;
+      setCurrentView(currentView + 1);
+    }
   }
   const subCategoryToView = subCategory.ingredients.slice(currentView * size, (currentView + 1) * size);
   return (

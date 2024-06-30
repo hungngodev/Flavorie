@@ -18,11 +18,11 @@ const NotificationProvider: React.FC<NotificationContextProviderProps> = ({
   const [numberOfNotifications, setCntNotifications] = useState(0);
   const [notificationDetail, setNotificationDetail] = useState<Notification | null>(null);
   const { notifyError, notifyWarning, notifySuccess } = useToast();
-  const [isAutheticate, setIsAuthenticate] = useState(false)
+  const [isAutheticate, setIsAuthenticate] = useState(false);
 
   // const [unreadNotifications, setUnreadNotifications] = useState<Notification[]>([])
 
-  //fetch all notifications 
+  //fetch all notifications
   const fetchNotifications = useCallback(async () => {
     try {
       const cntResponse = await axios.get('http://localhost:5100/api/user/notifications/cnt', {
@@ -38,18 +38,18 @@ const NotificationProvider: React.FC<NotificationContextProviderProps> = ({
     }
   }, [notifyError]);
 
-  // get notification detail 
+  // get notification detail
   const fetchNotificationById = async (id: string): Promise<Notification | null> => {
     try {
       const response = await axios.get(`http://localhost:5100/api/user/notifications/${id}`, { withCredentials: true });
       // console.log(response.data.currNotification);
-      const parsedData = NotificationSchema.safeParse(response.data.currNotification)
-      if (parsedData.success){
+      const parsedData = NotificationSchema.safeParse(response.data.currNotification);
+      if (parsedData.success) {
         setNotificationDetail(parsedData.data);
-        localStorage.setItem('notificationDetail', JSON.stringify(parsedData.data.message.data))
-        return parsedData.data
+        localStorage.setItem('notificationDetail', JSON.stringify(parsedData.data.message.data));
+        return parsedData.data;
       } else {
-        return null
+        return null;
       }
     } catch (error) {
       toast.error('Cannot find notification');
@@ -60,16 +60,16 @@ const NotificationProvider: React.FC<NotificationContextProviderProps> = ({
 
   useEffect(() => {
     if (auth.currentUser.status === 'authenticated') {
-        setIsAuthenticate(true)
+      setIsAuthenticate(true);
 
       fetchNotifications();
       socket.on('updateNotificationRead', (notificationId) => {
         // setNotifications((prevNotis) =>
         //   prevNotis.filter((noti) => (noti._id !== notificationId)),
         // );
-        setNotifications((prevNotis) => 
-          prevNotis.map((noti) => noti._id === notificationId ? {...noti, status: true} : noti)
-        )
+        setNotifications((prevNotis) =>
+          prevNotis.map((noti) => (noti._id === notificationId ? { ...noti, status: true } : noti)),
+        );
         setCntNotifications((prevCount) => prevCount - 1);
       });
       socket.on('updateNotificationDelete', (notificationId, wasUnread) => {
@@ -93,11 +93,10 @@ const NotificationProvider: React.FC<NotificationContextProviderProps> = ({
       };
     } else if (auth.currentUser.status === 'unauthenticated') {
       // console.log(auth.currentUser.status)
-      setIsAuthenticate(false)
+      setIsAuthenticate(false);
 
       setNotifications([]);
       setCntNotifications(0);
-      notifyWarning('Please log in to view notifications');
     }
   }, [auth.currentUser.status, fetchNotifications, notifyWarning]);
 
