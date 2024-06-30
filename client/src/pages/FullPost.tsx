@@ -75,30 +75,3 @@ const FullPost = () => {
   );
 };
 export default FullPost;
-{
-  /* <Card
-  marginBlock={4}
-  {...containerProps}
-  height="auto"
-  ref={ref}
-  position="relative"
-  backdropBlur={loading && 'blur(10px)'}
-  pointerEvents={loading ? 'none' : 'auto'}
-  opacity={loading ? 0.5 : 1}
->
-  <CardHeader paddingBottom={0} {...headerProps}>
-    <PostHeader postId={post.id} index={index} setLoading={setLoading} />
-  </CardHeader>
-
-  <CardBody {...bodyProps}>
-    <VStack gap={2} alignItems="start" marginBottom={2}>
-      <Heading size="lg">{post.header}</Heading>
-      <Text>{post.body}</Text>
-    </VStack>
-    {post.media.length > 0 && <ImageSlider action="direct" slides={post.media} postId={postId} />}
-  </CardBody>
-  <CardFooter {...footerProps}>
-    <PostFooter index={index} postId={post.id} setLoading={setLoading} />
-  </CardFooter>
-</Card>; */
-}
