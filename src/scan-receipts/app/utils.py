@@ -2,11 +2,14 @@ import os
 import string
 import fasttext
 import fasttext.util
+from flask import jsonify
 import nltk
 from annoy import AnnoyIndex
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from scipy.spatial.distance import cdist
+from bson import ObjectId
+
 
 # Extract related information from receipts
 def post_process(data):
@@ -21,6 +24,7 @@ def post_process(data):
         )
     return structured_receipts
 
+
 # Match ingredients
 # Load FastText model
 def load_fasttext_model():
@@ -29,8 +33,11 @@ def load_fasttext_model():
         return fasttext.load_model(model_path)
     else:
         fasttext.util.download_model("en", if_exists="ignore")
-        return fasttext.load_model('cc.en.300.bin')
+        return fasttext.load_model("cc.en.300.bin")
+
+
 ft_model = load_fasttext_model()
+
 
 # Preprocess text
 def preprocess(text):
@@ -46,15 +53,25 @@ def preprocess(text):
     processed_text = " ".join(words)
     return processed_text
 
+
 # Load ingredients' names
 def get_ingredients(mongo_client):
     ingredient_collection = mongo_client.test.ingredients
     ingredient_cursor = list(ingredient_collection.find({}))
-    ingredient_names = [ingredient['name'] for ingredient in ingredient_cursor]
-    # ingredient_oid = {ingredient['name']: str(ingredient['_id']) for ingredient in ingredient_cursor.rewind()}
-    ingredient_img = {ingredient['name']: "https://img.spoonacular.com/ingredients_250x250/" + ingredient.get('image' , 'No image') for ingredient in ingredient_cursor}
-    return ingredient_names, ingredient_img
-    
+    ingredient_names = []
+    ingredient_img = {}
+    ingredient_oid = {}
+    for ingredient in ingredient_cursor:
+        name = ingredient["name"]
+        ingredient_names.append(name)
+        ingredient_img[name] = (
+            "https://img.spoonacular.com/ingredients_250x250/"
+            + ingredient.get("image", "No image")
+        )
+        ingredient_oid[name] = str(ingredient["_id"])
+    return ingredient_names, ingredient_img, ingredient_oid
+
+
 # Build ANNOY index
 def build_annoy_idx(ft_model, ingredient_names):
     annoy_index = AnnoyIndex(ft_model.get_dimension(), "angular")
@@ -64,8 +81,9 @@ def build_annoy_idx(ft_model, ingredient_names):
     annoy_index.build(50)
     return annoy_index
 
+
 def match_ingredients(items, mongo_client):
-    ingredient_names, ingredient_img = get_ingredients(mongo_client)
+    ingredient_names, ingredient_img, ingredient_oid = get_ingredients(mongo_client)
     annoy_index = build_annoy_idx(ft_model, ingredient_names)
     matched_items = []
     for item in items:
@@ -89,8 +107,8 @@ def match_ingredients(items, mongo_client):
             (
                 cosine_similarities[i],
                 ingredient_names[idx],
-                # ingredient_oid[ingredient_names[idx]],
-                ingredient_img[ingredient_names[idx]]
+                ingredient_img[ingredient_names[idx]],
+                ingredient_oid[ingredient_names[idx]],
             )
             for i, idx in enumerate(similar_idx)
         ]
@@ -98,9 +116,13 @@ def match_ingredients(items, mongo_client):
         similar_items.sort(key=lambda x: x[0], reverse=True)
         potential_matches = []
         for val in similar_items:
-            potential_items = {'potential_name': val[1], 'potential_image': val[2]}
+            potential_items = {
+                "potential_name": val[1],
+                "potential_image": val[2],
+                "potential_id": val[3],
+            }
             potential_matches.append(potential_items)
-        
+
         item["potential_matches"] = potential_matches
         matched_items.append(item)
     return matched_items
