@@ -1,14 +1,18 @@
-import React from 'react';
+import { Dish } from './components/meals/ImageSlide';
 import { Box, ChakraBaseProvider, extendTheme } from '@chakra-ui/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
 import HomeLayout from './layouts/HomeLayout';
-// import { Ingredient, loader as ingredientsLoader } from './pages/Ingredient.tsx';
-// import { loader as mealsLoader } from './pages/Meal.tsx';
-// import { loader as recipeLoader } from './pages/Recipe';
-// import { Ingredient, Login, Main, Meal, Recipe, Register, User } from './pages/index';
+import {loader as ingredientsLoader } from './pages/Ingredient.tsx';
+import { loader as mealsLoader } from './pages/Meal.tsx';
+import NotificationDetailPage from './pages/NotificationDetail.tsx';
+import NotificationPage from './pages/NotificationPage.tsx';
+import ReceiptScan from './pages/ReceiptScan.tsx';
+import { loader as recipeLoader } from './pages/Recipe.tsx';
+import { Ingredient, Login, Main, Meal, Recipe, Register, User } from './pages/index';
+import ToastProvider from './providers/ToastProvider.tsx';
 import theme from './style/theme';
 import IndividualMeal from './pages/Recipe';
 import { BackendData } from './components/meals/ImageSlide';
@@ -17,6 +21,7 @@ import { IngredientProps } from './components/ingredients/NutritionCard';
 import ReviewCard, { Review } from './components/community/ReviewCard';
 import { identity } from 'lodash';
 import ReviewForm from './components/form/Review';
+import Receipt from './pages/Receipt.tsx';
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -86,6 +91,26 @@ const router = createBrowserRouter([
         path: 'profile',
         element: <User />,
       },
+      {
+        path: 'upload-receipts',
+        element: <ReceiptScan />,
+      },
+      {
+        path: 'notifications',
+        element: <NotificationPage />,
+      },
+      {
+        path: 'receipts/:id',
+        element: <Receipt />,
+      },
+      // {
+      //   path: 'notifications/:id',
+      //   element: <NotificationDetailPage />
+      // }
+      // {
+      //   path: 'receipts-test',
+      //   element: <Receipt />
+      // }
     ],
   },
 ]);
@@ -137,9 +162,16 @@ const router = createBrowserRouter([
 
 function App() {
   return (
+    
     <ChakraBaseProvider theme={extendTheme(theme)}>
+      <ToastProvider>
       <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
+      <RouterProvider router={router} />
+      {/* <NutritionCard {...mockdata} /> */}
+        <ToastContainer autoClose={5000} limit={3} transition={Slide} />
+        <ReactQueryDevtools />
+      </QueryClientProvider>
+      </ToastProvider>
         {/* <ImageScan /> */}
         {/* <IndividualMeal
           recipeData={backendData}
@@ -156,10 +188,9 @@ function App() {
         {/* <Box p="4">
           <ReviewForm onSubmit={handleReviewSubmit} />
         </Box> */}
-        <ToastContainer autoClose={5000} limit={3} transition={Slide} />
-        <ReactQueryDevtools />
-      </QueryClientProvider>
+        
     </ChakraBaseProvider>
   );
 }
-export default App; 
+export default App;
+
