@@ -192,7 +192,7 @@ function ReceiptField<T extends ZodType<any, any, any>>({
             name={`receipts.${index}.name` as FieldPath<z.infer<T>>}
             render={({ field: { ...fieldProps } }) => (
               <CustomTextInput
-                fieldProps={fieldProps}
+                fieldprops={fieldProps}
                 label="Name"
                 value={watch(`receipts.${index}.name` as Path<z.infer<T>>)}
                 isDisabled={!field.suggested.display}
@@ -283,7 +283,7 @@ function ReceiptField<T extends ZodType<any, any, any>>({
             name={`receipts.${index}.quantity` as FieldPath<z.infer<T>>}
             render={({ field: { ...fieldProps } }) => (
               <CustomNumberInput
-                fieldProps={fieldProps}
+                fieldprops={fieldProps}
                 value={watch(`receipts.${index}.quantity` as Path<z.infer<T>>)}
                 onChange={(valueString) => {
                   fieldProps.onChange(Number(valueString));

@@ -12,9 +12,12 @@ interface AuthContextProviderProps {
 
 const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ children }: AuthContextProviderProps) => {
   const [currentUser, setCurrentUser] = useState<AuthContextType['currentUser']>({
+    id: '',
     username: '',
     email: '',
-    status: 'loading',
+    location: '',
+    avatar: '',
+    status: 'unauthenticated',
   });
   const location = useLocation();
   const queryClient = useQueryClient();
@@ -27,7 +30,7 @@ const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ children }: A
       });
       if (logOutRequest.status === 200) {
         toast.success('Logged out successfully!', { position: 'top-right', icon: <CiCircleCheck /> });
-        setCurrentUser({ username: '', email: '', status: 'unauthenticated' });
+        setCurrentUser({ id: '', username: '', email: '', location: '', avatar: '', status: 'unauthenticated' });
       }
       queryClient.invalidateQueries();
       navigate('/');
@@ -40,12 +43,19 @@ const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ children }: A
     try {
       const getUser = await customFetch.get('/auth');
       if (getUser.data.msg === 'Unauthorized') {
-        setCurrentUser({ username: '', email: '', status: 'unauthenticated' });
+        setCurrentUser({ id: '', username: '', email: '', location: '', avatar: '', status: 'unauthenticated' });
         return;
       }
-      setCurrentUser({ username: getUser.data.user.name, email: getUser.data.user.email, status: 'authenticated' });
+      setCurrentUser({
+        id: getUser.data.user._id,
+        username: getUser.data.user.name,
+        email: getUser.data.user.email,
+        location: getUser.data.user.location,
+        avatar: getUser.data.user.avatar,
+        status: 'authenticated',
+      });
     } catch (error) {
-      setCurrentUser({ username: '', email: '', status: 'unauthenticated' });
+      setCurrentUser({ id: '', username: '', email: '', location: '', avatar: '', status: 'unauthenticated' });
     }
   };
 
