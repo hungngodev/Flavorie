@@ -26,7 +26,7 @@ export function RecentMeals({ meals }: RecentMealsProps) {
 
     return (
         <VStack width={'full'} height={'400px'} mt={'1vh'} mb={'1vh'}>
-            <Box width="full" height="40px">
+            <Box width="full" height="42px">
                 <HStack bg="rgba(153, 102, 255, 0.3)" borderRadius="md" height="100%" width="100%" spacing={0}>
                     <Box
                     textAlign="center"
