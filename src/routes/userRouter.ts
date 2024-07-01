@@ -32,7 +32,7 @@ router
   .patch(authenticateUser, catchAsync(updateCart));
 
 router
-  .route("/left-over")
+  .route("/leftOver")
   .get(authenticateUser, catchAsync(getLeftOver))
   .patch(authenticateUser, catchAsync(updateLeftOver));
 

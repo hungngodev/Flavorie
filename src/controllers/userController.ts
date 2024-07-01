@@ -34,8 +34,13 @@ export const getCart = async (req: Request, res: Response) => {
 };
 
 export const getLeftOver = async (req: Request, res: Response) => {
+  if (!req.user) {
+    return res
+      .status(StatusCodes.OK)
+      .send({ msg: "Unauthorized", leftOver: [] });
+  }
   const leftOver = await getUserItems(req.user.userId, "leftOver");
-  res.status(StatusCodes.OK).send({ leftOver });
+  return res.status(StatusCodes.OK).send({ leftOver: leftOver });
 };
 
 export const updateCart = async (req: Request, res: Response) => {
@@ -46,7 +51,9 @@ export const updateCart = async (req: Request, res: Response) => {
 };
 
 export const updateLeftOver = async (req: Request, res: Response) => {
-  await modifyUserItems(req.user.userId, req.body, "leftOver");
+  if (req.body.leftOver && req.body.leftOver.length !== 0) {
+    await modifyUserItems(req.user.userId, req.body.leftOver, "leftOver");
+  }
   res.status(StatusCodes.OK).send({ msg: "update leftOver" });
 };
 

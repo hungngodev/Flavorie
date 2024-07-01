@@ -8,11 +8,6 @@ import {
     Circle,
     Flex,
     Icon,
-    Menu,
-    MenuButton,
-    MenuDivider,
-    MenuItem,
-    MenuList,
     Popover,
     PopoverContent,
     PopoverTrigger,
@@ -24,8 +19,7 @@ import {
 } from '@chakra-ui/react';
 import { FaBell } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import logo from '../../assets/logo.svg';
-import { useAuth } from '../../hooks';
+import useAuth from '../../hooks/useAuth.tsx';
 import useNotification from '../../hooks/useNotification.tsx';
 import { NavItem } from './NavBar';
 

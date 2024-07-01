@@ -1,67 +1,65 @@
 import { EditIcon } from '@chakra-ui/icons';
 import { Avatar, Box, Card, CardBody, Divider, Flex, HStack, Heading, IconButton, Text } from '@chakra-ui/react';
-import React from 'react';
 
 export interface PersonalProps {
     avatar: {
-      src: string;
-      username: string;
+        src: string;
+        username: string;
     };
     email: string;
     phone: string;
     address: {
-      city: string;
-      state: string;
-      country: string;
-      zipcode?: string;
+        city: string;
+        state: string;
+        country: string;
+        zipcode?: string;
     };
-};
+}
 
-
-const UserCard: React.FC<PersonalProps> = ({ avatar, email, phone, address }) => {
-  return (
-    <Card maxW="md">
-      <Flex ml="4" mt="4" mr="4" mb="4">
-        <Flex flex="1" gap="4" alignItems="center" flexWrap="wrap">
-          <HStack>
-            <Avatar size="2xl" name={avatar.username} src={avatar.src} />
-            <Box ml="4">
-              <Heading size="md" fontWeight="bold">
-                {avatar.username}
-              </Heading>
-              <Text>
-                {address.city}, {address.state}
-              </Text>
+const UserCard = ({ avatar, email, phone, address }: PersonalProps) => {
+    return (
+        <Card maxW="md">
+            <Flex ml="4" mt="4" mr="4" mb="4">
+                <Flex flex="1" gap="4" alignItems="center" flexWrap="wrap">
+                    <HStack>
+                        <Avatar size="2xl" name={avatar.username} src={avatar.src} />
+                        <Box ml="4">
+                            <Heading size="md" fontWeight="bold">
+                                {avatar.username}
+                            </Heading>
+                            <Text>
+                                {address.city}, {address.state}
+                            </Text>
+                        </Box>
+                    </HStack>
+                </Flex>
+                <IconButton variant="solid" colorScheme="gray" aria-label="Edit" icon={<EditIcon />} />
+            </Flex>
+            <Box ml="36" mr="4">
+                <Divider width="100%" borderColor="base.200" />
             </Box>
-          </HStack>
-        </Flex>
-        <IconButton variant="solid" colorScheme="gray" aria-label="Edit" icon={<EditIcon />} />
-      </Flex>
-      <Box ml="36" mr="4">
-        <Divider width="100%" borderColor="base.200" />
-      </Box>
-      <CardBody>
-        <HStack spacing="20px" ml="19">
-          <Box w="80px">
-            <Text color="base.300">Email</Text>
-            <Text color="base.300">Phone</Text>
-            <Text color="base.300">City</Text>
-            <Text color="base.300">State</Text>
-            <Text color="base.300">Country</Text>
-            <Text color="base.300">Zipcode</Text>
-          </Box>
-          <Box w="240px">
-            <Text>{email}</Text>
-            <Text>{phone}</Text>
-            <Text>{address.city}</Text>
-            <Text>{address.state}</Text>
-            <Text>{address.country}</Text>
-            <Text>{address.zipcode}</Text>
-          </Box>
-        </HStack>
-      </CardBody>
-    </Card>
-  );
+            <CardBody>
+                <HStack spacing="20px" ml="19">
+                    <Box w="80px">
+                        <Text color="base.300">Email</Text>
+                        <Text color="base.300">Phone</Text>
+                        <Text color="base.300">City</Text>
+                        <Text color="base.300">State</Text>
+                        <Text color="base.300">Country</Text>
+                        <Text color="base.300">Zipcode</Text>
+                    </Box>
+                    <Box w="240px">
+                        <Text>{email}</Text>
+                        <Text>{phone}</Text>
+                        <Text>{address.city}</Text>
+                        <Text>{address.state}</Text>
+                        <Text>{address.country}</Text>
+                        <Text>{address.zipcode}</Text>
+                    </Box>
+                </HStack>
+            </CardBody>
+        </Card>
+    );
 };
 
 export default UserCard;
