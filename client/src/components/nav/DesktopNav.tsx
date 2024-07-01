@@ -20,6 +20,7 @@ import {
     Text,
     useBreakpointValue,
     useColorModeValue,
+    useTheme,
 } from '@chakra-ui/react';
 import { FaBell } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
@@ -29,8 +30,9 @@ import useNotification from '../../hooks/useNotification.tsx';
 import { NavItem } from './NavBar';
 
 export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
-    const linkColor = useColorModeValue('gray.600', 'gray.200');
-    const linkHoverColor = useColorModeValue('gray.800', 'white');
+    const theme = useTheme();
+    const linkColor = useColorModeValue('blackAlpha.700', 'gray.300');
+    const linkHoverColor = useColorModeValue(theme.colors.palette_purple, 'white');
     const popoverContentBgColor = useColorModeValue('white', 'gray.800');
     const auth = useAuth();
     const { numberOfNotifications } = useNotification();
@@ -55,12 +57,15 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
                                         <PopoverTrigger>
                                             <Box
                                                 p={2}
-                                                fontSize={'sm'}
-                                                fontWeight={500}
+                                                fontSize={'md'}
+                                                fontWeight={600}
                                                 color={linkColor}
                                                 _hover={{
                                                     textDecoration: 'none',
                                                     color: linkHoverColor,
+                                                    backgroundColor: 'purple.50',
+                                                    rounded: 'xl',
+                                                    paddingInline: 2,
                                                 }}
                                             >
                                                 <Link to={navItem.href ?? '#'}>{navItem.label}</Link>
@@ -89,10 +94,16 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
                         </Stack>
                     </Flex>
                 </Flex>
-                <Stack flex={{ base: 2, md: 0 }} justify={'flex-end'} direction={'row'} spacing={6}>
+                <Stack flex={{ base: 2, md: 0 }} justify={'flex-end'} direction={'row'} spacing={2}>
                     {auth.currentUser.status !== 'authenticated' ? (
                         <>
-                            <Button fontSize={'sm'} fontWeight={400} variant={'link'}>
+                            <Button
+                                fontSize={'sm'}
+                                fontWeight={600}
+                                variant="outline"
+                                borderColor={theme.colors.palette_indigo}
+                                color={theme.colors.palette_purple}
+                            >
                                 <Link to={`/login?redirect=${location.pathname}`}>Sign In</Link>
                             </Button>
                             <Button
@@ -100,9 +111,9 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
                                 fontSize={'sm'}
                                 fontWeight={600}
                                 color={'white'}
-                                bg={'pink.400'}
+                                bg={theme.colors.palette_purple}
                                 _hover={{
-                                    bg: 'pink.300',
+                                    bg: theme.colors.palette_indigo,
                                 }}
                             >
                                 <Link to="/register">Sign Up</Link>
@@ -110,19 +121,6 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
                         </>
                     ) : (
                         <>
-                            <Button
-                                display={{ base: 'none', md: 'inline-flex' }}
-                                fontSize={'sm'}
-                                fontWeight={600}
-                                color={'white'}
-                                bg={'pink.400'}
-                                onClick={auth.logout}
-                                _hover={{
-                                    bg: 'pink.300',
-                                }}
-                            >
-                                Sign Out
-                            </Button>
                             <Box position="relative" display="inline-block">
                                 <Link to="/notifications">
                                     <FaBell color="gray" size="24px" />
@@ -144,22 +142,38 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
                                     )}
                                 </Link>
                             </Box>
+                            <Button
+                                display={{ base: 'none', md: 'inline-flex' }}
+                                fontSize={'sm'}
+                                fontWeight={600}
+                                color={'white'}
+                                bg={theme.colors.palette_purple}
+                                _hover={{
+                                    bg: theme.colors.palette_indigo,
+                                }}
+                                onClick={auth.logout}
+                            >
+                                Sign Out
+                            </Button>
                         </>
                     )}
                 </Stack>
                 {auth.currentUser.status === 'authenticated' && (
-                    <Menu>
-                        <MenuButton as={Button} rounded={'full'} variant={'link'} cursor={'pointer'} minW={0}>
-                            <Avatar size={'sm'} height="50px" src={logo} />
-                        </MenuButton>
-                        <MenuList>
-                            <MenuItem>
-                                <Link to="/profile">Profile</Link>
-                            </MenuItem>
-                            <MenuDivider />
-                            <MenuItem>Setting</MenuItem>
-                        </MenuList>
-                    </Menu>
+                    <Link to="/profile">
+                        <Avatar size={'md'} src={auth.currentUser.avatar} />
+                    </Link>
+                    // <Menu>
+                    //     <MenuButton as={Button} rounded={'full'} variant={'link'} cursor={'pointer'} minW={0}>
+
+                    //     </MenuButton>
+                    //     <MenuList>
+                    //         <MenuItem>
+                    //             <Link to="/profile">Profile</Link>
+                    //         </MenuItem>
+                    //         <MenuDivider />
+                    //         <MenuItem>Setting</MenuItem>
+                    //     </MenuList>
+                    // </Menu>
                 )}
             </Flex>
         </>
