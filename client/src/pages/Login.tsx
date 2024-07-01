@@ -122,7 +122,7 @@ const Login: React.FC = () => {
                         left="50%"
                         transform="translate(-50%, -50%)"
                         width="90%" // Adjust based on your needs
-                        backgroundColor="rgba(255, 255, 255, 0.35)" // Semi-transparent background
+                        backgroundColor="rgba(255, 255, 255, 0.15)" // Semi-transparent background
                         backdropFilter="blur(10px)"
                         paddingBlock={10}
                         rounded="3xl"
