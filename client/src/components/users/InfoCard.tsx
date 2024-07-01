@@ -6,7 +6,6 @@ import { useForm, Controller } from 'react-hook-form';
 import theme from '../../style/theme';
 
 export interface PersonalProps {
-export interface PersonalProps {
     avatar: {
       src: string;
       username: string;
@@ -140,7 +139,7 @@ const UserCard: React.FC<PersonalProps> = ({ avatar, name, lastname, email, phon
       <Box p="3" position="relative">
         {/* <Flex ml="4" mt="4" mr="4" mb="2"> */}
         {isEditing ? (
-          <Box position="absolute" top="2" right="2">
+          <Box position="absolute" top="2" right="5">
             <Button size="sm" onClick={handleSubmit(onSubmit)} mr="2">
               Save
             </Button>
@@ -165,7 +164,7 @@ const UserCard: React.FC<PersonalProps> = ({ avatar, name, lastname, email, phon
         <Flex flex="1" gap="4" alignItems="center" flexWrap="wrap" justifyContent="space-between">
           <HStack>
             {isEditing ? (
-              <Box position="relative" width="fit-content" mt="4">
+              <Box position="relative" width="fit-content" mt="7">
                 <Avatar size="xl" name={userInfo.username} src={userInfo.avatar} />
                 <Box
                   position="absolute"
@@ -194,18 +193,27 @@ const UserCard: React.FC<PersonalProps> = ({ avatar, name, lastname, email, phon
                 <Input id="avatar-upload" type="file" accept="image/*" onChange={handleAvatarChange} display="none" />
               </Box>
             ) : (
-              <Avatar size="xl" name={userInfo.username} src={userInfo.avatar} mt="4" />
+              <Avatar size="xl" name={userInfo.username} src={userInfo.avatar} mt="7" />
             )}
-            <Box ml="4" mt="4">
+            <Box ml="4" mt="7">
               <Heading mb="2" size="md" fontWeight="bold">
                 {isEditing ? (
-                  <Controller
-                    name="username"
-                    control={control}
-                    render={({ field }) => <Input {...field} h="25px" size="sm" />}
-                  />
+                  <HStack spacing="2" w="260px">
+                    <Controller
+                      name="name"
+                      control={control}
+                      render={({ field }) => <Input {...field} h="25px" size="sm" placeholder="First name" />}
+                    />
+                    <Controller
+                      name="lastname"
+                      control={control}
+                      render={({ field }) => <Input {...field} h="25px" size="sm" placeholder="Last name" />}
+                    />
+                  </HStack>
                 ) : (
-                  userInfo.username
+                  <Box ml="2">
+                    {userInfo.name} {userInfo.lastname}
+                  </Box>
                 )}
               </Heading>
               <Text>
@@ -213,10 +221,10 @@ const UserCard: React.FC<PersonalProps> = ({ avatar, name, lastname, email, phon
                   <Controller
                     name="email"
                     control={control}
-                    render={({ field }) => <Input {...field} h="25px" size="sm" />}
+                    render={({ field }) => <Input {...field} w="260px" h="25px" size="sm" />}
                   />
                 ) : (
-                  userInfo.email
+                  <Box ml="2">{userInfo.email}</Box>
                 )}
               </Text>
             </Box>
@@ -227,15 +235,30 @@ const UserCard: React.FC<PersonalProps> = ({ avatar, name, lastname, email, phon
         <Divider width="100%" borderColor={theme.colors.palette_indigo} />
       </Box>
       <CardBody>
-        <HStack spacing="20px" ml="19">
+        <HStack spacing="20px" ml="19" mt="1" mb="3">
           <Box w="80px">
-            <Text color="base.300" mb="1"> Phone </Text>
-            <Text color="base.300" mb="1"> City </Text>
-            <Text color="base.300" mb="1"> State </Text>
-            <Text color="base.300" mb="1"> Country </Text>
-            <Text color="base.300" mb="1"> Zipcode </Text>
+            <Text color="base.300" mb="1">
+              {' '}
+              Phone{' '}
+            </Text>
+            <Text color="base.300" mb="1">
+              {' '}
+              City{' '}
+            </Text>
+            <Text color="base.300" mb="1">
+              {' '}
+              State{' '}
+            </Text>
+            <Text color="base.300" mb="1">
+              {' '}
+              Country{' '}
+            </Text>
+            <Text color="base.300" mb="1">
+              {' '}
+              Zipcode{' '}
+            </Text>
           </Box>
-          <Box w="240px">
+          <Box w="250px">
             {isEditing ? (
               <>
                 <Controller

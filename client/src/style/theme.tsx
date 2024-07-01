@@ -72,7 +72,7 @@ const theme = {
     Button: {
       variants: {
         solid: {
-          bg: '#736CED',
+          bg: '#736CED', // purple
           color: 'white',
           _hover: {
             bg: '#9F9FED',

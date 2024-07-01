@@ -13,7 +13,7 @@ import NotificationPage from './pages/NotificationPage.tsx';
 import Receipt from './pages/Receipt.tsx';
 import ReceiptScan from './pages/ReceiptScan.tsx';
 import { loader as recipeLoader } from './pages/Recipe.tsx';
-import { Feed, FullPost, Ingredient, Login, Main, Meal, Recipe, Register, User } from './pages/index';
+import { Feed, FullPost, Ingredient, Login, Main, Meal, Recipe, Register } from './pages/index';
 import ToastProvider from './providers/ToastProvider.tsx';
 import { store as reduxStore } from './store/store';
 import theme from './style/theme';
@@ -34,96 +34,96 @@ export const queryClient = new QueryClient({
   },
 });
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <HomeLayout />,
-    children: [
-      {
-        index: true,
-        element: <Main />,
-      },
-      {
-        path: 'register',
-        element: <Register />,
-      },
-      {
-        path: 'login',
-        element: <Login />,
-      },
-      {
-        path: 'ingredients',
-        element: <Outlet />,
-        children: [
-          {
-            index: true,
-            element: <div>HIHIH</div>,
-          },
-          {
-            path: ':category',
-            element: <Ingredient />,
-            loader: ingredientsLoader(queryClient),
-          },
-        ],
-      },
-      {
-        path: 'meals',
-        children: [
-          {
-            index: true,
-            element: <Meal />,
-            loader: mealsLoader(queryClient),
-          },
-          {
-            path: ':mealId',
-            element: <Recipe />,
-            loader: recipeLoader(queryClient),
-          },
-        ],
-      },
-      {
-        path: 'community',
-        children: [
-          {
-            index: true,
-            element: <Feed />,
-            loader: FeedLoader(queryClient),
-          },
-          {
-            path: ':postId',
-            element: <FullPost />,
-            loader: PostLoader(queryClient),
-          },
-        ],
-      },
+// const router = createBrowserRouter([
+//   {
+//     path: '/',
+//     element: <HomeLayout />,
+//     children: [
+//       {
+//         index: true,
+//         element: <Main />,
+//       },
+//       {
+//         path: 'register',
+//         element: <Register />,
+//       },
+//       {
+//         path: 'login',
+//         element: <Login />,
+//       },
+//       {
+//         path: 'ingredients',
+//         element: <Outlet />,
+//         children: [
+//           {
+//             index: true,
+//             element: <div>HIHIH</div>,
+//           },
+//           {
+//             path: ':category',
+//             element: <Ingredient />,
+//             loader: ingredientsLoader(queryClient),
+//           },
+//         ],
+//       },
+//       {
+//         path: 'meals',
+//         children: [
+//           {
+//             index: true,
+//             element: <Meal />,
+//             loader: mealsLoader(queryClient),
+//           },
+//           {
+//             path: ':mealId',
+//             element: <Recipe />,
+//             loader: recipeLoader(queryClient),
+//           },
+//         ],
+//       },
+//       {
+//         path: 'community',
+//         children: [
+//           {
+//             index: true,
+//             element: <Feed />,
+//             loader: FeedLoader(queryClient),
+//           },
+//           {
+//             path: ':postId',
+//             element: <FullPost />,
+//             loader: PostLoader(queryClient),
+//           },
+//         ],
+//       },
 
-      {
-        path: 'profile',
-        element: <User />,
-      },
-      {
-        path: 'upload-receipts',
-        element: <ReceiptScan />,
-      },
-      {
-        path: 'notifications',
-        element: <NotificationPage />,
-      },
-      {
-        path: 'receipts/:id',
-        element: <Receipt />,
-      },
-      // {
-      //   path: 'notifications/:id',
-      //   element: <NotificationDetailPage />
-      // }
-      // {
-      //   path: 'receipts-test',
-      //   element: <Receipt />
-      // }
-    ],
-  },
-]);
+//       {
+//         path: 'profile',
+//         element: <User />,
+//       },
+//       {
+//         path: 'upload-receipts',
+//         element: <ReceiptScan />,
+//       },
+//       {
+//         path: 'notifications',
+//         element: <NotificationPage />,
+//       },
+//       {
+//         path: 'receipts/:id',
+//         element: <Receipt />,
+//       },
+//       // {
+//       //   path: 'notifications/:id',
+//       //   element: <NotificationDetailPage />
+//       // }
+//       // {
+//       //   path: 'receipts-test',
+//       //   element: <Receipt />
+//       // }
+//     ],
+//   },
+// ]);
 
 
 const PersonalDashboardWrapper = () => {
@@ -132,7 +132,7 @@ const PersonalDashboardWrapper = () => {
       src: "../public/images/1989-Taylors-Version.webp",
       username: "Alex B",
     },
-    firstname: "Alex",
+    name: "Alex",
     lastname: "B",
     email: "taylorswift@gmail.com",
     phone: "+1 (202) 444 1989",
@@ -272,13 +272,13 @@ function App() {
       <ToastProvider>
         <ReduxProvider store={reduxStore}>
           <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
+            {/* <RouterProvider router={router} /> */}
             <ToastContainer autoClose={5000} limit={3} transition={Slide} />
             <ReactQueryDevtools initialIsOpen={false} />
             <PersonalDashboardWrapper />
           </QueryClientProvider>
         </ReduxProvider>
-      </ToastProvider>
+      </ToastProvider> 
     </ChakraProvider>
   );
 }

@@ -9,6 +9,7 @@ import { Chart, plugins, registerables, TooltipItem, ChartOptions } from 'chart.
 import TagSelect from '../components/meals/TagSelect';
 import { FaStar, FaUtensils, FaMedal, FaHeart, FaCheckCircle, FaListAlt } from 'react-icons/fa';
 import theme from '../style/theme';
+import { extendTheme } from '@chakra-ui/react';
 
 Chart.register(...registerables);
 export interface TableData {
@@ -172,30 +173,6 @@ const WeeklySummary = ({ weeklyProtein, weeklyCarb, weeklyFat }: WeeklyData) => 
     <Box p="1" borderRadius="md" boxShadow="md" bg="white" h="150px">
       <Bar data={chartData} options={options} />
     </Box>
-    // <Box p={4} borderRadius="md" boxShadow="md" bg="white">
-    //   <Box>
-    //     <Stack spacing="2">
-    //       <Box>
-    //         <Text fontSize="16" fontWeight="bold">
-    //           Proteins
-    //         </Text>
-    //         <Progress colorScheme="lighpurple" size="sm" value={weeklyProtein} />
-    //       </Box>
-    //       <Box>
-    //         <Text fontSize="16" fontWeight="bold">
-    //           Carbs
-    //         </Text>
-    //         <Progress colorScheme="lighblue" size="sm" value={weeklyCarb} />
-    //       </Box>
-    //       <Box>
-    //         <Text fontSize="16" fontWeight="bold">
-    //           Fat
-    //         </Text>
-    //         <Progress colorScheme="lighblue" size="sm" value={weeklyFat} />
-    //       </Box>
-    //     </Stack>
-    //   </Box>
-    // </Box>
   );
 };
 
@@ -235,7 +212,8 @@ const WeeklyCaloriesChart = ({ data }: { data: WeeklyCalories[] }) => {
     responsive: true,
     plugins: {
       legend: {
-        position: 'bottom',
+        // position: 'bottom',
+        display: false
       },
       title: {
         display: true,
@@ -253,7 +231,7 @@ const WeeklyCaloriesChart = ({ data }: { data: WeeklyCalories[] }) => {
   };
 
   return (
-    <Box p="2" borderRadius="md" boxShadow="md" bg="white">
+    <Box p="2" borderRadius="md" boxShadow="md" bg="white" h="210px">
       <Bar data={chartData} options={options} />
     </Box>
   );
@@ -296,7 +274,7 @@ const getBadgeColor = (badgeLevel: string): string => {
     case 'Silver':
       return 'base.400';
     default:
-      return 'orange';
+      return 'gold';
   }
 };
 
@@ -318,23 +296,24 @@ function User({
   weeklyCaloriesData,
 }: UserProps) {
   const nutrientData: NutrientData = { protein, carb, fat, vitamins, minerals };
-  const { username } = info.avatar;
+  const name = info.name;
+  const lastname = info.lastname;
   const badgeLevel = getBadgeLevel(badgesEarned);
   const badgeColor = getBadgeColor(badgeLevel);
 
   return (
     <Grid templateRows="repeat(3, 2fr)" templateColumns="repeat(10, 3fr)" mt="3">
-      <GridItem rowSpan={3} colSpan={3} objectFit="cover" ml="4" mr="4">
+      <GridItem rowSpan={3} colSpan={3} objectFit="cover" ml="4" mr="6">
         <Box height="100%" width="100%">
           <UserCard {...info} />
           <TagSelect />
         </Box>
       </GridItem>
-      <GridItem colSpan={4} ml="2" mr="2">
+      <GridItem colSpan={4} ml="3" mr="5">
         <Box>
           <Box mb="2" display="flex" flexDirection="column" justifyContent="flex-start">
             <Heading fontSize="20" fontWeight="bold" mt="1">
-              Hi {username},
+              Hi {name} {lastname},
             </Heading>
             <Text mt="1">Welcome back! Let's check the nutrition of your meals for today.</Text>
           </Box>
@@ -493,7 +472,7 @@ function User({
         
         </Box>
       </GridItem>
-      <GridItem rowSpan={2} colSpan={4} ml="2" mr="2" mt="2">
+      <GridItem rowSpan={2} colSpan={4} ml="2" mr="5" mt="2">
         <Box>
           <Heading fontSize="22" fontWeight="bold" mb={1}>
             Recent Meals
