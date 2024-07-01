@@ -49,7 +49,7 @@ const theme = {
         palette_blue: '#BDE0FE',
     },
     gradients: {
-        palette_purple_gradient: '#736CED',
+        palette_purple_gradient: `linear-gradient(to right top, #736ced, #7b76ee, #837fee, #8c89ee, #9492ee, #969df1, #99a7f3, #9eb1f5, #a1bef9, #a7cafb, #b0d5fd, #bde0fe)`,
     },
     fonts: {
         body: 'reddit-mono, sans-serif',
