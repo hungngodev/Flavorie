@@ -1,9 +1,5 @@
-import React from 'react';
-import { Box, Image, Text, Container, Flex, Grid, GridItem, HStack, Heading, VStack } from '@chakra-ui/react';
+import { Box, Container, Flex, Grid, GridItem, HStack, Heading, Image, Text, VStack } from '@chakra-ui/react';
 import { useEffect, useRef } from 'react';
-// import "fontsource-inter/500.css";
-//import { capsFirst } from "../utils/index.tsx";
-import { ReactNode } from 'react';
 import ChakraCarousel from './ChakraCarousel';
 
 export interface Ingredient {
@@ -86,7 +82,12 @@ export const IngredientsList = ({ ingredients }: IngredientsProps) => {
       {ingredients.map((ingredient, index) => (
         <HStack key={index} mb={4} alignItems="center">
           <Box bg="white" boxSize="40px" borderRadius="full" mr="2">
-            <Image src={ingredient.image} alt={ingredient.name} boxSize="40px" borderRadius="full"/>
+            <Image
+              src={ingredient.name}
+              alt={ingredient.image}
+              boxSize="40px"
+              borderRadius="full"
+            />
           </Box>
           <Text>{ingredient.name}</Text>
         </HStack>
@@ -102,7 +103,7 @@ function ImageSlide({ backendData }: ImageSlideProps) {
   const colorLevels = ['base.50', 'base.100', 'base.200', 'base.300', 'base.400', 'base.500', 'base.600'];
 
   const slides = backendData.analyzeInstruction.flatMap((instruction, instructionIndex) => {
-    return instruction.steps.map((step, stepIndex) => {
+    return instruction.steps.map((step) => {
       const bgColor = colorLevels[(instructionIndex) % colorLevels.length];
       const title = instruction.name;
       const description = step.step;
@@ -171,6 +172,7 @@ function ImageSlide({ backendData }: ImageSlideProps) {
                 </Box>
               </GridItem>
               <GridItem rowSpan={2} colSpan={2} ml="4">
+                {/* <img src={dish.image} alt={dish.title} style={{ maxWidth: '100%', borderRadius: '8px' }} /> */}
                 <VStack mb={2} textAlign="left" display="flex" flexDirection="column" justifyContent="flex-start">
                   <Heading fontSize="20" fontWeight="bold">
                     Instruction

@@ -22,7 +22,7 @@ const PostFooter = memo<PostFooterProps>(({ index, postId, ...props }) => {
 
   const dispatch = useDispatch<AppDispatch>();
   const post = useSelector(selectPosts)[index];
-  const reacts = useSelector(selectPosts)[index].reacts;
+  // const reacts = useSelector(selectPosts)[index].reacts;
   const isLiked = useSelector(selectPosts)[index].reacts?.includes(id) ?? false;
 
   const likeControl = useAnimationControls();

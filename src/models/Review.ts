@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import mongoose, { DateSchemaDefinition, Types } from "mongoose";
 import ExpressError from "../utils/ExpressError";
-import { Post } from "./Post.ts";
+import Post from "./Post.ts";
 import { User } from "./UserModel";
 
 export interface Review extends mongoose.Document {
