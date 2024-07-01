@@ -38,7 +38,7 @@ const setUpSocketIO = (server: any) => {
   io.on("connection", (socket: Socket) => {
     console.log("hello");
     roomHandler(socket);
-    // notificationHandler(socket);
+    notificationHandler(socket);
   });
 
   return io;
