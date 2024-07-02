@@ -7,6 +7,7 @@ import { ListOfMeals } from '../components';
 import { SearchBar } from '../components/ingredients/SearchBar';
 import { Specialty } from '../components/meals/Specialty';
 import customFetch from '../utils/customFetch';
+import React from 'react';
 
 // Default values shown
 export interface Meal {

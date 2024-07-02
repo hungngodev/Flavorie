@@ -13,7 +13,6 @@ const CustomWebcam: React.FC = () => {
     const {notifyError, notifySuccess, notifyWarning} = useToast()
     const auth = useAuth()
 
-
     // capture photo
     const capture = useCallback(() => {
         if (webcamRef.current) {
@@ -49,7 +48,7 @@ const CustomWebcam: React.FC = () => {
             ): (
                 <Webcam 
                     height={800} 
-                    width={800} 
+                    width={500} 
                     ref={webcamRef} 
                     screenshotFormat="image/jpeg"
                     screenshotQuality={0.9} 

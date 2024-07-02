@@ -1,3 +1,4 @@
+import React from 'react';
 import { DeleteIcon } from '@chakra-ui/icons';
 import {
   Flex,

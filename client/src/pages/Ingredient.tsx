@@ -11,6 +11,11 @@ import { Cart, CategorySidebar, IngredientsMain } from '../components';
 import { Nutrition } from '../components/ingredients/NutritionCard';
 import { useAuth } from '../hooks';
 import customFetch from '../utils/customFetch';
+import Lottie from 'lottie-react';
+import theme from '../style/theme';
+import React from 'react';
+import { extendTheme } from '@chakra-ui/react';
+
 // import { PaginationTable } from 'table-pagination-chakra-ui';
 
 waveform.register();
@@ -163,67 +168,70 @@ export default function Ingredient() {
   });
 
   return (
-    <Box
-      position="relative"
-      overflow={'hidden'}
-      className="no-scroll-bar"
-      display={'flex'}
-      width={'100%'}
-      height={'100%'}
-    >
-      <IconButton
-        position="absolute"
-        top="0"
-        right="0"
-        zIndex={10}
-        isRound={true}
-        variant="solid"
-        colorScheme="teal"
-        aria-label="Done"
-        fontSize="20px"
-        {...getButtonProps()}
-        icon={<FaShoppingCart />}
-      />
-
-      <CategorySidebar
-        currentCategory={currentCategory}
-        expanded={expanded}
-        setExpanded={() => setExpanded((cur) => !cur)}
-      />
-      <div className="relative z-0 h-full w-full overflow-auto transition-all">
-        <Flex width="100%" height="100%" direction={'column'} justifyContent={'center'} alignItems={'center'}>
-          {status === 'pending' ? (
-            <l-waveform size="100" stroke="3.5" speed="1" color="black"></l-waveform>
-          ) : (
-            <IngredientsMain data={ingredientData} addFunction={addFunction} />
-          )}
-        </Flex>
-      </div>
-      <motion.div
-        {...getDisclosureProps()}
-        hidden={hidden}
-        initial={false}
-        onAnimationStart={() => {
-          setHidden(false);
-        }}
-        onAnimationComplete={() => {
-          setHidden(!isOpen);
-        }}
-        animate={{ width: isOpen ? parseInt(fridgeWidth) : 0 }}
-        style={{
-          overflow: 'hidden',
-          whiteSpace: 'nowrap',
-          height: '100%',
-        }}
+      <Box
+          position="relative"
+          overflow={'hidden'}
+          className="no-scroll-bar"
+          display={'flex'}
+          width={'100%'}
+          height={'100%'}
       >
-        <Cart
-          fields={fields}
-          removeFunction={remove}
-          onSubmit={onSubmit}
-          control={control}
-          lottieCartRef={lottieCartRef}
-        />
-      </motion.div>
-    </Box>
+          <IconButton
+              position="absolute"
+              top="3"
+              right="3"
+              zIndex={10}
+              isRound={true}
+              variant="solid"
+              bg={theme.colors.palette_indigo}
+              color="white"
+              aria-label="Done"
+              fontSize="20px"
+              _hover={{ bg: theme.colors.palette_lavender }}
+              {...getButtonProps()}
+              icon={<FaShoppingCart />}
+          />
+
+          <CategorySidebar
+              currentCategory={currentCategory}
+              expanded={expanded}
+              setExpanded={() => setExpanded((cur) => !cur)}
+          />
+          <div className="relative z-0 h-full w-full overflow-auto transition-all">
+              <Flex width="100%" height="100%" direction={'column'} justifyContent={'center'} alignItems={'center'}>
+                  {status === 'pending' ? (
+                      <l-waveform size="100" stroke="3.5" speed="1" color="black"></l-waveform>
+                  ) : (
+                      // <Lottie animationData={Ingredient} loop={true} style={{ height: 600 }} />
+                      <IngredientsMain data={ingredientData} addFunction={addFunction} />
+                  )}
+              </Flex>
+          </div>
+          <motion.div
+              {...getDisclosureProps()}
+              hidden={hidden}
+              initial={false}
+              onAnimationStart={() => {
+                  setHidden(false);
+              }}
+              onAnimationComplete={() => {
+                  setHidden(!isOpen);
+              }}
+              animate={{ width: isOpen ? parseInt(fridgeWidth) : 0 }}
+              style={{
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  height: '100%',
+              }}
+          >
+              <Cart
+                  fields={fields}
+                  removeFunction={remove}
+                  onSubmit={onSubmit}
+                  control={control}
+                  lottieCartRef={lottieCartRef}
+              />
+          </motion.div>
+      </Box>
   );
 }
