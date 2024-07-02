@@ -1,9 +1,5 @@
-import React from 'react';
-import { Box, Image, Text, Container, Flex, Grid, GridItem, HStack, Heading, VStack } from '@chakra-ui/react';
+import { Box, Container, Flex, Grid, GridItem, HStack, Heading, Image, Text, VStack } from '@chakra-ui/react';
 import { useEffect, useRef } from 'react';
-// import "fontsource-inter/500.css";
-//import { capsFirst } from "../utils/index.tsx";
-import { ReactNode } from 'react';
 import ChakraCarousel from './ChakraCarousel';
 import theme from '../../style/theme';
 import Lottie from 'lottie-react';

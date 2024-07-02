@@ -5,7 +5,8 @@ out
 .DS_Store
 package-lock.json
 flavorie.ingredients.json
-
+cc.en.300.bin
+cc.en.300.bin.gz
 
 logs
 *.log
@@ -30,3 +31,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+src/scan-receipts/venv
+src/scan-receipts/venv
+src/scan-receipts/cc.en.300.bin.gz.part
+src/scan-receipts/app/__pycache__/*
+src/scan-receipts/__pycache__

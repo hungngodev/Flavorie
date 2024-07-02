@@ -1,20 +1,23 @@
 import {
   Box,
   Button,
-  ButtonGroup,
   Card,
   CardBody,
   CardFooter,
   Divider,
+  HStack,
   Heading,
   Image,
   Stack,
   Text,
+  useTheme,
 } from '@chakra-ui/react';
 import React from 'react';
+// import Heart from 'react-animated-heart';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../hooks';
+import customFetch from '../../utils/customFetch';
 
 interface ImageCardProps {
   imageProps: {
@@ -23,7 +26,10 @@ interface ImageCardProps {
     description: string;
     borderRadius?: string;
     category: string;
+    id: string;
     infoLink: string;
+    numberOfLiked: number;
+    liked?: boolean;
   };
 }
 
@@ -31,16 +37,24 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
   // const handleSeeMore = () => {
   //   window.open(imageProps.infoLink, '_blank');
   // };
+  const [numberOfLiked, setNumberOfLiked] = React.useState(imageProps.numberOfLiked);
+  const [liked, setLiked] = React.useState(imageProps.liked);
+  const theme = useTheme();
   const { currentUser } = useAuth();
-  const handleLike = () => {
+  const handleLike = async () => {
     if (currentUser.status === 'authenticated') {
-      toast.success('Liked');
+      const liked = await customFetch.post('/user/likedMeal', {
+        mealId: imageProps.id,
+      });
+      setLiked(liked.data.liked);
+      setNumberOfLiked(liked.data.liked ? numberOfLiked + 1 : numberOfLiked - 1);
     } else {
       toast.error('Please login to like');
     }
   };
+
   return (
-    <Card maxW="sm" boxShadow="md" borderRadius="md" variant={'outline'}>
+    <Card maxW="sm" boxShadow="md" borderRadius="xl" variant={'outline'} bgColor={theme.colors.palette_indigo}>
       <CardBody>
         <Image
           src={imageProps.src}
@@ -50,31 +64,33 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
           objectFit="cover"
         />
         <Stack mt="2" spacing="1">
-          <Box height={'82px'}>
+          <Box height={'52px'}>
             <Heading size="lg" fontSize="23" fontWeight="bold">
-              {imageProps.title}
+              {imageProps.title.toString().slice(0, 40)}
             </Heading>
           </Box>
-          <Box height={'60px'}>
-            <Text w="full">{imageProps.description.replace(/<\/[^>]+(>|$)/g, '')}</Text>
-          </Box>
-          {/* <Text color="blue.350" fontSize="28">
-            {imageProps.price}
-          </Text> */}
+          {imageProps.description && (
+            <Box height={'60px'}>
+              <Text w="full">{imageProps.description.replace(/<[^>]*>/g, '').slice(0, 90) + '...'}</Text>
+            </Box>
+          )}
         </Stack>
       </CardBody>
       <Divider borderColor="base.200" />
       <CardFooter>
-        <ButtonGroup>
+        <HStack>
+          <Box position="relative">
+            <Heart isClick={liked || false} onClick={handleLike} />
+            <Text fontSize="sm" fontWeight="bold" color="white" position={'absolute'} top="10" right="6">
+              {numberOfLiked}
+            </Text>
+          </Box>
           <Link to={imageProps.infoLink}>
             <Button variant="solid" colorScheme="blue" fontWeight="bold">
               See more
             </Button>
           </Link>
-          <Button variant="outline" colorScheme="blue" fontWeight="bold" onClick={handleLike}>
-            Like
-          </Button>
-        </ButtonGroup>
+        </HStack>
       </CardFooter>
     </Card>
   );

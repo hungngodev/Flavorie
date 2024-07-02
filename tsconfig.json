@@ -1,5 +1,7 @@
 {
-  "include": ["src/**/*"],
+  "include": ["src/**/*",
+  "peerjs/**/*"
+],
   "compilerOptions": {
     "resolveJsonModule": true,
     "lib": [
@@ -34,6 +36,8 @@
     }
   },
   "ts-node": {
+    "transpileOnly": true,
+
     "esm": true
   }
 }

@@ -14,14 +14,16 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { QueryClient } from '@tanstack/react-query';
 import { Focus } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
-import { Params } from 'react-router-dom';
+import { Params, useNavigate, useParams } from 'react-router-dom';
 import { z } from 'zod';
 import { mockReceipts } from '../components/ingredients/MockReceipt';
 import ReceiptField from '../components/ingredients/ReceiptField';
 import ReceiptForm from '../components/ingredients/ReceiptForm';
 import customFetch from '../utils/customFetch';
+import useNotification from '../hooks/useNotification';
+import useToast from '../hooks/useToast';
 
 export const scannedReceiptQuery = (id?: any) => {
   return {
@@ -44,6 +46,7 @@ export const defaultImg =
 
 const ReceiptObject = z
   .object({
+    id: z.string().optional(),
     name: z.string(),
     image: z.string(),
     quantity: z.coerce.string(),
@@ -54,6 +57,7 @@ const ReceiptObject = z
         z.object({
           name: z.coerce.string(),
           img: z.coerce.string(),
+          oid: z.coerce.string()
         }),
       ),
     }),
@@ -69,53 +73,115 @@ const ReceiptFieldObject = z.object({
   receipts: z.array(ReceiptObject),
 });
 const ReceiptRequest = z.object({
-  message: z.string(),
-  data: z.array(ReceiptObject.extend({ potential_oids: z.array(z.string()) })),
+  // _id: z.string(),
+  message: z.object({
+    title: z.string(),
+    data: z.array(ReceiptObject)
+  }),
+  
+  // message: z.string(),
+  // data: z.array(ReceiptObject),
 });
 
 export type ReceiptFieldType = z.infer<typeof ReceiptFieldObject>;
 export type ReceiptRequest = z.infer<typeof ReceiptRequest>;
 
+
 const Receipt = () => {
+  const {id} = useParams()
+  const {notificationDetail, fetchNotificationById} = useNotification()
+  const navigate = useNavigate()
+  const { notifyError } = useToast();
+
+  useEffect(() => {
+        if (id){
+            fetchNotificationById(id)
+        }
+    }, [id, fetchNotificationById])
+  
+    useEffect(() => {
+      if (notificationDetail){
+        localStorage.setItem('notificationDetail', JSON.stringify(notificationDetail.message.data))
+      }
+    }, [notificationDetail])
+
+
   const {
     control,
     handleSubmit,
     watch,
+    // reset,
     formState: { errors },
   } = useForm<ReceiptFieldType>({
     resolver: zodResolver(ReceiptFieldObject),
-    defaultValues: {
-      receipts:
-        mockReceipts?.data?.length > 0
-          ? mockReceipts.data.map((receipt: any) => {
-              return {
-                name: receipt.name.toLowerCase(),
-                quantity: receipt.quantity,
-                price: receipt.price,
-                suggested: {
-                  display: false,
-                  items: receipt['potential_matches'].map((item: any) => ({
-                    name: item?.name ?? item,
-                    img: item?.img ?? defaultImg,
-                  })),
-                },
-              };
-            })
-          : [{ name: '', image: defaultImg, quantity: '0', price: '0.0', suggested: { display: false, items: [] } }],
-    },
+    defaultValues: 
+    {
+      receipts: 
+      localStorage.getItem('notificationDetail') ? 
+      JSON.parse(localStorage.getItem('notificationDetail')).map((receipt: any) => {
+        return {
+          id: receipt['potential_matches'][0]['potential_id'],
+          name: receipt.name.toLowerCase(),
+          quantity: receipt.quantity,
+          image: receipt['potential_matches'][0]['potential_image'],
+          price: receipt.price,
+          suggested: {
+            display: false,
+            items: receipt['potential_matches'].map((item: any) => ({
+              name: item['potential_name'],
+              img: item['potential_image'],
+              oid: item['potential_id']
+            }))
+          }
+        }
+      }) : [{ name: '', image: defaultImg, quantity: '0', price: '0.0', suggested: { display: false, items: [] } }],
+  
+      
+    }
+
   });
+
+
   useEffect(() => {
     console.log(errors);
   }, [errors]);
+  
   const { fields, append, remove, update } = useFieldArray({
     control: control,
     name: 'receipts',
   });
+  
+  const transformResponse = (data) => {
+    return data.receipts.map((item) => ({
+      itemId: item.id,
+      quantity: Number(item.quantity),
+      // status: 'leftOver'
+      // unit: item.price,
+    }));
+  }
 
   // this function handles the submission of the form
-  const submitReceipts: SubmitHandler<ReceiptFieldType> = (receiptResponse) => {
+  const submitReceipts: SubmitHandler<ReceiptFieldType> = async (receiptResponse) => {
     console.log(receiptResponse);
+    localStorage.removeItem('notificationDetail')
+    const transformData = transformResponse(receiptResponse)
+    console.log("Data will be sent: ", transformData)
+    try {
+      const response = await customFetch.patch('http://localhost:5100/api/user/left-over', transformData)
+      console.log(response.data)
+      if (response.status === 200){
+        navigate('/')
+      }
+      else {
+        notifyError('Error submitting receipt. Please try again')
+      }
+    }
+    catch(e)  {
+      console.log(e)
+      notifyError('Error submitting receipt. Please try again')
+    }
     // actual submit logic will be added later
+
   };
 
   const removeField = (index: number) => {
@@ -184,9 +250,14 @@ const Receipt = () => {
               {parseFloat(
                 watch(`receipts`)
                   .reduce((accumulator, field) => {
-                    return accumulator + parseFloat(field.price) * parseFloat(field.quantity);
-                  }, 0)
-                  .toFixed(2),
+                  const price = parseFloat(field.price);
+      const quantity = parseFloat(field.quantity);
+      if (!isNaN(price) && !isNaN(quantity)) {
+        return accumulator + price * quantity;
+      }
+      return accumulator;
+    }, 0)
+    .toFixed(2)
               )}
             </Text>
           </HStack>
@@ -196,6 +267,7 @@ const Receipt = () => {
 
         <CardFooter>
           <VStack width="100%">
+          
             <Button
               fontSize="lg"
               letterSpacing="-0.005em"

@@ -1,10 +1,22 @@
-import React from 'react'; 
-import { Box, Button, ButtonGroup, Grid, GridItem, HStack, Heading, Image, Stack, Text } from '@chakra-ui/react';
+import {
+    Box,
+    Button,
+    ButtonGroup,
+    Grid,
+    GridItem,
+    HStack,
+    Heading,
+    Image,
+    Stack,
+    Tag,
+    TagLabel,
+    Text,
+} from '@chakra-ui/react';
 import { QueryClient, useQuery } from '@tanstack/react-query';
 import { waveform } from 'ldrs';
 import { FaPrint, FaSave, FaShareAlt, FaStar } from 'react-icons/fa';
-import { Params, useParams } from 'react-router-dom';
-import ImageSlide from '../components/meals/ImageSlide';
+import { Params, useLoaderData } from 'react-router-dom';
+import ImageSlide, { BackendData } from '../components/meals/ImageSlide';
 import customFetch from '../utils/customFetch';
 import { Tag, TagLabel } from '@chakra-ui/react';
 import { BackendData } from '../components/meals/ImageSlide';
@@ -19,8 +31,8 @@ const individualMealQuery = (id: string) => {
     return {
         queryKey: ['individualMeal', id],
         queryFn: async () => {
-        const data = await customFetch(`/meal/${id}`, {});
-        return data;
+            const data = await customFetch(`/meal/${id}`, {});
+            return data;
         },
     };
 };
@@ -29,74 +41,26 @@ export const loader =
     (queryClient: QueryClient) =>
     async ({ params }: { params: Params }) => {
         queryClient.ensureQueryData(individualMealQuery(params.mealId ?? ''));
-        return null;
+        return params.mealId;
     };
 
-
-// function Recipe() {
-//     const sampleMeal: Dish[] = [
-//         {
-//         image: '../public/images/baked-brie-with-roasted-mushrooms.webp',
-//         title: 'Baked brie with roasted mushroom',
-//         description: ' Step 1: Bake brie and roasted mushroom.',
-//         },
-//         {
-//         image: '../public/images/apple-and-cheddar-crisp-salad-scaled.webp',
-//         title: 'Apple and cheddar crisp salad',
-//         description: 'Step 2: Wash salad and apple',
-//         },
-//         {
-//         image: '../public/images/buffalo-chicken-cobb-salad-scaled.webp',
-//         title: 'Buffalo chicken cobb salad',
-//         description: 'Step 3: Roast buffalo chicken',
-//         },
-//         {
-//         image: '../public/images/chocolate-raspberry-pavlova-stack-12-scaled.webp',
-//         title: 'Chocolate raspberry pavlova stack',
-//         description: 'Step 4: Wash raspberry',
-//         },
-//         {
-//         image: '../public/images/new-york-crumb-cake-7-scaled.webp',
-//         title: 'New york crumb cake',
-//         description: 'Step 5: Bake cake',
-//         },
-//         {
-//         image: '../public/images/summer-ricotta-grilled-vegetables.webp',
-//         title: 'Summer ricotta grilled vegetables',
-//         description: 'Step 6: Grilled vegetables after washing',
-//         },
-//     ];
-//     const individualMeal = sampleMeal;
-//     const lastDish = sampleMeal[sampleMeal.length - 1];
-//     const title = 'Sample Meal Title';
-//     const overview = 'This is an overview of the sample meal.';
-//     const image = 'https://images.pexels.com/photos/1640772/pexels-photo-1640772.jpeg?auto=compress&cs=tinysrgb&w=800';
-//     const totalTime = '45 mins';
-//     const servings = '4';
-//     const calories = '500';
-//     const averageStar = '5';
-//     const numReviews = '1';
-
-//     const { mealId } = useParams<{ mealId: string }>();
-//     const { data: queryData, status } = useQuery(individualMealQuery(mealId ?? ''));
-//     const recipeData = queryData?.data;
-//     console.log(recipeData);
-//     console.log(status);
-
-interface IndividualMealProps {
-    recipeData: BackendData;
-    calories: string;
-    averageStar: string;
-    numReviews: string;
+const Recipe = () => {
+    const mealId = useLoaderData();
+    const { data: queryData, status } = useQuery(individualMealQuery((mealId as string) ?? ''));
+    if (status === 'pending') {
+        return <div>Loading...</div>;
     }
-
-const IndividualMeal: React.FC<IndividualMealProps> = ({ recipeData, calories, averageStar, numReviews }) => {
+    const extractedData = queryData?.data;
+    const recipeData: BackendData = extractedData;
+    const averageStar = 5;
+    const numReviews = 100;
+    const calories = 100;
     const totalTime = recipeData.analyzeInstruction.reduce((acc, instruction) => {
         return (
-        acc +
-        instruction.steps.reduce((stepAcc, step) => {
-            return stepAcc + (step.length?.number || 0);
-        }, 0)
+            acc +
+            instruction.steps.reduce((stepAcc, step) => {
+                return stepAcc + (step.length?.number || 0);
+            }, 0)
         );
     }, 0);
 
@@ -278,4 +242,4 @@ const IndividualMeal: React.FC<IndividualMealProps> = ({ recipeData, calories, a
 };
 
 // export default Recipe;
-export default IndividualMeal;
+export default Recipe;

@@ -1,5 +1,6 @@
 import mongoose, { Types } from "mongoose";
-import { Review } from "./Review"
+import { Review } from "./Review.ts";
+import { User } from "./UserModel.ts";
 
 export interface Media {
   type: "image" | "video" | "file";
@@ -8,27 +9,22 @@ export interface Media {
 }
 export type Privacy = "public" | "private" | "friend";
 
-interface Post extends mongoose.Document {
-  id: string;
+export interface Post extends mongoose.Document {
   author: Types.ObjectId;
   header: string;
   body: string;
   media: Media[];
   privacy: Privacy;
+  location: string;
   review: Types.DocumentArray<Review>;
-  //react: Types.DocumentArray<React>;
-  reviewCount: number;
-  reactCount: number;
+  react: Types.DocumentArray<Types.ObjectId>;
+  hiddenTo: Types.DocumentArray<Types.ObjectId>;
+  savedTo: Types.DocumentArray<Types.ObjectId>;
 }
 
 interface PostModel extends mongoose.Model<Post> {}
 const PostSchema = new mongoose.Schema<Post, PostModel>(
   {
-    id: {
-      type: String,
-      required: true,
-      unique: true,
-    },
     author: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
@@ -64,18 +60,33 @@ const PostSchema = new mongoose.Schema<Post, PostModel>(
       required: true,
       default: "public",
     },
-    review: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Review",
-    }],
-    reviewCount: {
-      type: Number,
-      default: 0,
+    location: {
+      type: String,
     },
-    reactCount: {
-      type: Number,
-      default: 0,
-    },
+    hiddenTo: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    savedTo: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    review: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Review",
+      },
+    ],
+    react: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   { timestamps: true },
 );

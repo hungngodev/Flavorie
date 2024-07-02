@@ -15,6 +15,7 @@ export const EndPoint = {
     FIND_RECIPES_ID: (id: string) => `/recipes/${id}/information`,
     ANALYZE_INSTRUCTIONS: "/recipes/analyzeInstructions",
     COMPLEX_SEARCH: "/recipes/complexSearch",
+    AUTO_COMPLETE: "/recipes/autocomplete",
 }
 
 const baseURL = axios.create(
@@ -61,7 +62,7 @@ export const baseCall = async (url: string, query: Record<string, any>, method =
         throw new ServerError('API limit reached');
     }
     if (callPerMin > rate && Math.abs(Number(new Date().getTime()) - Number(lastMinute)) < 60000) {
-        throw new ServerError('API rate limit reached');
+        await new Promise(resolve => setTimeout(resolve, 60000));
     }
 
     SpoonacularTrack.usageCount = usageCount + 1;
@@ -119,14 +120,40 @@ export const getIngredientByIdAPI = async (id: string) => {
     });
 }
 
-export const getAllMealsComplexSearch = async (query: string, cuisine: string, diet: string[], intolerances: string[], mealType: string, sort: string, number: number) => {
+
+export const findIngredientById = async (cagetory: string, id: Number) => {
+    const find = await Ingredients.findOne({ id: id });
+    if (find) {
+        return find;
+    }
+    else {
+        const info = await getIngredientByIdAPI(`${id}`);
+        const newIngredient = new Ingredients({ id: id, ...info, myCagetory: cagetory });
+        await newIngredient.save();
+        return newIngredient;
+    }
+}
+
+
+export const getAllMealsComplexSearch = async (
+    query: string,
+    diet: string[],
+    intolerances: string[],
+    sort: string,
+    number: number,
+) => {
     return await baseCall(EndPoint.COMPLEX_SEARCH, {
         query: query,
-        cuisine: cuisine,
         diet: diet.join(','),
         intolerances: intolerances.join(','),
-        type: mealType,
         sort: sort,
+        number: number.toString(),
+    });
+}
+
+export const getMealsAutoCompleteAPI = async (query: string, number: number) => {
+    return await baseCall(EndPoint.AUTO_COMPLETE, {
+        query: query,
         number: number.toString(),
     });
 }
@@ -154,20 +181,6 @@ export const getMealByIdAPI = async (id: string) => {
         addTasteData: 'true',
         includeNutrition: 'true',
     });
-}
-
-
-export const findIngredientById = async (cagetory: string, id: Number) => {
-    const find = await Ingredients.findOne({ id: id });
-    if (find) {
-        return find;
-    }
-    else {
-        const info = await getIngredientByIdAPI(`${id}`);
-        const newIngredient = new Ingredients({ id: id, ...info, myCagetory: cagetory });
-        await newIngredient.save();
-        return newIngredient;
-    }
 }
 
 export const analyzeInstruction = async (instructions: string) => {
