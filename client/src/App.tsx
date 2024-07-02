@@ -5,7 +5,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
 import HomeLayout from './layouts/HomeLayout';
-import { Ingredient, loader as ingredientsLoader } from './pages/Ingredient.tsx';
+// import { Ingredient, loader as ingredientsLoader } from './pages/Ingredient.tsx';
 import { loader as mealsLoader } from './pages/Meal.tsx';
 import { loader as recipeLoader } from './pages/Recipe';
 import { Ingredient, Login, Main, Meal, Recipe, Register, User } from './pages/index';
@@ -23,69 +23,69 @@ export const queryClient = new QueryClient({
   },
 });
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <HomeLayout />,
-    children: [
-      {
-        index: true,
-        element: <Main />,
-      },
-      {
-        path: 'register',
-        element: <Register />,
-      },
-      {
-        path: 'login',
-        element: <Login />,
-      },
-      {
-        path: 'ingredients',
-        element: <Outlet />,
-        children: [
-          {
-            index: true,
-            element: <div>HIHIH</div>,
-          },
-          {
-            path: ':category',
-            element: <Ingredient />,
-            loader: ingredientsLoader(queryClient),
-          },
-        ],
-      },
-      {
-        path: 'meals',
-        children: [
-          {
-            index: true,
-            element: <Meal />,
-            loader: mealsLoader(queryClient),
-          },
-          {
-            path: ':mealId',
-            element: <Recipe />,
-            loader: recipeLoader(queryClient),
-          },
-        ],
-      },
-      {
-        path: 'community',
-        children: [
-          {
-            index: true,
-            element: <div>Community</div>,
-          },
-        ],
-      },
-      {
-        path: 'profile',
-        element: <User />,
-      },
-    ],
-  },
-]);
+// const router = createBrowserRouter([
+//   {
+//     path: '/',
+//     element: <HomeLayout />,
+//     children: [
+//       {
+//         index: true,
+//         element: <Main />,
+//       },
+//       {
+//         path: 'register',
+//         element: <Register />,
+//       },
+//       {
+//         path: 'login',
+//         element: <Login />,
+//       },
+//       {
+//         path: 'ingredients',
+//         element: <Outlet />,
+//         children: [
+//           {
+//             index: true,
+//             element: <div>HIHIH</div>,
+//           },
+//           {
+//             path: ':category',
+//             element: <Ingredient />,
+//             loader: ingredientsLoader(queryClient),
+//           },
+//         ],
+//       },
+//       {
+//         path: 'meals',
+//         children: [
+//           {
+//             index: true,
+//             element: <Meal />,
+//             loader: mealsLoader(queryClient),
+//           },
+//           {
+//             path: ':mealId',
+//             element: <Recipe />,
+//             loader: recipeLoader(queryClient),
+//           },
+//         ],
+//       },
+//       {
+//         path: 'community',
+//         children: [
+//           {
+//             index: true,
+//             element: <div>Community</div>,
+//           },
+//         ],
+//       },
+//       {
+//         path: 'profile',
+//         element: <User />,
+//       },
+//     ],
+//   },
+// ]);
 
 const backendData: BackendData = {
   title: 'Sample Meal',
@@ -940,13 +940,13 @@ function App() {
     <ChakraBaseProvider theme={extendTheme(theme)}>
       <QueryClientProvider client={queryClient}>
         {/* <ImageScan /> */}
-        <RouterProvider router={router} />
-        {/* <IndividualMeal
+        {/* <RouterProvider router={router} /> */}
+        <IndividualMeal
           recipeData={backendData}
           calories='340 kcal'
           averageStar="4.5"
           numReviews="3"
-        /> */}
+        />
         {/* <NutritionCard {...mockdata} /> */}
         <ToastContainer autoClose={5000} limit={3} transition={Slide} />
         <ReactQueryDevtools />

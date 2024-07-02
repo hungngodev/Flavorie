@@ -1,3 +1,4 @@
+
 const theme = {
   colors: {
     base: {
@@ -50,8 +51,17 @@ const theme = {
     palette_lavender: '#D4C1EC',
     palette_pink: '#FFC0CB',
     palette_blue: '#BDE0FE',
+    indigo: '#8978D9',
 
-    light_purple: '#fef9ff',
+    white_purple: '#fef9ff',
+    light_lavender: '#F4ECFF',
+    lavender: '#D3B2EB',
+    pink_purple: '#F3CCF3',
+    bone_white: '#F9F6EE',
+    off_white: '#FAF9F6',
+    ivory: '#FFFFF0',
+    parchment: '#FCF5E5',
+    beige: '#F5F5DC',
   },
   components: {
     Heading: {
@@ -70,9 +80,27 @@ const theme = {
       },
     },
     Button: {
-      baseStyle: {
-        fontWeight: 'normal',
-        userSelect: 'none',
+      variants: {
+        solid: {
+          bg: '#736CED',
+          color: 'white',
+          _hover: {
+            bg: '#9F9FED',
+          },
+          _active: {
+            bg: '#9F9FED',
+          },
+        },
+        outline: {
+          borderColor: '#9F9FED', // indigo
+          color: '#736CED', // purple
+          _hover: {
+            bg: '#fef9ff', // white purple
+          },
+          _active: {
+            bg: '#fef9ff',
+          },
+        },
       },
     },
   },

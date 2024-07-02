@@ -89,7 +89,7 @@ export const IngredientsList = ({ ingredients }: IngredientsProps) => {
           <Box bg="white" boxSize="40px" borderRadius="full" ml="2" mr="1">
             <Image src={ingredient.image} alt={ingredient.name} boxSize="40px" borderRadius="full"/>
           </Box>
-          <Text color="pink.400">{ingredient.name}</Text>
+          <Text color="black">{ingredient.name}</Text>
         </HStack>
       ))}
     </Box>
@@ -131,7 +131,7 @@ function ImageSlide({ backendData }: ImageSlideProps) {
     'Let’s get started! Gather your ingredients and set up your workspace. You’re on your way to creating something delicious!',
     'Keep it up! Your dedication will pay off in a tasty dish.',
     "You're on your way! Each step brings you closer to a delicious result.",
-    'Great progress! Every action you take is one step closer to success.',
+    'Great work! Every action you take is one step closer to success.',
     "Halfway there! You're creating something wonderful. Enjoy the process!",
     'You’re doing amazing! Stay focused and keep moving forward.',
     'Patience pays off! Let your dish  to perfection, and soon you’ll enjoy a warm, delightful treat.',
@@ -144,14 +144,26 @@ function ImageSlide({ backendData }: ImageSlideProps) {
     'Congratulations! Enjoy the delicious results of your hard work.',
   ];
 
+  const getRandomText = (() => {
+    const middleTexts = message.slice(1, message.length - 1); 
+    return (index: number, total: number) => {
+      if (index === 0) return message[0];
+      if (index === total - 1) return message[message.length - 1];
+
+      const randomIndex = Math.floor(Math.random() * middleTexts.length);
+      return middleTexts.splice(randomIndex, 1)[0]; 
+    };
+  })();
+
   const slides: Slide[] = backendData.analyzeInstruction.flatMap((instruction, instructionIndex) => {
     // const bgColor = colorLevels[instructionIndex % colorLevels.length];
-    const randomMessage = message[]
+    const totalSteps = instruction.steps.length + 1;
+
     const instructionSlides: Slide[] = [
       {
         type: 'title' as const,
         title: `${instructionIndex + 1}. ${instruction.name}`,
-        description: '',
+        description: getRandomText(instructionIndex, totalSteps),
         ingredients: [],
         equipment: [],
       },
@@ -194,7 +206,7 @@ function ImageSlide({ backendData }: ImageSlideProps) {
         xxl: '87.5rem',
       }}
     >
-      <ChakraCarousel gap={25}>
+      <ChakraCarousel gap={28}>
         {slides.map((slide, index) => (
           <Flex
             key={index}
@@ -203,7 +215,7 @@ function ImageSlide({ backendData }: ImageSlideProps) {
             justifyContent="flex-start"
             overflow="hidden"
             color="black.200"
-            bg="base.50"
+            bg={theme.colors.white_purple}
             rounded={5}
             flex={1}
             p={5}
@@ -223,12 +235,15 @@ function ImageSlide({ backendData }: ImageSlideProps) {
                 >
                   {slide.title}
                 </Heading>
+                <Box mt="2">
+                  <Text fontSize="18" textAlign="justify">{slide.description}</Text>
+                </Box>
                 {/* <Lottie animationData={Livecook} style={{ height: 200, width: 200 }} /> */}
               </>
             ) : (
               <Grid mt="4" mb="4" templateRows="repeat(2)" templateColumns="repeat(3, 2fr)" width="100%">
                 <GridItem>
-                  <Box borderRadius="md" boxShadow="md" bg="brown.20">
+                  <Box borderRadius="md" boxShadow="md" bg={theme.colors.light_lavender}>
                     <Heading fontSize="20" fontWeight="bold" ml="2" p="2" mb="1">
                       Ingredients
                     </Heading>
@@ -237,17 +252,17 @@ function ImageSlide({ backendData }: ImageSlideProps) {
                 </GridItem>
                 <GridItem rowSpan={2} colSpan={2} ml="6">
                   <VStack mb={2} textAlign="left" display="flex" flexDirection="column" justifyContent="flex-start">
-                    <Heading fontSize="20" fontWeight="bold">
+                    <Heading fontSize="22" fontWeight="bold">
                       Instruction
                     </Heading>
-                    <Text w="full" textAlign="justify">
+                    <Text w="full" fontSize="18" textAlign="justify">
                       {slide.description}
                     </Text>
                   </VStack>
                 </GridItem>
                 {slide.equipment.length > 0 && (
                   <GridItem mt="4">
-                    <Box borderRadius="md" boxShadow="md" bg="brown.20">
+                    <Box borderRadius="md" boxShadow="md" bg={theme.colors.light_lavender}>
                       <Heading fontSize="20" fontWeight="bold" ml="2" p="2" mb="1">
                         Equipment
                       </Heading>
@@ -257,7 +272,7 @@ function ImageSlide({ backendData }: ImageSlideProps) {
                             <Box bg="white" boxSize="40px" borderRadius="full" ml="2" mr="1">
                               <Image src={equip.image} alt={equip.name} boxSize="40px" borderRadius="full" />
                             </Box>
-                            <Text color="pink.400">{equip.name}</Text>
+                            <Text color="black">{equip.name}</Text>
                           </HStack>
                         ))}
                       </Box>
