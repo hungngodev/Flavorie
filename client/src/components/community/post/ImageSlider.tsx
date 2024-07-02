@@ -7,16 +7,15 @@ import { motion, useAnimationControls } from 'framer-motion';
 import { X } from 'lucide-react';
 import { GoDotFill } from 'react-icons/go';
 import { useNavigate } from 'react-router-dom';
-import { MediaObjectType } from './types';
+import { MediaObjectType, BasePostProps } from './types';
 
-interface ImageSliderProps extends StackProps {
+interface ImageSliderProps extends StackProps, BasePostProps {
   slides: MediaObjectType[];
   onClose?: (arg?: any) => void;
-  postId?: string;
   action: 'display' | 'direct';
 }
 
-const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, onClose, postId, action, ...props }) => {
+const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, onClose, postId, action, index, ...props }) => {
   const navigate = useNavigate();
   const [imageSlides, setImageSlides] = useState<MediaObjectType[]>(slides);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -102,7 +101,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, onClose, po
                   rounded="lg"
                   maxHeight="100%"
                   cursor="pointer"
-                  onClick={action === 'direct' ? () => navigate(`/community/${postId}`) : () => {}}
+                  onClick={action === 'direct' ? () => navigate(`/community/${postId}/${index}`) : () => {}}
                 />
               ) : (
                 <Box

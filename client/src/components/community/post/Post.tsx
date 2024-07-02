@@ -71,7 +71,7 @@ const Post = forwardRef<HTMLDivElement, PostProps>(
             <Heading size="lg">{post.header}</Heading>
             <Text>{post.body}</Text>
           </VStack>
-          {post.media.length > 0 && <ImageSlider action="direct" slides={post.media} postId={postId} />}
+          {post.media.length > 0 && <ImageSlider index={index} action="direct" slides={post.media} postId={postId} />}
         </CardBody>
         <CardFooter {...footerProps}>
           <PostFooter index={index} postId={post.id} setLoading={setLoading} />

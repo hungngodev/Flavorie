@@ -26,7 +26,7 @@ import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Camera, Ellipsis, Images, SmilePlus, X } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, memo } from 'react';
 import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import Webcam from 'react-webcam';
 import { useAuth } from '../../../../hooks/index';
@@ -46,7 +46,6 @@ interface PostFormExpandProps extends BasePostProps {
   onClose: () => void;
   preload?: PostEditObjectType | null;
   action: 'update' | 'create';
-  index: number;
   setLoading?: (arg?: any) => void;
 }
 
@@ -255,7 +254,14 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({
               />
             </InputGroup>
 
-            <ImageSlider action="display" slides={previewMedia} onClose={handleFileRemove} marginBlock={2} />
+            <ImageSlider
+              postId={postId}
+              index={index}
+              action="display"
+              slides={previewMedia}
+              onClose={handleFileRemove}
+              marginBlock={2}
+            />
 
             {useWebcam && (
               <Box position="relative" marginBlock={4}>
@@ -380,4 +386,4 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({
     </Modal>
   );
 };
-export default PostFormExpand;
+export default memo(PostFormExpand);
