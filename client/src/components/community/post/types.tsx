@@ -119,6 +119,7 @@ export type PostEditObjectType = z.infer<typeof PostEditObject>;
 export interface BasePostProps {
   postId: string;
   index: number;
+  postData?: PostObjectType;
 }
 
 export const parsePost = (backEndPosts: PostResponseObjectType[]) => {

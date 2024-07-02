@@ -16,14 +16,19 @@ interface PostFooterProps extends StackProps, BasePostProps {
   setLoading?: (arg?: any) => void;
 }
 
-const PostFooter = memo<PostFooterProps>(({ index, postId, ...props }) => {
+const PostFooter = memo<PostFooterProps>(({ index, postId, postData, ...props }) => {
   const auth = useAuth();
   const { id } = auth.currentUser;
 
   const dispatch = useDispatch<AppDispatch>();
-  const post = useSelector(selectPosts)[index];
-  const reacts = useSelector(selectPosts)[index].reacts;
-  const isLiked = useSelector(selectPosts)[index].reacts?.includes(id) ?? false;
+  const post = typeof index === 'number' ? useSelector(selectPosts)[index] : postData ? postData : null;
+  const reacts = typeof index === 'number' ? useSelector(selectPosts)[index].reacts : postData?.reacts ?? [];
+  const isLiked =
+    typeof index === 'number'
+      ? useSelector(selectPosts)[index].reacts?.includes(id)
+      : postData
+        ? postData.reacts?.includes(id)
+        : false;
 
   const likeControl = useAnimationControls();
   const likePost = async () => {
@@ -43,17 +48,17 @@ const PostFooter = memo<PostFooterProps>(({ index, postId, ...props }) => {
     {
       name: 'React',
       icon: FaRegHeart,
-      content: post.reacts ?? [],
+      content: post?.reacts ?? [],
     },
     {
       name: 'Review',
       icon: MessageCircle,
-      content: post.reviews ?? [],
+      content: post?.reviews ?? [],
     },
     {
       name: 'Share',
       icon: Share2,
-      content: post.shares ?? [],
+      content: post?.shares ?? [],
     },
   ];
   return (
