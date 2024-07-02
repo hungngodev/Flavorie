@@ -17,6 +17,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../hooks';
+import theme from '../../style/theme';
 import customFetch from '../../utils/customFetch';
 
 export type leftOverData = {
@@ -134,10 +135,11 @@ export default function LeftOver({ height }: { height?: string }) {
             height={'82%'}
             gap={10}
             border="2px solid"
-            borderColor="black"
             flexDir={'column'}
             rounded={'xl'}
             maxH={'85vh'}
+            bg={'#fef9ff'}
+            borderColor={theme.colors.palette_purple}
         >
             <HStack>
                 <IconButton
@@ -179,6 +181,7 @@ export default function LeftOver({ height }: { height?: string }) {
                 }}
             >
                 <VStack
+                    ref={scrollLeftOverRef}
                     spacing={8}
                     width={'100%'}
                     height={height}

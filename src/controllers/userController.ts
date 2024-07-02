@@ -49,7 +49,7 @@ export const updateCart = async (req: Request, res: Response) => {
 
   if (req.body.transfer === "true") {
     await changeItemTypes(req.user.userId, req.body.cart, "cart", "leftOver");
-  } else if (req.body.cart && req.body.cart.length !== 0) {
+  } else {
     await modifyUserItems(req.user.userId, req.body.cart, "cart");
   }
 

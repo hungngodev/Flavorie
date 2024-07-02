@@ -1,5 +1,4 @@
 'use client';
-
 import { ChevronRightIcon } from '@chakra-ui/icons';
 import {
     Avatar,
@@ -8,12 +7,12 @@ import {
     Circle,
     Flex,
     Icon,
+    Image,
     Popover,
     PopoverContent,
     PopoverTrigger,
     Stack,
     Text,
-    useBreakpointValue,
     useColorModeValue,
     useTheme,
 } from '@chakra-ui/react';
@@ -35,15 +34,22 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
         <>
             <Flex align={'center'} justifyContent={'space-between'} gap={4}>
                 <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
-                    <Text
+                    {/* <Text
                         textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
                         fontFamily={'heading'}
                         color={useColorModeValue('gray.800', 'white')}
                         as="b"
                     >
                         Flavorie
-                    </Text>
-                    <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
+                    </Text> */}
+                    <Image
+                        ml="2"
+                        boxSize="50px"
+                        objectFit="cover"
+                        src="../public/images/branding/Logo.png"
+                        alt="logo"
+                    />
+                    <Flex display={{ base: 'none', md: 'flex' }} ml={6}>
                         <Stack direction={'row'} spacing={4}>
                             {NavItems.map((navItem) => (
                                 <Box key={navItem.label}>

@@ -1,4 +1,4 @@
-import {HStack, Button} from "@chakra-ui/react"
+import {Box, HStack, Button, VStack, Text} from "@chakra-ui/react"
 import React, {useState} from "react";
 import CustomTag from "./CustomTag"
 import { PiFishSimple, PiGrainsBold, PiShrimp } from "react-icons/pi";
@@ -6,6 +6,7 @@ import { Milk, EggFried, Wheat, WheatOff, Bean, Salad, Nut, FishOff, Cherry, Bee
 import { SlChemistry } from "react-icons/sl";
 import { GiSesame } from "react-icons/gi";
 import { TbBrandPeanut, TbMeatOff } from "react-icons/tb";
+import theme from "../../style/theme";
 
 export type Allergy = "Dairy" | "Egg" | "Gluten" | "Grain" | "Peanut" | "Seafood" | "Sesame" | "Shellfish" | "Soy" | "Sulfite" | "Tree Nut" | "Wheat";
 export type Diet = "Gluten Free" | "Ketogenic" | "Vegetarian" | "Lacto-Vegetarian" | "Ovo-Vegetarian" | "Vegan" | "Pescetarian" | "Paleo" | "Primal" | "Whole30" | "Low FODMAP"
@@ -43,36 +44,98 @@ const Icons: Record<Allergy | Diet, React.ComponentType> = {
 
 const colorScheme = {
   allergy: {
-    background: 'red.200',
-    text: 'red.800',
+    background: 'rgba(255, 192, 203, 0.5)',
+    text: 'rgba(244, 83, 138, 1)', //rgba(244, 83, 138, 1)  rgba(255, 99, 132, 11)
+    selectedBackground: ' rgba(252, 129, 158, 0.5)', // rgba(252, 129, 158, 0.4) rgba(255, 112, 171, 0.48) rgba(242, 123, 189, 0.38) rgba(255, 113, 205, 0.4)  rgba(255, 112, 171, 0.48) rgba(242, 102, 171, 0.4) rgba(255, 106, 194, 0.4)
   },
   diet: {
-    background: 'orange.200',
-    text: 'orange.800',
+    background: 'rgba(189, 224, 254, 0.6)',
+    text: 'rgba(16, 67, 159, 1)', // #10439F
+    selectedBackground: 'rgba(57, 167, 255, 0.5)', //rgba(90, 178, 255, 0.5)  rgba(64, 162, 227, 0.4)  rgba(57, 167, 255, 0.5)
   },
 };
+const TagSelect = () => {
+  const [selectedTags, setSelectedTags] = useState<Set<PreferenceType>>(new Set([]));
 
-interface TagSelectProps {
-  handleSelect: (tag : PreferenceType) => void;
-  selectedTags: Set<PreferenceType>;
-}
-const TagSelect: React.FC<TagSelectProps> = ({handleSelect, selectedTags}) => {
+  // const handleSelect = (field: PreferenceType) => {
+  //   if(selectedTags.has(field)){
+  //     setSelectedTags((prevTags)=>{
+  //       prevTags.delete(field);
+  //       return new Set(prevTags);
+  //     })
+  //   }
+  //   else{
+  //     setSelectedTags((prevTags)=>{
+  //       prevTags.add(field);
+  //       return new Set(prevTags);
+  //     })
+  //   }
+  // }
+
+  // const submitTags = () => {
+  //   const tagRequest = {
+  //     tags: Array.from(selectedTags)
+  //   }
+  //   console.log(tagRequest);
+  // }
+
+  const handleSelect = (field: PreferenceType) => {
+    setSelectedTags((prevTags) => {
+      const newTags = new Set(prevTags);
+      if (newTags.has(field)) {
+        newTags.delete(field);
+      } else {
+        newTags.add(field);
+      }
+      return newTags;
+    });
+  };
+  
+// interface TagSelectProps {
+//   handleSelect: (tag : PreferenceType) => void;
+//   selectedTags: Set<PreferenceType>;
+// }
+// const TagSelect: React.FC<TagSelectProps> = ({handleSelect, selectedTags}) => {
 
   return (
     <>
-    <HStack flexWrap="wrap" marginBlock={4}>
-      {Preferences.map((type) => (
-        <CustomTag 
-        key={type} 
-        type={type} 
-        onClick={() => handleSelect(type)} 
-        border={selectedTags.has(type) ? "2px" : "0px"}  
-        // change component color and background base on whether it is an allergy or diet
-        bgColor={allergyTypes.includes(type as Allergy) ? colorScheme['allergy']['background'] : colorScheme['diet']['background']}
-        color={dietTypes.includes(type as Diet) ? colorScheme['diet']['text'] : colorScheme['allergy']['text']} 
-        icon={Icons[type]}/>
-      ))}
-    </HStack>
+      <VStack spacing={2} align="start" marginBlock={2}>
+        <Text fontSize="22" fontWeight="bold">
+          Allergies:
+        </Text>
+          <HStack flexWrap="wrap">
+            {allergyTypes.map((type) => (
+              <CustomTag
+                key={type}
+                type={type}
+                onClick={() => handleSelect(type)}
+                // border={selectedTags.has(type) ? '2px' : '0px'}
+                bgColor={
+                  selectedTags.has(type) ? colorScheme.allergy.selectedBackground : colorScheme.allergy.background
+                }
+                color={colorScheme.allergy.text}
+                icon={Icons[type]}
+              />
+            ))}
+          </HStack>
+        <Text fontSize="22" fontWeight="bold" mt="2">
+          Diets:
+        </Text>
+        <HStack flexWrap="wrap">
+          {dietTypes.map((type) => (
+            <CustomTag
+              key={type}
+              type={type}
+              onClick={() => handleSelect(type)}
+              // border={selectedTags.has(type) ? '2px' : '0px'}
+              bgColor={selectedTags.has(type) ? colorScheme.diet.selectedBackground : colorScheme.diet.background}
+              color={colorScheme.diet.text}
+              icon={Icons[type]}
+            />
+          ))}
+        </HStack>
+      </VStack>
+      {/* <Button mt="1" onClick={submitTags}>SubmitTags</Button> */}
     </>
   );
 }

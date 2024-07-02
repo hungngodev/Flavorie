@@ -1,6 +1,6 @@
 import { Box, Flex, IconButton, useDisclosure } from '@chakra-ui/react';
 import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { waveform } from 'ldrs';
 import { LottieRefCurrentProps } from 'lottie-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -9,8 +9,10 @@ import { FaShoppingCart } from 'react-icons/fa';
 import { Params, useParams } from 'react-router-dom';
 import { Cart, CategorySidebar, IngredientsMain, LeftOver, TypeWriter } from '../components';
 import { Nutrition } from '../components/ingredients/NutritionCard';
-import { useAuth } from '../hooks';
+import theme from '../style/theme';
 import customFetch from '../utils/customFetch';
+
+// import { PaginationTable } from 'table-pagination-chakra-ui';
 
 waveform.register();
 
@@ -96,7 +98,6 @@ export default function Ingredient() {
     const [hidden, setHidden] = useState(!isOpen);
     const [expanded, setExpanded] = useState(false);
     const lottieCartRef = useRef<LottieRefCurrentProps>(null);
-    const auth = useAuth();
     const queryClient = useQueryClient();
 
     const { control, handleSubmit, watch, setValue } = useForm<CartData>({
@@ -167,7 +168,7 @@ export default function Ingredient() {
     }, [cartStatus]);
 
     const onSubmit = (operation: string) => {
-        handleSubmit((data: CartData) => {
+        handleSubmit(async (data: CartData) => {
             const results = data.cart.map((item) => {
                 return {
                     itemId: item.id,
@@ -188,9 +189,10 @@ export default function Ingredient() {
                 },
             );
             if (operation === 'transfer') {
-                queryClient.invalidateQueries({
+                await queryClient.invalidateQueries({
                     queryKey: ['leftOver'],
                 });
+                await queryClient.ensureQueryData(leftOverQuery);
             }
             queryClient.invalidateQueries({
                 queryKey: ['cart'],
@@ -243,9 +245,10 @@ export default function Ingredient() {
                 zIndex={10}
                 isRound={true}
                 variant="solid"
-                colorScheme="teal"
+                color="white"
                 aria-label="Done"
                 fontSize="20px"
+                _hover={{ bg: theme.colors.palette_lavender }}
                 {...getButtonProps()}
                 icon={<FaShoppingCart />}
             />
@@ -280,6 +283,7 @@ export default function Ingredient() {
                     setHidden(!isOpen);
                 }}
                 animate={{ width: isOpen ? parseInt(fridgeWidth) : 0 }}
+                transition={{ duration: 0.5 }}
                 style={{
                     whiteSpace: 'nowrap',
                     height: '100%',
@@ -320,35 +324,42 @@ export default function Ingredient() {
                     ))}
                 </div>
                 <div className="relative h-full w-full">
-                    {tabs.map((tab, idx) => (
-                        <motion.div
-                            key={tab.value}
-                            layoutId={tab.value}
-                            style={{
-                                scale: 1 - idx * 0.05,
-                                left: hovering ? idx * -50 : 0,
-                                zIndex: -idx + 100,
-                                opacity: 1 - idx * 0.3,
-                            }}
-                            animate={{
-                                y: tab.value === tabs[0].value ? [0, 40, 0] : 0,
-                            }}
-                            className={'absolute left-0 top-0 h-full w-full'}
-                        >
-                            {tab.value === 'cart' ? (
-                                <Cart
-                                    fields={fields}
-                                    removeFunction={remove}
-                                    onSubmit={onSubmit}
-                                    control={control}
-                                    lottieCartRef={lottieCartRef}
-                                    height="50vh"
-                                />
-                            ) : (
-                                <LeftOver height="50vh" />
-                            )}
-                        </motion.div>
-                    ))}
+                    <AnimatePresence>
+                        {tabs.map((tab, idx) => (
+                            <motion.div
+                                exit={{ y: 40, opacity: 0 }}
+                                initial={{ y: 40, opacity: 0 }}
+                                transition={{ type: 'spring', bounce: 0.3, duration: 0.6 }}
+                                key={tab.value}
+                                layoutId={tab.value}
+                                style={{
+                                    scale: 1 - idx * 0.05,
+                                    left: hovering ? idx * -20 : 0,
+                                    zIndex: -idx + 100,
+                                    opacity: 1 - idx * 0.3,
+                                }}
+                                animate={{
+                                    y: tab.value === tabs[0].value ? [0, 40, 0] : 0,
+                                    opacity: 1,
+                                }}
+                                className={'absolute left-0 top-0 h-full w-full'}
+                            >
+                                {isOpen &&
+                                    (tab.value === 'cart' ? (
+                                        <Cart
+                                            fields={fields}
+                                            removeFunction={remove}
+                                            onSubmit={onSubmit}
+                                            control={control}
+                                            lottieCartRef={lottieCartRef}
+                                            height="50vh"
+                                        />
+                                    ) : (
+                                        <LeftOver height="50vh" />
+                                    ))}
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
                 </div>
             </motion.div>
         </Box>
@@ -361,7 +372,6 @@ const moreCookingJokes: string[] = [
     'What did the grape do when it got stepped on? Nothing but let out a little wine!',
     'Why did the orange stop? Because it ran out of juice.',
     'What do you call a fake noodle? An impasta.',
-    'Why did the chef get sent to jail? He beat the eggs and whipped the cream.',
     'Why did the baker go to therapy? He kneaded it.',
     'What do you call a sad strawberry? A blueberry.',
     "Why did the mushroom go to the party alone? Because he's a fungi.",

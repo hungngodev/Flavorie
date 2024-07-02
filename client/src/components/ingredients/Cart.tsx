@@ -17,6 +17,7 @@ import { RefObject, useEffect, useRef } from 'react';
 import { Control, Controller, FieldArrayWithId } from 'react-hook-form';
 import { Cart } from '../../assets/animations';
 import { CartData } from '../../pages/Ingredient';
+import theme from '../../style/theme';
 
 type CartProps = {
     removeFunction: (index: number) => void;
@@ -48,11 +49,11 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
             height={'82%'}
             gap={10}
             border="2px solid"
-            borderColor="black"
+            borderColor={theme.colors.palette_purple}
             flexDir={'column'}
             rounded={'xl'}
             maxH={'85vh'}
-            bg={'#adfffb'}
+            bg={'#fef9ff'}
         >
             <HStack>
                 <IconButton
@@ -160,7 +161,11 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
                                                         size="md"
                                                         format={(n) => (typeof n === 'string' ? parseInt(n) : n)}
                                                     >
-                                                        <Flex gap={1}>
+                                                        <Flex
+                                                            gap={1}
+                                                            borderColor={theme.colors.palette_indigo}
+                                                            _active={{ borderColor: theme.colors.palette_purple }}
+                                                        >
                                                             <NumberIncrementStepper
                                                                 style={{ background: 'transparent', border: 'none' }}
                                                             />
@@ -189,10 +194,11 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
                                         <IconButton
                                             icon={<DeleteIcon />}
                                             aria-label="delete"
-                                            colorScheme="pink"
+                                            bg={theme.colors.palette_indigo}
                                             size="xs"
                                             minWidth={'full'}
                                             variant="solid"
+                                            _hover={{ bg: theme.colors.palette_lavender }}
                                             onClick={() => removeFunction(index)}
                                         />
                                     </Flex>
