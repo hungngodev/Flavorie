@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     Button,
     Card,
@@ -113,7 +114,8 @@ const Receipt = () => {
         resolver: zodResolver(ReceiptFieldObject),
         defaultValues: {
             receipts: localStorage.getItem('notificationDetail')
-                ? JSON.parse(localStorage.getItem('notificationDetail') ?? '[]').map((receipt: any) => {
+                ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  JSON.parse(localStorage.getItem('notificationDetail') ?? '[]').map((receipt: any) => {
                       return {
                           id: receipt['potential_matches'][0]['potential_id'],
                           name: receipt.name.toLowerCase(),
@@ -213,7 +215,7 @@ const Receipt = () => {
         >
             <ReceiptForm
                 fields={fields}
-                FieldComponent={ReceiptField as React.ComponentType<any>}
+                FieldComponent={ReceiptField as React.ComponentType}
                 control={control}
                 watch={watch}
                 submit={submitReceipts}

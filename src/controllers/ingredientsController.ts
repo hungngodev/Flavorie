@@ -6,6 +6,7 @@ import User from "../models/UserModel.ts";
 import {
   classifyIngredient,
   classifyIngredientByAisle,
+  findIngredients,
 } from "../services/ingredientServices.ts";
 import { getAllIngredientsAPI } from "../services/spoonacular/spoonacularServices.ts";
 
@@ -20,26 +21,28 @@ export const getAllIngredients = async (req: Request, res: Response) => {
       diet.push(thisUser.diet);
     }
   }
+
+  if (category === "/") {
+    return res.status(StatusCodes.OK).json({
+      category: [],
+      categories: [],
+    });
+  }
   try {
     const classifiedIngredients = await classifyIngredient();
     if (sideBar)
-      return res
-        .status(StatusCodes.OK)
-        .json({
-          categories: classifiedIngredients.map(
-            SubCategory => SubCategory.categoryName,
-          ),
-        });
+      return res.status(StatusCodes.OK).json({
+        categories: classifiedIngredients.map(
+          SubCategory => SubCategory.categoryName,
+        ),
+      });
     console.log(
       classifiedIngredients.map(SubCategory => SubCategory.categoryName),
     );
     return res.status(StatusCodes.OK).json({
-      category:
-        category !== "/"
-          ? classifiedIngredients.filter(
-              SubCategory => SubCategory.categoryName === category,
-            )
-          : classifiedIngredients,
+      category: classifiedIngredients.filter(
+        SubCategory => SubCategory.categoryName === category,
+      ),
       categories: classifiedIngredients.map(
         SubCategory => SubCategory.categoryName,
       ),

@@ -10,10 +10,10 @@ import {
     NumberInputField,
     VStack,
 } from '@chakra-ui/react';
-import { useQuery } from '@tanstack/react-query';
-import { AnimatePresence, motion } from 'framer-motion';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../hooks';
@@ -35,13 +35,14 @@ const leftOverQuery = {
         return data;
     },
 };
-export default function LeftOver() {
+export default function LeftOver({ height }: { height?: string }) {
     const { control, handleSubmit, setValue } = useForm<leftOverData>({
         defaultValues: {
             leftOver: [],
         },
     });
     const { data: leftOverData, status: leftOverStatus } = useQuery(leftOverQuery);
+    const queryClient = useQueryClient();
     useEffect(() => {
         if (leftOverStatus === 'success') {
             console.log(leftOverData);
@@ -86,6 +87,9 @@ export default function LeftOver() {
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 },
             );
+            queryClient.invalidateQueries({
+                queryKey: ['leftOver'],
+            });
         })();
     };
     const auth = useAuth();
@@ -96,26 +100,10 @@ export default function LeftOver() {
             else scrollLeftOverRef.current.scrollTop += distance;
         }
     }
-    const [isLastItemRemoved, setIsLastItemRemoved] = useState(false);
-    const [lastItemIndex, setLastItemIndex] = useState<null | number>(null);
     const removeItem = (index: number) => {
-        if (index === fields.length - 1) {
-            removeFunction(index);
-            setIsLastItemRemoved(true);
-            setLastItemIndex(index);
-        } else {
-            removeFunction(index);
-        }
+        removeFunction(index);
     };
 
-    function onExitComplete() {
-        if (isLastItemRemoved && lastItemIndex !== null && lastItemIndex >= 0) {
-            console.log('onExitComplete: exit,', 'lastItem', lastItemIndex);
-            removeFunction(lastItemIndex as number);
-            setIsLastItemRemoved(false);
-            setLastItemIndex(null);
-        }
-    }
     return (
         <Flex
             marginTop={'4vh'}
@@ -171,90 +159,88 @@ export default function LeftOver() {
                 <VStack
                     spacing={8}
                     width={'100%'}
-                    height={'65vh'}
+                    height={height}
                     px={6}
                     overflowY={'auto'}
                     overflowX={'hidden'}
                     alignItems={'center'}
                     justifyContent={'start'}
                 >
-                    <AnimatePresence onExitComplete={onExitComplete}>
-                        {fields.map((item, index) => {
-                            return (
-                                <motion.div key={item.id + index + 'leftOver'}>
-                                    <HStack spacing={6} key={index} minWidth={'3rem'} flexShrink={0}>
-                                        <Image
-                                            src={'https://img.spoonacular.com/ingredients_100x100/' + item.image}
-                                            alt={item.name}
-                                            height={'full'}
-                                            width={'6vw'}
-                                            rounded={'xl'}
+                    {fields.map((item, index) => {
+                        return (
+                            <motion.div key={item.id + index + 'leftOver'}>
+                                <HStack spacing={6} key={index} minWidth={'3rem'} flexShrink={0}>
+                                    <Image
+                                        src={'https://img.spoonacular.com/ingredients_100x100/' + item.image}
+                                        alt={item.name}
+                                        height={'full'}
+                                        width={'6vw'}
+                                        rounded={'xl'}
+                                    />
+                                    <Flex
+                                        direction={'column'}
+                                        justifyContent={'center'}
+                                        alignItems={'center'}
+                                        gap={2}
+                                        width={'5vw'}
+                                    >
+                                        <Controller
+                                            render={({ field: { ref, ...restField } }) => (
+                                                <HStack spacing={4}>
+                                                    <NumberInput
+                                                        allowMouseWheel
+                                                        {...restField}
+                                                        min={1}
+                                                        max={50}
+                                                        size="md"
+                                                        format={(n) => (typeof n === 'string' ? parseInt(n) : n)}
+                                                    >
+                                                        <Flex gap={1}>
+                                                            <NumberIncrementStepper
+                                                                style={{
+                                                                    background: 'transparent',
+                                                                    border: 'none',
+                                                                }}
+                                                            />
+                                                            <NumberInputField
+                                                                ref={ref}
+                                                                name={restField.name}
+                                                                type="number"
+                                                                minWidth={'4.5rem'}
+                                                            />
+                                                            <NumberDecrementStepper
+                                                                style={{
+                                                                    background: 'transparent',
+                                                                    border: 'none',
+                                                                }}
+                                                            />
+                                                        </Flex>
+                                                    </NumberInput>
+                                                </HStack>
+                                            )}
+                                            name={`leftOver.${index}.quantity`}
+                                            control={control}
+                                            rules={{
+                                                required: {
+                                                    value: true,
+                                                    message: 'Price is required',
+                                                },
+                                            }}
                                         />
-                                        <Flex
-                                            direction={'column'}
-                                            justifyContent={'center'}
-                                            alignItems={'center'}
-                                            gap={2}
-                                            width={'5vw'}
-                                        >
-                                            <Controller
-                                                render={({ field: { ref, ...restField } }) => (
-                                                    <HStack spacing={4}>
-                                                        <NumberInput
-                                                            allowMouseWheel
-                                                            {...restField}
-                                                            min={1}
-                                                            max={50}
-                                                            size="md"
-                                                            format={(n) => (typeof n === 'string' ? parseInt(n) : n)}
-                                                        >
-                                                            <Flex gap={1}>
-                                                                <NumberIncrementStepper
-                                                                    style={{
-                                                                        background: 'transparent',
-                                                                        border: 'none',
-                                                                    }}
-                                                                />
-                                                                <NumberInputField
-                                                                    ref={ref}
-                                                                    name={restField.name}
-                                                                    type="number"
-                                                                    minWidth={'4.5rem'}
-                                                                />
-                                                                <NumberDecrementStepper
-                                                                    style={{
-                                                                        background: 'transparent',
-                                                                        border: 'none',
-                                                                    }}
-                                                                />
-                                                            </Flex>
-                                                        </NumberInput>
-                                                    </HStack>
-                                                )}
-                                                name={`leftOver.${index}.quantity`}
-                                                control={control}
-                                                rules={{
-                                                    required: {
-                                                        value: true,
-                                                        message: 'Price is required',
-                                                    },
-                                                }}
-                                            />
-                                            <IconButton
-                                                icon={<DeleteIcon />}
-                                                aria-label="delete"
-                                                colorScheme="pink"
-                                                size="xs"
-                                                minWidth={'full'}
-                                                variant="solid"
-                                                onClick={() => removeItem(index)}
-                                            />
-                                        </Flex>
-                                    </HStack>
-                                </motion.div>
-                            );
-                        })}
-                    </AnimatePresence>
+                                        <IconButton
+                                            icon={<DeleteIcon />}
+                                            aria-label="delete"
+                                            colorScheme="pink"
+                                            size="xs"
+                                            minWidth={'full'}
+                                            variant="solid"
+                                            onClick={() => removeItem(index)}
+                                        />
+                                    </Flex>
+                                </HStack>
+                            </motion.div>
+                        );
+                    })}
                 </VStack>
             </form>
         </Flex>

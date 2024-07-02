@@ -1,5 +1,5 @@
 import { Box, Flex, IconButton, useDisclosure } from '@chakra-ui/react';
-import { QueryClient, useQuery } from '@tanstack/react-query';
+import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { waveform } from 'ldrs';
 import { LottieRefCurrentProps } from 'lottie-react';
@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { FaShoppingCart } from 'react-icons/fa';
 import { Params, useParams } from 'react-router-dom';
-import { Cart, CategorySidebar, IngredientsMain, LeftOver } from '../components';
+import { Cart, CategorySidebar, IngredientsMain, LeftOver, Tabs } from '../components';
 import { Nutrition } from '../components/ingredients/NutritionCard';
 import { useAuth } from '../hooks';
 import customFetch from '../utils/customFetch';
@@ -30,8 +30,14 @@ const allIngredientsQuery = (category: string) => {
         },
     };
 };
-
-const cartQuery = {
+const leftOverQuery = {
+    queryKey: ['leftOver'],
+    queryFn: async () => {
+        const data = await customFetch.get('/user/leftOver');
+        return data;
+    },
+};
+export const cartQuery = {
     queryKey: ['cart'],
     queryFn: async () => {
         const data = await customFetch.get('/user/cart');
@@ -44,6 +50,7 @@ export const loader =
     ({ params }: { params: Params }) => {
         queryClient.ensureQueryData(allIngredientsQuery(params.category ?? ''));
         queryClient.ensureQueryData(cartQuery);
+        queryClient.ensureQueryData(leftOverQuery);
         return null;
     };
 
@@ -85,13 +92,13 @@ export default function Ingredient() {
     const { data: queryData, status } = useQuery(allIngredientsQuery(currentCategory));
     const ingredientData = queryData?.data.category[0];
     const { data: cartData, status: cartStatus } = useQuery(cartQuery);
-    console.log(cartData);
     const fridgeWidth = '500';
     const { getButtonProps, getDisclosureProps, isOpen } = useDisclosure();
     const [hidden, setHidden] = useState(!isOpen);
     const [expanded, setExpanded] = useState(false);
     const lottieCartRef = useRef<LottieRefCurrentProps>(null);
     const auth = useAuth();
+    const queryClient = useQueryClient();
 
     const { control, handleSubmit, watch, setValue } = useForm<CartData>({
         defaultValues: {
@@ -100,6 +107,7 @@ export default function Ingredient() {
     });
     useEffect(() => {
         if (cartStatus === 'success') {
+            console.log(cartData);
             setValue(
                 'cart',
                 cartData.data.cart.map(
@@ -136,8 +144,8 @@ export default function Ingredient() {
         lottieCartRef.current?.playSegments([150, 185]);
     };
     const onSubmit = () => {
+        if (auth.currentUser.status !== 'authenticated') return;
         handleSubmit((data: CartData) => {
-            console.log(data);
             const results = data.cart.map((item) => {
                 return {
                     itemId: item.id,
@@ -156,15 +164,17 @@ export default function Ingredient() {
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 },
             );
+            queryClient.invalidateQueries({
+                queryKey: ['cart'],
+            });
         })();
     };
-    useEffect(() => {
-        if (auth.currentUser.status === 'authenticated') {
-            console.log('submitting');
-            onSubmit();
-        }
-    });
 
+    // useEffect(() => {
+    //     if (auth.currentUser.status === 'authenticated') {
+    //         onSubmit();
+    //     }
+    // });
     return (
         <Box
             position="relative"
@@ -197,8 +207,10 @@ export default function Ingredient() {
                 <Flex width="100%" height="100%" direction={'column'} justifyContent={'center'} alignItems={'center'}>
                     {status === 'pending' ? (
                         <l-waveform size="100" stroke="3.5" speed="1" color="black"></l-waveform>
-                    ) : (
+                    ) : currentCategory !== '/' ? (
                         <IngredientsMain data={ingredientData} addFunction={addFunction} />
+                    ) : (
+                        <div>Category not found</div>
                     )}
                 </Flex>
             </div>
@@ -219,13 +231,42 @@ export default function Ingredient() {
                     height: '100%',
                 }}
             >
-                <LeftOver />
+                <Tabs
+                    tabs={[
+                        {
+                            title: 'Cart',
+                            value: 'cart',
+                            content: (
+                                <div className="relative flex h-[90%] w-full items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br  from-purple-700 to-violet-900 font-bold">
+                                    <Cart
+                                        fields={fields}
+                                        removeFunction={remove}
+                                        onSubmit={onSubmit}
+                                        control={control}
+                                        lottieCartRef={lottieCartRef}
+                                        height="65vh"
+                                    />
+                                </div>
+                            ),
+                        },
+                        {
+                            title: 'Fridge',
+                            value: 'fridge',
+                            content: (
+                                <div className="relative flex h-[90%] w-full items-center justify-center  overflow-hidden rounded-2xl bg-gradient-to-br from-purple-700 to-violet-900 font-bold">
+                                    <LeftOver height="65vh" />
+                                </div>
+                            ),
+                        },
+                    ]}
+                />
                 <Cart
                     fields={fields}
                     removeFunction={remove}
                     onSubmit={onSubmit}
                     control={control}
                     lottieCartRef={lottieCartRef}
+                    height="65vh"
                 />
             </motion.div>
         </Box>

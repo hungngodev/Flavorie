@@ -44,6 +44,7 @@ export const getLeftOver = async (req: Request, res: Response) => {
 };
 
 export const updateCart = async (req: Request, res: Response) => {
+  console.log(req.body.cart);
   if (req.body.cart && req.body.cart.length !== 0) {
     await modifyUserItems(req.user.userId, req.body.cart, "cart");
   }
