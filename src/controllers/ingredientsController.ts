@@ -28,6 +28,7 @@ export const getAllIngredients = async (req: Request, res: Response) => {
       categories: [],
     });
   }
+  console.log("category querying", category);
   try {
     const classifiedIngredients = await classifyIngredient();
     if (sideBar)

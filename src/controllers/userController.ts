@@ -52,6 +52,7 @@ export const updateCart = async (req: Request, res: Response) => {
 };
 
 export const updateLeftOver = async (req: Request, res: Response) => {
+  console.log(req.body.leftOver);
   if (req.body.leftOver && req.body.leftOver.length !== 0) {
     await modifyUserItems(req.user.userId, req.body.leftOver, "leftOver");
   }

@@ -12,7 +12,6 @@ const authenticateSocketIO = (socket: Socket, next: Function) => {
     if (token) {
       const { userId, role } = verifyJWT(token);
       socket.data.user = { userId, role };
-      console.log("authenticate success");
       next();
     } else {
       console.log("authenticate invalid");
@@ -36,7 +35,6 @@ const setUpSocketIO = (server: any) => {
 
   io.use(authenticateSocketIO);
   io.on("connection", (socket: Socket) => {
-    console.log("hello");
     roomHandler(socket);
     notificationHandler(socket);
   });

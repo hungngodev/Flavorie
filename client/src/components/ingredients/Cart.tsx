@@ -42,7 +42,7 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
             marginTop={'4vh'}
             alignItems={'center'}
             width={'95%'}
-            height={'full'}
+            height={'82%'}
             gap={10}
             border="2px solid"
             borderColor="black"
@@ -108,12 +108,20 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
                     {fields.map((item, index) => {
                         return (
                             <motion.div key={item.id + index + 'cart'}>
-                                <HStack spacing={6} key={index} minWidth={'3rem'} flexShrink={0} flexWrap={'wrap'}>
+                                <HStack
+                                    spacing={6}
+                                    key={index}
+                                    minWidth={'3rem'}
+                                    flexShrink={0}
+                                    flexWrap={'wrap'}
+                                    justifyContent={'center'}
+                                    alignItems={'center'}
+                                >
                                     <Image
                                         src={'https://img.spoonacular.com/ingredients_100x100/' + item.image}
                                         alt={item.name}
                                         height={'full'}
-                                        width={'10vw'}
+                                        width={'5vw'}
                                         rounded={'xl'}
                                     />
                                     <Flex

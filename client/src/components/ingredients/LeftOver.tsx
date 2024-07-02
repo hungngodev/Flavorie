@@ -13,7 +13,7 @@ import {
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../hooks';
@@ -36,13 +36,28 @@ const leftOverQuery = {
     },
 };
 export default function LeftOver({ height }: { height?: string }) {
-    const { control, handleSubmit, setValue } = useForm<leftOverData>({
-        defaultValues: {
-            leftOver: [],
-        },
-    });
     const { data: leftOverData, status: leftOverStatus } = useQuery(leftOverQuery);
     const queryClient = useQueryClient();
+    const { control, handleSubmit, setValue } = useForm<leftOverData>({
+        defaultValues: {
+            leftOver: useMemo(
+                () =>
+                    leftOverStatus === 'success'
+                        ? leftOverData.data.leftOver.map(
+                              (item: { leftOver: { _id: string; name: string; image: string }; quantity: string }) => {
+                                  return {
+                                      id: item.leftOver._id,
+                                      name: item.leftOver.name,
+                                      image: item.leftOver.image,
+                                      quantity: item.quantity,
+                                  };
+                              },
+                          )
+                        : [],
+                [leftOverData, leftOverStatus],
+            ),
+        },
+    });
     useEffect(() => {
         if (leftOverStatus === 'success') {
             console.log(leftOverData);
@@ -109,7 +124,7 @@ export default function LeftOver({ height }: { height?: string }) {
             marginTop={'4vh'}
             alignItems={'center'}
             width={'95%'}
-            height={'10rem'}
+            height={'82%'}
             gap={10}
             border="2px solid"
             borderColor="black"

@@ -3,15 +3,14 @@ import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { waveform } from 'ldrs';
 import { LottieRefCurrentProps } from 'lottie-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { FaShoppingCart } from 'react-icons/fa';
 import { Params, useParams } from 'react-router-dom';
-import { Cart, CategorySidebar, IngredientsMain, LeftOver, Tabs } from '../components';
+import { Cart, CategorySidebar, IngredientsMain, LeftOver, Tabs, TypeWriter } from '../components';
 import { Nutrition } from '../components/ingredients/NutritionCard';
 import { useAuth } from '../hooks';
 import customFetch from '../utils/customFetch';
-// import { PaginationTable } from 'table-pagination-chakra-ui';
 
 waveform.register();
 
@@ -47,10 +46,10 @@ export const cartQuery = {
 
 export const loader =
     (queryClient: QueryClient) =>
-    ({ params }: { params: Params }) => {
+    async ({ params }: { params: Params }) => {
         queryClient.ensureQueryData(allIngredientsQuery(params.category ?? ''));
-        queryClient.ensureQueryData(cartQuery);
-        queryClient.ensureQueryData(leftOverQuery);
+        await queryClient.ensureQueryData(cartQuery);
+        await queryClient.ensureQueryData(leftOverQuery);
         return null;
     };
 
@@ -102,9 +101,25 @@ export default function Ingredient() {
 
     const { control, handleSubmit, watch, setValue } = useForm<CartData>({
         defaultValues: {
-            cart: [],
+            cart: useMemo(
+                () =>
+                    cartStatus === 'success'
+                        ? cartData.data.cart.map(
+                              (item: { cart: { _id: string; name: string; image: string }; quantity: string }) => {
+                                  return {
+                                      id: item.cart._id,
+                                      name: item.cart.name,
+                                      image: item.cart.image,
+                                      quantity: item.quantity,
+                                  };
+                              },
+                          )
+                        : [],
+                [cartData, cartStatus],
+            ),
         },
     });
+
     useEffect(() => {
         if (cartStatus === 'success') {
             console.log(cartData);
@@ -143,8 +158,10 @@ export default function Ingredient() {
             });
         lottieCartRef.current?.playSegments([150, 185]);
     };
+    useEffect(() => {
+        console.log(cartStatus);
+    }, [cartStatus]);
     const onSubmit = () => {
-        if (auth.currentUser.status !== 'authenticated') return;
         handleSubmit((data: CartData) => {
             const results = data.cart.map((item) => {
                 return {
@@ -206,7 +223,10 @@ export default function Ingredient() {
             <div className="relative z-0 h-full w-full overflow-auto transition-all">
                 <Flex width="100%" height="100%" direction={'column'} justifyContent={'center'} alignItems={'center'}>
                     {status === 'pending' ? (
-                        <l-waveform size="100" stroke="3.5" speed="1" color="black"></l-waveform>
+                        <>
+                            <l-waveform size="100" stroke="3.5" speed="1" color="black"></l-waveform>
+                            <TypeWriter words={moreCookingJokes} duration={5000} />
+                        </>
                     ) : currentCategory !== '/' ? (
                         <IngredientsMain data={ingredientData} addFunction={addFunction} />
                     ) : (
@@ -236,39 +256,41 @@ export default function Ingredient() {
                         {
                             title: 'Cart',
                             value: 'cart',
-                            content: (
-                                <div className="relative flex h-[90%] w-full items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br  from-purple-700 to-violet-900 font-bold">
+                            content:
+                                cartStatus === 'success' ? (
                                     <Cart
                                         fields={fields}
                                         removeFunction={remove}
                                         onSubmit={onSubmit}
                                         control={control}
                                         lottieCartRef={lottieCartRef}
-                                        height="65vh"
+                                        height="50vh"
                                     />
-                                </div>
-                            ),
+                                ) : (
+                                    <div>Loading</div>
+                                ),
                         },
                         {
                             title: 'Fridge',
                             value: 'fridge',
-                            content: (
-                                <div className="relative flex h-[90%] w-full items-center justify-center  overflow-hidden rounded-2xl bg-gradient-to-br from-purple-700 to-violet-900 font-bold">
-                                    <LeftOver height="65vh" />
-                                </div>
-                            ),
+                            content: <LeftOver height="65vh" />,
                         },
                     ]}
-                />
-                <Cart
-                    fields={fields}
-                    removeFunction={remove}
-                    onSubmit={onSubmit}
-                    control={control}
-                    lottieCartRef={lottieCartRef}
-                    height="65vh"
                 />
             </motion.div>
         </Box>
     );
 }
+
+const moreCookingJokes: string[] = [
+    'Why did the banana go to the doctor? Because it wasn’t peeling well.',
+    'What kind of vegetable is angry? A steamed carrot.',
+    'What did the grape do when it got stepped on? Nothing but let out a little wine!',
+    'Why did the orange stop? Because it ran out of juice.',
+    'What do you call a fake noodle? An impasta.',
+    'Why did the chef get sent to jail? He beat the eggs and whipped the cream.',
+    'Why did the baker go to therapy? He kneaded it.',
+    'What do you call a sad strawberry? A blueberry.',
+    "Why did the mushroom go to the party alone? Because he's a fungi.",
+    'How do you make a lemon drop? Just let it fall.',
+];

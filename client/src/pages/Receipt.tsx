@@ -18,6 +18,7 @@ import { Focus } from 'lucide-react';
 import { useEffect } from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { Params, useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { z } from 'zod';
 import ReceiptField from '../components/ingredients/ReceiptField';
 import ReceiptForm from '../components/ingredients/ReceiptForm';
@@ -169,10 +170,12 @@ const Receipt = () => {
         const transformData = transformResponse(receiptResponse);
         console.log('Data will be sent: ', transformData);
         try {
-            const response = await customFetch.patch('/user/left-over', transformData);
+            const response = await customFetch.patch('/user/leftOver', {
+                leftOver: transformData,
+            });
             console.log(response.data);
             if (response.status === 200) {
-                navigate('/');
+                toast.success('Receipt submitted successfully');
             } else {
                 notifyError('Error submitting receipt. Please try again');
             }

@@ -17,5 +17,6 @@ export { default as StickyScrollReveal } from './ui/StickyScrollReveal';
 export { default as Tabs } from './ui/Tabs';
 export { default as Testimonials } from './ui/Testimonials';
 export { default as TracingBeam } from './ui/TracingBeam';
+export { default as TypeWriter } from './ui/TypeWriter';
 export { default as WavyBackground } from './ui/WavyBackGround';
 export { default as InfoCard } from './users/InfoCard';

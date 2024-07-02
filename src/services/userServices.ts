@@ -4,7 +4,7 @@ import {
   UserCreationError,
 } from "../errors/customErrors.ts";
 import { Ingredient } from "../models/IngredientModel.ts";
-import ItemModel, { Item } from "../models/ItemModel.ts";
+import ItemModel, { Item, typeItem } from "../models/ItemModel.ts";
 import UserModel, { User } from "../models/UserModel.ts";
 import { comparePassword, hashPassword } from "../utils/passwordUtils.ts";
 
@@ -88,6 +88,40 @@ export async function modifyUserItems(
     }
   }
   const existingItems = await ItemModel.find({ userId: userId, type: type });
+  for (const existingItem of existingItems) {
+    const item = items.find(
+      item => item.itemId.toString() === existingItem.itemId.toString(),
+    );
+    if (!item) {
+      console.log("deleting item");
+      await ItemModel.findByIdAndDelete(existingItem._id);
+    }
+  }
+}
+
+export async function changeItemTypes(
+  userId: string,
+  items: Item[],
+  previousType: string,
+  newType: typeItem,
+) {
+  for (const item of items) {
+    const existingItem = await ItemModel.findOne({
+      userId: userId,
+      itemId: item.itemId,
+      type: previousType,
+    });
+    if (existingItem) {
+      existingItem.type = newType;
+      await existingItem.save();
+    } else {
+      await ItemModel.create({ ...item, userId: userId, type: newType });
+    }
+  }
+  const existingItems = await ItemModel.find({
+    userId: userId,
+    type: previousType,
+  });
   for (const existingItem of existingItems) {
     const item = items.find(
       item => item.itemId.toString() === existingItem.itemId.toString(),
