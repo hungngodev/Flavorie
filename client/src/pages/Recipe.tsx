@@ -19,8 +19,6 @@ import { Params, useLoaderData } from 'react-router-dom';
 import ImageSlide, { BackendData } from '../components/meals/ImageSlide';
 import theme from '../style/theme';
 import customFetch from '../utils/customFetch';
-import theme from '../style/theme';
-
 
 
 // Default values shown

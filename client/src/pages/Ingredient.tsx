@@ -12,7 +12,6 @@ import { Nutrition } from '../components/ingredients/NutritionCard';
 import theme from '../style/theme';
 import customFetch from '../utils/customFetch';
 import Lottie from 'lottie-react';
-import theme from '../style/theme';
 import { extendTheme } from '@chakra-ui/react';
 
 // import { PaginationTable } from 'table-pagination-chakra-ui';

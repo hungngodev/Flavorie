@@ -14,7 +14,7 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 // import Heart from 'react-animated-heart';
-import Heart from 'react-animated-heart';
+// import Heart from 'react-animated-heart';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../hooks';
