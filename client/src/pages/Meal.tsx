@@ -20,6 +20,7 @@ export interface Meal {
   numberOfLiked: number;
   liked?: boolean;
   // price: string;
+  infoLink: string;
 }
 
 const allMealsQuery = (params: { [key: string]: string }) => {

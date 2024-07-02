@@ -1,3 +1,4 @@
+import React from 'react';
 import { Box, Flex, IconButton, useDisclosure } from '@chakra-ui/react';
 import { QueryClient, useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';

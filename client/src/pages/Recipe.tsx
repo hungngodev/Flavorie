@@ -19,7 +19,6 @@ import { Params, useLoaderData } from 'react-router-dom';
 import ImageSlide, { BackendData } from '../components/meals/ImageSlide';
 import customFetch from '../utils/customFetch';
 
-waveform.register();
 
 // Default values shown
 
@@ -58,7 +57,8 @@ const Recipe = () => {
                 return stepAcc + (step.length?.number || 0);
             }, 0)
         );
-    }, 0);
+    }, 
+0);
 
     return (
         <Stack alignItems="center" justifyContent="center">
@@ -241,7 +241,7 @@ const Recipe = () => {
             </Box>
         </Stack>
     );
-};
+}
 
 // export default Recipe;
 export default Recipe;

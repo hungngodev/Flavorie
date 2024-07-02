@@ -1,5 +1,6 @@
 import { Box, Container, Flex, Grid, GridItem, HStack, Heading, Image, Text, VStack } from '@chakra-ui/react';
 import { useEffect, useRef } from 'react';
+import React from 'react';
 import ChakraCarousel from './ChakraCarousel';
 
 export interface Ingredient {
