@@ -59,9 +59,15 @@ const Post = forwardRef<HTMLDivElement, PostProps>(
             <Heading size="lg">{postData.header}</Heading>
             <Text>{postData.body}</Text>
           </VStack>
-          {postData.media.length && postData.media.length > 0 && (
-            <ImageSlider postIndex={postIndex} action="direct" slides={postData.media} postId={postId} />
-          )}
+          {postData.media.length && postData.media.length > 0 ? (
+            <ImageSlider
+              postIndex={postIndex}
+              action="direct"
+              slides={postData.media}
+              postId={postId}
+              postData={postData}
+            />
+          ) : null}
         </CardBody>
         <CardFooter {...footerProps}>
           <PostFooter postIndex={postIndex} postId={postData.id} setLoading={setLoading} />

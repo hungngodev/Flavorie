@@ -1,5 +1,5 @@
 import { Box, Card, CardBody, CardFooter, CardHeader, Heading, Text, VStack } from '@chakra-ui/react';
-import { QueryClient, useQuery } from '@tanstack/react-query';
+import { QueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { Params, useLocation, useParams } from 'react-router-dom';
 import { ImageSlider, PostFooter, PostHeader } from '../components/community/post/index';
@@ -27,12 +27,20 @@ const FullPost = () => {
   const [loading, setLoading] = useState(false);
 
   const { postId } = useParams();
-  const { data: queryData, status } = useQuery(postQuery(postId ?? ''));
-  const { search } = useLocation();
+  // const { data: queryData, status } = useQuery<any>(postQuery(postId ?? ''));
+  const { search, state } = useLocation();
   const searchParams = new URLSearchParams(search);
   const index = parseInt(searchParams.get('index') ?? '-1');
 
-  const post = queryData?.post ?? null;
+  const { post } = state;
+  console.log('post');
+  console.log(post);
+  console.log('index');
+  console.log(index);
+  console.log('postId');
+  console.log(postId);
+  // console.log('queryData');
+  // console.log(queryData);
 
   const [preloadPost, setPreloadPost] = useState<PostEditObjectType>({
     header: post?.header ?? '',
@@ -61,7 +69,13 @@ const FullPost = () => {
   ) : (
     <Card height="auto" position="relative">
       <CardHeader paddingBottom={0}>
-        <PostHeader isFullPage={true} preloadData={preloadPost} postId={post.id} postIndex={index} />
+        <PostHeader
+          isFullPage={true}
+          postId={postId ?? post.id ?? ''}
+          postIndex={index}
+          preloadData={preloadPost}
+          postData={post}
+        />
       </CardHeader>
 
       <CardBody>
@@ -70,11 +84,11 @@ const FullPost = () => {
           <Text>{post.body}</Text>
         </VStack>
         {post.media.length > 0 && (
-          <ImageSlider postIndex={index} action="direct" slides={post.media} postId={postId ?? ''} />
+          <ImageSlider postIndex={index} action="direct" slides={post.media} postId={postId ?? post.id ?? ''} />
         )}
       </CardBody>
       <CardFooter>
-        <PostFooter postId={post.id} postIndex={index} />
+        <PostFooter postId={postId ?? post.id ?? ''} postIndex={index} postData={post} />
       </CardFooter>
     </Card>
   );

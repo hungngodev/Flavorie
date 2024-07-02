@@ -1,9 +1,11 @@
-import { Box } from '@chakra-ui/react';
+import { AspectRatio, Box, Image } from '@chakra-ui/react';
 import { QueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useEffect, useRef, useState } from 'react';
+import lottie from 'lottie-web';
+import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Params } from 'react-router-dom';
+import errorIllustration from '../../public/images/404-error-removebg-preview.png';
 import dumbCatLoaderAnimation from '../assets/animations/dumb-cat-loader.json';
 import Post from '../components/community/post/Post';
 import PostFormCard from '../components/community/post/form/PostFormCard';
@@ -12,9 +14,6 @@ import '../index.css';
 import { getFeed, selectPosts } from '../slices/posts/PostState';
 import { AppDispatch } from '../store/store';
 import customFetch from '../utils/customFetch';
-import lottie from 'lottie-web';
-import errorIllustration from '../../public/images/404-error-removebg-preview.png';
-import { Image, AspectRatio } from '@chakra-ui/react';
 
 const fetchFeed = async ({
   pageParam = 1,
@@ -57,7 +56,7 @@ const Feed = () => {
     count: posts.length,
     getScrollElement: () => parentRef.current,
     estimateSize: (index) => 200,
-    gap: 50,
+    gap: 30,
     getItemKey: (index) => posts[index].id,
     measureElement: (element, entry, instance) => {
       const direction = instance.scrollDirection;
@@ -133,7 +132,7 @@ const Feed = () => {
               marginInline="auto"
               width="100%"
               postId={post.id}
-              index={virtualItem.index}
+              postIndex={virtualItem.index}
             />
           ) : null;
         })}

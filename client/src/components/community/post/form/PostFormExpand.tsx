@@ -26,7 +26,7 @@ import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Camera, Ellipsis, Images, SmilePlus, X } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState, memo } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import Webcam from 'react-webcam';
 import { useAuth } from '../../../../hooks/index';
@@ -47,7 +47,6 @@ interface PostFormExpandProps extends BasePostProps {
   preload?: PostEditObjectType | null;
   action: 'update' | 'create';
   setLoading?: (arg?: any) => void;
-  
 }
 
 const PostFormExpand: React.FC<PostFormExpandProps> = ({
@@ -55,7 +54,7 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({
   onClose,
   action,
   preload,
-  index,
+  postIndex,
   postId,
   setLoading,
 }) => {
@@ -102,7 +101,7 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({
             console.log(newFormData);
 
             await dispatch(updateRequest({ postId, newFormData }))
-              .then((res: any) => dispatch(updatePost({ post: parsePost([res.payload.post]), postIndex: index })))
+              .then((res: any) => dispatch(updatePost({ post: parsePost([res.payload.post]), postIndex: postIndex })))
               .then(() => onClose());
           }
           break;
@@ -257,7 +256,7 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({
 
             <ImageSlider
               postId={postId}
-              index={index}
+              postIndex={postIndex}
               action="display"
               slides={previewMedia}
               onClose={handleFileRemove}
