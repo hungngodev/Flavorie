@@ -1,5 +1,4 @@
 'use client';
-import React from 'react';
 import { ChevronRightIcon } from '@chakra-ui/icons';
 import {
     Avatar,
@@ -9,24 +8,17 @@ import {
     Flex,
     Icon,
     Image,
-    Menu,
-    MenuButton,
-    MenuDivider,
-    MenuItem,
-    MenuList,
     Popover,
     PopoverContent,
     PopoverTrigger,
     Stack,
     Text,
-    useBreakpointValue,
     useColorModeValue,
     useTheme,
 } from '@chakra-ui/react';
 import { FaBell } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import logo from '../../assets/logo.svg';
-import { useAuth } from '../../hooks';
+import useAuth from '../../hooks/useAuth.tsx';
 import useNotification from '../../hooks/useNotification.tsx';
 import { NavItem } from './NavBar';
 

@@ -1,35 +1,33 @@
-import { AddIcon, InfoOutlineIcon } from '@chakra-ui/icons';
+import { AddIcon } from '@chakra-ui/icons';
 import {
-  Box,
-  Flex,
-  HStack,
-  IconButton,
-  Image,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverTrigger,
-  chakra
+    Box,
+    Flex,
+    HStack,
+    IconButton,
+    Image,
+    Popover,
+    PopoverArrow,
+    PopoverBody,
+    PopoverCloseButton,
+    PopoverContent,
+    PopoverTrigger,
+    chakra,
 } from '@chakra-ui/react';
-import React from 'react';
+import theme from '../../style/theme';
 import customFetch from '../../utils/customFetch';
 import NutritionCard, { Nutrition } from './NutritionCard';
-import theme from '../../style/theme';
-import { extendTheme } from '@chakra-ui/react';
 
 type CardProps = {
-  imgLink: string;
-  title: string;
-  category?: string;
-  height?: string;
-  width?: string;
-  onClick?: () => void;
-  id: string;
-  amount: number;
-  unitShort: string;
-  nutrition: Nutrition;
+    imgLink: string;
+    title: string;
+    category?: string;
+    height?: string;
+    width?: string;
+    onClick?: () => void;
+    id: string;
+    amount: number;
+    unitShort: string;
+    nutrition: Nutrition;
 };
 function Card({ id, imgLink, title, height, width, onClick, amount, unitShort, nutrition }: CardProps) {
     return (
@@ -44,7 +42,11 @@ function Card({ id, imgLink, title, height, width, onClick, amount, unitShort, n
                         bgSize="cover"
                         bgPos="center"
                         bgColor="white"
-                        src={'https://img.spoonacular.com/ingredients_100x100/' + imgLink}
+                        src={
+                            imgLink.length > 120
+                                ? imgLink
+                                : 'https://img.spoonacular.com/ingredients_100x100/' + imgLink
+                        }
                         onError={async (e) =>
                             ((e.target as HTMLImageElement).src = (
                                 await customFetch('/bug/image-fix', {

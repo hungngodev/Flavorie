@@ -17,7 +17,6 @@ import {
     Feed,
     FullPost,
     Ingredient,
-    IngredientLanding,
     Login,
     Main,
     Meal,
@@ -63,7 +62,7 @@ const router = createBrowserRouter([
                 children: [
                     {
                         index: true,
-                        element: <IngredientLanding />,
+                        element: <Ingredient />,
                         loader: ingredientsLoader(queryClient),
                     },
                     {

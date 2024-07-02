@@ -42,12 +42,13 @@ const theme = {
             300: '604F44',
             400: '3A2B22',
         },
+        indigo: '#8978D9',
         palette_purple: '#736CED',
         palette_indigo: '#9F9FED',
         palette_lavender: '#D4C1EC',
         palette_pink: '#FFC0CB',
         palette_blue: '#BDE0FE',
-
+        bone_white: '#F9F6EE',
         white_purple: '#fef9ff',
         bone_white: '#F9F6EE',
         
