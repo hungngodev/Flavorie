@@ -3,10 +3,11 @@ import { Flex } from '@chakra-ui/react';
 import { QueryClient, useQuery } from '@tanstack/react-query';
 import { miyagi } from 'ldrs';
 import { Params } from 'react-router-dom';
-import { ListOfMeals } from '../components';
 import { SearchBar } from '../components/ingredients/SearchBar';
 import { Specialty } from '../components/meals/Specialty';
 import customFetch from '../utils/customFetch';
+// import { singleMeal } from '../components/meals/ListofMeals';
+import { ListOfMeals } from '../components/meals/ListofMeals';
 
 miyagi.register();
 
@@ -19,6 +20,7 @@ export interface Meal {
   image: string;
   category: string;
   // price: string;
+  infoLink: string;
 }
 
 const allMealsQuery = (category: string) => {

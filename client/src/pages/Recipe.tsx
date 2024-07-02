@@ -9,7 +9,6 @@ import customFetch from '../utils/customFetch';
 import { Tag, TagLabel } from '@chakra-ui/react';
 import { BackendData } from '../components/meals/ImageSlide';
 
-waveform.register();
 
 // Default values shown
 
@@ -81,14 +80,14 @@ export const loader =
 //     console.log(recipeData);
 //     console.log(status);
 
-interface IndividualMealProps {
+interface RecipeProps {
     recipeData: BackendData;
     calories: string;
     averageStar: string;
     numReviews: string;
     }
 
-const IndividualMeal: React.FC<IndividualMealProps> = ({ recipeData, calories, averageStar, numReviews }) => {
+const IndividualMeal: React.FC<RecipeProps> = ({ recipeData, calories, averageStar, numReviews }) => {
     const totalTime = recipeData.analyzeInstruction.reduce((acc, instruction) => {
         return (
         acc +
@@ -96,7 +95,8 @@ const IndividualMeal: React.FC<IndividualMealProps> = ({ recipeData, calories, a
             return stepAcc + (step.length?.number || 0);
         }, 0)
         );
-    }, 0);
+    }, 
+0);
 
     return (
         <Stack alignItems="center" justifyContent="center">
@@ -272,7 +272,8 @@ const IndividualMeal: React.FC<IndividualMealProps> = ({ recipeData, calories, a
         </Box>
         </Stack>
     );
-};
+}
 
 // export default Recipe;
+
 export default IndividualMeal;
