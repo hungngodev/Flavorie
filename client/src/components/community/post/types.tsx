@@ -118,7 +118,7 @@ export type PostEditObjectType = z.infer<typeof PostEditObject>;
 
 export interface BasePostProps {
   postId: string;
-  index: number;
+  postIndex: number;
   postData?: PostObjectType;
 }
 

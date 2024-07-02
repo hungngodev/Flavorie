@@ -18,6 +18,7 @@ import { FaUserCircle } from 'react-icons/fa';
 import PostFormExpand from './form/PostFormExpand';
 // import parseDate from '../../../utils/parseDate';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import useAuth from '../../../hooks/useAuth';
 import { deleteRequest, selectDeleteStatus } from '../../../slices/posts/DeletePost';
 import { hideRequest, selectHideStatus } from '../../../slices/posts/HidePost';
@@ -27,47 +28,47 @@ import { AppDispatch } from '../../../store/store';
 import { BasePostProps, PostEditObjectType, parsePost } from './types';
 
 interface PostHeaderProps extends BasePostProps, StackProps {
-  avatar?: string;
-  author?: string;
-  date?: Date;
-  privacy?: 'public' | 'private' | 'friend';
-  location?: string;
-  canupdate?: boolean;
-  preloadPost?: PostEditObjectType;
+  preloadData?: PostEditObjectType;
   setLoading?: (arg?: any) => void;
+  isFullPage: boolean;
 }
 
 const PostHeader = memo<PostHeaderProps>(
-  ({ avatar, author, date, privacy, location, index, canupdate, postId, setLoading, ...props }) => {
+  ({ postIndex, postId, setLoading, postData, preloadData, isFullPage, ...props }) => {
     const auth = useAuth();
     const { id } = auth.currentUser;
+    const navigate = useNavigate();
 
     const dispatch = useDispatch<AppDispatch>();
-    const post = useSelector(selectPosts)[index];
+
+    const post = postData ?? useSelector(selectPosts)[postIndex];
+
     const deleteStatus: string = useSelector(selectDeleteStatus);
     const saveStatus: string = useSelector(selectSaveStatus);
     const hideStatus: string = useSelector(selectHideStatus);
 
-    const [canUpdate, setCanUpdate] = useState(post.author.id === id);
-    const [preloadPost, setPreloadPost] = useState<PostEditObjectType>({
-      header: post.header ?? '',
-      body: post.body ?? '',
-      privacy: post.privacy ?? 'public',
-      location: post.location ?? '',
-      media: [],
-      savedPreviewMedia: post.media ?? [],
-    });
+    const [canUpdate, setCanUpdate] = useState(post?.author.id === id);
+    const [preloadPost, setPreloadPost] = useState<PostEditObjectType>(
+      preloadData ?? {
+        header: post?.header ?? '',
+        body: post?.body ?? '',
+        privacy: post?.privacy ?? 'public',
+        location: post?.location ?? '',
+        media: [],
+        savedPreviewMedia: post?.media ?? [],
+      },
+    );
 
     useEffect(() => {
       setPreloadPost(() => ({
-        header: post.header ?? '',
-        body: post.body ?? '',
-        privacy: post.privacy ?? 'public',
-        location: post.location ?? '',
+        header: post?.header ?? '',
+        body: post?.body ?? '',
+        privacy: post?.privacy ?? 'public',
+        location: post?.location ?? '',
         media: [],
-        savedPreviewMedia: post.media ?? [],
+        savedPreviewMedia: post?.media ?? [],
       }));
-      setCanUpdate(post.author.id === id);
+      setCanUpdate(post?.author.id === id);
     }, [dispatch, auth.currentUser.id, post]);
 
     useEffect(() => {
@@ -91,7 +92,7 @@ const PostHeader = memo<PostHeaderProps>(
     return (
       <HStack width="100%" justifyContent="space-between" alignItems="center" {...props}>
         <PostFormExpand
-          index={index}
+          postIndex={postIndex}
           postId={postId}
           action="update"
           preload={preloadPost}
@@ -99,15 +100,10 @@ const PostHeader = memo<PostHeaderProps>(
           onClose={onClose}
         />
         <HStack gap={4} alignItems="start">
-          <Avatar
-            name={post.author.name}
-            src={avatar ?? 'https://github.com/shadcn.png'}
-            aria-label="user-image"
-            icon={<FaUserCircle />}
-          />
+          <Avatar name={post?.author.name} src={post?.author.avatar} aria-label="user-image" icon={<FaUserCircle />} />
           <VStack alignItems="start" height="auto" gap={0}>
             <Text fontWeight="semibold" fontSize="lg">
-              {post.author.name}
+              {post?.author.name}
             </Text>
           </VStack>
         </HStack>
@@ -121,17 +117,23 @@ const PostHeader = memo<PostHeaderProps>(
             fontSize="2xl"
           />
           <MenuList zIndex="200">
+            {isFullPage && (
+              <MenuItem icon={<Pencil />} command="⌘U" onClick={() => navigate('/community')}>
+                Return
+              </MenuItem>
+            )}
             {canUpdate && (
               <MenuItem icon={<Pencil />} command="⌘U" onClick={onOpen}>
                 Update post
               </MenuItem>
             )}
+
             <MenuItem
               icon={<Bookmark />}
               command="⌘S"
               onClick={() => {
                 dispatch(saveRequest({ postId })).then((res: any) => {
-                  dispatch(updatePost({ postIndex: index, post: parsePost([res.payload.post]) }));
+                  dispatch(updatePost({ postIndex: postIndex, post: parsePost([res.payload.post]) }));
                 });
               }}
             >
@@ -146,7 +148,7 @@ const PostHeader = memo<PostHeaderProps>(
               command="⌘H"
               onClick={() => {
                 dispatch(hideRequest({ postId })).then((res: any) => {
-                  dispatch(updatePost({ postIndex: index, post: parsePost([res.payload.post]) }));
+                  dispatch(updatePost({ postIndex: postIndex, post: parsePost([res.payload.post]) }));
                 });
               }}
             >

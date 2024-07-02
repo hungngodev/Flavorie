@@ -15,7 +15,7 @@ interface ImageSliderProps extends StackProps, BasePostProps {
   action: 'display' | 'direct';
 }
 
-const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, onClose, postId, action, index, ...props }) => {
+const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, onClose, postId, action, postIndex, ...props }) => {
   const navigate = useNavigate();
   const [imageSlides, setImageSlides] = useState<MediaObjectType[]>(slides);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -101,7 +101,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, onClose, po
                   rounded="lg"
                   maxHeight="100%"
                   cursor="pointer"
-                  onClick={action === 'direct' ? () => navigate(`/community/${postId}/${index}`) : () => {}}
+                  onClick={action === 'direct' ? () => navigate(`/community/${postId}?index=${postIndex}`) : () => {}}
                 />
               ) : (
                 <Box

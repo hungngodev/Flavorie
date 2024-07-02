@@ -16,16 +16,18 @@ interface PostFooterProps extends StackProps, BasePostProps {
   setLoading?: (arg?: any) => void;
 }
 
-const PostFooter = memo<PostFooterProps>(({ index, postId, postData, ...props }) => {
+const PostFooter = memo<PostFooterProps>(({ postIndex, postId, postData, ...props }) => {
   const auth = useAuth();
   const { id } = auth.currentUser;
 
   const dispatch = useDispatch<AppDispatch>();
-  const post = typeof index === 'number' ? useSelector(selectPosts)[index] : postData ? postData : null;
-  const reacts = typeof index === 'number' ? useSelector(selectPosts)[index].reacts : postData?.reacts ?? [];
+  const post =
+    postIndex && typeof postIndex === 'number' ? useSelector(selectPosts)[postIndex] : postData ? postData : null;
+  const reacts =
+    postIndex && typeof postIndex === 'number' ? useSelector(selectPosts)[postIndex].reacts : postData?.reacts ?? [];
   const isLiked =
-    typeof index === 'number'
-      ? useSelector(selectPosts)[index].reacts?.includes(id)
+    postIndex && typeof postIndex === 'number'
+      ? useSelector(selectPosts)[postIndex].reacts?.includes(id)
       : postData
         ? postData.reacts?.includes(id)
         : false;
@@ -36,7 +38,7 @@ const PostFooter = memo<PostFooterProps>(({ index, postId, postData, ...props })
       await dispatch(likeRequest(postId)).then((res: any) => {
         console.log(res);
         likeControl.start({ scale: [1, 1.2, 1], transition: { duration: 0.2, ease: 'easeInOut' } });
-        dispatch(reactPost({ postIndex: index, reacts: res.payload.reacts }));
+        dispatch(reactPost({ postIndex: postIndex, reacts: res.payload.reacts }));
       });
     } catch (error) {
       console.log(error);
@@ -63,8 +65,8 @@ const PostFooter = memo<PostFooterProps>(({ index, postId, postData, ...props })
   ];
   return (
     <HStack gap={4} width="100%" justifyContent="flex-start" alignItems="center" {...props}>
-      {FooterButtons.map((button, index) => (
-        <HStack key={index} alignItems="center" gap={0} marginLeft={button.name === 'Share' ? 'auto' : 0}>
+      {FooterButtons.map((button, postIndex) => (
+        <HStack key={postIndex} alignItems="center" gap={0} marginLeft={button.name === 'Share' ? 'auto' : 0}>
           <Tooltip label={button.name} gap={2}>
             <IconButton
               as={motion.button}

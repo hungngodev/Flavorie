@@ -47,6 +47,7 @@ interface PostFormExpandProps extends BasePostProps {
   preload?: PostEditObjectType | null;
   action: 'update' | 'create';
   setLoading?: (arg?: any) => void;
+  
 }
 
 const PostFormExpand: React.FC<PostFormExpandProps> = ({

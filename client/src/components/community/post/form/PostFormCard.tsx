@@ -62,7 +62,7 @@ const PostFormCard = memo<PostFormCardProps>(() => {
                 {`What are you thinking today ${currentUser.username}?`}
               </Button>
             </HStack>
-            <PostFormExpand postId="" index={0} isOpen={isOpen} onClose={onClose} action="create" />
+            <PostFormExpand postId="" postIndex={0} isOpen={isOpen} onClose={onClose} action="create" />
           </CardBody>
           <Divider color="blackAlpha.300" />
           <CardFooter paddingBlock={2}>

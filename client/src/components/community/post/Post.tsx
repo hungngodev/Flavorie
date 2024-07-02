@@ -10,12 +10,9 @@ import {
   StackProps,
   Text,
   VStack,
-  useTheme,
 } from '@chakra-ui/react';
-import { forwardRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { forwardRef, useEffect, useState } from 'react';
 import useAuth from '../../../hooks/useAuth';
-import { selectPosts } from '../../../slices/posts/PostState';
 import { ImageSlider, PostFooter, PostHeader } from './index';
 import { BasePostProps, PostObjectType } from './types';
 
@@ -27,33 +24,18 @@ interface PostProps extends StackProps, BasePostProps {
 }
 
 const Post = forwardRef<HTMLDivElement, PostProps>(
-  ({ postData, headerProps, bodyProps, footerProps, index, postId, ...containerProps }, ref) => {
-    const theme = useTheme();
+  ({ postData, headerProps, bodyProps, footerProps, postIndex, postId, ...containerProps }, ref) => {
+    // const theme = useTheme();
 
     const auth = useAuth();
-    const posts = useSelector(selectPosts);
-    const post = posts[index!]; // Get post data from redux state
+    // const posts = useSelector(selectPosts);
+    // const post = postIndex ? posts[postIndex] : null; // Get post data from redux state
 
     const { id } = auth.currentUser;
     const [loading, setLoading] = useState(false);
-    // const [isVisible, setIsVisible] = useState(
-    // !post.hiddenTo?.includes(id) &&
-    //   (post.privacy === 'public' ||
-    //     post.privacy === 'friend' ||
-    //     (post.privacy === 'private' && post.author.id === id)),
-    // );
-
-    // useEffect(() => {
-    //   setIsVisible(
-    //     () =>
-    //       (!post.hiddenTo?.includes(id) && post.privacy === 'public') ||
-    //       post.privacy === 'friend' ||
-    //       (post.privacy === 'private' && post.author.id === id),
-    //   );
-    // }, [auth.currentUser.id, post, setIsVisible]);
-
-    // all hidden posts are stricttly hidden
-
+    useEffect(() => {
+      console.log(postData);
+    }, [postData]);
     return (
       <Card
         {...containerProps}
@@ -63,18 +45,26 @@ const Post = forwardRef<HTMLDivElement, PostProps>(
         opacity={loading ? 0.5 : 1}
       >
         <CardHeader paddingBottom={0} {...headerProps}>
-          <PostHeader postId={post.id} index={index} setLoading={setLoading} />
+          <PostHeader
+            postData={postData}
+            postId={postData.id}
+            postIndex={postIndex}
+            setLoading={setLoading}
+            isFullPage={false}
+          />
         </CardHeader>
 
         <CardBody {...bodyProps}>
           <VStack gap={2} alignItems="start" marginBottom={2}>
-            <Heading size="lg">{post.header}</Heading>
-            <Text>{post.body}</Text>
+            <Heading size="lg">{postData.header}</Heading>
+            <Text>{postData.body}</Text>
           </VStack>
-          {post.media.length > 0 && <ImageSlider index={index} action="direct" slides={post.media} postId={postId} />}
+          {postData.media.length && postData.media.length > 0 && (
+            <ImageSlider postIndex={postIndex} action="direct" slides={postData.media} postId={postId} />
+          )}
         </CardBody>
         <CardFooter {...footerProps}>
-          <PostFooter index={index} postId={post.id} setLoading={setLoading} />
+          <PostFooter postIndex={postIndex} postId={postData.id} setLoading={setLoading} />
         </CardFooter>
       </Card>
     );
