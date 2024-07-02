@@ -1,14 +1,15 @@
 import { HStack, IconButton, StackProps, Text, Tooltip } from '@chakra-ui/react';
 import { motion, useAnimationControls } from 'framer-motion';
 import { MessageCircle, Share2 } from 'lucide-react';
-import { memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { FaHeart } from 'react-icons/fa';
 import { FaRegHeart } from 'react-icons/fa6';
 import { useDispatch, useSelector } from 'react-redux';
 import useAuth from '../../../hooks/useAuth';
 import { likeRequest } from '../../../slices/posts/LikePost';
-import { reactPost, selectPosts } from '../../../slices/posts/PostState';
+import { selectPosts, updatePost } from '../../../slices/posts/PostState';
 import { AppDispatch } from '../../../store/store';
+import { parsePost } from '../post/types';
 import { BasePostProps } from './types';
 interface PostFooterProps extends StackProps, BasePostProps {
   // right now reacts are just a list of ids, no clear schema for reviews and shares yet
@@ -16,29 +17,23 @@ interface PostFooterProps extends StackProps, BasePostProps {
   setLoading?: (arg?: any) => void;
 }
 
-const PostFooter = memo<PostFooterProps>(({ postIndex, postId, postData, ...props }) => {
+const PostFooter = memo<PostFooterProps>(({ postIndex, postData, postId, ...props }) => {
   const auth = useAuth();
   const { id } = auth.currentUser;
 
   const dispatch = useDispatch<AppDispatch>();
-  const post =
-    postIndex && typeof postIndex === 'number' ? useSelector(selectPosts)[postIndex] : postData ? postData : null;
-  const reacts =
-    postIndex && typeof postIndex === 'number' ? useSelector(selectPosts)[postIndex].reacts : postData?.reacts ?? [];
-  const isLiked =
-    postIndex && typeof postIndex === 'number'
-      ? useSelector(selectPosts)[postIndex].reacts?.includes(id)
-      : postData
-        ? postData.reacts?.includes(id)
-        : false;
+  const post = postData ?? useSelector(selectPosts)[postIndex];
+  const reacts = useSelector(selectPosts)[postIndex].reacts;
+  const [isLiked, setIsLiked] = useState(useSelector(selectPosts)[postIndex].reacts?.includes(id) ?? false);
 
   const likeControl = useAnimationControls();
   const likePost = async () => {
+    likeControl.start({ scale: [1, 1.2, 1], transition: { duration: 0.2, ease: 'easeInOut' } });
     try {
       await dispatch(likeRequest(postId)).then((res: any) => {
-        console.log(res);
-        likeControl.start({ scale: [1, 1.2, 1], transition: { duration: 0.2, ease: 'easeInOut' } });
-        dispatch(reactPost({ postIndex: postIndex, reacts: res.payload.reacts }));
+        console.log(res.payload);
+        dispatch(updatePost({ postIndex: postIndex, post: parsePost([res.payload.reacts]) }));
+        setIsLiked(useSelector(selectPosts)[postIndex].reacts?.includes(id) ?? false);
       });
     } catch (error) {
       console.log(error);
@@ -46,7 +41,7 @@ const PostFooter = memo<PostFooterProps>(({ postIndex, postId, postData, ...prop
   };
 
   // Update content of FooterButtons based on props
-  const FooterButtons = [
+  const [footerButtons, setFooterButtons] = useState([
     {
       name: 'React',
       icon: FaRegHeart,
@@ -62,11 +57,32 @@ const PostFooter = memo<PostFooterProps>(({ postIndex, postId, postData, ...prop
       icon: Share2,
       content: post?.shares ?? [],
     },
-  ];
+  ]);
+
+  useEffect(() => {
+    setIsLiked(post?.reacts?.includes(id) ?? false);
+    setFooterButtons([
+      {
+        name: 'React',
+        icon: FaRegHeart,
+        content: post?.reacts ?? [],
+      },
+      {
+        name: 'Review',
+        icon: MessageCircle,
+        content: post?.reviews ?? [],
+      },
+      {
+        name: 'Share',
+        icon: Share2,
+        content: post?.shares ?? [],
+      },
+    ]);
+  }, [dispatch, post, postData]);
   return (
     <HStack gap={4} width="100%" justifyContent="flex-start" alignItems="center" {...props}>
-      {FooterButtons.map((button, postIndex) => (
-        <HStack key={postIndex} alignItems="center" gap={0} marginLeft={button.name === 'Share' ? 'auto' : 0}>
+      {footerButtons.map((button, index) => (
+        <HStack key={index} alignItems="center" gap={0} marginLeft={button.name === 'Share' ? 'auto' : 0}>
           <Tooltip label={button.name} gap={2}>
             <IconButton
               as={motion.button}

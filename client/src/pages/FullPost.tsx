@@ -1,9 +1,9 @@
 import { Box, Card, CardBody, CardFooter, CardHeader, Heading, Text, VStack } from '@chakra-ui/react';
-import { QueryClient } from '@tanstack/react-query';
+import { QueryClient, useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { Params, useLocation, useParams } from 'react-router-dom';
 import { ImageSlider, PostFooter, PostHeader } from '../components/community/post/index';
-import { PostEditObjectType } from '../components/community/post/types';
+import { PostObjectType, parsePost } from '../components/community/post/types';
 import customFetch from '../utils/customFetch';
 const postQuery = (postId: string) => {
   return {
@@ -25,42 +25,19 @@ export const loader =
 
 const FullPost = () => {
   const [loading, setLoading] = useState(false);
+  const [post, setPost] = useState<PostObjectType | null>(null);
 
   const { postId } = useParams();
-  // const { data: queryData, status } = useQuery<any>(postQuery(postId ?? ''));
-  const { search, state } = useLocation();
+  const { data: queryData, status } = useQuery<any>(postQuery(postId ?? ''));
+  const { search } = useLocation();
   const searchParams = new URLSearchParams(search);
   const index = parseInt(searchParams.get('index') ?? '-1');
 
-  const { post } = state;
-  console.log('post');
-  console.log(post);
-  console.log('index');
-  console.log(index);
-  console.log('postId');
-  console.log(postId);
-  // console.log('queryData');
-  // console.log(queryData);
-
-  const [preloadPost, setPreloadPost] = useState<PostEditObjectType>({
-    header: post?.header ?? '',
-    body: post?.body ?? '',
-    privacy: post?.privacy ?? 'public',
-    location: post?.location ?? '',
-    media: [],
-    savedPreviewMedia: post?.media ?? [],
-  });
-
   useEffect(() => {
-    setPreloadPost(() => ({
-      header: post?.header ?? '',
-      body: post?.body ?? '',
-      privacy: post?.privacy ?? 'public',
-      location: post?.location ?? '',
-      media: [],
-      savedPreviewMedia: post?.media ?? [],
-    }));
-  }, [postId, post]);
+    if (status === 'success') {
+      setPost(parsePost([queryData?.post])[0]);
+    }
+  }, [queryData, status]);
 
   return status === 'pending' ? (
     <Box>Loading...</Box>
@@ -69,13 +46,7 @@ const FullPost = () => {
   ) : (
     <Card height="auto" position="relative">
       <CardHeader paddingBottom={0}>
-        <PostHeader
-          isFullPage={true}
-          postId={postId ?? post.id ?? ''}
-          postIndex={index}
-          preloadData={preloadPost}
-          postData={post}
-        />
+        <PostHeader isFullPage={true} postId={postId ?? post.id ?? ''} postIndex={index} />
       </CardHeader>
 
       <CardBody>
@@ -83,12 +54,12 @@ const FullPost = () => {
           <Heading size="lg">{post.header}</Heading>
           <Text>{post.body}</Text>
         </VStack>
-        {post.media.length > 0 && (
+        {post.media && post.media.length > 0 && (
           <ImageSlider postIndex={index} action="direct" slides={post.media} postId={postId ?? post.id ?? ''} />
         )}
       </CardBody>
       <CardFooter>
-        <PostFooter postId={postId ?? post.id ?? ''} postIndex={index} postData={post} />
+        <PostFooter postId={postId ?? post.id ?? ''} postIndex={index} />
       </CardFooter>
     </Card>
   );

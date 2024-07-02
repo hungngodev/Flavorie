@@ -11,7 +11,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { forwardRef, useEffect, useState } from 'react';
+import { forwardRef, useState } from 'react';
 import useAuth from '../../../hooks/useAuth';
 import { ImageSlider, PostFooter, PostHeader } from './index';
 import { BasePostProps, PostObjectType } from './types';
@@ -33,9 +33,6 @@ const Post = forwardRef<HTMLDivElement, PostProps>(
 
     const { id } = auth.currentUser;
     const [loading, setLoading] = useState(false);
-    useEffect(() => {
-      console.log(postData);
-    }, [postData]);
     return (
       <Card
         {...containerProps}
@@ -70,7 +67,7 @@ const Post = forwardRef<HTMLDivElement, PostProps>(
           ) : null}
         </CardBody>
         <CardFooter {...footerProps}>
-          <PostFooter postIndex={postIndex} postId={postData.id} setLoading={setLoading} />
+          <PostFooter postData={postData} postIndex={postIndex} postId={postData.id} setLoading={setLoading} />
         </CardFooter>
       </Card>
     );

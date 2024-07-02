@@ -63,6 +63,8 @@ export const PostObject = BaseObject.extend({
   reviews: z.array(ReviewObject).optional(),
   hiddenTo: z.array(z.string()).optional(),
   reacts: z.array(z.string()).optional(),
+  reactCount: z.number().optional(),
+  reviewCount: z.number().optional(),
   shares: z.array(z.string()).optional(),
   date: z.date().optional(),
 }).required({
@@ -87,8 +89,8 @@ export const PostResponseObject = z.object({
   react: z.array(z.string()),
   hiddenTo: z.array(z.string()),
   // review: z.array(ReviewObject.extend({ _id: z.string() })),
-  // reactCount: z.number(),
-  // reviewCount: z.number(),
+  reactCount: z.number(),
+  reviewCount: z.number(),
   createdAt: z.date(),
   updatedAt: z.date(),
   _v: z.number(),
@@ -122,10 +124,26 @@ export interface BasePostProps {
   postData?: PostObjectType;
 }
 
+export const PlaceHolderPost: PostObjectType = {
+  id: '',
+  author: {
+    id: '',
+    name: '',
+    avatar: '',
+  },
+  header: '',
+  body: '',
+  privacy: 'public',
+  media: [],
+  reacts: [],
+  reviews: [],
+  location: '',
+};
+
 export const parsePost = (backEndPosts: PostResponseObjectType[]) => {
   if (!backEndPosts) return [];
 
-  const frontEndPosts: PostObjectType[] = backEndPosts.map((post: PostResponseObjectType) => ({
+  return backEndPosts.map((post: PostResponseObjectType) => ({
     id: post._id,
     author: {
       id: post.author._id,
@@ -145,7 +163,9 @@ export const parsePost = (backEndPosts: PostResponseObjectType[]) => {
     privacy: post.privacy,
     reviews: [],
     reacts: post.react,
+    reactCount: post.reactCount,
+    reviewCount: post.reviewCount,
     date: post.createdAt,
   }));
-  return frontEndPosts;
+  // Dependency array ensures useMemo is only re-computed when backEndPosts changes
 };
