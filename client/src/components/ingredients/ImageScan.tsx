@@ -1,9 +1,9 @@
 import React, { useCallback, useRef, useState } from 'react';
 import Webcam from 'react-webcam';
 import { Box, Button, ButtonGroup, Flex, HStack, Image, VStack, Text } from '@chakra-ui/react';
-import socket from '../../socket/socketio.tsx';
-import useToast from '../../hooks/useToast.tsx';
-import useAuth from '../../hooks/useAuth.tsx';
+import socket from '../../socket/socketio';
+import useToast from '../../hooks/useToast';
+import useAuth from '../../hooks/useAuth';
 
 
 const CustomWebcam: React.FC = () => {

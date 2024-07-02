@@ -49,6 +49,9 @@ const theme = {
         palette_blue: '#BDE0FE',
 
         white_purple: '#fef9ff',
+        bone_white: '#F9F6EE',
+        
+        indigo: '#8978D9',
     },
     gradients: {
         palette_purple_gradient: `linear-gradient(to right top, #736ced, #7b76ee, #837fee, #8c89ee, #9492ee, #969df1, #99a7f3, #9eb1f5, #a1bef9, #a7cafb, #b0d5fd, #bde0fe)`,

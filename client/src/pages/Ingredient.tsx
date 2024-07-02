@@ -14,7 +14,6 @@ import { useAuth } from '../hooks';
 import customFetch from '../utils/customFetch';
 import Lottie from 'lottie-react';
 import theme from '../style/theme';
-import React from 'react';
 import { extendTheme } from '@chakra-ui/react';
 
 // import { PaginationTable } from 'table-pagination-chakra-ui';
