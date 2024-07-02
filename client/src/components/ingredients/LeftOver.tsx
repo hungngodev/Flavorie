@@ -38,6 +38,13 @@ const leftOverQuery = {
 export default function LeftOver({ height }: { height?: string }) {
     const { data: leftOverData, status: leftOverStatus } = useQuery(leftOverQuery);
     const queryClient = useQueryClient();
+
+    useEffect(() => {
+        console.log('changing');
+        queryClient.invalidateQueries({
+            queryKey: ['leftOver'],
+        });
+    }, [queryClient]);
     const { control, handleSubmit, setValue } = useForm<leftOverData>({
         defaultValues: {
             leftOver: useMemo(
@@ -186,7 +193,11 @@ export default function LeftOver({ height }: { height?: string }) {
                             <motion.div key={item.id + index + 'leftOver'}>
                                 <HStack spacing={6} key={index} minWidth={'3rem'} flexShrink={0}>
                                     <Image
-                                        src={'https://img.spoonacular.com/ingredients_100x100/' + item.image}
+                                        src={
+                                            item.image.length > 120
+                                                ? item.image
+                                                : 'https://img.spoonacular.com/ingredients_100x100/' + item.image
+                                        }
                                         alt={item.name}
                                         height={'full'}
                                         width={'6vw'}

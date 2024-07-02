@@ -13,14 +13,14 @@ import {
 import { motion } from 'framer-motion';
 import Lottie, { LottieRefCurrentProps } from 'lottie-react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { RefObject, useRef } from 'react';
+import { RefObject, useEffect, useRef } from 'react';
 import { Control, Controller, FieldArrayWithId } from 'react-hook-form';
 import { Cart } from '../../assets/animations';
 import { CartData } from '../../pages/Ingredient';
 
 type CartProps = {
     removeFunction: (index: number) => void;
-    onSubmit: () => void;
+    onSubmit: (operation: string) => void;
     fields: FieldArrayWithId<CartData, 'cart', 'id'>[];
     control: Control<CartData>;
     lottieCartRef: RefObject<LottieRefCurrentProps>;
@@ -37,6 +37,9 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
             else scrollCartRef.current.scrollTop += distance;
         }
     }
+    useEffect(() => {
+        console.log('fields', fields);
+    }, [fields]);
     return (
         <Flex
             marginTop={'4vh'}
@@ -49,6 +52,7 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
             flexDir={'column'}
             rounded={'xl'}
             maxH={'85vh'}
+            bg={'#adfffb'}
         >
             <HStack>
                 <IconButton
@@ -71,12 +75,21 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
 
                 <button
                     onClick={() => {
-                        onSubmit();
+                        onSubmit('add');
                         // socket.emit('sendToInstacart', fields);
                         lottieCartRef.current?.playSegments([0, 135]);
                     }}
                 >
                     Save it
+                </button>
+                <button
+                    onClick={() => {
+                        onSubmit('transfer');
+                        // socket.emit('sendToInstacart', fields);
+                        lottieCartRef.current?.playSegments([0, 135]);
+                    }}
+                >
+                    Transfer to Fridge
                 </button>
                 <IconButton
                     icon={<ChevronDown />}
@@ -96,6 +109,7 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
                 }}
             >
                 <VStack
+                    ref={scrollCartRef}
                     spacing={8}
                     width={'100%'}
                     height={height ? height : 'full'}
@@ -118,7 +132,11 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
                                     alignItems={'center'}
                                 >
                                     <Image
-                                        src={'https://img.spoonacular.com/ingredients_100x100/' + item.image}
+                                        src={
+                                            item.image.length > 120
+                                                ? item.image
+                                                : 'https://img.spoonacular.com/ingredients_100x100/' + item.image
+                                        }
                                         alt={item.name}
                                         height={'full'}
                                         width={'5vw'}

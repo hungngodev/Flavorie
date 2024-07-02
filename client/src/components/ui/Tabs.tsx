@@ -33,15 +33,14 @@ const Tabs = ({
     };
 
     const [hovering, setHovering] = useState(false);
-
     return (
         <>
             <div
                 className={cn(
                     `no-visible-scrollbar relative 
-          flex w-full max-w-full flex-row
-           items-center justify-start overflow-auto
-            [perspective:1000px] sm:overflow-visible`,
+          mt-2 flex w-full max-w-full
+           flex-row items-center justify-start
+            overflow-auto [perspective:1000px] sm:overflow-visible`,
                     containerClassName,
                 )}
             >
@@ -78,7 +77,7 @@ const Tabs = ({
                 active={active}
                 key={active.value}
                 hovering={hovering}
-                className={cn('mt-8', contentClassName)}
+                className={cn('mt-1', contentClassName)}
             />
         </>
     );

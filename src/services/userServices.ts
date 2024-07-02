@@ -73,6 +73,12 @@ export async function modifyUserItems(
   items: Item[],
   type: string,
 ): Promise<void> {
+  if (!items || items.length === 0) {
+    const existingItems = await ItemModel.find({ userId: userId, type: type });
+    for (const existingItem of existingItems) {
+      await ItemModel.findByIdAndDelete(existingItem._id);
+    }
+  }
   for (const item of items) {
     const existingItem = await ItemModel.findOne({
       userId: userId,
@@ -93,7 +99,7 @@ export async function modifyUserItems(
       item => item.itemId.toString() === existingItem.itemId.toString(),
     );
     if (!item) {
-      console.log("deleting item");
+      console.log("deleting item", type);
       await ItemModel.findByIdAndDelete(existingItem._id);
     }
   }
@@ -103,7 +109,7 @@ export async function changeItemTypes(
   userId: string,
   items: Item[],
   previousType: string,
-  newType: typeItem,
+  newType: string,
 ) {
   for (const item of items) {
     const existingItem = await ItemModel.findOne({
@@ -112,25 +118,39 @@ export async function changeItemTypes(
       type: previousType,
     });
     if (existingItem) {
-      existingItem.type = newType;
-      await existingItem.save();
+      const currentNewTypeItem = await ItemModel.findOne({
+        userId: userId,
+        itemId: item.itemId,
+        type: newType,
+      });
+      if (currentNewTypeItem) {
+        currentNewTypeItem.quantity += item.quantity;
+        await currentNewTypeItem.save();
+      } else {
+        existingItem.type = newType as typeItem;
+        await existingItem.save();
+      }
     } else {
-      await ItemModel.create({ ...item, userId: userId, type: newType });
+      await ItemModel.create({
+        ...item,
+        userId: userId,
+        type: newType,
+      });
     }
   }
-  const existingItems = await ItemModel.find({
-    userId: userId,
-    type: previousType,
-  });
-  for (const existingItem of existingItems) {
-    const item = items.find(
-      item => item.itemId.toString() === existingItem.itemId.toString(),
-    );
-    if (!item) {
-      console.log("deleting item");
-      await ItemModel.findByIdAndDelete(existingItem._id);
-    }
-  }
+  // const existingItems = await ItemModel.find({
+  //   userId: userId,
+  //   type: previousType,
+  // });
+  // for (const existingItem of existingItems) {
+  //   const item = items.find(
+  //     item => item.itemId.toString() === existingItem.itemId.toString(),
+  //   );
+  //   if (!item) {
+  //     console.log("deleting item");
+  //     await ItemModel.findByIdAndDelete(existingItem._id);
+  //   }
+  // }
 }
 
 export async function toggleLikedItem(
