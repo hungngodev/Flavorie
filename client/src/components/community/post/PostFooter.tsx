@@ -23,8 +23,9 @@ const PostFooter = memo<PostFooterProps>(({ postIndex, postData, postId, ...prop
 
   const dispatch = useDispatch<AppDispatch>();
   const post = postData ?? useSelector(selectPosts)[postIndex];
-  const reacts = useSelector(selectPosts)[postIndex].reacts;
-  const [isLiked, setIsLiked] = useState(useSelector(selectPosts)[postIndex].reacts?.includes(id) ?? false);
+
+  console.log(post);
+  const [isLiked, setIsLiked] = useState(post?.reacts?.includes(id) ?? false);
 
   const likeControl = useAnimationControls();
   const likePost = async () => {
@@ -60,6 +61,7 @@ const PostFooter = memo<PostFooterProps>(({ postIndex, postData, postId, ...prop
   ]);
 
   useEffect(() => {
+    console.log(post);
     setIsLiked(post?.reacts?.includes(id) ?? false);
     setFooterButtons([
       {
@@ -78,7 +80,7 @@ const PostFooter = memo<PostFooterProps>(({ postIndex, postData, postId, ...prop
         content: post?.shares ?? [],
       },
     ]);
-  }, [dispatch, post, postData]);
+  }, [dispatch, post, postData, auth.currentUser.id]);
   return (
     <HStack gap={4} width="100%" justifyContent="flex-start" alignItems="center" {...props}>
       {footerButtons.map((button, index) => (

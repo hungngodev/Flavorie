@@ -73,6 +73,7 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({
   const dispatch = useDispatch<AppDispatch>();
 
   const submitPost: SubmitHandler<PostRequestType> = async (data) => {
+    console.log(data);
     try {
       switch (action) {
         case 'create':
@@ -148,6 +149,10 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({
     control,
     name: 'media',
   });
+
+  useEffect(() => {
+    console.log(errors);
+  }, [errors]);
 
   // add file to the useField and update the state for preview
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -232,7 +237,7 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({
                       variant="ghost"
                       fontSize="xl"
                       fontWeight="semibold"
-                      isInvalid={errors.header ? true : false}
+                      isError={errors.header ? true : false}
                       errorText={errors.header?.message}
                     />
                   </HStack>
@@ -247,7 +252,7 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({
                     variant="ghost"
                     placeholder="What is going on?"
                     fieldProps={fieldProps}
-                    isInvalid={errors.body ? true : false}
+                    isError={errors.body ? true : false}
                     errorText={errors.body?.message}
                   />
                 )}

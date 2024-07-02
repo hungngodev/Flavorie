@@ -164,6 +164,7 @@ const PostHeader = memo<PostHeaderProps>(
                 onClick={async () => {
                   dispatch(deleteRequest(postId)).then(() => {
                     dispatch(deletePost({ postId }));
+                    if (isFullPage) navigate('/community');
                   });
                 }}
               >

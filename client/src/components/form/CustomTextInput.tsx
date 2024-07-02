@@ -4,18 +4,18 @@ import {
   FormErrorMessage,
   FormHelperText,
   FormLabel,
+  HStack,
   Input,
   InputGroup,
   InputLeftElement,
   InputProps,
   InputRightElement,
-  HStack,
 } from '@chakra-ui/react';
 import React from 'react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 
 interface CustomInputProps<T extends FieldValues> extends InputProps {
-  isInValid?: boolean;
+  isError?: boolean;
   label?: string;
   helperText?: string;
   errorText?: string;
@@ -27,11 +27,11 @@ interface CustomInputProps<T extends FieldValues> extends InputProps {
 }
 
 const CustomTextInput: React.ForwardRefRenderFunction<HTMLInputElement, CustomInputProps<FieldValues>> = (
-  { label, helperText, errorText, isInValid, leftIcon, rightIcon, containerProps, control, fieldprops, ...props },
+  { label, helperText, errorText, isError, leftIcon, rightIcon, containerProps, control, fieldprops, ...props },
   forwardedRef,
 ) => {
   return (
-    <FormControl isInvalid={isInValid} {...containerProps}>
+    <FormControl isInvalid={isError} {...containerProps}>
       <HStack width="100%" justifyContent="space-between" align="center" margin={0} padding={0}>
         <FormLabel fontSize="xl" color={props.color} margin={0} padding={0}>
           {label}
