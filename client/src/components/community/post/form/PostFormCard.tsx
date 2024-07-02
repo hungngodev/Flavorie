@@ -57,7 +57,6 @@ const PostFormCard = memo<PostFormCardProps>(() => {
                 sx={{ textAlign: 'left', justifyContent: 'flex-start' }}
                 rounded="lg"
                 padding={6}
-                // backgroundColor="blackAlpha.50"
               >
                 {`What are you thinking today ${currentUser.username}?`}
               </Button>

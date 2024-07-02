@@ -50,6 +50,8 @@ const Feed = () => {
     queryFn: fetchFeed,
     initialPageParam: 1,
     getNextPageParam: (lastPage) => lastPage.nextPage,
+    retry: false,
+    retryDelay: 1000,
   });
 
   const scrollVirtualizer = useVirtualizer({
@@ -146,7 +148,7 @@ const Feed = () => {
           id="animation-container"
         />
       )}
-      {error && (
+      {(error || isError || !hasNextPage) && !isFetchingNextPage && (
         <AspectRatio marginInline="auto" maxWidth={{ base: '100%', md: '90%', lg: '85%' }} ratio={4 / 3}>
           <Image src={errorIllustration} alt="error-image" />
         </AspectRatio>
