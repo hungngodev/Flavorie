@@ -167,7 +167,7 @@ const Slider: React.FC<SliderProps> = ({
       <Box
         ref={ref}
         w={{ base: '100%', md: `calc(100% + ${gap}px)` }}
-        ml={{ base: 0, md: `-${gap / 2}px` }}
+        ml={{ base: 1, md: `-${gap / 2}px` }}
         px={`${gap / 2}px`}
         position="relative"
         overflow="hidden"
@@ -199,7 +199,7 @@ const Slider: React.FC<SliderProps> = ({
         <Button
           onClick={handleDecrementClick}
           onFocus={handleFocus}
-          mr={`${gap / 3}px`}
+          mr={`${gap / 4}px`}
           color="gray.300"
           variant="link"
           minW={0}
@@ -360,7 +360,7 @@ const Track: React.FC<TrackProps> = ({
   return (
     <>
       {itemWidth && (
-        <VStack ref={node} spacing={5} alignItems="stretch">
+        <VStack ref={node} spacing={8} alignItems="stretch">
           <MotionFlex
             animate={{
               x: positions[activeItem],
