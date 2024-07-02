@@ -56,11 +56,8 @@ const Post = forwardRef<HTMLDivElement, PostProps>(
 
     return (
       <Card
-        marginBlock={4}
         {...containerProps}
-        height="auto"
         ref={ref}
-        position="relative"
         backdropBlur={loading && 'blur(10px)'}
         pointerEvents={loading ? 'none' : 'auto'}
         opacity={loading ? 0.5 : 1}
