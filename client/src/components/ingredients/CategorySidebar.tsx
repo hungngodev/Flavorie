@@ -1,6 +1,22 @@
+import { useTheme } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { ChevronFirst } from 'lucide-react';
 import { FC, ReactNode, createContext, useContext } from 'react';
+import {
+  FaAppleAlt,
+  FaBreadSlice,
+  FaCandyCane,
+  FaCarrot,
+  FaCheese,
+  FaDrumstickBite,
+  FaEgg,
+  FaFish,
+  FaHome,
+  FaMortarPestle,
+  FaPepperHot,
+  FaSeedling,
+  FaUtensilSpoon,
+} from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 type SidebarItemProps = {
@@ -14,7 +30,7 @@ type SidebarItemProps = {
 };
 
 type SidebarProps = {
-  categories?: SidebarItemProps[];
+  currentCategory: string;
   expanded: boolean;
   setExpanded: () => void;
 };
@@ -22,13 +38,26 @@ type SidebarProps = {
 type SidebarContextProps = {
   expanded: boolean;
 };
-
+const categoriesArr = [
+  'meat',
+  'vegetable',
+  'dairy',
+  'sauce',
+  'grain',
+  'fruit',
+  'nut',
+  'egg',
+  'seafood',
+  'spice',
+  'sweet',
+  'powder',
+];
 const SidebarContext = createContext<SidebarContextProps | undefined>(undefined);
 
 export function SidebarItem({ icon, text, active, alert, onClickF, index = 0, link }: SidebarItemProps): JSX.Element {
   const { expanded } = useContext(SidebarContext) as SidebarContextProps;
   return (
-    <Link to={onClickF ? '' : link}>
+    <Link to={onClickF ? '' : link ?? ''}>
       <motion.li
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -76,7 +105,9 @@ export function SidebarItem({ icon, text, active, alert, onClickF, index = 0, li
 
         {!expanded && (
           <motion.div
-            className={`text-md border-1 invisible absolute left-full ml-1 w-min -translate-x-3 text-nowrap rounded-md  text-secondary-foreground opacity-20 transition-all group-hover:visible group-hover:translate-x-0 group-hover:opacity-100`}
+            className={` invisible absolute left-full z-50 ml-1  w-min
+              -translate-x-3 text-nowrap rounded-md border-1  text-secondary-foreground opacity-20 transition-all 
+              group-hover:visible group-hover:translate-x-0 group-hover:opacity-100`}
           >
             {text}
           </motion.div>
@@ -85,16 +116,45 @@ export function SidebarItem({ icon, text, active, alert, onClickF, index = 0, li
     </Link>
   );
 }
-const Sidebar: FC<SidebarProps> = ({ categories, expanded, setExpanded }: SidebarProps) => {
-  const mainNav = categories || [];
+const Sidebar: FC<SidebarProps> = ({ currentCategory, expanded, setExpanded }: SidebarProps) => {
+  const theme = useTheme();
+  const iconsArr = [
+    <FaDrumstickBite size={20} color={theme.colors.palette_purple} />,
+    <FaCarrot size={20} color={theme.colors.palette_purple} />,
+    <FaCheese size={20} color={theme.colors.palette_purple} />,
+    <FaUtensilSpoon size={20} color={theme.colors.palette_purple} />,
+    <FaBreadSlice size={20} color={theme.colors.palette_purple} />,
+    <FaAppleAlt size={20} color={theme.colors.palette_purple} />,
+    <FaSeedling size={20} color={theme.colors.palette_purple} />,
+    <FaEgg size={20} color={theme.colors.palette_purple} />,
+    <FaFish size={20} color={theme.colors.palette_purple} />,
+    <FaPepperHot size={20} color={theme.colors.palette_purple} />,
+    <FaCandyCane size={20} color={theme.colors.palette_purple} />,
+    <FaMortarPestle size={20} color={theme.colors.palette_purple} />,
+  ];
+  const categories = categoriesArr.map((category, index) => ({
+    index,
+    icon: iconsArr[index],
+    text: category,
+    active: category === currentCategory,
+    link: `/ingredients/${category}`,
+  }));
+
+  categories.unshift({
+    index: 0,
+    icon: <FaHome size={20} color={theme.colors.palette_purple} />,
+    text: 'Index',
+    active: currentCategory === '/',
+    link: '/ingredients/',
+  });
   return (
     <SidebarContext.Provider value={{ expanded }}>
-      <div className={`space-between bg relative z-10 flex h-full w-min flex-col border-r shadow-sm`}>
+      <div className={`space-between bg relative z-[100] flex h-full w-min flex-col  border-r shadow-sm`}>
         <button onClick={setExpanded} className="cursor-pointer rounded-lg  p-1.5 hover:bg-secondary ">
           <ChevronFirst className={`${expanded ? '' : 'rotate-180'} ml-4 transition-all duration-500 `} />
         </button>
-        <ul className="flex h-full w-full  flex-col justify-around px-3">
-          {mainNav.map((item, index) => (
+        <ul className="p-r e relative  -z-10 flex h-full w-full  flex-col justify-around px-3">
+          {categories.map((item, index) => (
             <SidebarItem key={index} {...item} />
           ))}
         </ul>
