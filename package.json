@@ -10,7 +10,7 @@
     "server": "nodemon --watch 'src/**/*' -e ts --exec \"node --no-warnings --loader ts-node/esm ./src/index.ts\" ",
     "client": "cd client && npm run dev",
     "scan-receipts": "cd src && cd scan-receipts && python3 run.py",
-    "dev": "concurrently --kill-others-on-fail  \"npm run server\" \"npm run client\" \"npm run scan-receipts""
+    "dev": "concurrently --kill-others-on-fail  \"npm run server\" \"npm run client\" \"npm run scan-receipts\" "
   },
   "keywords": [],
   "author": "",

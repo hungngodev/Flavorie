@@ -22,6 +22,8 @@ import ReviewCard, { Review } from './components/community/ReviewCard';
 import { identity } from 'lodash';
 import ReviewForm from './components/form/Review';
 import Receipt from './pages/Receipt.tsx';
+import CameraComponent from './pages/mouse.tsx';
+import CustomCam from './components/ingredients/customCam.tsx';
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -86,6 +88,10 @@ const router = createBrowserRouter([
             element: <div>Community</div>,
           },
         ],
+      },
+      {
+        path:'custom-cam',
+        element: <CustomCam />
       },
       {
         path: 'profile',
