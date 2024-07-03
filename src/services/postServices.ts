@@ -8,20 +8,52 @@ import {
 import PostModel, { Post } from "../models/Post.ts";
 import ReviewModel from "../models/Review.ts";
 import UserModel from "../models/UserModel.ts";
-import { parseMedia, parsePublicId, updateFieldArray } from "../utils/index.ts";
+import {
+  parseMedia,
+  parsePublicId,
+  recursivePopulate,
+  updateFieldArray,
+} from "../utils/index.ts";
 import { cloudinary } from "./cloudinary/cloudinaryServices.ts";
+
+PostModel.schema.pre("findOne", function (next) {
+  this.populate([
+    {
+      path: "review",
+      populate: [
+        {
+          path: "childrenReview",
+          model: "Review",
+        },
+        {
+          path: "userId",
+          select: "id name avatar",
+        },
+      ],
+    },
+  ]);
+  next();
+});
 
 export const getPostDocumentById = async (
   postId: string,
 ): Promise<Document> => {
   try {
-    const post = await PostModel.findById(postId).populate({
-      path: "author",
-      select: "name avatar id ",
-    });
+    const post = await PostModel.findOne({ _id: postId }).populate([
+      {
+        path: "review",
+        populate: { path: "userId", select: "id name avatar" },
+      },
+      {
+        path: "author",
+        select: "id name avatar",
+      },
+    ]);
+
     if (!post) {
       throw new ServerError("Post not found");
     }
+    await recursivePopulate(post.review);
     console.log(post);
     return post as Document;
   } catch (err) {
@@ -166,7 +198,17 @@ export const updatePostDocument = async (
 
     const updatedPost = await PostModel.findByIdAndUpdate(postId, updateData, {
       new: true,
-    }).populate("author", "id name avatar");
+    }).populate([
+      { path: "author", select: "id name avatar" },
+      {
+        path: "review",
+        select: "content",
+        populate: {
+          path: "userId",
+          select: "id name avatar",
+        },
+      },
+    ]);
     if (!updatedPost) throw new ServerError("Failed to update post");
 
     await updatedPost.save();
