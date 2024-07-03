@@ -95,6 +95,7 @@ export const roomHandler = (socket: Socket) => {
   };
   socket.on("create-room", createRoom);
   socket.on("join-room", joinRoom);
+  socket.on("leave-room", leaveRoom);
   socket.on("start-sharing", startSharing);
   socket.on("stop-sharing", stopSharing);
   socket.on("send-message", addMessage);

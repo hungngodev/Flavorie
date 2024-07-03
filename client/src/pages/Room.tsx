@@ -1,4 +1,4 @@
-import { Button, Grid, GridItem, HStack, IconButton, useDisclosure } from '@chakra-ui/react';
+import { Button, Card, CardBody, Grid, GridItem, HStack, IconButton, useDisclosure } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import {
     Clipboard,
@@ -34,6 +34,11 @@ const Room = () => {
         micStatus,
     } = useRoom();
     const { userName, userId } = useUser();
+    const [focus, setFocus] = useState(screenSharingId);
+
+    useEffect(() => {
+        setFocus(screenSharingId);
+    }, [screenSharingId]);
 
     useEffect(() => {
         if (stream) ws.emit('join-room', { roomId: id, peerId: me?.id, userName, userId });
@@ -42,22 +47,21 @@ const Room = () => {
     useEffect(() => {
         setRoomId(id || '');
     }, [id, setRoomId]);
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     useEffect(() => {
-        console.log(screenSharingId);
-    }, [screenSharingId]);
-    const { [screenSharingId]: sharing, ...peersToShow } = peers;
-    // console.log(sharing);
-    useEffect(() => {
-        console.log('CHANGINGNIGNGIN', peers);
-    }, [peers]);
+        return () => {
+            ws.emit('leave-room', { roomId: id, userId });
+        };
+    }, []);
 
-    const screenSharingVideo = screenSharingId === userId ? screenStream : sharing?.stream;
+    const { [focus]: focusing, ...peersToShow } = peers;
+
+    const focusingVideo = focus === userId ? (screenSharingId !== '' ? screenStream : stream) : focusing?.stream;
 
     const { getButtonProps, getDisclosureProps, isOpen } = useDisclosure();
     const chatWidth = '500';
     const [hidden, setHidden] = useState(!isOpen);
+
+    const peerVideos = [...Object.values(peersToShow as PeerState)];
     return (
         <Grid
             templateRows="repeat(14, 1fr)"
@@ -67,31 +71,46 @@ const Room = () => {
             position="relative"
         >
             <GridItem rowSpan={13} colSpan={1}>
-                <HStack height="100%" width="100%" alignItems={'start'}>
-                    {screenSharingVideo && (
-                        <div className="w-4/5 pr-4">
-                            <VideoPlayer stream={screenSharingVideo} />
-                        </div>
-                    )}
-                    <div className={`grid gap-4 ${screenSharingVideo ? 'grid-col-1 w-1/5' : 'grid-cols-4'}`}>
-                        {screenSharingId !== userId && (
-                            <div>
-                                <VideoPlayer stream={stream} />
-                                <NameInput />
-                                {userId}
-                            </div>
+                <HStack height="100%" width="100%" alignItems={'start'} padding={'5px'}>
+                    <Grid height={'100%'} width="100%" templateColumns={`repeat(5,1fr)`} templateRows={`repeat(3,1fr)`}>
+                        {focusingVideo && (
+                            <GridItem rowSpan={3} colSpan={4} padding={'8px'} onClick={() => setFocus('')}>
+                                <Card width={'full'} height="full" display={'flex'} justify={'center'} align={'center'}>
+                                    <VideoPlayer stream={focusingVideo} />
+                                </Card>
+                            </GridItem>
                         )}
 
-                        {Object.values(peersToShow as PeerState)
+                        {focus !== userId && (
+                            <GridItem rowSpan={1} colSpan={1} padding={'8px'} onClick={() => setFocus(userId)}>
+                                <Card width={'full'} height="full" display={'flex'} justify={'center'} align={'center'}>
+                                    <CardBody>
+                                        <VideoPlayer stream={stream} />
+                                        <NameInput />
+                                    </CardBody>
+                                </Card>
+                            </GridItem>
+                        )}
+                        {peerVideos
                             .filter((peer) => !!peer.stream)
                             .map((peer, index) => (
-                                <div key={peer.userId + index}>
-                                    <VideoPlayer stream={peer.stream} />
-                                    <div>{peer.userName}</div>
-                                    <div>{peer.userId}</div>
-                                </div>
+                                <GridItem
+                                    key={index}
+                                    rowSpan={1}
+                                    colSpan={1}
+                                    padding={'8px'}
+                                    onClick={() => setFocus(peer.userId)}
+                                >
+                                    <Card width={'full'} height="full">
+                                        <CardBody>
+                                            <VideoPlayer stream={peer.stream} />
+                                            <div>{peer.userName}</div>
+                                        </CardBody>
+                                    </Card>
+                                </GridItem>
                             ))}
-                    </div>
+                    </Grid>
+
                     <motion.div
                         {...getDisclosureProps()}
                         hidden={hidden}
@@ -125,9 +144,9 @@ const Room = () => {
 
                     <Button
                         onClick={shareScreen}
-                        isDisabled={screenSharingId !== userId && !!screenSharingVideo}
+                        isDisabled={screenSharingId !== userId && screenSharingId !== ''}
                         padding={0}
-                        leftIcon={screenSharingVideo && screenSharingId == userId ? <ScreenShareOff /> : <MonitorUp />}
+                        leftIcon={screenSharingId == userId ? <ScreenShareOff /> : <MonitorUp />}
                         aria-label="Share screen"
                     />
                     <IconButton

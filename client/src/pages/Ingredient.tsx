@@ -7,12 +7,12 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { FaShoppingCart } from 'react-icons/fa';
 import { Params, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { Cart, CategorySidebar, IngredientsMain, LeftOver, TypeWriter } from '../components';
 import { Nutrition } from '../components/ingredients/NutritionCard';
 import socket from '../socket/socketio.tsx';
 import theme from '../style/theme';
 import customFetch from '../utils/customFetch';
-import mockData from './mockIngredient.ts';
 
 waveform.register();
 
@@ -92,19 +92,19 @@ export type Category = {
 export default function Ingredient() {
     let { category: currentCategory } = useParams<{ category: string }>();
     currentCategory = currentCategory === undefined ? '/' : currentCategory;
-    // const { data, status } = useQuery(allIngredientsQuery(currentCategory));
-    const status = 'success';
-    const queryData = mockData;
+
+    const { data: queryData, status } = useQuery(allIngredientsQuery(currentCategory));
+    // const queryData = mockData;
     const ingredientData = queryData?.data.category[0];
     const { data: cartData, status: cartStatus } = useQuery(cartQuery);
     const { data: leftOverData, status: leftOverStatus } = useQuery(leftOverQuery);
+    const queryClient = useQueryClient();
 
     const fridgeWidth = '500';
     const { getButtonProps, getDisclosureProps, isOpen } = useDisclosure();
     const [hidden, setHidden] = useState(!isOpen);
     const [expanded, setExpanded] = useState(false);
     const lottieCartRef = useRef<LottieRefCurrentProps>(null);
-    const queryClient = useQueryClient();
 
     const { control, handleSubmit, watch, setValue } = useForm<CartData>({
         defaultValues: {
@@ -202,6 +202,7 @@ export default function Ingredient() {
             }
             if (operation === 'send') {
                 socket.emit('sendToInstacart', results);
+                toast.success('Your cart has been sent to Instacart');
             }
             queryClient.invalidateQueries({
                 queryKey: ['cart'],
@@ -283,12 +284,6 @@ export default function Ingredient() {
             });
         })();
     };
-
-    // useEffect(() => {
-    //     if (auth.currentUser.status === 'authenticated') {
-    //         onSubmit();
-    //     }
-    // });
     const propTabs = [
         {
             title: 'Cart',

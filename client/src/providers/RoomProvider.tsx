@@ -121,6 +121,7 @@ const RoomProvider = ({ children }: { children: React.ReactNode }) => {
                 const stream = await navigator.mediaDevices.getDisplayMedia({});
                 switchStream(stream);
                 setScreenStream(stream);
+
                 ws.emit('start-sharing', { userId: userId, roomId });
                 setScreenSharingId(userId);
             } catch (error) {
