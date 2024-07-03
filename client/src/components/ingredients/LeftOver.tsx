@@ -51,16 +51,16 @@ export default function LeftOver({ height }: { height?: string }) {
             leftOver: useMemo(
                 () =>
                     leftOverStatus === 'success'
-                        ? leftOverData.data.leftOver.map(
-                              (item: { leftOver: { _id: string; name: string; image: string }; quantity: string }) => {
-                                  return {
-                                      id: item.leftOver._id,
-                                      name: item.leftOver.name,
-                                      image: item.leftOver.image,
-                                      quantity: item.quantity,
-                                  };
-                              },
-                          )
+                            ? leftOverData.data.leftOver.map(
+                                (item: { leftOver: { _id: string; name: string; image: string }; quantity: string }) => {
+                                    return {
+                                        id: item.leftOver._id,
+                                        name: item.leftOver.name,
+                                        image: item.leftOver.image,
+                                        quantity: item.quantity,
+                                    };
+                                },
+                            )
                         : [],
                 [leftOverData, leftOverStatus],
             ),
@@ -141,8 +141,8 @@ export default function LeftOver({ height }: { height?: string }) {
             bg={'#fef9ff'}
             borderColor={theme.colors.palette_purple}
         >
-            <HStack>
-                <IconButton
+            <HStack mt="7">
+                {/* <IconButton
                     icon={<ChevronUp />}
                     aria-label="left"
                     onClick={() => scroll('up', 100)}
@@ -150,7 +150,7 @@ export default function LeftOver({ height }: { height?: string }) {
                     colorScheme="blue"
                     size="xs"
                     height="50%"
-                />
+                /> */}
                 <button
                     onClick={(e) => {
                         e.preventDefault();
@@ -160,10 +160,11 @@ export default function LeftOver({ height }: { height?: string }) {
                             toast.error('Please login to save your leftOver', { position: 'top-right' });
                         }
                     }}
+                    className=" rounded-md bg-indigo-500 p-2 text-white"
                 >
                     Save
                 </button>
-                <IconButton
+                {/* <IconButton
                     icon={<ChevronDown />}
                     aria-label="right"
                     onClick={() => scroll('down', 100)}
@@ -171,7 +172,7 @@ export default function LeftOver({ height }: { height?: string }) {
                     colorScheme="blue"
                     size="xs"
                     height="50%"
-                />
+                /> */}
             </HStack>
 
             <form
@@ -212,6 +213,7 @@ export default function LeftOver({ height }: { height?: string }) {
                                         alignItems={'center'}
                                         gap={2}
                                         width={'5vw'}
+                                        ml="5"
                                     >
                                         <Controller
                                             render={({ field: { ref, ...restField } }) => (
@@ -258,10 +260,12 @@ export default function LeftOver({ height }: { height?: string }) {
                                         />
                                         <IconButton
                                             icon={<DeleteIcon />}
+                                            bg={theme.colors.palette_indigo}
                                             aria-label="delete"
                                             colorScheme="pink"
                                             size="xs"
                                             minWidth={'full'}
+                                            _hover={{ bg: theme.colors.palette_lavender }}
                                             variant="solid"
                                             onClick={() => removeItem(index)}
                                         />

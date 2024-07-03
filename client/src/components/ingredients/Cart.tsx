@@ -55,16 +55,17 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
             maxH={'85vh'}
             bg={'#fef9ff'}
         >
-            <HStack>
-                <IconButton
+            <HStack mr="3">
+                {/* <IconButton
                     icon={<ChevronUp />}
                     aria-label="left"
                     onClick={() => scroll('up', 100)}
                     variant="solid"
-                    colorScheme="blue"
+                    bg={theme.colors.palette_indigo}
                     size="xs"
                     height="50%"
-                />
+                    ml="2"
+                /> */}
 
                 <Lottie
                     animationData={Cart}
@@ -80,8 +81,9 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
                         // socket.emit('sendToInstacart', fields);
                         lottieCartRef.current?.playSegments([0, 135]);
                     }}
+                    className=" rounded-md bg-indigo-500 p-3 text-white"
                 >
-                    Save it
+                    Save
                 </button>
                 <button
                     onClick={() => {
@@ -89,18 +91,20 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
                         // socket.emit('sendToInstacart', fields);
                         lottieCartRef.current?.playSegments([0, 135]);
                     }}
+                    className=" rounded-md bg-indigo-500 p-3 text-white"
                 >
                     Transfer to Fridge
                 </button>
-                <IconButton
+                {/* <IconButton
                     icon={<ChevronDown />}
                     aria-label="right"
                     onClick={() => scroll('down', 100)}
                     variant="solid"
-                    colorScheme="blue"
+                    bg={theme.colors.palette_indigo}
                     size="xs"
                     height="50%"
-                />
+                    mr="2"
+                /> */}
             </HStack>
 
             <form
@@ -149,6 +153,7 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
                                         alignItems={'center'}
                                         gap={2}
                                         width={'5vw'}
+                                        ml="5"
                                     >
                                         <Controller
                                             render={({ field: { ref, ...restField } }) => (
