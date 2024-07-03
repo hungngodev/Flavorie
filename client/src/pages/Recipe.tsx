@@ -13,13 +13,11 @@ import {
     Text,
 } from '@chakra-ui/react';
 import { QueryClient, useQuery } from '@tanstack/react-query';
-import { waveform } from 'ldrs';
 import { FaPrint, FaSave, FaShareAlt, FaStar } from 'react-icons/fa';
 import { Params, useLoaderData } from 'react-router-dom';
 import ImageSlide, { BackendData } from '../components/meals/ImageSlide';
+import theme from '../style/theme';
 import customFetch from '../utils/customFetch';
-
-waveform.register();
 
 // Default values shown
 
@@ -62,6 +60,7 @@ const Recipe = () => {
 
     return (
         <Stack alignItems="center" justifyContent="center">
+            `
             <Grid templateRows="repeat(5)" templateColumns="repeat(4, 2fr)" mt="6" width="100%">
                 <GridItem rowSpan={5} colSpan={2} ml={4} objectFit="cover">
                     <Box
@@ -114,22 +113,23 @@ const Recipe = () => {
                     alignItems="center"
                 >
                     <Box ml="10" mr="10" textAlign="center" alignItems="center" display="flex" flexDirection="column">
-                        <Box
-                            width="80px"
-                            height="36px"
-                            bg="black"
-                            textColor="white"
-                            fontSize="14"
-                            display="flex"
-                            flexDirection="column"
-                            justifyContent="center"
-                            alignItems="center"
-                            mb={3}
-                            textAlign="center"
-                        >
-                            RECIPES
-                        </Box>
+                        {/* <Box
+                    width="80px"
+                    height="36px"
+                    bg="black"
+                    textColor="white"
+                    fontSize="14"
+                    display="flex"
+                    flexDirection="column"
+                    justifyContent="center"
+                    alignItems="center"
+                    mb={3}
+                    textAlign="center"
+                    >
+                    RECIPES
+                    </Box> */}
                         <Heading
+                            color="black"
                             mb="3"
                             mt="4"
                             size="lg"
@@ -140,39 +140,39 @@ const Recipe = () => {
                         >
                             {recipeData.title}
                         </Heading>
-                        <Text justifyContent="center" alignItems="center" fontSize={26}>
+                        <Text justifyContent="center" alignItems="center" color="gray.500" fontSize={26}>
                             {recipeData.description}
                         </Text>
                         <HStack mt="2" justifyContent="center" alignItems="center" fontSize="14">
-                            <Text fontSize={18} ml={2}>
+                            <Text color={theme.colors.palette_purple} fontSize={18} ml={2}>
                                 {averageStar}
                             </Text>
                             {Array(5)
                                 .fill('')
                                 .map((_, i) => (
-                                    <FaStar key={i} color="black" />
+                                    <FaStar key={i} color={theme.colors.palette_purple} />
                                 ))}
-                            <Text fontSize={18} ml={2}>
+                            <Text color={theme.colors.palette_indigo} fontSize={18} ml={2}>
                                 ({numReviews})
                             </Text>
                         </HStack>
                         <HStack justifyContent="flex-end" width="100%" mt={8}>
                             <ButtonGroup spacing={2} mb={10}>
-                                <Button rightIcon={<FaSave />} bg="base.50">
+                                <Button variant="outline" rightIcon={<FaSave color={theme.colors.palette_purple} />}>
                                     Save
                                 </Button>
-                                <Button rightIcon={<FaStar />} bg="base.50">
+                                <Button variant="outline" rightIcon={<FaStar />}>
                                     Rate
                                 </Button>
-                                <Button rightIcon={<FaPrint />} bg="base.50">
+                                <Button variant="outline" rightIcon={<FaPrint />}>
                                     Print
                                 </Button>
-                                <Button rightIcon={<FaShareAlt />} bg="base.50">
+                                <Button variant="outline" rightIcon={<FaShareAlt />}>
                                     Share
                                 </Button>
                             </ButtonGroup>
                         </HStack>
-                        <Text fontSize="14" textAlign="center" textColor="base.600">
+                        <Text fontSize="14" textAlign="center" textColor="gray.500">
                             * Source: {recipeData.source}
                         </Text>
                     </Box>
@@ -181,7 +181,7 @@ const Recipe = () => {
                     <Box h="100%" display="flex" flexDirection="column" justifyContent="flex-end" alignItems="center">
                         <HStack justifyContent="center" alignItems="center" width="100%" spacing={0}>
                             <Box
-                                bg="base.50"
+                                bg={theme.colors.indigo}
                                 p={4}
                                 position="relative"
                                 width="25%"
@@ -192,18 +192,18 @@ const Recipe = () => {
                                     top: '20%',
                                     bottom: '20%',
                                     width: '1px',
-                                    bg: 'base.200',
+                                    bg: theme.colors.bone_white,
                                 }}
                             >
-                                <Box fontSize="18">
-                                    <Box as="span" fontSize="20" fontWeight="bold">
+                                <Text fontSize="18">
+                                    <Box as="span" color="white" fontSize="20" fontWeight="bold">
                                         Total time:
                                     </Box>
-                                    <Box>{totalTime} minutes</Box>
-                                </Box>
+                                    <Box color="white">{totalTime} minutes</Box>
+                                </Text>
                             </Box>
                             <Box
-                                bg="base.50"
+                                bg={theme.colors.indigo}
                                 p={4}
                                 position="relative"
                                 width="25%"
@@ -214,22 +214,22 @@ const Recipe = () => {
                                     top: '20%',
                                     bottom: '20%',
                                     width: '1px',
-                                    bg: 'base.200',
+                                    bg: theme.colors.bone_white,
                                 }}
                             >
                                 <Text fontSize="18">
-                                    <Box as="span" fontSize="20" fontWeight="bold">
+                                    <Box as="span" color="white" fontSize="20" fontWeight="bold">
                                         Servings:
                                     </Box>
-                                    <Box>{recipeData.servings}</Box>
+                                    <Box color="white">{recipeData.servings}</Box>
                                 </Text>
                             </Box>
-                            <Box bg="base.50" p={4} width="40%">
+                            <Box bg={theme.colors.indigo} p={4} width="40%">
                                 <Text fontSize="18">
-                                    <Box as="span" fontSize="20" fontWeight="bold">
+                                    <Box as="span" color="white" fontSize="20" fontWeight="bold">
                                         Calories per serving:
                                     </Box>{' '}
-                                    <Box>{calories}</Box>
+                                    <Box color="white">{calories}</Box>
                                 </Text>
                             </Box>
                         </HStack>

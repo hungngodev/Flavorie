@@ -5,12 +5,13 @@ import { Hero } from '../../components';
 import { Meal } from '../../pages/Meal';
 import ImageCard from './ImageCard';
 
+
 interface MealTypeProps {
-  Type: string;
-  meals: Meal[];
+    Type: string;
+    meals: Meal[];
 }
 
-export function ListofMeals({ Type, meals }: MealTypeProps) {
+export function ListOfMeals({ Type, meals }: MealTypeProps) {
   function scroll(direction: 'left' | 'right', distance: number, index: number) {
     const scrollRef = scrollRefs.current[index];
     if (scrollRef) {
@@ -94,4 +95,4 @@ export function ListofMeals({ Type, meals }: MealTypeProps) {
   );
 }
 
-export default ListofMeals;
+export default ListOfMeals;

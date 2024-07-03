@@ -47,6 +47,8 @@ const theme = {
         palette_lavender: '#D4C1EC',
         palette_pink: '#FFC0CB',
         palette_blue: '#BDE0FE',
+
+        white_purple: '#fef9ff',
     },
     gradients: {
         palette_purple_gradient: `linear-gradient(to right top, #736ced, #7b76ee, #837fee, #8c89ee, #9492ee, #969df1, #99a7f3, #9eb1f5, #a1bef9, #a7cafb, #b0d5fd, #bde0fe)`,
@@ -73,11 +75,46 @@ const theme = {
             },
         },
         Button: {
-            baseStyle: {
-                fontWeight: 'normal',
-                userSelect: 'none',
+            variants: {
+                solid: {
+                    bg: '#736CED', // purple
+                    color: 'white',
+                    _hover: {
+                        bg: '#9F9FED',
+                    },
+                    _active: {
+                        bg: '#9F9FED',
+                    },
+                },
+                outline: {
+                    borderColor: '#9F9FED', // indigo
+                    color: '#736CED', // purple
+                    _hover: {
+                        bg: '#fef9ff', // light purple
+                    },
+                    _active: {
+                        bg: '#fef9ff',
+                    },
+                },
             },
         },
+        // IconButton: {
+        //     baseStyle: {
+        //         _hover: {
+        //             bg: '#eceff1', // palette_lavender
+        //         },
+        //     },
+        //     variants: {
+        //         solid: {
+        //             bg: '#9F9FED', // palette_indigo
+        //             color: 'white',
+        //             _hover: {
+        //                 bg: '#D4C1EC', // palette_lavender
+        //                 color: 'white',
+        //             },
+        //         },
+        //     },
+        // },
         Avatar: {
             icon: FaUserCircle,
         },
