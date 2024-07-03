@@ -1,56 +1,116 @@
 import { SearchIcon } from '@chakra-ui/icons';
-import { Box, Flex, IconButton, Input, InputGroup } from '@chakra-ui/react';
+import { Flex, IconButton, Input, InputGroup, VStack } from '@chakra-ui/react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useClickAway } from '@uidotdev/usehooks';
-import { useEffect, useState } from 'react';
+import { bouncy } from 'ldrs';
+import { useEffect, useRef, useState } from 'react';
+import { Form, useSubmit } from 'react-router-dom';
+import customFetch from '../../utils/customFetch';
 
-const items = ['orange', 'apple', 'lemon'];
+bouncy.register();
 
-export const SearchBar = () => {
+export const SearchBar = ({ autoCompleteLink }: { autoCompleteLink: string }) => {
+  const autoCompleteQuery = (query: string) => {
+    return {
+      queryKey: ['autoComplete', query],
+      queryFn: async () => {
+        const data = await customFetch(autoCompleteLink, {
+          params: {
+            query: query,
+          },
+        });
+        return data;
+      },
+    };
+  };
+
   const [query, setQuery] = useState('');
-  const [searchResult, setSearchResult] = useState<string[]>([]);
+  const [autoComplete, setAutoComplete] = useState<string>('');
   const [focus, setFocus] = useState(false);
+  const queryClient = useQueryClient();
+  const submit = useSubmit();
+
   const ref = useClickAway(() => {
     setFocus(false);
   });
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const { data: queryData, status } = useQuery(autoCompleteQuery(autoComplete));
+  const items = queryData?.data;
 
   useEffect(() => {
     const timeOut = setTimeout(() => {
-      const results = items.filter((i) => i.toLowerCase().includes(query));
-      setSearchResult(results);
-    }, 1000);
+      queryClient.cancelQueries({ queryKey: ['autoComplete', autoComplete] });
+      setAutoComplete(query);
+    }, 500);
     return () => {
       clearTimeout(timeOut);
     };
   }, [query]);
 
   return (
-    <>
-      <Flex align="center" justify="center" padding="1.5">
-        <InputGroup borderRadius={5} size="md" maxWidth="1000px">
-          <Input
-            ref={ref as React.LegacyRef<HTMLInputElement>}
-            pr="4.5rem"
-            type="text"
-            placeholder="Search..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => setFocus(true)}
-          />
-          <IconButton icon={<SearchIcon />} aria-label={'Search'} colorScheme="blue" />
-        </InputGroup>
-      </Flex>
-      <Box width="100%">
-        {focus &&
-          (searchResult.length > 0 ? (
-            searchResult.map((item, index) => (
-              <Flex key={index} justify="center" py="2">
-                {item}
+      <Flex width="100%" justifyContent={'center'}>
+          <VStack ref={ref as React.LegacyRef<HTMLDivElement>} width={'40%'} gap={0}>
+              <Form onSubmit={() => setFocus(false)} style={{ width: '100%' }}>
+                  <Flex width="100%" justify="center">
+                      <InputGroup borderRadius={5} size="md" width={'100%'} minWidth={'30vw'}>
+                          <Input
+                              pr="4.5rem"
+                              type="text"
+                              placeholder="Search..."
+                              value={query}
+                              name="search"
+                              onChange={(e) => setQuery(e.target.value)}
+                              onFocus={() => setFocus(true)}
+                          />
+                          <IconButton
+                              icon={<SearchIcon />}
+                              aria-label={'Search'}
+                              colorScheme="blue"
+                              type="submit"
+                              ref={buttonRef}
+                              onClick={() => submit(buttonRef.current)}
+                          />
+                      </InputGroup>
+                  </Flex>
+              </Form>
+              <Flex
+                  width="100%"
+                  maxWidth="50vw"
+                  justify="center"
+                  alignItems={'center'}
+                  flexDir="column"
+                  border="1px solid black"
+                  borderRadius={5}
+                  boxShadow="md"
+                  display={focus ? 'flex' : 'none'}
+                  borderTop="none"
+              >
+                  {focus &&
+                      (status !== 'pending' ? (
+                          items.map((item: { title: string }, index: number) => (
+                              <div className="w-full hover:bg-slate-400">
+                                  <Flex
+                                      key={index}
+                                      justify="left"
+                                      dir="col"
+                                      ml="2"
+                                      py={1}
+                                      onClick={() => {
+                                          setQuery(item.title);
+                                          setFocus(false);
+                                      }}
+                                  >
+                                      {item.title}
+                                  </Flex>
+                              </div>
+                          ))
+                      ) : (
+                          <div className="mt-4">
+                              <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
+                          </div>
+                      ))}
               </Flex>
-            ))
-          ) : (
-            <Flex justify="center">No items found</Flex>
-          ))}
-      </Box>
-    </>
+          </VStack>
+      </Flex>
   );
 };

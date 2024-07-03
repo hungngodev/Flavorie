@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @layer base {
     :root {
         --background: 0 0% 100%;
@@ -60,7 +59,20 @@
     }
 }
 
-
 .no-scroll-bar::-webkit-scrollbar {
     display: none;
+}
+
+/* Pyramid.css */
+
+body {
+    background: #333;
+    font-family: 'Reddit Mono';
+    color: #888;
+}
+
+@layer components {
+    .c-chat__form--ready input {
+        @apply opacity-100;
+    }
 }

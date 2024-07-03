@@ -16,7 +16,7 @@ const CustomTag: React.FC<CustomTagProps> = React.forwardRef<HTMLSpanElement, Cu
     {
       canClose = false,
       onClick,
-      fontSize = 'md',
+      fontSize = '12',
       children,
       icon,
       type,
@@ -31,13 +31,13 @@ const CustomTag: React.FC<CustomTagProps> = React.forwardRef<HTMLSpanElement, Cu
         boxShadow="md"
         borderRadius="full"
         fontWeight="bold"
-        pl="1"
+        pl="2"
         pr="3"
         width="max-content"
         onClick={onClick}
       >
-        {icon && <TagLeftIcon as={icon} backgroundColor="gray.50" borderRadius="full" boxSize="2.25rem" border="1px" borderWidth="0.5rem" borderColor="gray.50" />}
-        <TagLabel py="3" width="fit-content" fontSize="md" whiteSpace='nowrap'>{type}</TagLabel>
+        {icon && <TagLeftIcon as={icon} backgroundColor="gray.50" borderRadius="full" boxSize="1.85rem" border="1px" borderWidth="0.3rem" borderColor="gray.50" />}
+        <TagLabel py="2" width="fit-content" fontSize="md" whiteSpace='nowrap'>{type}</TagLabel>
       </Tag>
     );
   },
