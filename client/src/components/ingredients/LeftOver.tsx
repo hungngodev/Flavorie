@@ -10,123 +10,22 @@ import {
     NumberInputField,
     VStack,
 } from '@chakra-ui/react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { ChevronDown, ChevronUp } from 'lucide-react';
-import { useEffect, useMemo, useRef } from 'react';
-import { Controller, useFieldArray, useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
-import { useAuth } from '../../hooks';
+import { useEffect } from 'react';
+import { Control, Controller, FieldArrayWithId } from 'react-hook-form';
+import { leftOverData } from '../../pages/Ingredient';
 import theme from '../../style/theme';
-import customFetch from '../../utils/customFetch';
-
-export type leftOverData = {
-    leftOver: {
-        id: string;
-        name: string;
-        image: string;
-        quantity: string;
-    }[];
-};
-
-const leftOverQuery = {
-    queryKey: ['leftOver'],
-    queryFn: async () => {
-        const data = await customFetch.get('/user/leftOver');
-        return data;
-    },
-};
-export default function LeftOver({ height }: { height?: string }) {
-    const { data: leftOverData, status: leftOverStatus } = useQuery(leftOverQuery);
-    const queryClient = useQueryClient();
-
+interface LeftOverProps {
+    height: string;
+    removeItem: (index: number) => void;
+    onSubmit: () => void;
+    fields: FieldArrayWithId<leftOverData, 'leftOver', 'id'>[];
+    control: Control<leftOverData>;
+}
+export default function LeftOver({ height, removeItem, onSubmit, fields, control }: LeftOverProps) {
     useEffect(() => {
-        console.log('changing');
-        queryClient.invalidateQueries({
-            queryKey: ['leftOver'],
-        });
-    }, [queryClient]);
-    const { control, handleSubmit, setValue } = useForm<leftOverData>({
-        defaultValues: {
-            leftOver: useMemo(
-                () =>
-                    leftOverStatus === 'success'
-                        ? leftOverData.data.leftOver.map(
-                              (item: { leftOver: { _id: string; name: string; image: string }; quantity: string }) => {
-                                  return {
-                                      id: item.leftOver._id,
-                                      name: item.leftOver.name,
-                                      image: item.leftOver.image,
-                                      quantity: item.quantity,
-                                  };
-                              },
-                          )
-                        : [],
-                [leftOverData, leftOverStatus],
-            ),
-        },
-    });
-    useEffect(() => {
-        if (leftOverStatus === 'success') {
-            console.log(leftOverData);
-            setValue(
-                'leftOver',
-                leftOverData.data.leftOver.map(
-                    (item: { leftOver: { _id: string; name: string; image: string }; quantity: string }) => {
-                        return {
-                            id: item.leftOver._id,
-                            name: item.leftOver.name,
-                            image: item.leftOver.image,
-                            quantity: item.quantity,
-                        };
-                    },
-                ),
-            );
-        }
-    }, [leftOverData, leftOverStatus, setValue]);
-    const { fields, remove: removeFunction } = useFieldArray({
-        control,
-        name: 'leftOver',
-    });
-
-    const onSubmit = () => {
-        handleSubmit((data: leftOverData) => {
-            console.log(data);
-            const results = data.leftOver.map((item) => {
-                return {
-                    itemId: item.id,
-                    quantity: parseInt(item.quantity),
-                    unit: 'unit',
-                    userId: '',
-                    type: 'leftOver',
-                };
-            });
-            customFetch.patch(
-                '/user/leftOver',
-                {
-                    leftOver: results,
-                },
-                {
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                },
-            );
-            queryClient.invalidateQueries({
-                queryKey: ['leftOver'],
-            });
-        })();
-    };
-    const auth = useAuth();
-    const scrollLeftOverRef = useRef<HTMLDivElement>(null);
-    function scroll(direction: 'up' | 'down', distance: number) {
-        if (scrollLeftOverRef.current) {
-            if (direction === 'up') scrollLeftOverRef.current.scrollTop -= distance;
-            else scrollLeftOverRef.current.scrollTop += distance;
-        }
-    }
-    const removeItem = (index: number) => {
-        removeFunction(index);
-    };
-
+        console.log('fields', fields);
+    }, [fields]);
     return (
         <Flex
             marginTop={'4vh'}
@@ -142,36 +41,14 @@ export default function LeftOver({ height }: { height?: string }) {
             borderColor={theme.colors.palette_purple}
         >
             <HStack>
-                <IconButton
-                    icon={<ChevronUp />}
-                    aria-label="left"
-                    onClick={() => scroll('up', 100)}
-                    variant="solid"
-                    colorScheme="blue"
-                    size="xs"
-                    height="50%"
-                />
                 <button
                     onClick={(e) => {
                         e.preventDefault();
-                        if (auth.currentUser.status === 'authenticated') {
-                            onSubmit();
-                        } else {
-                            toast.error('Please login to save your leftOver', { position: 'top-right' });
-                        }
+                        onSubmit();
                     }}
                 >
                     Save
                 </button>
-                <IconButton
-                    icon={<ChevronDown />}
-                    aria-label="right"
-                    onClick={() => scroll('down', 100)}
-                    variant="solid"
-                    colorScheme="blue"
-                    size="xs"
-                    height="50%"
-                />
             </HStack>
 
             <form
@@ -181,7 +58,6 @@ export default function LeftOver({ height }: { height?: string }) {
                 }}
             >
                 <VStack
-                    ref={scrollLeftOverRef}
                     spacing={8}
                     width={'100%'}
                     height={height}

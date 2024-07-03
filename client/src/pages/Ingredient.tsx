@@ -9,14 +9,12 @@ import { FaShoppingCart } from 'react-icons/fa';
 import { Params, useParams } from 'react-router-dom';
 import { Cart, CategorySidebar, IngredientsMain, LeftOver, TypeWriter } from '../components';
 import { Nutrition } from '../components/ingredients/NutritionCard';
+import socket from '../socket/socketio.tsx';
 import theme from '../style/theme';
 import customFetch from '../utils/customFetch';
-
-// import { PaginationTable } from 'table-pagination-chakra-ui';
+import mockData from './mockIngredient.ts';
 
 waveform.register();
-
-// Default values shown
 
 const allIngredientsQuery = (category: string) => {
     return {
@@ -54,14 +52,18 @@ export const loader =
         queryClient.ensureQueryData(leftOverQuery);
         return null;
     };
-
+export type UserItem = {
+    id: string;
+    name: string;
+    image: string;
+    quantity: string;
+};
 export type CartData = {
-    cart: {
-        id: string;
-        name: string;
-        image: string;
-        quantity: string;
-    }[];
+    cart: UserItem[];
+};
+
+export type leftOverData = {
+    leftOver: UserItem[];
 };
 
 export type Ingredient = {
@@ -84,15 +86,19 @@ export type Category = {
     numberOfQueryKeys: number;
     totalNumberOfIngredients: number;
     results: SubCategory[];
-    color: string;
+    color?: string;
 };
 
 export default function Ingredient() {
     let { category: currentCategory } = useParams<{ category: string }>();
     currentCategory = currentCategory === undefined ? '/' : currentCategory;
-    const { data: queryData, status } = useQuery(allIngredientsQuery(currentCategory));
+    // const { data, status } = useQuery(allIngredientsQuery(currentCategory));
+    const status = 'success';
+    const queryData = mockData;
     const ingredientData = queryData?.data.category[0];
     const { data: cartData, status: cartStatus } = useQuery(cartQuery);
+    const { data: leftOverData, status: leftOverStatus } = useQuery(leftOverQuery);
+
     const fridgeWidth = '500';
     const { getButtonProps, getDisclosureProps, isOpen } = useDisclosure();
     const [hidden, setHidden] = useState(!isOpen);
@@ -123,7 +129,6 @@ export default function Ingredient() {
 
     useEffect(() => {
         if (cartStatus === 'success') {
-            console.log(cartData);
             setValue(
                 'cart',
                 cartData.data.cart.map(
@@ -139,16 +144,14 @@ export default function Ingredient() {
             );
         }
     }, [cartData, cartStatus]);
+
     const { fields, append, remove } = useFieldArray({
         control,
         name: 'cart',
     });
 
-    useEffect(() => {
-        console.log(fields);
-    }, [fields]);
-
     const currentCart = watch('cart');
+
     const addFunction = (ingredientData: Ingredient) => {
         if (currentCart.some((item) => item.id === ingredientData.id)) {
             const index = currentCart.findIndex((item) => item.id === ingredientData.id);
@@ -169,33 +172,114 @@ export default function Ingredient() {
 
     const onSubmit = (operation: string) => {
         handleSubmit(async (data: CartData) => {
-            const results = data.cart.map((item) => {
-                return {
-                    itemId: item.id,
-                    quantity: parseInt(item.quantity),
-                    unit: 'unit',
-                    userId: '',
-                    type: 'cart',
-                };
-            });
-            customFetch.patch(
+            const results =
+                operation === 'deleteAll'
+                    ? []
+                    : data.cart.map((item) => {
+                          return {
+                              itemId: item.id,
+                              quantity: parseInt(item.quantity),
+                              unit: 'unit',
+                              userId: '',
+                              type: 'cart',
+                          };
+                      });
+            await customFetch.patch(
                 '/user/cart',
                 {
                     cart: results,
-                    transfer: operation === 'transfer',
+                    transfer: operation === 'transfer' || operation === 'send' ? true : false,
                 },
                 {
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 },
             );
-            if (operation === 'transfer') {
+            if (operation === 'transfer' || operation === 'send') {
                 await queryClient.invalidateQueries({
                     queryKey: ['leftOver'],
                 });
                 await queryClient.ensureQueryData(leftOverQuery);
             }
+            if (operation === 'send') {
+                socket.emit('sendToInstacart', results);
+            }
             queryClient.invalidateQueries({
                 queryKey: ['cart'],
+            });
+        })();
+    };
+
+    const {
+        control: control2,
+        handleSubmit: handleSubmit2,
+        setValue: setValue2,
+    } = useForm<leftOverData>({
+        defaultValues: {
+            leftOver: useMemo(
+                () =>
+                    leftOverStatus === 'success'
+                        ? leftOverData.data.leftOver.map(
+                              (item: { leftOver: { _id: string; name: string; image: string }; quantity: string }) => {
+                                  return {
+                                      id: item.leftOver._id,
+                                      name: item.leftOver.name,
+                                      image: item.leftOver.image,
+                                      quantity: item.quantity,
+                                  };
+                              },
+                          )
+                        : [],
+                [leftOverData, leftOverStatus],
+            ),
+        },
+    });
+    useEffect(() => {
+        console.log(leftOverData);
+        if (leftOverStatus === 'success') {
+            setValue2(
+                'leftOver',
+                leftOverData.data.leftOver.map(
+                    (item: { leftOver: { _id: string; name: string; image: string }; quantity: string }) => {
+                        return {
+                            id: item.leftOver._id,
+                            name: item.leftOver.name,
+                            image: item.leftOver.image,
+                            quantity: item.quantity,
+                        };
+                    },
+                ),
+            );
+        }
+    }, [leftOverData, leftOverStatus, setValue2]);
+    const { fields: field2, remove: remove2 } = useFieldArray({
+        control: control2,
+        name: 'leftOver',
+    });
+
+    const onSubmit2 = () => {
+        handleSubmit2((data: leftOverData) => {
+            console.log(data);
+            const results = data.leftOver.map((item) => {
+                return {
+                    itemId: item.id,
+                    quantity: parseInt(item.quantity),
+                    unit: 'unit',
+                    userId: '',
+                    type: 'leftOver',
+                };
+            });
+            console.log(results);
+            customFetch.patch(
+                '/user/leftOver',
+                {
+                    leftOver: results.length > 0 ? results : [],
+                },
+                {
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                },
+            );
+            queryClient.invalidateQueries({
+                queryKey: ['leftOver'],
             });
         })();
     };
@@ -302,8 +386,7 @@ export default function Ingredient() {
                                 moveSelectedTabToTop(idx);
                             }}
                             onMouseEnter={() => {
-                                console.log('hover');
-                                setHovering(true);
+                                active.value !== tab.value && setHovering(true);
                             }}
                             onMouseLeave={() => setHovering(false)}
                             className="relative rounded-full px-4 py-2"
@@ -315,7 +398,7 @@ export default function Ingredient() {
                                 <motion.div
                                     layoutId="clickedbutton"
                                     transition={{ type: 'spring', bounce: 0.3, duration: 0.6 }}
-                                    className="absolute inset-0 rounded-full bg-gray-200 dark:bg-zinc-800"
+                                    className="absolute inset-0 rounded-full bg-gray-300 dark:bg-zinc-800"
                                 />
                             )}
 
@@ -334,7 +417,7 @@ export default function Ingredient() {
                                 layoutId={tab.value}
                                 style={{
                                     scale: 1 - idx * 0.05,
-                                    left: hovering ? idx * -20 : 0,
+                                    left: hovering ? idx * -50 : 0,
                                     zIndex: -idx + 100,
                                     opacity: 1 - idx * 0.3,
                                 }}
@@ -355,7 +438,13 @@ export default function Ingredient() {
                                             height="50vh"
                                         />
                                     ) : (
-                                        <LeftOver height="50vh" />
+                                        <LeftOver
+                                            removeItem={remove2}
+                                            fields={field2}
+                                            onSubmit={onSubmit2}
+                                            control={control2}
+                                            height="50vh"
+                                        />
                                     ))}
                             </motion.div>
                         ))}

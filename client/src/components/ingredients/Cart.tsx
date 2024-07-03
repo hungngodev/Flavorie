@@ -12,8 +12,7 @@ import {
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import Lottie, { LottieRefCurrentProps } from 'lottie-react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
-import { RefObject, useEffect, useRef } from 'react';
+import { RefObject, useEffect } from 'react';
 import { Control, Controller, FieldArrayWithId } from 'react-hook-form';
 import { Cart } from '../../assets/animations';
 import { CartData } from '../../pages/Ingredient';
@@ -31,13 +30,6 @@ type CartProps = {
 };
 
 export default function CartToBuy({ removeFunction, onSubmit, fields, control, lottieCartRef, height }: CartProps) {
-    const scrollCartRef = useRef<HTMLDivElement>(null);
-    function scroll(direction: 'up' | 'down', distance: number) {
-        if (scrollCartRef.current) {
-            if (direction === 'up') scrollCartRef.current.scrollTop -= distance;
-            else scrollCartRef.current.scrollTop += distance;
-        }
-    }
     useEffect(() => {
         console.log('fields', fields);
     }, [fields]);
@@ -56,51 +48,49 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
             bg={'#fef9ff'}
         >
             <HStack>
-                <IconButton
-                    icon={<ChevronUp />}
-                    aria-label="left"
-                    onClick={() => scroll('up', 100)}
-                    variant="solid"
-                    colorScheme="blue"
-                    size="xs"
-                    height="50%"
-                />
-
-                <Lottie
-                    animationData={Cart}
-                    style={{ height: 100 }}
-                    loop={false}
-                    autoPlay={false}
-                    lottieRef={lottieCartRef}
-                />
-
-                <button
-                    onClick={() => {
-                        onSubmit('add');
-                        // socket.emit('sendToInstacart', fields);
-                        lottieCartRef.current?.playSegments([0, 135]);
-                    }}
-                >
-                    Save it
-                </button>
-                <button
-                    onClick={() => {
-                        onSubmit('transfer');
-                        // socket.emit('sendToInstacart', fields);
-                        lottieCartRef.current?.playSegments([0, 135]);
-                    }}
-                >
-                    Transfer to Fridge
-                </button>
-                <IconButton
-                    icon={<ChevronDown />}
-                    aria-label="right"
-                    onClick={() => scroll('down', 100)}
-                    variant="solid"
-                    colorScheme="blue"
-                    size="xs"
-                    height="50%"
-                />
+                <VStack>
+                    <Lottie
+                        animationData={Cart}
+                        style={{ height: 100 }}
+                        loop={false}
+                        autoPlay={false}
+                        lottieRef={lottieCartRef}
+                    />
+                    <button
+                        onClick={() => {
+                            onSubmit('add');
+                            // socket.emit('sendToInstacart', fields);
+                            lottieCartRef.current?.playSegments([0, 135]);
+                        }}
+                    >
+                        Save it
+                    </button>
+                    <button
+                        onClick={() => {
+                            onSubmit('transfer');
+                            // socket.emit('sendToInstacart', fields);
+                            lottieCartRef.current?.playSegments([0, 135]);
+                        }}
+                    >
+                        Transfer to Fridge
+                    </button>
+                    <button
+                        onClick={() => {
+                            onSubmit('send');
+                            lottieCartRef.current?.playSegments([0, 135]);
+                        }}
+                    >
+                        Send To Instacart
+                    </button>
+                    <button
+                        onClick={() => {
+                            onSubmit('deleteAll');
+                            lottieCartRef.current?.playSegments([0, 135]);
+                        }}
+                    >
+                        delete ALL
+                    </button>
+                </VStack>
             </HStack>
 
             <form
@@ -110,7 +100,6 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
                 }}
             >
                 <VStack
-                    ref={scrollCartRef}
                     spacing={8}
                     width={'100%'}
                     height={height ? height : 'full'}

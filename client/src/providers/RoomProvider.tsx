@@ -1,7 +1,7 @@
 // import Peer from 'peerjs';
+import Peer from 'peerjs';
 import { useEffect, useReducer, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { io } from 'socket.io-client';
 import RoomContext from '../contexts/roomContext';
 import useUser from '../hooks/useUser';
 import {
@@ -14,13 +14,11 @@ import {
     toggleVideoAction,
 } from '../reducers/peerActions';
 import { peersReducer } from '../reducers/peerReducer';
+import socket from '../socket/socketio';
 import { IPeer } from '../types/peer';
 
 export const WS = 'http://localhost:5100';
-export const ws = io(WS, {
-    withCredentials: true,
-    autoConnect: true,
-});
+export const ws = socket;
 
 const RoomProvider = ({ children }: { children: React.ReactNode }) => {
     const navigate = useNavigate();

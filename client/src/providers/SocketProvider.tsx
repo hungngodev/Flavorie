@@ -25,7 +25,12 @@ const SocketProvider: React.FC<SocketContextProviderProps> = ({ children }) => {
 
         socket.on('processReceipt', (data) => {
             console.log('Process receipt successfully', data);
-            notifySuccess('Process successfully');
+            notifySuccess('Process your receipts successfully');
+        });
+
+        socket.on('processInstacart', (data) => {
+            console.log('Process instacart successfully', data);
+            notifySuccess('Connect with Instacart successfully');
         });
 
         socket.on('error', (error) => {
@@ -35,6 +40,7 @@ const SocketProvider: React.FC<SocketContextProviderProps> = ({ children }) => {
 
         return () => {
             socket.off('processReceipt');
+            socket.off('processInstacart');
             socket.off('error');
         };
     }, [auth.currentUser.status, notifyError, notifySuccess]);

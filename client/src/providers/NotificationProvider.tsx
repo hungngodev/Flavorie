@@ -1,10 +1,10 @@
-import axios from 'axios';
 import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import NotificationContext, { Notification, NotificationSchema } from '../contexts/NotificationContext.tsx';
 import useAuth from '../hooks/useAuth.tsx';
 import useToast from '../hooks/useToast.tsx';
 import socket from '../socket/socketio.tsx';
+import customFetch from '../utils/customFetch.ts';
 
 interface NotificationContextProviderProps {
     children: React.ReactNode;
@@ -24,12 +24,12 @@ const NotificationProvider: React.FC<NotificationContextProviderProps> = ({
     //fetch all notifications
     const fetchNotifications = useCallback(async () => {
         try {
-            const cntResponse = await axios.get('http://localhost:5100/api/user/notifications/cnt', {
+            const cntResponse = await customFetch.get('/user/notifications/cnt', {
                 withCredentials: true,
             });
             setCntNotifications(cntResponse.data.count);
 
-            const notiResponse = await axios.get('http://localhost:5100/api/user/notifications', {
+            const notiResponse = await customFetch.get('/user/notifications', {
                 withCredentials: true,
             });
             setNotifications(notiResponse.data.notifications);
@@ -42,11 +42,13 @@ const NotificationProvider: React.FC<NotificationContextProviderProps> = ({
     // get notification detail
     const fetchNotificationById = async (id: string): Promise<Notification | null> => {
         try {
-            const response = await axios.get(`http://localhost:5100/api/user/notifications/${id}`, {
+            const response = await customFetch.get(`/user/notifications/${id}`, {
                 withCredentials: true,
             });
-            // console.log(response.data.currNotification);
+            console.log(response.data.currNotification);
+
             const parsedData = NotificationSchema.safeParse(response.data.currNotification);
+            console.log(parsedData);
             if (parsedData.success) {
                 setNotificationDetail(parsedData.data);
                 localStorage.setItem('notificationDetail', JSON.stringify(parsedData.data.message.data));

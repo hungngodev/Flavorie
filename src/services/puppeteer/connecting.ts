@@ -300,7 +300,7 @@ export const groceryGenerating = async (groceryList: string[]) => {
   await page.waitForSelector(nextButtonSelector);
   await new Promise(resolve => setTimeout(resolve, 500));
   await page.click(nextButtonSelector);
-  for (let i = 1; i < groceryList.length; i++) {
+  for (let i = 1; i < groceryList.length + 1; i++) {
     const searchBarButton = `div.e-1hudhoo > div.e-1awx5o3 > div.e-124dr7b > button`;
     await page.waitForSelector(searchBarButton);
     await page.click(searchBarButton);
@@ -342,5 +342,5 @@ export const groceryGenerating = async (groceryList: string[]) => {
   await browser.close();
   return copiedText;
 };
-const list = await groceryGenerating(["meat", "egg", "celery"]);
-console.log(list);
+// const list = await groceryGenerating(["meat", "egg", "celery"]);
+// console.log(list);
