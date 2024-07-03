@@ -28,10 +28,10 @@ const PostFooter = memo<PostFooterProps>(({ postIndex, postData, postId, ...prop
   const [isLiked, setIsLiked] = useState(post?.reacts?.includes(id) ?? false);
 
   const likeControl = useAnimationControls();
-  const likePost = async () => {
+  const likePost = () => {
     likeControl.start({ scale: [1, 1.2, 1], transition: { duration: 0.2, ease: 'easeInOut' } });
     try {
-      await dispatch(likeRequest(postId)).then((res: any) => {
+      dispatch(likeRequest(postId)).then((res: any) => {
         console.log(res.payload);
         dispatch(updatePost({ postIndex: postIndex, post: parsePost([res.payload.reacts]) }));
         setIsLiked(useSelector(selectPosts)[postIndex].reacts?.includes(id) ?? false);

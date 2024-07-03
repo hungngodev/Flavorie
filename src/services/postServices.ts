@@ -22,6 +22,7 @@ export const getPostDocumentById = async (
     if (!post) {
       throw new ServerError("Post not found");
     }
+    console.log(post);
     return post as Document;
   } catch (err) {
     throw new ServerError(`${err}`);
@@ -243,20 +244,25 @@ export const deletePostDocument = async (postId: string) => {
 export const reactPostDocument = async (
   userId: string,
   postId: string,
-): Promise<Array<Types.ObjectId>> => {
+): Promise<Document> => {
   try {
-    const post = await PostModel.findById(postId);
+    const post = await PostModel.findById(postId).populate({
+      path: "author",
+      select: "name avatar id",
+    });
     if (!post) throw new PostError("Post not found");
 
     const alreadyLiked = post.react.some(id => id.equals(userId));
 
     if (alreadyLiked) {
       post.react.pull(userId);
+      post.reactCount -= 1;
     } else {
       post.react.push(new Types.ObjectId(userId));
+      post.reactCount = Math.max(0, post.reactCount + 1);
     }
     await post.save();
-    return post.react;
+    return post;
   } catch (err) {
     throw new ServerError(`${err}`);
   }
