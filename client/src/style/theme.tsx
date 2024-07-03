@@ -42,13 +42,16 @@ const theme = {
             300: '604F44',
             400: '3A2B22',
         },
+        indigo: '#8978D9',
         palette_purple: '#736CED',
         palette_indigo: '#9F9FED',
         palette_lavender: '#D4C1EC',
         palette_pink: '#FFC0CB',
         palette_blue: '#BDE0FE',
 
+        bone_white: '#F9F6EE',
         white_purple: '#fef9ff',
+
     },
     gradients: {
         palette_purple_gradient: `linear-gradient(to right top, #736ced, #7b76ee, #837fee, #8c89ee, #9492ee, #969df1, #99a7f3, #9eb1f5, #a1bef9, #a7cafb, #b0d5fd, #bde0fe)`,

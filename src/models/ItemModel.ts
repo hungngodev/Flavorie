@@ -1,8 +1,9 @@
 import mongoose, { Types } from "mongoose";
 
-enum typeItem {
+export enum typeItem {
   leftOver = "leftOver",
   cart = "cart",
+  likedMeal = "likedMeal",
 }
 
 export interface Item {

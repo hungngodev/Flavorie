@@ -1,5 +1,4 @@
 'use client';
-import React from 'react';
 import { ChevronRightIcon } from '@chakra-ui/icons';
 import {
     Avatar,
@@ -9,25 +8,19 @@ import {
     Flex,
     Icon,
     Image,
-    Menu,
-    MenuButton,
-    MenuDivider,
-    MenuItem,
-    MenuList,
     Popover,
     PopoverContent,
     PopoverTrigger,
     Stack,
     Text,
-    useBreakpointValue,
     useColorModeValue,
     useTheme,
 } from '@chakra-ui/react';
 import { FaBell } from 'react-icons/fa';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import logo from '../../assets/logo.svg';
-import { useAuth } from '../../hooks';
-import useNotification from '../../hooks/useNotification.tsx';
+import useAuth from '../../hooks/useAuth';
+import useNotification from '../../hooks/useNotification';
 import { NavItem } from './NavBar';
 
 export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
@@ -42,22 +35,14 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
         <>
             <Flex align={'center'} justifyContent={'space-between'} gap={4}>
                 <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
-                    {/* <Text
-                        textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
-                        fontFamily={'heading'}
-                        color={useColorModeValue('gray.800', 'white')}
-                        as="b"
-                    >
-                        Flavorie
-                    </Text> */}
                     <Image
                         ml="2"
-                        boxSize="50px"
+                        boxSize="48px"
                         objectFit="cover"
                         src="../public/images/branding/Logo.png"
                         alt="logo"
                     />
-                    <Flex display={{ base: 'none', md: 'flex' }} ml={6}>
+                    <Flex display={{ base: 'none', md: 'flex' }} ml={6} flexDirection="column" justifyContent="center">
                         <Stack direction={'row'} spacing={4}>
                             {NavItems.map((navItem) => (
                                 <Box key={navItem.label}>

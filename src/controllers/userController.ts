@@ -4,6 +4,7 @@ import { NotFoundError } from "../errors/customErrors.ts";
 import MealModel from "../models/MealModel.ts";
 import UserModel from "../models/UserModel.ts";
 import {
+  changeItemTypes,
   getUserItems,
   modifyOrdinaryInfo,
   modifyUserItems,
@@ -34,19 +35,31 @@ export const getCart = async (req: Request, res: Response) => {
 };
 
 export const getLeftOver = async (req: Request, res: Response) => {
+  if (!req.user) {
+    return res
+      .status(StatusCodes.OK)
+      .send({ msg: "Unauthorized", leftOver: [] });
+  }
   const leftOver = await getUserItems(req.user.userId, "leftOver");
-  res.status(StatusCodes.OK).send({ leftOver });
+  return res.status(StatusCodes.OK).send({ leftOver: leftOver });
 };
 
 export const updateCart = async (req: Request, res: Response) => {
-  if (req.body.cart && req.body.cart.length !== 0) {
+  console.log(req.body);
+
+  if (req.body.transfer === "true") {
+    await changeItemTypes(req.user.userId, req.body.cart, "cart", "leftOver");
+  } else {
     await modifyUserItems(req.user.userId, req.body.cart, "cart");
   }
+
   res.status(StatusCodes.OK).send({ msg: "update cart" });
 };
 
 export const updateLeftOver = async (req: Request, res: Response) => {
-  await modifyUserItems(req.user.userId, req.body, "leftOver");
+  console.log(req.body);
+  await modifyUserItems(req.user.userId, req.body.leftOver, "leftOver");
+
   res.status(StatusCodes.OK).send({ msg: "update leftOver" });
 };
 

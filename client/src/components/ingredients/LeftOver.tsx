@@ -10,37 +10,123 @@ import {
     NumberInputField,
     VStack,
 } from '@chakra-ui/react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import Lottie, { LottieRefCurrentProps } from 'lottie-react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { RefObject, useEffect, useRef } from 'react';
-import { Control, Controller, FieldArrayWithId } from 'react-hook-form';
-import { Cart } from '../../assets/animations';
-import { CartData } from '../../pages/Ingredient';
+import { useEffect, useMemo, useRef } from 'react';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
+import { useAuth } from '../../hooks';
 import theme from '../../style/theme';
+import customFetch from '../../utils/customFetch';
 
-type CartProps = {
-    removeFunction: (index: number) => void;
-    onSubmit: (operation: string) => void;
-    fields: FieldArrayWithId<CartData, 'cart', 'id'>[];
-    control: Control<CartData>;
-    lottieCartRef: RefObject<LottieRefCurrentProps>;
-    onExitComplete?: () => void;
-    height?: string;
-    containerHeight?: string;
+export type leftOverData = {
+    leftOver: {
+        id: string;
+        name: string;
+        image: string;
+        quantity: string;
+    }[];
 };
 
-export default function CartToBuy({ removeFunction, onSubmit, fields, control, lottieCartRef, height }: CartProps) {
-    const scrollCartRef = useRef<HTMLDivElement>(null);
+const leftOverQuery = {
+    queryKey: ['leftOver'],
+    queryFn: async () => {
+        const data = await customFetch.get('/user/leftOver');
+        return data;
+    },
+};
+export default function LeftOver({ height }: { height?: string }) {
+    const { data: leftOverData, status: leftOverStatus } = useQuery(leftOverQuery);
+    const queryClient = useQueryClient();
+
+    useEffect(() => {
+        console.log('changing');
+        queryClient.invalidateQueries({
+            queryKey: ['leftOver'],
+        });
+    }, [queryClient]);
+    const { control, handleSubmit, setValue } = useForm<leftOverData>({
+        defaultValues: {
+            leftOver: useMemo(
+                () =>
+                    leftOverStatus === 'success'
+                        ? leftOverData.data.leftOver.map(
+                              (item: { leftOver: { _id: string; name: string; image: string }; quantity: string }) => {
+                                  return {
+                                      id: item.leftOver._id,
+                                      name: item.leftOver.name,
+                                      image: item.leftOver.image,
+                                      quantity: item.quantity,
+                                  };
+                              },
+                          )
+                        : [],
+                [leftOverData, leftOverStatus],
+            ),
+        },
+    });
+    useEffect(() => {
+        if (leftOverStatus === 'success') {
+            console.log(leftOverData);
+            setValue(
+                'leftOver',
+                leftOverData.data.leftOver.map(
+                    (item: { leftOver: { _id: string; name: string; image: string }; quantity: string }) => {
+                        return {
+                            id: item.leftOver._id,
+                            name: item.leftOver.name,
+                            image: item.leftOver.image,
+                            quantity: item.quantity,
+                        };
+                    },
+                ),
+            );
+        }
+    }, [leftOverData, leftOverStatus, setValue]);
+    const { fields, remove: removeFunction } = useFieldArray({
+        control,
+        name: 'leftOver',
+    });
+
+    const onSubmit = () => {
+        handleSubmit((data: leftOverData) => {
+            console.log(data);
+            const results = data.leftOver.map((item) => {
+                return {
+                    itemId: item.id,
+                    quantity: parseInt(item.quantity),
+                    unit: 'unit',
+                    userId: '',
+                    type: 'leftOver',
+                };
+            });
+            customFetch.patch(
+                '/user/leftOver',
+                {
+                    leftOver: results,
+                },
+                {
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                },
+            );
+            queryClient.invalidateQueries({
+                queryKey: ['leftOver'],
+            });
+        })();
+    };
+    const auth = useAuth();
+    const scrollLeftOverRef = useRef<HTMLDivElement>(null);
     function scroll(direction: 'up' | 'down', distance: number) {
-        if (scrollCartRef.current) {
-            if (direction === 'up') scrollCartRef.current.scrollTop -= distance;
-            else scrollCartRef.current.scrollTop += distance;
+        if (scrollLeftOverRef.current) {
+            if (direction === 'up') scrollLeftOverRef.current.scrollTop -= distance;
+            else scrollLeftOverRef.current.scrollTop += distance;
         }
     }
-    useEffect(() => {
-        console.log('fields', fields);
-    }, [fields]);
+    const removeItem = (index: number) => {
+        removeFunction(index);
+    };
+
     return (
         <Flex
             marginTop={'4vh'}
@@ -49,11 +135,11 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
             height={'82%'}
             gap={10}
             border="2px solid"
-            borderColor={theme.colors.palette_purple}
             flexDir={'column'}
             rounded={'xl'}
             maxH={'85vh'}
             bg={'#fef9ff'}
+            borderColor={theme.colors.palette_purple}
         >
             <HStack>
                 <IconButton
@@ -65,32 +151,17 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
                     size="xs"
                     height="50%"
                 />
-
-                <Lottie
-                    animationData={Cart}
-                    style={{ height: 100 }}
-                    loop={false}
-                    autoPlay={false}
-                    lottieRef={lottieCartRef}
-                />
-
                 <button
-                    onClick={() => {
-                        onSubmit('add');
-                        // socket.emit('sendToInstacart', fields);
-                        lottieCartRef.current?.playSegments([0, 135]);
+                    onClick={(e) => {
+                        e.preventDefault();
+                        if (auth.currentUser.status === 'authenticated') {
+                            onSubmit();
+                        } else {
+                            toast.error('Please login to save your leftOver', { position: 'top-right' });
+                        }
                     }}
                 >
-                    Save it
-                </button>
-                <button
-                    onClick={() => {
-                        onSubmit('transfer');
-                        // socket.emit('sendToInstacart', fields);
-                        lottieCartRef.current?.playSegments([0, 135]);
-                    }}
-                >
-                    Transfer to Fridge
+                    Save
                 </button>
                 <IconButton
                     icon={<ChevronDown />}
@@ -110,10 +181,10 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
                 }}
             >
                 <VStack
-                    ref={scrollCartRef}
+                    ref={scrollLeftOverRef}
                     spacing={8}
                     width={'100%'}
-                    height={height ? height : 'full'}
+                    height={height}
                     px={6}
                     overflowY={'auto'}
                     overflowX={'hidden'}
@@ -122,16 +193,8 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
                 >
                     {fields.map((item, index) => {
                         return (
-                            <motion.div key={item.id + index + 'cart'}>
-                                <HStack
-                                    spacing={6}
-                                    key={index}
-                                    minWidth={'3rem'}
-                                    flexShrink={0}
-                                    flexWrap={'wrap'}
-                                    justifyContent={'center'}
-                                    alignItems={'center'}
-                                >
+                            <motion.div key={item.id + index + 'leftOver'}>
+                                <HStack spacing={6} key={index} minWidth={'3rem'} flexShrink={0}>
                                     <Image
                                         src={
                                             item.image.length > 120
@@ -140,7 +203,7 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
                                         }
                                         alt={item.name}
                                         height={'full'}
-                                        width={'5vw'}
+                                        width={'6vw'}
                                         rounded={'xl'}
                                     />
                                     <Flex
@@ -161,13 +224,12 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
                                                         size="md"
                                                         format={(n) => (typeof n === 'string' ? parseInt(n) : n)}
                                                     >
-                                                        <Flex
-                                                            gap={1}
-                                                            borderColor={theme.colors.palette_indigo}
-                                                            _active={{ borderColor: theme.colors.palette_purple }}
-                                                        >
+                                                        <Flex gap={1}>
                                                             <NumberIncrementStepper
-                                                                style={{ background: 'transparent', border: 'none' }}
+                                                                style={{
+                                                                    background: 'transparent',
+                                                                    border: 'none',
+                                                                }}
                                                             />
                                                             <NumberInputField
                                                                 ref={ref}
@@ -176,13 +238,16 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
                                                                 minWidth={'4.5rem'}
                                                             />
                                                             <NumberDecrementStepper
-                                                                style={{ background: 'transparent', border: 'none' }}
+                                                                style={{
+                                                                    background: 'transparent',
+                                                                    border: 'none',
+                                                                }}
                                                             />
                                                         </Flex>
                                                     </NumberInput>
                                                 </HStack>
                                             )}
-                                            name={`cart.${index}.quantity`}
+                                            name={`leftOver.${index}.quantity`}
                                             control={control}
                                             rules={{
                                                 required: {
@@ -194,12 +259,11 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
                                         <IconButton
                                             icon={<DeleteIcon />}
                                             aria-label="delete"
-                                            bg={theme.colors.palette_indigo}
+                                            colorScheme="pink"
                                             size="xs"
                                             minWidth={'full'}
                                             variant="solid"
-                                            _hover={{ bg: theme.colors.palette_lavender }}
-                                            onClick={() => removeFunction(index)}
+                                            onClick={() => removeItem(index)}
                                         />
                                     </Flex>
                                 </HStack>

@@ -76,3 +76,12 @@ body {
         @apply opacity-100;
     }
 }
+
+.neomorphic-banner {
+    background: rgba(226, 197, 249, 0.67);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5.1px);
+    -webkit-backdrop-filter: blur(5.1px);
+    border: 1px solid rgba(226, 197, 249, 1);
+}
