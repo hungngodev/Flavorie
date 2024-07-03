@@ -52,28 +52,6 @@ const UserCard: React.FC<PersonalProps> = ({ avatar, name, lastname, email, phon
 
     const toast = useToast();
 
-    // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //   const { name, value } = e.target;
-    //   setFormData((prev) => ({
-    //     ...prev,
-    //     [name]: value,
-    //   }));
-    // };
-
-    // const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //   if (e.target.files && e.target.files[0]) {
-    //     const file = e.target.files[0];
-    //     const reader = new FileReader();
-    //     reader.onloadend = () => {
-    //       setFormData((prev) => ({
-    //         ...prev,
-    //         avatar: reader.result as string,
-    //       }));
-    //     };
-    //     reader.readAsDataURL(file);
-    //   }
-    // };
-
     const handleEditClick = () => setIsEditing(true);
 
     // const handleSaveClick = () => {

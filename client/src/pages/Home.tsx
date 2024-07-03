@@ -19,6 +19,8 @@ import React from 'react';
 import { Cooking, Ingredient, LiveVideo, Scanning, Sharing } from '../assets/animations';
 import { ContainerScroll, Hero, StickyScrollReveal, Testimonials, WavyBackground } from '../components';
 import HerroIllustration from '../../public/images/hero-ilustration.jpg';
+import theme from '../style/theme';
+
 const content = [
     {
         title: 'Browsing your recipes',
