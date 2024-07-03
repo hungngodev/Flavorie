@@ -124,10 +124,9 @@ export async function changeItemTypes(
         type: newType,
       });
       if (currentNewTypeItem) {
-        currentNewTypeItem.quantity = (
+        currentNewTypeItem.quantity = 
           parseInt(`${currentNewTypeItem.quantity}`) +
-            parseInt(`${existingItem.quantity}`),
-        );
+          parseInt(`${existingItem.quantity}`),
         await currentNewTypeItem.save();
       } else {
         existingItem.type = newType as typeItem;
