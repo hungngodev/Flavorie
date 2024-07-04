@@ -46,7 +46,7 @@ export function IngredientsMain({ addFunction, data }: IngredientsMainProps) {
                     showControls
                     onChange={(page) => setPage(page)}
                     total={Math.ceil(data.results.length / size)}
-                    color="secondary"
+                    color="primary"
                     initialPage={3}
                     space-y-10
                 />

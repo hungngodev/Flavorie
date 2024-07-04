@@ -99,13 +99,11 @@ export const roomHandler = (socket: Socket) => {
     mealId: string;
     mealInfo: any;
   }) => {
-    console.log("changing meal", mealId);
     roomsInfo[roomId] = {
       ...roomsInfo[roomId],
       currentMeal: mealId,
       currentMealInfo: mealInfo,
     };
-    console.log(mealInfo);
     socket.to(roomId).emit("meal-changed", {
       currentMeal: mealId,
       mealInfo: mealInfo,

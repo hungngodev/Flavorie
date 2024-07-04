@@ -24,7 +24,7 @@ import {
     Video,
     VideoOff,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ProgressiveImage from 'react-progressive-graceful-image';
 import { Link, useParams } from 'react-router-dom';
 import ImageSlide, { BackendData } from '../components/meals/ImageSlide';
@@ -68,6 +68,7 @@ const Room = () => {
     useEffect(() => {
         setRoomId(id || '');
     }, [id, setRoomId]);
+
     useEffect(() => {
         return () => {
             ws.emit('leave-room', { roomId: id, userId });
@@ -83,6 +84,11 @@ const Room = () => {
     const [hidden, setHidden] = useState(!isOpen);
 
     const peerVideos = [...Object.values(peersToShow as PeerState)];
+
+    const myVideoRef = useRef<HTMLVideoElement>(null);
+    useEffect(() => {
+        if (myVideoRef.current && stream) myVideoRef.current.srcObject = stream;
+    }, [stream]);
     return (
         <Box height="100%" width="100%" position="relative">
             <HStack height="100%" width="100%" padding={'5px'}>
@@ -100,7 +106,17 @@ const Room = () => {
                             <GridItem rowSpan={1} colSpan={1} padding={'8px'} onClick={() => setFocus(userId)}>
                                 <Card width={'full'} height="full" display={'flex'} justify={'center'} align={'center'}>
                                     <CardBody>
-                                        <VideoPlayer stream={stream} />
+                                        <video
+                                            data-testid="peer-video"
+                                            ref={myVideoRef}
+                                            autoPlay
+                                            muted={true}
+                                            style={{
+                                                width: '90%',
+                                                height: '90%',
+                                                objectFit: 'cover',
+                                            }}
+                                        />
                                         <NameInput />
                                     </CardBody>
                                 </Card>
