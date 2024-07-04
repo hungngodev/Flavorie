@@ -78,7 +78,7 @@ export const IngredientsList = ({ ingredients }: IngredientsProps) => {
     }, []);
 
     return (
-        <Box ref={scrollRef} maxHeight="220px" overflowY="auto" p={1}>
+        <Box ref={scrollRef} height={'full'} maxHeight="12vh" overflowY="auto" p={1}>
             {ingredients.map((ingredient, index) => (
                 <HStack key={index} mb={4} alignItems="center">
                     <Box bg="white" boxSize="40px" borderRadius="full" ml="2" mr="1">

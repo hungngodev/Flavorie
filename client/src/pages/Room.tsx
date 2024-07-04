@@ -86,8 +86,8 @@ const Room = () => {
     return (
         <Box height="100%" width="100%" position="relative">
             <HStack height="100%" width="100%" padding={'5px'}>
-                <VStack width="full" height="full ">
-                    <Grid height={'60%'} width="100%" templateColumns={`repeat(5,1fr)`} templateRows={`repeat(2,1fr)`}>
+                <VStack width="full" height="full" gap={2}>
+                    <Grid height={'60vh'} width="100%" templateColumns={`repeat(5,1fr)`} templateRows={`repeat(2,1fr)`}>
                         {focusingVideo && (
                             <GridItem rowSpan={3} colSpan={3} padding={'8px'} onClick={() => setFocus('')}>
                                 <Card width={'full'} height="full" display={'flex'} justify={'center'} align={'center'}>
@@ -124,8 +124,8 @@ const Room = () => {
                                     </Card>
                                 </GridItem>
                             ))}
-                        <GridItem gridColumn={5} gridRow={1} colSpan={1} rowSpan={1}>
-                            <VStack height="full" width="full" justifyContent={'end'}>
+                        <GridItem gridColumn={5} gridRow={1} colSpan={1} rowSpan={2} padding={2}>
+                            <VStack height="full" width="90%" justifyContent={'end'}>
                                 <ProgressiveImage
                                     src={
                                         mealDatas.find((meal: any) => meal.title === mealChoice)?.imageUrl ||
@@ -165,7 +165,7 @@ const Room = () => {
                         </GridItem>
                     </Grid>
                     {currentMealInfo && Object.keys(currentMealInfo).length > 0 && (
-                        <HStack width={'80%'} height="50%">
+                        <HStack width={'80%'} height="40vh" flexShrink={0}>
                             {mealChoice}
                             <ImageSlide backendData={currentMealInfo} />
                         </HStack>
