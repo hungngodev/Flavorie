@@ -1,4 +1,4 @@
-// import Peer from 'peerjs';
+import Peer from 'peerjs';
 import { useEffect, useReducer, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';

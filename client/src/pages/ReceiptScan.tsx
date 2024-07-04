@@ -2,117 +2,201 @@ import React, { useState } from 'react';
 import UploadReceiptForm from '../components/UploadReceiptForm';
 import ImageScan from '../components/ingredients/ImageScan';
 import useAuth from '../hooks/useAuth';
-import { Heading, Box, Button, Flex, Icon, HStack, UnorderedList, ListItem, Text, VStack } from '@chakra-ui/react';
+import {
+    Heading,
+    Box,
+    Button,
+    Flex,
+    Icon,
+    HStack,
+    UnorderedList,
+    ListItem,
+    Text,
+    VStack,
+    useToast,
+} from '@chakra-ui/react';
+// import { Box, Flex, VStack, Icon, Button,  } from '@chakra-ui/react';
 import { FaUpload, FaCamera } from 'react-icons/fa';
+import socket from '../socket/socketio.tsx';
+import UploadImage from '../components/UploadReceiptForm';
 import theme from '../style/theme';
+import Footer from '../components/nav/Footer.tsx';
 
 const ReceiptScan: React.FC = () => {
-  const { currentUser } = useAuth();
+    const { currentUser } = useAuth();
+    const toast = useToast();
+    const [file, setFile] = useState<File | null>(null);
+    const [backgroundImage, setBackgroundImage] = useState('');
 
-  return (
-      <Flex direction="column" alignItems="center" mt="7">
-          <Box w="100%" maxW="1200px" p="4">
-              <Heading as="h1" mb="5" color="gray.600">
-                  Welcome, {currentUser.username}
-              </Heading>
-              <Text fontSize={18} textAlign="justify" mb="5">
-                  We're excited to help you discover delicious meals and guide you through cooking based on the
-                  ingredients you have. If you don't have specific ideas, don't worry! Just follow our simple steps to
-                  get started.
-              </Text>
-              <Box mt="10">
-                  <Heading as="h3" size="lg" mb="4" textAlign="center" color={theme.colors.palette_purple}>
-                      How it works
-                  </Heading>
-                  <Flex justify="space-between" wrap="wrap" h="320px">
-                      <Box
-                          flex="1"
-                          minW="250px"
-                          p="4"
-                          borderWidth="1px"
-                          borderRadius="lg"
-                          boxShadow="lg"
-                          m="2"
-                          bg={theme.colors.white_purple}
-                      >
-                          <Heading as="h4" size="md" mt="6" textAlign="center" color="gray.600">
-                              1. Scan or upload your receipt
-                          </Heading>
-                          <Text textAlign="justify" p={4}>
-                              Click on the "Scan Receipt" button and use your device's camera to capture a clear image
-                              of your grocery receipt. Ensure all items are visible for the best results.
-                          </Text>
-                      </Box>
-                      <Box
-                          flex="1"
-                          minW="250px"
-                          p="4"
-                          borderWidth="1px"
-                          borderRadius="lg"
-                          boxShadow="lg"
-                          m="2"
-                          bg={theme.colors.white_purple}
-                      >
-                          <Heading as="h4" size="md" mt="6" mb="2" textAlign="center" color="gray.600">
-                              2. Upload Your Receipt
-                          </Heading>
-                          <Text textAlign="justify" p={4}>
-                              Click on the "Upload Receipt" button and select the image or PDF file of your grocery
-                              receipt from your device. Make sure the receipt is legible and includes all purchased
-                              items.
-                          </Text>
-                      </Box>
-                      <Box
-                          flex="1"
-                          minW="250px"
-                          p="4"
-                          borderWidth="1px"
-                          borderRadius="lg"
-                          boxShadow="lg"
-                          m="2"
-                          bg={theme.colors.white_purple}
-                      >
-                          <Heading as="h4" size="md" mt="6" mb="2" textAlign="center" color="gray.600">
-                              3. Get Meal Suggestions
-                          </Heading>
-                          <Text textAlign="justify" p={4}>
-                              After uploading or scanning your receipt, our system will analyze the ingredients and
-                              provide personalized meal suggestions along with step-by-step cooking guides.
-                          </Text>
-                      </Box>
-                  </Flex>
-              </Box>
-              <Box ml="3" mt="10" mb="8">
-                  <Heading as="h5" size="md" color="gray.600">
-                      Tips for best results:
-                  </Heading>
-                  <UnorderedList mt="4" spacing="2">
-                      <ListItem>Ensure your receipt is well-lit and all items are clearly visible.</ListItem>
-                      <ListItem>If scanning, hold your camera steady to avoid blurry images.</ListItem>
-                      <ListItem>
-                          For uploads, check that the file is not too large and is in a common format (JPG, PNG, PDF).
-                      </ListItem>
-                  </UnorderedList>
-              </Box>
-              <Flex justify="space-between" wrap="wrap" h="630px">
-                  <Box flex="1" minW="250px" p="4" borderWidth="1px" borderRadius="lg" boxShadow="lg" m="2">
-                      <VStack spacing="4">
-                          <Icon as={FaUpload} boxSize="7" color={theme.colors.palette_indigo} />
-                          <Box alignItems="center">
-                              <UploadReceiptForm />
-                          </Box>
-                      </VStack>
-                  </Box>
-                  <Box flex="1" minW="250px" p="4" borderWidth="1px" borderRadius="lg" boxShadow="lg" m="2">
-                      <VStack spacing="4">
-                          <Icon as={FaCamera} boxSize="7" color={theme.colors.palette_indigo} />
-                          <ImageScan />
-                      </VStack>
-                  </Box>
-              </Flex>
-          </Box>
-      </Flex>
-  );
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        if (!file) {
+            toast({
+                title: 'Error',
+                description: 'Please upload files',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+                // position: 'top-right',
+            });
+            return;
+        }
+
+        if (currentUser.status === 'unauthenticated') {
+            toast({
+                title: 'Error',
+                description: 'Please log in or sign up to submit receipt',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+                // position: 'top-right',
+            });
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const base64 = e.target?.result as string;
+            const filename = file.name;
+            console.log('submitting receipt');
+            socket.emit('submitReceipt', { base64, filename });
+            toast({
+                title: 'Success',
+                description: 'Submit receipt successfully',
+                status: 'success',
+                duration: 2000,
+                isClosable: true,
+                // position: 'top-right',
+            });
+        };
+
+        reader.readAsDataURL(file);
+    };
+
+    const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+        await handleSubmit(event as unknown as React.FormEvent<HTMLFormElement>);
+    };
+
+    return (
+        <div className="flex flex-col overflow-hidden">
+            <Flex direction="column" alignItems="center" mt="6" mb="24">
+                <Box w="100%" maxW="1200px" p="4">
+                    <Heading as="h1" fontSize="4xl" mb="4" color={theme.colors.palette_purple}>
+                        {/* Hey {currentUser.username},  */}
+                        Stuck on what to cook today?
+                    </Heading>
+                    <Text fontSize="22" textAlign="justify" mb="5" color="gray.600">
+                        Don't worry! We're here to turn your grocery list into mouth-watering meals! Whether you have no
+                        idea what to cook or just need some inspiration, we've got you covered. Just follow our simple
+                        steps to get started!
+                    </Text>
+                    <Box mt="12">
+                        <Heading as="h2" fontSize="36" mb="4" textAlign="center" color={theme.colors.palette_purple}>
+                            How it works
+                        </Heading>
+                        <Flex justify="space-between" wrap="wrap" h="320px">
+                            <Box
+                                flex="1"
+                                minW="250px"
+                                p="5"
+                                borderWidth="1px"
+                                borderRadius="lg"
+                                boxShadow="lg"
+                                m="4"
+                                bg={theme.colors.white_purple}
+                            >
+                                <Heading as="h4" size="md" mt="6" textAlign="center" color="gray.600">
+                                    1. Scan or Upload Your Receipt
+                                </Heading>
+                                <Text textAlign="justify" p={4}>
+                                    Either click "Scan receipt" to capture an image using your device's camera or choose
+                                    an image or PDF file from your device.
+                                </Text>
+                            </Box>
+                            <Box
+                                flex="1"
+                                minW="250px"
+                                p="5"
+                                borderWidth="1px"
+                                borderRadius="lg"
+                                boxShadow="lg"
+                                m="4"
+                                bg={theme.colors.white_purple}
+                            >
+                                <Heading as="h4" size="md" mt="6" mb="2" textAlign="center" color="gray.600">
+                                    2. Verify Receipt Details
+                                </Heading>
+                                <Text textAlign="justify" p={4}>
+                                    Review and verify the extracted items. If you have more receipts, use the button to
+                                    go back and add them.
+                                </Text>
+                            </Box>
+                            <Box
+                                flex="1"
+                                minW="250px"
+                                p="5"
+                                borderWidth="1px"
+                                borderRadius="lg"
+                                boxShadow="lg"
+                                m="4"
+                                bg={theme.colors.white_purple}
+                            >
+                                <Heading as="h4" size="md" mt="6" mb="2" textAlign="center" color="gray.600">
+                                    3. Get Meal Suggestions
+                                </Heading>
+                                <Text textAlign="justify" p={4}>
+                                    We will analyze the ingredients and provide personalized meal suggestions along with
+                                    step-by-step cooking guides for you.
+                                </Text>
+                            </Box>
+                        </Flex>
+                    </Box>
+                    <Box ml="3" mt="10" mb="12">
+                        <Heading as="h5" size="md" color="gray.600">
+                            Tips for best results:
+                        </Heading>
+                        <UnorderedList mt="4" spacing="2">
+                            <ListItem>Ensure your receipt is well-lit and all items are clearly visible.</ListItem>
+                            <ListItem>If scanning, hold your camera steady to avoid blurry images.</ListItem>
+                            <ListItem>
+                                For uploads, check that the file is not too large and is in a common format (JPG, PNG,
+                                PDF).
+                            </ListItem>
+                        </UnorderedList>
+                    </Box>
+                    <Flex justify="space-between" wrap="wrap" h="630px">
+                        <Box flex="1" minW="250px" p="4" borderWidth="1px" borderRadius="lg" boxShadow="lg" m="2">
+                            <VStack spacing="4">
+                                <Icon as={FaUpload} boxSize="7" color="indigo" />
+                                <Box alignItems="center">
+                                    <UploadImage
+                                        setFile={setFile}
+                                        backgroundImage={backgroundImage}
+                                        setBackgroundImage={setBackgroundImage}
+                                    />
+                                </Box>
+                                <Box width="100%" textAlign="center">
+                                    <Button onClick={handleClick} variant="outline">
+                                        Submit
+                                    </Button>
+                                </Box>
+                            </VStack>
+                        </Box>
+                        <Box flex="1" minW="250px" p="4" borderWidth="1px" borderRadius="lg" boxShadow="lg" m="2">
+                            <VStack spacing="4">
+                                <Icon as={FaCamera} boxSize="7" color="indigo" />
+                                <ImageScan />
+                            </VStack>
+                        </Box>
+                    </Flex>
+                </Box>
+            </Flex>
+            {/* <Box>
+                <Footer />
+            </Box> */}
+        </div>
+    );
 };
 
 export default ReceiptScan;

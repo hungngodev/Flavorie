@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../hooks';
 import useToast from '../hooks/useToast';
 import socket from '../socket/socketio';
-import { AspectRatio, Box, BoxProps, Container, forwardRef, Heading, Input, Stack, Text } from '@chakra-ui/react';
+import { AspectRatio, Box, Button, BoxProps, Container, forwardRef, Heading, Input, Stack, Text } from '@chakra-ui/react';
 import { motion, useAnimation } from 'framer-motion';
 import theme from '../style/theme';
 
@@ -96,15 +96,34 @@ const PreviewImage = forwardRef<BoxProps, typeof Box>((props, ref) => {
     );
 });
 
-export default function UploadImage() {
+interface UploadImageProps {
+    backgroundImage: string;
+    setFile: React.Dispatch<React.SetStateAction<File | null>>;
+    setBackgroundImage: React.Dispatch<React.SetStateAction<string>>;
+}
+
+const UploadImage: React.FC<UploadImageProps> = ({ setFile, backgroundImage, setBackgroundImage }) => {
     const controls = useAnimation();
     const startAnimation = () => controls.start('hover');
     const stopAnimation = () => controls.stop();
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files) {
+            const selectedFile = event.target.files[0];
+            setFile(selectedFile);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setBackgroundImage(reader.result as string);
+            };
+            reader.readAsDataURL(selectedFile);
+        }
+    };
+
     return (
         <Container my="23">
             <AspectRatio width="62" ratio={1} h="400px" w="300px">
                 <Box
-                    borderColor={theme.colors.palette_lavender}
+                    borderColor="lavender"
                     borderStyle="dashed"
                     borderWidth="2px"
                     rounded="md"
@@ -114,12 +133,16 @@ export default function UploadImage() {
                     _hover={{
                         shadow: 'md',
                     }}
-                    as={motion.div}
-                    initial="rest"
-                    animate="rest"
-                    whileHover="hover"
                 >
-                    <Box position="relative" height="100%" width="100%">
+                    <Box
+                        as={motion.div}
+                        initial="rest"
+                        animate="rest"
+                        whileHover="hover"
+                        position="relative"
+                        height="100%"
+                        width="100%"
+                    >
                         <Box
                             position="absolute"
                             top="0"
@@ -138,7 +161,7 @@ export default function UploadImage() {
                                 spacing="4"
                             >
                                 <Box height="20" width="14" position="relative" mt="10">
-                                    <PreviewImage variants={third} backgroundImage={`../public/images/receipt.jpg`} />
+                                    <PreviewImage variants={third} backgroundImage={backgroundImage} />
                                 </Box>
                                 <Stack p="8" textAlign="center" spacing="1">
                                     <Heading fontSize="lg" color="gray.700" fontWeight="bold">
@@ -160,10 +183,13 @@ export default function UploadImage() {
                             accept="image/*"
                             onDragEnter={startAnimation}
                             onDragLeave={stopAnimation}
+                            onChange={handleFileChange}
                         />
                     </Box>
                 </Box>
             </AspectRatio>
         </Container>
     );
-}
+};
+
+export default UploadImage;

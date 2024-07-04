@@ -114,7 +114,7 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
                         </>
                     ) : (
                         <>
-                            <Box position="relative" display="inline-block">
+                            <Box mt="1" position="relative" display="inline-block">
                                 <Link to="/notifications">
                                     <FaBell color="gray" size="24px" />
                                     {numberOfNotifications > 0 && (
