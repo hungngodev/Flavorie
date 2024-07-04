@@ -149,7 +149,7 @@ export async function toggleLikedItem(
   const existingItem = await ItemModel.findOne({
     userId: userId,
     itemId: itemId,
-    type: "likedMeal",
+    type: type,
   });
   if (existingItem) {
     await ItemModel.findByIdAndDelete(existingItem._id);

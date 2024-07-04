@@ -94,3 +94,19 @@ export const updateLikedMeals = async (req: Request, res: Response) => {
   const myLikedMeals = await getUserItems(req.user.userId, "likedMeal");
   res.status(StatusCodes.OK).send({ liked, myLikedMeals });
 };
+export const getCookedMeals = async (req: Request, res: Response) => {
+  const cookedMeals = await getUserItems(req.user.userId, "cookedMeal");
+  res.status(StatusCodes.OK).send({ cookedMeals });
+};
+
+export const updateCookedMeals = async (req: Request, res: Response) => {
+  console.log(req.body);
+  await toggleLikedItem(req.user.userId, req.body.mealId, "cookedMeal");
+  const user = await UserModel.findById(req.user.userId);
+  if (user) {
+    user.points += 10;
+    await user.save();
+  }
+
+  res.status(StatusCodes.OK).send({ msg: "update cookedMeal" });
+};
