@@ -1,43 +1,29 @@
+import { Box, Button, Flex, Heading, Icon, ListItem, Text, UnorderedList, VStack } from '@chakra-ui/react';
 import React, { useState } from 'react';
-import UploadReceiptForm from '../components/UploadReceiptForm';
 import ImageScan from '../components/ingredients/ImageScan';
 import useAuth from '../hooks/useAuth';
 import useToast from '../hooks/useToast.tsx';
-import {
-    Heading,
-    Box,
-    Button,
-    Flex,
-    Icon,
-    HStack,
-    UnorderedList,
-    ListItem,
-    Text,
-    VStack,
-    useToast,
-} from '@chakra-ui/react';
 // import { Box, Flex, VStack, Icon, Button,  } from '@chakra-ui/react';
-import { FaUpload, FaCamera } from 'react-icons/fa';
-import socket from '../socket/socketio.tsx';
+import { FaCamera, FaUpload } from 'react-icons/fa';
 import UploadImage from '../components/UploadReceiptForm';
+import socket from '../socket/socketio.tsx';
 import theme from '../style/theme';
-import Footer from '../components/nav/Footer.tsx';
 
 const ReceiptScan: React.FC = () => {
     const { currentUser } = useAuth();
-    const {notifyError, notifySuccess} = useToast()
+    const { notifyError, notifySuccess } = useToast();
     const [file, setFile] = useState<File | null>(null);
     const [backgroundImage, setBackgroundImage] = useState('');
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (!file) {
-            notifyError("Please upload your receipt")
+            notifyError('Please upload your receipt');
             return;
         }
 
         if (currentUser.status === 'unauthenticated') {
-            notifyError("Please log in to upload receipts")
+            notifyError('Please log in to upload receipts');
         }
 
         const reader = new FileReader();
@@ -46,7 +32,7 @@ const ReceiptScan: React.FC = () => {
             const filename = file.name;
             console.log('submitting receipt');
             socket.emit('submitReceipt', { base64, filename });
-            notifySuccess("Submit receipt successfully")
+            notifySuccess('Submit receipt successfully');
         };
 
         reader.readAsDataURL(file);
