@@ -3,3 +3,7 @@ export { default as createReviewReducer } from './CreateReview';
 export { default as editReviewReducer } from './EditReview';
 export { default as deleteReviewReducer } from './DeleteReview';
 export { default as reviewReducer } from './ReviewState';
+export { createReviewRequest as createReviewRequest } from './CreateReview';
+export { deleteReviewRequest as deleteReviewRequest } from './DeleteReview';
+export { editReviewRequest as editReviewRequest } from './EditReview';
+export { getReviewsRequest as getReviewsRequest } from './GetReviews';

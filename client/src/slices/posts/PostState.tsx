@@ -39,7 +39,8 @@ export const PostSlice = createSlice({
 
     updatePost: (state: PostState, action: PayloadAction<{ post: PostObjectType[] }>) => {
       const { post } = action.payload;
-      const postIndex = state.posts.findIndex((p) => p.id === post[0].id); // Assuming each post has a unique 'id' field
+      const postIndex = state.posts.findIndex((p) => p.id === post[0].id);
+
       if (postIndex !== -1) {
         // Check if the post was found
         const updatedPosts = [...state.posts];
@@ -48,7 +49,7 @@ export const PostSlice = createSlice({
         updatedPosts[postIndex] = post[0];
         return { posts: [...updatedPosts] };
       }
-      return state; // Return the original state if post not found
+      return state;
     },
 
     deletePost: (state: PostState, action: PayloadAction<{ postId: string | undefined }>) => {

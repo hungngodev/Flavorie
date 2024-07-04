@@ -10,6 +10,6 @@ export const hideRequest = createAsyncThunk('hidePost/hide', async ({ postId }: 
 
 export const HidePost = getTemplateSlice('hidePost', initialState, hideRequest);
 
-export const selectHideStatus = (state: RootState) => state.hidePost.status;
+export const selectHideStatus = (state: RootState) => (state.hidePost as any).status;
 
 export default HidePost.reducer;

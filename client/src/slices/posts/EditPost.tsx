@@ -7,11 +7,14 @@ interface EditRequestPayload {
   newFormData: any;
 }
 
-export const editRequest = createAsyncThunk('editPost/edit', async ({ postId, newFormData }: EditRequestPayload) => {
-  const response = await customFetch.put(`/community/post/${postId}`, newFormData);
-  return { post: response.data.post };
-});
+export const editPostRequest = createAsyncThunk(
+  'editPost/edit',
+  async ({ postId, newFormData }: EditRequestPayload) => {
+    const response = await customFetch.put(`/community/post/${postId}`, newFormData);
+    return { post: response.data.post };
+  },
+);
 
-export const EditPost = getTemplateSlice('editPost', initialState, editRequest);
+export const EditPost = getTemplateSlice('editPost', initialState, editPostRequest);
 
 export default EditPost.reducer;

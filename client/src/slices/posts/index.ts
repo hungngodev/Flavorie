@@ -5,3 +5,7 @@ export { default as likePostReducer } from './LikePost';
 export { default as postReducer } from './PostState';
 export { default as savePostReducer } from './SavePost';
 export { default as editPostReducer, default as selectUpdateStatus } from './UpdatePost';
+export { createPostRequest as createPostRequest } from './CreatePost';
+export { deletePostRequest as deletePostRequest } from './DeletePost';
+export { editPostRequest as editPostRequest } from './EditPost';
+export { likePostRequest as likePostRequest } from './LikePost';

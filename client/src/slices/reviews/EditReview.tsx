@@ -3,14 +3,14 @@ import { ReviewRequestType } from '../../components/community/review/types';
 import customFetch from '../../utils/customFetch';
 import { getTemplateSlice, initialState } from '../utils';
 
-export const editReview = createAsyncThunk(
+export const editReviewRequest = createAsyncThunk(
   'editReview/fetchReview',
-  async ({ postId, reviewId }: { postId: string; reviewId: string }) => {
-    const response = await customFetch.put(`/community/review/${postId}/${reviewId}`);
+  async ({ postId, reviewId, content }: { postId: string; reviewId: string; content: string }) => {
+    const response = await customFetch.put(`/community/review/${postId}/${reviewId}`, { content: content });
     return { review: response.data };
   },
 );
 
-export const EditReview = getTemplateSlice('editReview', initialState, editReview);
+export const EditReview = getTemplateSlice('editReview', initialState, editReviewRequest);
 
 export default EditReview.reducer;
