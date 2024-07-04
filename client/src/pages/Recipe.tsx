@@ -12,12 +12,14 @@ import {
     TagLabel,
     Text,
 } from '@chakra-ui/react';
+import React from 'react';
 import { QueryClient, useQuery } from '@tanstack/react-query';
 import { FaPrint, FaSave, FaShareAlt, FaStar } from 'react-icons/fa';
 import { Params, useLoaderData } from 'react-router-dom';
 import ImageSlide, { BackendData } from '../components/meals/ImageSlide';
 import theme from '../style/theme';
 import customFetch from '../utils/customFetch';
+
 
 // Default values shown
 

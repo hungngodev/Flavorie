@@ -46,6 +46,7 @@ export default function LeftOver({ height, removeItem, onSubmit, fields, control
                         e.preventDefault();
                         onSubmit();
                     }}
+                    className=" rounded-full bg-indigo-500 p-3 text-white"
                 >
                     Save
                 </button>
@@ -88,6 +89,7 @@ export default function LeftOver({ height, removeItem, onSubmit, fields, control
                                         alignItems={'center'}
                                         gap={2}
                                         width={'5vw'}
+                                        ml="5"
                                     >
                                         <Controller
                                             render={({ field: { ref, ...restField } }) => (
@@ -134,10 +136,12 @@ export default function LeftOver({ height, removeItem, onSubmit, fields, control
                                         />
                                         <IconButton
                                             icon={<DeleteIcon />}
+                                            bg={theme.colors.palette_indigo}
                                             aria-label="delete"
                                             colorScheme="pink"
                                             size="xs"
                                             minWidth={'full'}
+                                            _hover={{ bg: theme.colors.palette_lavender }}
                                             variant="solid"
                                             onClick={() => removeItem(index)}
                                         />

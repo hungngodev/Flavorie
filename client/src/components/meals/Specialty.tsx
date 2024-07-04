@@ -2,6 +2,8 @@ import { Box, Button } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { AutoSlider } from '../../components';
+import theme from '../../style/theme';
+
 interface mockMeals {
   id: string;
   image: string;
@@ -44,7 +46,7 @@ export const Specialty = () => {
   return (
     <Box width="80%" height={'fit-content'} margin={'20px'} borderRadius="xl" textAlign="center">
       {!showMeal ? (
-        <Button textAlign="center" borderRadius="full" colorScheme="teal" onClick={handleClick}>
+        <Button textAlign="center" borderRadius="full" variant="outline" onClick={handleClick}>
           What's special today?
         </Button>
       ) : (

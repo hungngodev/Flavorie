@@ -2,6 +2,7 @@ import { Badge, Box, Button, Flex, Heading, Link, useTheme } from '@chakra-ui/re
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
 import { cn } from '../../utils/cn';
+import theme from '../../style/theme';
 
 const AutoSlider = ({
   images,
@@ -112,73 +113,74 @@ const AutoSlider = ({
   };
   const areImagesLoaded = loadedImages.length > 0;
   return (
-    <div
-      className={cn('relative flex h-full w-full items-center justify-center overflow-hidden', className)}
-      style={{
-        perspective: '1000px',
-      }}
-    >
-      {areImagesLoaded && overlay && (
-        <div className={cn('absolute left-20 z-40', overlayClassName)}>
-          <motion.div
-            initial="initial"
-            animate="visible"
-            exit={direction === 'up' ? 'upExit' : 'downExit'}
-            variants={slideVariants}
-          >
-            <Flex direction={{ base: 'column', md: 'row' }} alignItems="center" justifyContent="center">
-              <Box ml={{ md: '4' }} textAlign="left">
-                <Heading as="h3" size="3xl" color="white" mb="4" width="40vw" className="text-wrap">
-                  {images[currentIndex].title}
-                </Heading>
-                <Link href={images[currentIndex].id}>
-                  <Button textAlign="center" borderRadius="full" px="4" py="2" colorScheme="teal" fontSize="md" mb="4">
-                    Cook now
-                  </Button>
-                </Link>
-                <Flex gap="2">
-                  {images[currentIndex].tags?.map((tag, index) => (
-                    <Badge
-                      key={index}
-                      borderRadius="full"
-                      px="4"
-                      py="2"
-                      variant="outline"
-                      textAlign="center"
-                      bgColor={theme.colors.palette_pink}
-                      color={'white'}
-                    >
-                      {tag}
-                    </Badge>
-                  ))}
-                </Flex>
-              </Box>
-            </Flex>
-          </motion.div>
-        </div>
-      )}
-      { 
-        areImagesLoaded &&       
-        <AnimatePresence>
-        <motion.img
-          key={currentIndex}
-          src={images[currentIndex].image}
-          initial="initial"
-          animate="visible"
-          exit={direction === 'up' ? 'upExit' : 'downExit'}
-          variants={slideVariants}
-          className="image absolute  z-20 h-full w-full rounded-3xl object-contain object-right backdrop-blur-sm"
-        />
-        <motion.div
-          className="from- absolute  inset-0 z-30 h-full w-full rounded-3xl bg-gradient-to-r from-indigo-500 from-[66%]"
-          initial="initial"
-          animate="visible"
-          exit={direction === 'up' ? 'upExit' : 'downExit'}
-          variants={slideVariants}
-        ></motion.div>
-      </AnimatePresence>
-      }
-    </div>
+      <div
+          className={cn('relative flex h-full w-full items-center justify-center overflow-hidden', className)}
+          style={{
+              perspective: '1000px',
+          }}
+      >
+          {areImagesLoaded && overlay && (
+              <div className={cn('absolute left-20 z-40', overlayClassName)}>
+                  <motion.div
+                      initial="initial"
+                      animate="visible"
+                      exit={direction === 'up' ? 'upExit' : 'downExit'}
+                      variants={slideVariants}
+                  >
+                      <Flex direction={{ base: 'column', md: 'row' }} alignItems="center" justifyContent="center">
+                          <Box ml={{ md: '4' }} textAlign="left">
+                              <Heading as="h3" size="3xl" color="white" mb="4" width="40vw" className="text-wrap">
+                                  {images[currentIndex].title}
+                              </Heading>
+                              <Link href={images[currentIndex].id}>
+                                  <Button textAlign="center" borderRadius="full" px="4" py="2" fontSize="md" mb="4">
+                                      Cook now
+                                  </Button>
+                              </Link>
+                              <Flex gap="2">
+                                  {images[currentIndex].tags?.map((tag, index) => (
+                                      <Badge
+                                          key={index}
+                                          borderRadius="full"
+                                          px="4"
+                                          py="2"
+                                          variant="outline"
+                                          textAlign="center"
+                                          borderColor={theme.colors.palette_indigo}
+                                          bg={theme.colors.white_purple}
+                                          color={theme.colors.purple}
+                                      >
+                                          {tag}
+                                      </Badge>
+                                  ))}
+                              </Flex>
+                          </Box>
+                      </Flex>
+                  </motion.div>
+              </div>
+          )}
+          {areImagesLoaded && (
+              <AnimatePresence>
+                  <motion.img
+                      key={currentIndex}
+                      src={images[currentIndex].image}
+                      initial="initial"
+                      animate="visible"
+                      exit={direction === 'up' ? 'upExit' : 'downExit'}
+                      variants={slideVariants}
+                      className="image absolute  z-20 h-full w-full rounded-3xl object-contain object-right backdrop-blur-sm"
+                  />
+                  <motion.div
+                      className="from- absolute  inset-0 z-30 h-full w-full rounded-3xl bg-gradient-to-r from-indigo-200 from-[58%] "
+                      initial="initial"
+                      animate="visible"
+                      exit={direction === 'up' ? 'upExit' : 'downExit'}
+                      variants={slideVariants}
+                  ></motion.div>
+                  {/* bg-gradient-to-r from-indigo-300 from-[58%] via-purple-300 to-pink-300 */}
+              </AnimatePresence>
+          )}
+      </div>
   );
 };
 

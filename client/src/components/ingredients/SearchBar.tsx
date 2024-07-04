@@ -48,68 +48,69 @@ export const SearchBar = ({ autoCompleteLink }: { autoCompleteLink: string }) =>
   }, [query]);
 
   return (
-    <Flex width="100%" justifyContent={'center'}>
-      <VStack ref={ref as React.LegacyRef<HTMLDivElement>} width={'40%'} gap={0}>
-        <Form onSubmit={() => setFocus(false)} style={{ width: '100%' }}>
-          <Flex width="100%" justify="center">
-            <InputGroup borderRadius={5} size="md" width={'100%'} minWidth={'30vw'}>
-              <Input
-                pr="4.5rem"
-                type="text"
-                placeholder="Search..."
-                value={query}
-                name="search"
-                onChange={(e) => setQuery(e.target.value)}
-                onFocus={() => setFocus(true)}
-              />
-              <IconButton
-                icon={<SearchIcon />}
-                aria-label={'Search'}
-                colorScheme="blue"
-                type="submit"
-                ref={buttonRef}
-                onClick={() => submit(buttonRef.current)}
-              />
-            </InputGroup>
-          </Flex>
-        </Form>
-        <Flex
-          width="100%"
-          maxWidth="50vw"
-          justify="center"
-          alignItems={'center'}
-          flexDir="column"
-          border="1px solid black"
-          borderRadius={5}
-          boxShadow="md"
-          display={focus ? 'flex' : 'none'}
-          borderTop="none"
-        >
-          {focus &&
-            (status !== 'pending' ? (
-              items.map((item: { title: string }, index: number) => (
-                <div className="w-full hover:bg-slate-400">
-                  <Flex
-                    key={index}
-                    justify="center"
-                    dir="col"
-                    py={1}
-                    onClick={() => {
-                      setQuery(item.title);
-                      setFocus(false);
-                    }}
-                  >
-                    {item.title}
+      <Flex width="100%" justifyContent={'center'}>
+          <VStack ref={ref as React.LegacyRef<HTMLDivElement>} width={'40%'} gap={0}>
+              <Form onSubmit={() => setFocus(false)} style={{ width: '100%' }}>
+                  <Flex width="100%" justify="center">
+                      <InputGroup borderRadius={5} size="md" width={'100%'} minWidth={'30vw'}>
+                          <Input
+                              pr="4.5rem"
+                              type="text"
+                              placeholder="Search..."
+                              value={query}
+                              name="search"
+                              onChange={(e) => setQuery(e.target.value)}
+                              onFocus={() => setFocus(true)}
+                          />
+                          <IconButton
+                              icon={<SearchIcon />}
+                              aria-label={'Search'}
+                              colorScheme="blue"
+                              type="submit"
+                              ref={buttonRef}
+                              onClick={() => submit(buttonRef.current)}
+                          />
+                      </InputGroup>
                   </Flex>
-                </div>
-              ))
-            ) : (
-              <div className="mt-4">
-                <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
-              </div>
-            ))}
-        </Flex>
-      </VStack>
-    </Flex>
+              </Form>
+              <Flex
+                  width="100%"
+                  maxWidth="50vw"
+                  justify="center"
+                  alignItems={'center'}
+                  flexDir="column"
+                  border="1px solid black"
+                  borderRadius={5}
+                  boxShadow="md"
+                  display={focus ? 'flex' : 'none'}
+                  borderTop="none"
+              >
+                  {focus &&
+                      (status !== 'pending' ? (
+                          items.map((item: { title: string }, index: number) => (
+                              <div className="w-full hover:bg-slate-400">
+                                  <Flex
+                                      key={index}
+                                      justify="left"
+                                      dir="col"
+                                      ml="2"
+                                      py={1}
+                                      onClick={() => {
+                                          setQuery(item.title);
+                                          setFocus(false);
+                                      }}
+                                  >
+                                      {item.title}
+                                  </Flex>
+                              </div>
+                          ))
+                      ) : (
+                          <div className="mt-4">
+                              <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
+                          </div>
+                      ))}
+              </Flex>
+          </VStack>
+      </Flex>
   );
 };

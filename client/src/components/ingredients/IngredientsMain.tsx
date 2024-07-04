@@ -28,13 +28,10 @@ export function IngredientsMain({ addFunction, data }: IngredientsMainProps) {
             justifyContent={'space-around'}
         >
             {/* <Hero title="" boldTitle={data.categoryName.toUpperCase()} /> */}
-            <Heading mt="5" fontSize="60" fontWeight="bold" color={theme.colors.palette_purple}>
+            <Heading mt="4" mb="4" fontSize="60" fontWeight="bold" color={theme.colors.palette_purple}>
                 {data.categoryName.toUpperCase()}
             </Heading>
-            <Text color="gray.600" fontSize={'1.3rem'}>
-                {data.totalNumberOfIngredients} Ingredients
-            </Text>
-            <VStack width={'100%'} height={'100%'}>
+            <VStack width={'100%'} height={'100%'} mb="4">
                 {dataToRender.map((subCategory, index) => (
                     <IngredientLine
                         key={index + subCategory.queryKey}
@@ -49,11 +46,14 @@ export function IngredientsMain({ addFunction, data }: IngredientsMainProps) {
                     showControls
                     onChange={(page) => setPage(page)}
                     total={Math.ceil(data.results.length / size)}
-                    color="primary"
-                    initialPage={page}
-                    space-y-10="true"
+                    color="secondary"
+                    initialPage={3}
+                    space-y-10
                 />
             </div>
+            <Text color="gray.600" fontSize={'1.3rem'} mt="6">
+                {data.totalNumberOfIngredients} Ingredients
+            </Text>
         </VStack>
     );
 }

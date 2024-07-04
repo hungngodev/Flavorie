@@ -62,6 +62,7 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
                             // socket.emit('sendToInstacart', fields);
                             lottieCartRef.current?.playSegments([0, 135]);
                         }}
+                        className=" rounded-full bg-indigo-500 px-5 py-3 text-white"
                     >
                         Save it
                     </button>
@@ -71,6 +72,7 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
                             // socket.emit('sendToInstacart', fields);
                             lottieCartRef.current?.playSegments([0, 135]);
                         }}
+                        className=" rounded-full bg-indigo-500 px-5 py-3 text-white"
                     >
                         Transfer to Fridge
                     </button>
@@ -79,6 +81,7 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
                             onSubmit('send');
                             lottieCartRef.current?.playSegments([0, 135]);
                         }}
+                        className=" rounded-full bg-indigo-500 px-5 py-3 text-white"
                     >
                         Send To Instacart
                     </button>
@@ -87,8 +90,9 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
                             onSubmit('deleteAll');
                             lottieCartRef.current?.playSegments([0, 135]);
                         }}
+                        className=" rounded-full bg-indigo-500 px-5 py-3 text-white"
                     >
-                        delete ALL
+                        Delete ALL
                     </button>
                 </VStack>
             </HStack>
@@ -138,6 +142,7 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
                                         alignItems={'center'}
                                         gap={2}
                                         width={'5vw'}
+                                        ml="5"
                                     >
                                         <Controller
                                             render={({ field: { ref, ...restField } }) => (

@@ -32,8 +32,8 @@ dist-ssr
 *.sln
 *.sw?
 
-src/scan-receipts/venv
-src/scan-receipts/venv
 src/scan-receipts/cc.en.300.bin.gz.part
 src/scan-receipts/app/__pycache__/*
 src/scan-receipts/__pycache__
+venv/
+__pycache__/
