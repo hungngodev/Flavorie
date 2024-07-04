@@ -13,7 +13,7 @@ import NotificationPage from './pages/NotificationPage.tsx';
 import Receipt from './pages/Receipt.tsx';
 import ReceiptScan from './pages/ReceiptScan.tsx';
 import { loader as recipeLoader } from './pages/Recipe.tsx';
-import { Feed, FullPost, Ingredient, Login, Main, Meal, Recipe, Register, User } from './pages/index';
+import { Feed, FullPost, Ingredient, Login, Main, Meal, Register, User } from './pages/index';
 import ToastProvider from './providers/ToastProvider.tsx';
 import { store as reduxStore } from './store/store';
 import theme from './style/theme';
@@ -67,7 +67,7 @@ const router = createBrowserRouter([
           },
           {
             path: ':mealId',
-            element: <Recipe />,
+            element: <div />,
             loader: recipeLoader(queryClient),
           },
         ],
@@ -84,6 +84,10 @@ const router = createBrowserRouter([
             path: ':postId',
             element: <FullPost />,
             loader: PostLoader(queryClient),
+          },
+          {
+            path: 'reviews',
+            element: <Reviews />,
           },
         ],
       },
@@ -115,6 +119,7 @@ const router = createBrowserRouter([
     ],
   },
 ]);
+
 function App() {
   return (
     <ChakraProvider theme={extendTheme(theme)}>

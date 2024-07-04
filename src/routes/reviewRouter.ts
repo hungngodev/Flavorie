@@ -11,7 +11,7 @@ import {
   checkUser,
 } from "../middleware/authMiddleware.ts";
 import { validateReview } from "../middleware/validateMiddleware.ts";
-import Review from "../models/Review.ts";
+import { default as Review, default as Review } from "../models/Review.ts";
 import { catchAsync } from "../utils/catchAsync.ts";
 
 const router = Router();
@@ -37,5 +37,7 @@ router.delete(
   authorizeReviewOwner,
   catchAsync(deleteReview),
 );
+
+export default router;
 
 export default router;
