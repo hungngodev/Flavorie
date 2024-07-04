@@ -6,108 +6,81 @@ import {
     CardBody,
     Divider,
     Flex,
+    Grid,
     HStack,
     Heading,
     IconButton,
     Input,
     Text,
-    useToast,
 } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { FaCamera, FaEllipsis } from 'react-icons/fa6';
+import useToast from '../../hooks/useToast';
 import theme from '../../style/theme';
-
+import customFetch from '../../utils/customFetch';
 export interface PersonalProps {
-    avatar: {
-        src: string;
-        username: string;
-    };
+    avatar: string;
+    // avatarFileName: string;
     name: string;
-    lastname: string;
+    lastName: string;
     email: string;
-    phone: string;
-    address: {
-        city: string;
-        state: string;
-        country: string;
-        zipcode?: string;
-    };
+    city: string;
+    country: string;
+    description: string;
 }
 
-const UserCard: React.FC<PersonalProps> = ({ avatar, name, lastname, email, phone, address }) => {
+const UserCard = () => {
     const [isEditing, setIsEditing] = useState(false);
-    const [formData, setFormData] = useState({
-        avatar: avatar.src,
-        username: avatar.username,
-        name,
-        lastname,
-        email,
-        phone,
-        city: address.city,
-        state: address.state,
-        country: address.country,
-        zipcode: address.zipcode,
-    });
-
-    const toast = useToast();
-
     const handleEditClick = () => setIsEditing(true);
-
-    // const handleSaveClick = () => {
-    //   setIsEditing(false);
-    //   toast({
-    //     title: 'Profile updated.',
-    //     description: 'Your profile information has been successfully updated.',
-    //     status: 'success',
-    //     duration: 5000,
-    //     isClosable: true,
-    //   });
-    // };
-
-    // const handleCancelClick = () => {
-    //   setIsEditing(false);
-    //   setFormData({
-    //     avatar: avatar.src,
-    //     username: avatar.username,
-    //     name,
-    //     lastname,
-    //     email,
-    //     phone,
-    //     city: address.city,
-    //     state: address.state,
-    //     country: address.country,
-    //     zipcode: address.zipcode,
-    //   });
-    // };
-
-    const [userInfo, setUserInfo] = useState({
-        avatar: avatar.src,
-        username: avatar.username,
-        name,
-        lastname,
-        email,
-        phone,
-        city: address.city,
-        state: address.state,
-        country: address.country,
-        zipcode: address.zipcode,
-    });
-
+    const [userInfo, setUserInfo] = useState<PersonalProps>();
+    const { notifyError, notifySuccess } = useToast();
     const { handleSubmit, control, setValue, reset } = useForm({
         defaultValues: userInfo,
     });
+    const queryClient = useQueryClient();
 
-    const onSubmit = (data: any) => {
-        setUserInfo(data);
-        setIsEditing(false);
-        toast({
-            title: 'Profile updated.',
-            description: 'Your profile information has been successfully updated.',
-            status: 'success',
-            duration: 5000,
-            isClosable: true,
-        });
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            try {
+                const response = await customFetch.get('/user');
+                if (response.status === 200) {
+                    setUserInfo(response.data.currUser);
+                    reset(response.data.currUser);
+                } else {
+                    notifyError('Cannot load your info. Please try again');
+                }
+            } catch (error) {
+                console.log('Error fetching personal data', error);
+                notifyError('Cannot load your info. Please try again');
+            }
+        };
+        fetchUserInfo();
+    }, [notifyError, reset]);
+
+    useEffect(() => {
+        if (userInfo) {
+            reset(userInfo);
+        }
+    }, [userInfo, reset]);
+
+    const onSubmit = async (data: any) => {
+        try {
+            const response = await customFetch.patch('/user', data);
+            if (response.status === 200) {
+                const updatedUserInfo = { ...userInfo, ...data };
+                setUserInfo(updatedUserInfo);
+                setIsEditing(false);
+                notifySuccess('Update profile successfully');
+                queryClient.invalidateQueries({ queryKey: ['user'] });
+            } else {
+                notifyError('Cannot update your profile. Please try again');
+            }
+        } catch (error) {
+            console.log('error when updating profile', error);
+            notifyError('Cannot update your profile. Please try again');
+        }
     };
     const handleCancelClick = () => {
         setIsEditing(false);
@@ -122,13 +95,13 @@ const UserCard: React.FC<PersonalProps> = ({ avatar, name, lastname, email, phon
                 setValue('avatar', reader.result as string);
             };
             reader.readAsDataURL(file);
+            queryClient.invalidateQueries({ queryKey: ['user'] });
         }
     };
 
     return (
         <Card maxW="md" position="relative">
             <Box p="3" position="relative">
-                {/* <Flex ml="4" mt="4" mr="4" mb="2"> */}
                 {isEditing ? (
                     <Box position="absolute" top="2" right="5">
                         <Button size="sm" onClick={handleSubmit(onSubmit)} mr="2">
@@ -156,7 +129,7 @@ const UserCard: React.FC<PersonalProps> = ({ avatar, name, lastname, email, phon
                     <HStack>
                         {isEditing ? (
                             <Box position="relative" width="fit-content" mt="7">
-                                <Avatar size="xl" name={userInfo.username} src={userInfo.avatar} />
+                                <Avatar size="xl" name={userInfo?.name} src={userInfo?.avatar} />
                                 <Box
                                     position="absolute"
                                     top="0"
@@ -190,7 +163,7 @@ const UserCard: React.FC<PersonalProps> = ({ avatar, name, lastname, email, phon
                                 />
                             </Box>
                         ) : (
-                            <Avatar size="xl" name={userInfo.username} src={userInfo.avatar} mt="7" />
+                            <Avatar size="xl" name={userInfo?.name} src={userInfo?.avatar} mt="7" />
                         )}
                         <Box ml="4" mt="7">
                             <Heading mb="2" size="md" fontWeight="bold">
@@ -204,7 +177,7 @@ const UserCard: React.FC<PersonalProps> = ({ avatar, name, lastname, email, phon
                                             )}
                                         />
                                         <Controller
-                                            name="lastname"
+                                            name="lastName"
                                             control={control}
                                             render={({ field }) => (
                                                 <Input {...field} h="25px" size="sm" placeholder="Last name" />
@@ -213,7 +186,7 @@ const UserCard: React.FC<PersonalProps> = ({ avatar, name, lastname, email, phon
                                     </HStack>
                                 ) : (
                                     <Box ml="2">
-                                        {userInfo.name} {userInfo.lastname}
+                                        {userInfo?.name} {userInfo?.lastName}
                                     </Box>
                                 )}
                             </Heading>
@@ -225,7 +198,7 @@ const UserCard: React.FC<PersonalProps> = ({ avatar, name, lastname, email, phon
                                         render={({ field }) => <Input {...field} w="260px" h="25px" size="sm" />}
                                     />
                                 ) : (
-                                    <Box ml="2">{userInfo.email}</Box>
+                                    <Box ml="2">{userInfo?.email}</Box>
                                 )}
                             </Text>
                         </Box>
@@ -236,19 +209,11 @@ const UserCard: React.FC<PersonalProps> = ({ avatar, name, lastname, email, phon
                 <Divider width="100%" borderColor={theme.colors.palette_indigo} />
             </Box>
             <CardBody>
-                <HStack spacing="20px" ml="19" mt="1" mb="3">
-                    <Box w="80px">
-                        <Text color="base.300" mb="1">
-                            {' '}
-                            Phone{' '}
-                        </Text>
+                <Grid templateColumns="100px 1fr" gap={4} ml="19" mt="1" mb="3">
+                    <Box w="100px">
                         <Text color="base.300" mb="1">
                             {' '}
                             City{' '}
-                        </Text>
-                        <Text color="base.300" mb="1">
-                            {' '}
-                            State{' '}
                         </Text>
                         <Text color="base.300" mb="1">
                             {' '}
@@ -256,24 +221,14 @@ const UserCard: React.FC<PersonalProps> = ({ avatar, name, lastname, email, phon
                         </Text>
                         <Text color="base.300" mb="1">
                             {' '}
-                            Zipcode{' '}
+                            Description
                         </Text>
                     </Box>
                     <Box w="250px">
                         {isEditing ? (
                             <>
                                 <Controller
-                                    name="phone"
-                                    control={control}
-                                    render={({ field }) => <Input {...field} h="25px" mb="1" />}
-                                />
-                                <Controller
                                     name="city"
-                                    control={control}
-                                    render={({ field }) => <Input {...field} h="25px" mb="1" />}
-                                />
-                                <Controller
-                                    name="state"
                                     control={control}
                                     render={({ field }) => <Input {...field} h="25px" mb="1" />}
                                 />
@@ -283,22 +238,20 @@ const UserCard: React.FC<PersonalProps> = ({ avatar, name, lastname, email, phon
                                     render={({ field }) => <Input {...field} h="25px" mb="1" />}
                                 />
                                 <Controller
-                                    name="zipcode"
+                                    name="description"
                                     control={control}
                                     render={({ field }) => <Input {...field} h="25px" mb="1" />}
                                 />
                             </>
                         ) : (
                             <>
-                                <Text mb="1">{userInfo.phone}</Text>
-                                <Text mb="1">{userInfo.city}</Text>
-                                <Text mb="1">{userInfo.state}</Text>
-                                <Text mb="1">{userInfo.country}</Text>
-                                <Text mb="1">{userInfo.zipcode}</Text>
+                                <Text mb="1">{userInfo?.city}</Text>
+                                <Text mb="1">{userInfo?.country}</Text>
+                                <Text mb="1">{userInfo?.description}</Text>
                             </>
                         )}
                     </Box>
-                </HStack>
+                </Grid>
             </CardBody>
         </Card>
     );

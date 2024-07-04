@@ -46,14 +46,18 @@ export async function modifyOrdinaryInfo(
 ): Promise<void> {
   let user = await UserModel.findById(userId);
   if (!user) throw new UnauthenticatedError("User not found");
-  if (reqInfo.role !== "admin") throw new UnauthenticatedError("Not Allowed");
+  // if (reqInfo.role !== "admin") throw new UnauthenticatedError("Not Allowed");
   if ("name" in reqInfo) user.name = reqInfo.name;
   if ("email" in reqInfo) user.email = reqInfo.email;
   if ("password" in reqInfo)
     user.password = await hashPassword(reqInfo.password);
   if ("lastName" in reqInfo) user.lastName = reqInfo.lastName;
-  if ("location" in reqInfo) user.location = reqInfo.location;
+  if ("city" in reqInfo) user.city = reqInfo.city;
+  if ("country" in reqInfo) user.country = reqInfo.country;
+  if ("description" in reqInfo) user.description = reqInfo.description;
+
   if ("role" in reqInfo) user.role = reqInfo.role;
+  if ("avatar" in reqInfo) user.avatar = reqInfo.avatar
   if ("avatarPublicId" in reqInfo) user.avatarPublicId = reqInfo.avatarPublicId;
   if ("preferences" in reqInfo) user.preferences = reqInfo.preferences;
   if ("allergy" in reqInfo) user.allergy = reqInfo.allergy;

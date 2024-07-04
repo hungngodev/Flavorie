@@ -36,6 +36,7 @@ export const notificationHandler = (socket: Socket) => {
         message: {
           title: "Process receipt successfully",
           data: response.data,
+          notificationType: "receipt",
         },
         timestamp: new Date(),
       });
@@ -48,6 +49,7 @@ export const notificationHandler = (socket: Socket) => {
         status: false,
         message: {
           title: "Cannot process receipt. Please try again",
+          notificationType: "error",
         },
         timestamp: new Date(),
       });
