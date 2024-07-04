@@ -45,6 +45,10 @@ const theme = {
     palette_lavender: '#D4C1EC',
     palette_pink: '#FFC0CB',
     palette_blue: '#BDE0FE',
+
+    light_purple: '#fef9ff',
+
+    // CDB6A8 #1B1212
   },
   components: {
     Heading: {
@@ -64,10 +68,39 @@ const theme = {
       },
     },
     Button: {
-      baseStyle: {
-        fontWeight: 'normal',
-        userSelect: 'none',
+      variants: {
+        solid: {
+          bg: '#736CED',
+          color: 'white',
+          _hover: {
+            bg: '#9F9FED',
+          },
+          _active: {
+            bg: '#9F9FED',
+          },
+        },
+        outline: {
+          borderColor: '#9F9FED', // indigo
+          color: '#736CED', // purple
+          _hover: {
+            bg: '#fef9ff',
+          },
+          _active: {
+            bg: '#fef9ff',
+          },
+        },
       },
+    },
+    Textarea: {
+      variants: {
+        outline: {
+          borderColor: '#9F9FED',
+          _focus: {
+            borderColor: '#736CED', // purple
+          },
+        },
+      },
+      
     },
     Avatar: {
       icon: FaUserCircle,
