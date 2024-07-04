@@ -116,8 +116,8 @@ export const baseCall = async (
       }
     } catch (error) {
       if (error instanceof AxiosError) {
-        console.log(error);
         // throw new NotFoundError(`Error: ${error.response?.data}`);
+        console.log("Change key");
         SpoonacularTrack.currentKey = currentKey + 1;
         SpoonacularTrack.usageCount = 0;
         SpoonacularTrack.callPerMin = 0;

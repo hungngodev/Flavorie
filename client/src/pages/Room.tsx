@@ -203,7 +203,7 @@ const Room = () => {
                                     setMealChoice(newValue);
                                 }}
                             />
-                            {status !== 'pending' && mealSuggestions.some((e) => e === mealChoice) && (
+                            {status !== 'pending' && mealSuggestions.some((e: string) => e === mealChoice) && (
                                 <Box width="40vh" height="full" mx="auto" px={4}>
                                     <ImageSlide
                                         backendData={

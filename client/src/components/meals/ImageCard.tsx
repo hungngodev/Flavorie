@@ -43,9 +43,11 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
     const theme = useTheme();
     const { currentUser } = useAuth();
     const handleLike = async () => {
+        console.log(imageProps);
         if (currentUser.status === 'authenticated') {
             const liked = await customFetch.post('/user/likedMeal', {
                 mealId: imageProps.id,
+                infoLink: imageProps.infoLink,
             });
             setLiked(liked.data.liked);
             setNumberOfLiked(liked.data.liked ? numberOfLiked + 1 : numberOfLiked - 1);
@@ -83,7 +85,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
                     <Box position="relative">
                         <Heart isClick={liked || false} onClick={handleLike} />
                         <Text fontSize="sm" fontWeight="bold" color="white" position={'absolute'} top="10" right="6">
-                            {numberOfLiked}
+                            {numberOfLiked ? numberOfLiked : 0}
                         </Text>
                     </Box>
                     <Link to={imageProps.infoLink}>
@@ -98,18 +100,3 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
 };
 
 export default ImageCard;
-
-// Instruction to use
-
-// copy this prop to function App in App.tsx
-// const imageProps = {
-//   src: "../public/images/baked-brie-with-roasted-mushrooms.webp",
-//   alt: "Baked brie with roasted mushroom",
-//   title: "Baked brie with roasted mushroom"
-//   description: "Baked brie cheese with roasted mushroom on top.",
-//   borderRadius: '8px',
-//   price: '$4.8'
-// }
-
-// copy this line in return in App.tsx
-//<ImageCard imageProps={imageProps} />

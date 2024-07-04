@@ -3,6 +3,8 @@ import { StatusCodes } from "http-status-codes";
 import { NotFoundError } from "../errors/customErrors.ts";
 import MealModel from "../models/MealModel.ts";
 import UserModel from "../models/UserModel.ts";
+import { createMeal } from "../services/mealServices.ts";
+import { getMealByIdAPI } from "../services/spoonacular/spoonacularServices.ts";
 import {
   changeItemTypes,
   getUserItems,
@@ -70,7 +72,14 @@ export const getLikedMeals = async (req: Request, res: Response) => {
 
 export const updateLikedMeals = async (req: Request, res: Response) => {
   console.log(req.body);
-  const { mealId } = req.body;
+  let { mealId, infoLink } = req.body;
+  if (!mealId) {
+    console.log("Creating not existing meal for like");
+    const id = infoLink.match(/\d+/)[0];
+    const mealInfo = await getMealByIdAPI(id);
+    mealId = await createMeal(mealInfo, "spoonacular");
+  }
+
   const liked = await toggleLikedItem(req.user.userId, mealId, "likedMeal");
   const likedMeals = await MealModel.findById(mealId);
   if (!likedMeals) {

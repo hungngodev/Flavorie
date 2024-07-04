@@ -17,7 +17,7 @@ import { QueryClient } from '@tanstack/react-query';
 import { Focus } from 'lucide-react';
 import { useEffect } from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
-import { Params, useNavigate, useParams } from 'react-router-dom';
+import { Params, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
 import ReceiptField from '../components/ingredients/ReceiptField';
@@ -90,7 +90,7 @@ export type ReceiptRequest = z.infer<typeof ReceiptRequest>;
 const Receipt = () => {
     const { id } = useParams();
     const { notificationDetail, fetchNotificationById } = useNotification();
-    const navigate = useNavigate();
+
     const { notifyError } = useToast();
 
     useEffect(() => {

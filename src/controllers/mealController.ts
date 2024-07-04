@@ -169,7 +169,7 @@ export const getRanDomMealsAuthenticated = async (
     );
     const likedMeals = await getUserItems(req.user.userId, "likedMeal");
     async function processingMeals(meals: spoonacularDB[]) {
-      const results = await Promise.all(
+      const results: any = await Promise.all(
         meals.map(async meal => {
           const _id = await createMeal(meal, "spoonacular");
           const thisMeal = await MealModel.findById(_id);
