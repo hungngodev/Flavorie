@@ -30,8 +30,8 @@ const upload = multer({
 
 const router = Router();
 const apiLimiter = rateLimiter({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
+  windowMs: 20 * 60 * 1000,
+  max: 10000,
   message: { msg: "IP rate limit exceeded, retry in 15 minutes." },
 });
 
