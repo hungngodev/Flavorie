@@ -75,9 +75,18 @@ export const getFeedDocument = async (
       location: -1,
     })
     .populate({ path: "author", select: "name avatar location " })
+    .populate({
+      path: "review",
+      populate: { path: "userId", select: "id name avatar" },
+    })
     .skip((page - 1) * limit)
     .limit(limit);
+
   if (postLists.length === 0) throw new ServerError("Failed to get posts");
+  for (let post of postLists) {
+    await recursivePopulate(post.review);
+  }
+  console.log(postLists);
   return postLists.map(post => post.toJSON() as Document);
 };
 
