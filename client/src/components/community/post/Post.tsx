@@ -34,6 +34,7 @@ const Post = forwardRef<HTMLDivElement, PostProps>(
 
     const { id } = auth.currentUser;
     const [loading, setLoading] = useState(false);
+
     return (
       <Card
         {...containerProps}

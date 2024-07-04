@@ -6,7 +6,7 @@ import { FaHeart } from 'react-icons/fa';
 import { FaRegHeart } from 'react-icons/fa6';
 import { useDispatch, useSelector } from 'react-redux';
 import useAuth from '../../../hooks/useAuth';
-import { likeRequest } from '../../../slices/posts/LikePost';
+import { likePostRequest } from '../../../slices/posts/index';
 import { selectPosts, updatePost, selectPostById } from '../../../slices/posts/PostState';
 import { AppDispatch, RootState } from '../../../store/store';
 import { parsePost } from '../post/types';
@@ -37,7 +37,7 @@ const PostFooter = memo<PostFooterProps>(({ postData, postId, ...props }) => {
   const likePost = () => {
     likeControl.start({ scale: [1, 1.2, 1], transition: { duration: 0.2, ease: 'easeInOut' } });
     try {
-      const res = dispatch(likeRequest(postId)).then((res: any) => {
+      const res = dispatch(likePostRequest(postId)).then((res: any) => {
         dispatch(updatePost({ post: parsePost([res.payload.reacts]) }));
         setIsLiked(post?.reacts?.includes(id) ?? false);
       });

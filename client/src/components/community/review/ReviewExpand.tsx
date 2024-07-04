@@ -18,10 +18,9 @@ import ReviewCard from './ReviewCard';
 import ReviewForm from './ReviewForm';
 import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Params, useLocation, useParams } from 'react-router-dom';
-import { CreateReview } from '../../../slices/reviews/CreateReview';
 import { updatePost, selectPostById } from '../../../slices/posts/PostState';
-import customFetch from '../../../utils/customFetch';
-import { createReview, selectCreateReviewStatus } from '../../../slices/reviews/CreateReview';
+import { selectCreateReviewStatus } from '../../../slices/reviews/CreateReview';
+import { createReviewRequest } from '../../../slices/reviews/index';
 import { useDispatch } from 'react-redux';
 import { AppDispatch, RootState } from '../../../store/store';
 import { useSelector } from 'react-redux';
@@ -52,7 +51,7 @@ const ReviewExpand: React.FC<ReviewExpandProps> = ({ onClose, isOpen, postId, re
       return;
     }
 
-    await dispatch(createReview({ postId: postId, content: content, parentReview: null }))
+    await dispatch(createReviewRequest({ postId: postId, content: content, parentReview: null }))
       .then((res: any) => {
         dispatch(updatePost({ post: res.data }));
         queryClient.invalidateQueries();
@@ -89,7 +88,7 @@ const ReviewExpand: React.FC<ReviewExpandProps> = ({ onClose, isOpen, postId, re
         <ModalCloseButton />
         <ModalBody overflow="auto">
           <VStack gap={4} width="100%" alignItems="start">
-            {reviews?.map((review) => <ReviewCard review={review} />)}
+            {reviews?.map((review) => <ReviewCard review={review} postId={postId} />)}
           </VStack>
           {error && <Text>{error}</Text>}
         </ModalBody>

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { parseReviews } from '../review/types';
+import { ReviewObject } from '../review/types';
 export const BaseObject = z
   .object({
     id: z.string().optional(),
@@ -35,9 +36,9 @@ export const PostObject = BaseObject.extend({
   media: z.array(MediaObject),
   location: z.string(),
   privacy: Privacy,
-  reviews: z.array(z.any()),
   hiddenTo: z.array(z.string()).optional(),
   reacts: z.array(z.string()).optional(),
+  reviews: z.array(ReviewObject),
   reactCount: z.number().optional(),
   reviewCount: z.number().optional(),
   shares: z.array(z.string()).optional(),
@@ -63,7 +64,7 @@ export const PostResponseObject = z.object({
   media: z.array(MediaObject.extend({ _id: z.string() })),
   react: z.array(z.string()),
   hiddenTo: z.array(z.string()),
-  review: z.array(z.any()),
+  review: z.array(ReviewObject),
   reactCount: z.number(),
   reviewCount: z.number(),
   createdAt: z.date(),
@@ -92,9 +93,6 @@ export type PostObjectType = z.infer<typeof PostObject>;
 export type PostResponseObjectType = z.infer<typeof PostResponseObject>;
 
 export type PostEditObjectType = z.infer<typeof PostEditObject>;
-
-// export type ReviewObjectType = z.infer<typeof ReviewObject>;
-// export type ReviewType = z.infer<typeof ReviewObject>;
 
 export interface BasePostProps {
   postId: string;

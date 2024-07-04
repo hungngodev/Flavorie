@@ -57,11 +57,14 @@ const PostFormCard = memo<PostFormCardProps>(() => {
                 sx={{ textAlign: 'left', justifyContent: 'flex-start' }}
                 rounded="lg"
                 padding={6}
+                backgroundColor="blackAlpha.50"
+                color="blackAlpha.700"
+                _hover={{ backgroundColor: 'blackAlpha.100' }}
               >
-                {`What are you thinking today ${currentUser.username}?`}
+                {`What are you cooking today ${currentUser.username}?`}
               </Button>
             </HStack>
-            <PostFormExpand postId="" postIndex={0} isOpen={isOpen} onClose={onClose} action="create" />
+            <PostFormExpand postId="" isOpen={isOpen} onClose={onClose} action="create" />
           </CardBody>
           <Divider color="blackAlpha.300" />
           <CardFooter paddingBlock={2}>

@@ -27,7 +27,8 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import cooking from '../../../../public/images/let-him-cook.jpg';
 import useAuth from '../../../hooks/useAuth';
-import { deleteRequest, selectDeleteStatus } from '../../../slices/posts/DeletePost';
+import { selectDeleteStatus } from '../../../slices/posts/DeletePost';
+import { deletePostRequest } from '../../../slices/posts/DeletePost';
 import { hideRequest, selectHideStatus } from '../../../slices/posts/HidePost';
 import { deletePost, selectPosts, updatePost, selectPostById } from '../../../slices/posts/PostState';
 import { saveRequest, selectSaveStatus } from '../../../slices/posts/SavePost';
@@ -177,7 +178,7 @@ const PostHeader = memo<PostHeaderProps>(({ postId, setLoading, postData, preloa
               icon={<Trash />}
               command="⌘D"
               onClick={async () => {
-                dispatch(deleteRequest(postId)).then(() => {
+                dispatch(deletePostRequest(postId)).then(() => {
                   dispatch(deletePost({ postId }));
                   toast.success('Post deleted !'), { position: 'top-right', icon: <Check /> };
                   if (isFullPage) navigate('/community');

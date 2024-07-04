@@ -4,7 +4,7 @@ import theme from '../../../style/theme';
 import customFetch from '../../../utils/customFetch';
 // import { createReview } from '../../../utils/reviewService';
 import useAuth from '../../../hooks/useAuth';
-import { createReview } from '../../../slices/reviews/CreateReview';
+import { createReviewRequest } from '../../../slices/reviews/index';
 import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../../store/store';
@@ -35,7 +35,7 @@ const ReviewForm: React.FC<InputProps> = ({ postId, onSubmit, parentReviewId }) 
 
     // const response = await createReview(postId, inputContent, parentReviewId ?? null);
     const response = await dispatch(
-      createReview({ postId, content: inputContent, parentReview: parentReviewId ?? null }),
+      createReviewRequest({ postId, content: inputContent, parentReview: parentReviewId ?? null }),
     ).then(() => {
       queryClient.invalidateQueries();
     });

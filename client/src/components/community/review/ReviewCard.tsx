@@ -28,23 +28,24 @@ import { PersonalProps } from '../../users/InfoCard';
 import { FaTimes } from 'react-icons/fa';
 import { IoIosSend } from 'react-icons/io';
 import useAuth from '../../../hooks/useAuth';
-import { createReview, deleteReview, updateReview } from '../../../utils/reviewService';
-
-import { Review } from './types';
-
+import { createReview, updateReview } from '../../../utils/reviewService';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../../store/store';
+import { Review, ReviewObjectType } from './types';
+import { BasePostProps } from '../post/types';
+import { deletePost } from '../../../slices/posts/PostState';
+import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
+import { deleteReviewRequest, editReviewRequest, createReviewRequest } from '../../../slices/reviews/index';
 export interface Post {
   id: string;
   body: string;
 }
 
-interface ReviewCardProps {
-  review: Review;
-  onReply?: (id: string, postId: string, content: string, name: string, avatar: string, parentReviewId: string) => void;
-  onEdit?: (reviewId: string, editedContent: string) => void;
-  onDelete?: (reviewId: string) => void;
+interface ReviewCardProps extends BasePostProps {
+  review: ReviewObjectType;
 }
 
-const ReviewCard: React.FC<ReviewCardProps> = ({ review, onReply, onEdit, onDelete }) => {
+const ReviewCard: React.FC<ReviewCardProps> = ({ review, postId }) => {
   const [showReplies, setShowReplies] = useState(false);
   const [reply, setReply] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -53,26 +54,28 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, onReply, onEdit, onDele
   const cancelRef = React.useRef<HTMLButtonElement>(null);
   const auth = useAuth(); //
 
+  const queryClient = useQueryClient();
+
+  const dispatch = useDispatch<AppDispatch>();
+
   const handleReply = async (content: string, parentReviewId: string) => {
     try {
       console.log(review.postId, content);
       const response = await createReview(review.postId, content, parentReviewId);
-      if (onReply) {
-        onReply(review.id, review.postId, response, review.author.name, review.author.avatar, parentReviewId);
-      }
       setReply(false);
     } catch (error) {
       console.error('Failed to create reply: ', error);
     }
   };
 
-  const handleEdit = async () => {
+  const handleEdit = async ({ postId, reviewId, content }: { postId: string; reviewId: string; content: string }) => {
+    if (!postId || !reviewId || auth.currentUser.status !== 'authenticated') return;
+    console.log('here');
     if (isEditing) {
       try {
-        await updateReview(review.postId, review.id, editedContent);
-        if (onEdit) {
-          onEdit(review.id, editedContent);
-        }
+        const request = dispatch(editReviewRequest({ postId, reviewId, content })).then((res) => {
+          queryClient.invalidateQueries();
+        });
         setIsEditing(false);
       } catch (error) {
         console.error('Failed to edit review: ', error);
@@ -82,23 +85,12 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, onReply, onEdit, onDele
     }
   };
 
-  const handleDelete = async () => {
-    try {
-      if (review.children.length > 0) {
-        for (const child of review.children) {
-          await deleteReview(review.postId, child.id);
-        }
-      }
-      await deleteReview(review.postId, review.id);
-      if (onDelete) {
-        onDelete(review.id);
-      }
-      console.log('Review is deleted.');
-    } catch (error) {
-      console.error('Failed to delete review: ', error);
-    } finally {
+  const handleDelete = async ({ postId, reviewId }: { postId: string; reviewId: string }) => {
+    if (!postId || !reviewId || auth.currentUser.status !== 'authenticated') return;
+    const request = dispatch(deleteReviewRequest({ postId, reviewId })).then((res) => {
       setAlertOpen(false);
-    }
+      queryClient.invalidateQueries();
+    });
   };
 
   return (
@@ -134,7 +126,10 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, onReply, onEdit, onDele
                       variant="normal"
                       color={theme.colors.palette_purple}
                       icon={<IoIosSend />}
-                      onClick={handleEdit}
+                      onClick={() => {
+                        console.log('here');
+                        handleEdit({ postId: postId, reviewId: review.id, content: editedContent });
+                      }}
                       aria-label="Save"
                     />
                   </Box>
@@ -186,14 +181,8 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, onReply, onEdit, onDele
       </HStack>
       {review.children.length > 0 && (
         <Box ml="8">
-          {review.children.slice(0, 2).map((childReview) => (
-            <ReviewCard
-              key={childReview.id}
-              review={childReview}
-              onReply={onReply}
-              onEdit={onEdit}
-              onDelete={onDelete}
-            />
+          {review.children.slice(0, 2).map((childReview: any) => (
+            <ReviewCard postId={postId} key={childReview.id} review={childReview} />
           ))}
           {review.children.length > 2 && (
             <Box ml="20">
@@ -210,15 +199,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, onReply, onEdit, onDele
           {showReplies &&
             review.children
               .slice(2)
-              .map((childReview) => (
-                <ReviewCard
-                  key={childReview.id}
-                  review={childReview}
-                  onReply={onReply}
-                  onEdit={onEdit}
-                  onDelete={onDelete}
-                />
-              ))}
+              .map((childReview: any) => <ReviewCard postId={postId} key={childReview.id} review={childReview} />)}
         </Box>
       )}
       <AlertDialog isOpen={isAlertOpen} leastDestructiveRef={cancelRef} onClose={() => setAlertOpen(false)}>
@@ -234,7 +215,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, onReply, onEdit, onDele
               <Button variant="outline" ref={cancelRef} onClick={() => setAlertOpen(false)}>
                 No
               </Button>
-              <Button onClick={handleDelete} ml={2}>
+              <Button ml={2} onClick={() => handleDelete({ postId: postId, reviewId: review.id })}>
                 Yes
               </Button>
             </AlertDialogFooter>
