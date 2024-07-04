@@ -91,9 +91,11 @@ export const updateLikedMeals = async (req: Request, res: Response) => {
     likedMeals.numberOfLiked -= 1;
   }
   await likedMeals.save();
-  const myLikedMeals = await getUserItems(req.user.userId, "likedMeal");
-  res.status(StatusCodes.OK).send({ liked, myLikedMeals });
+  res
+    .status(StatusCodes.OK)
+    .send({ liked, numberOfLiked: likedMeals.numberOfLiked });
 };
+
 export const getCookedMeals = async (req: Request, res: Response) => {
   const cookedMeals = await getUserItems(req.user.userId, "cookedMeal");
   res.status(StatusCodes.OK).send({ cookedMeals });

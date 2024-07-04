@@ -2,7 +2,15 @@ import { Socket } from "socket.io";
 import { v4 as uuidV4 } from "uuid";
 
 const rooms: Record<string, Record<string, IUser>> = {};
+
+const roomsInfo: Record<string, RoomInfo> = {};
 const chats: Record<string, IMessage[]> = {};
+
+interface RoomInfo {
+  currentMeal: string;
+  currentShareId: string;
+  currentMealInfo: any;
+}
 interface IUser {
   userName: string;
   userId: string;
@@ -28,6 +36,11 @@ export const roomHandler = (socket: Socket) => {
   const createRoom = () => {
     const roomId = uuidV4();
     rooms[roomId] = {};
+    roomsInfo[roomId] = {
+      currentMeal: "",
+      currentShareId: "",
+      currentMealInfo: {},
+    };
     socket.emit("room-created", { roomId });
     console.log("user created the room");
   };
@@ -42,6 +55,17 @@ export const roomHandler = (socket: Socket) => {
       roomId,
       participants: rooms[roomId],
     });
+    console.log("current room info", roomsInfo[roomId]);
+    socket.emit("meal-changed", {
+      currentMeal: roomsInfo[roomId].currentMeal,
+      mealInfo: roomsInfo[roomId].currentMealInfo,
+    });
+    if (
+      roomsInfo[roomId].currentShareId &&
+      roomsInfo[roomId].currentShareId !== ""
+    ) {
+      socket.emit("user-started-sharing", roomsInfo[roomId].currentShareId);
+    }
 
     socket.on("disconnect", () => {
       console.log("user left the room", userId);
@@ -56,12 +80,36 @@ export const roomHandler = (socket: Socket) => {
 
   const startSharing = ({ userId, roomId }: IRoomParams) => {
     console.log("sharing started", userId);
+    roomsInfo[roomId] = { ...roomsInfo[roomId], currentShareId: userId };
     socket.to(roomId).emit("user-started-sharing", userId);
   };
 
   const stopSharing = ({ roomId }: { roomId: string }) => {
     console.log("leaving room", roomId);
+    roomsInfo[roomId] = { ...roomsInfo[roomId], currentShareId: "" };
     socket.to(roomId).emit("user-stopped-sharing");
+  };
+
+  const changeMeal = ({
+    roomId,
+    mealId,
+    mealInfo,
+  }: {
+    roomId: string;
+    mealId: string;
+    mealInfo: any;
+  }) => {
+    console.log("changing meal", mealId);
+    roomsInfo[roomId] = {
+      ...roomsInfo[roomId],
+      currentMeal: mealId,
+      currentMealInfo: mealInfo,
+    };
+    console.log(mealInfo);
+    socket.to(roomId).emit("meal-changed", {
+      currentMeal: mealId,
+      mealInfo: mealInfo,
+    });
   };
 
   const toggleVideo = ({ roomId, userId }: IRoomParams) => {
@@ -101,4 +149,5 @@ export const roomHandler = (socket: Socket) => {
   socket.on("send-message", addMessage);
   socket.on("change-name", changeName);
   socket.on("toggle-video", toggleVideo);
+  socket.on("change-meal", changeMeal);
 };
