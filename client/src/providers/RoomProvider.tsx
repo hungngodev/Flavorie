@@ -1,7 +1,9 @@
 // import Peer from 'peerjs';
+import { useQuery } from '@tanstack/react-query';
 import Peer from 'peerjs';
 import { useEffect, useReducer, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { BackendData } from '../components/meals/ImageSlide';
 import RoomContext from '../contexts/roomContext';
 import useUser from '../hooks/useUser';
 import {
@@ -16,9 +18,18 @@ import {
 import { peersReducer } from '../reducers/peerReducer';
 import socket from '../socket/socketio';
 import { IPeer } from '../types/peer';
+import customFetch from '../utils/customFetch';
 
 export const WS = 'http://localhost:5100';
 export const ws = socket;
+
+const likedMealQuery = {
+    queryKey: ['likedMeal'],
+    queryFn: async () => {
+        const response = await customFetch.get('/user/likedMeal');
+        return response;
+    },
+};
 
 const RoomProvider = ({ children }: { children: React.ReactNode }) => {
     const navigate = useNavigate();
@@ -31,9 +42,26 @@ const RoomProvider = ({ children }: { children: React.ReactNode }) => {
     const [roomId, setRoomId] = useState<string>('');
     const [videoStatus, setVideoStatus] = useState(true);
     const [micStatus, setMicStatus] = useState(true);
+    const [currentMeal, setCurrentMealRaw] = useState<string>('');
+    const [currentMealData, setCurrentMealData] = useState<BackendData>();
+    console.log(currentMealData);
+
+    const { data: likedMeal, status } = useQuery(likedMealQuery);
+    const mealDatas = status !== 'pending' ? likedMeal?.data?.likedMeals.map((meal: any) => meal.likedMeal) : [];
+
+    const setCurrentMeal = (currentMealChoice: string) => {
+        setCurrentMealRaw(currentMealChoice);
+        setCurrentMealData(mealDatas.find((mealData: any) => mealData.title === currentMealChoice));
+        ws.emit('change-meal', {
+            roomId,
+            mealId: currentMealChoice,
+            mealInfo: mealDatas.find((mealData: any) => mealData.title === currentMealChoice),
+        });
+    };
 
     const enterRoom = ({ roomId }: { roomId: 'string' }) => {
         navigate(`/meeting/room/${roomId}`);
+        window.location.reload();
     };
     const getUsers = ({ participants }: { participants: Record<string, IPeer> }) => {
         // console.log('get-users', participants);
@@ -91,9 +119,9 @@ const RoomProvider = ({ children }: { children: React.ReactNode }) => {
         }
         ws.emit('toggle-video', { roomId, userId });
     };
-    useEffect(() => {
-        console.log(peers);
-    }, [peers]);
+    // useEffect(() => {
+    //     console.log(peers);
+    // }, [peers]);
 
     const toggleMic = async () => {
         if (micStatus) {
@@ -153,6 +181,12 @@ const RoomProvider = ({ children }: { children: React.ReactNode }) => {
         window.location.reload();
     };
 
+    const mealChange = (mealData: { currentMeal: string; mealInfo: BackendData }) => {
+        console.log('meal-changed', mealData);
+        setCurrentMealRaw(mealData.currentMeal);
+        setCurrentMealData(mealData.mealInfo);
+    };
+
     useEffect(() => {
         ws.emit('change-name', { userId, userName, roomId });
     }, [userName, userId, roomId]);
@@ -179,6 +213,7 @@ const RoomProvider = ({ children }: { children: React.ReactNode }) => {
         ws.on('user-stopped-sharing', stopSharing);
         ws.on('name-changed', nameChangedHandler);
         ws.on('user-toggle-video', videoChange);
+        ws.on('meal-changed', mealChange);
 
         return () => {
             ws.off('room-created');
@@ -188,6 +223,7 @@ const RoomProvider = ({ children }: { children: React.ReactNode }) => {
             ws.off('user-stopped-sharing');
             ws.off('user-joined');
             ws.off('name-changed');
+            ws.off('user-toggle-video');
             me?.disconnect();
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -245,6 +281,10 @@ const RoomProvider = ({ children }: { children: React.ReactNode }) => {
                 toggleMic,
                 videoStatus,
                 micStatus,
+                currentMeal,
+                setCurrentMeal,
+                mealDatas,
+                currentMealInfo: currentMealData as BackendData,
             }}
         >
             {children}

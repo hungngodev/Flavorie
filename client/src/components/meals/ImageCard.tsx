@@ -43,14 +43,24 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
     const theme = useTheme();
     const { currentUser } = useAuth();
     const handleLike = async () => {
-        console.log(imageProps);
         if (currentUser.status === 'authenticated') {
-            const liked = await customFetch.post('/user/likedMeal', {
+            setLiked(!liked);
+            setNumberOfLiked(
+                !liked
+                    ? imageProps.numberOfLiked + 1
+                    : imageProps.numberOfLiked - 1 > 0
+                      ? imageProps.numberOfLiked - 1
+                      : 0,
+            );
+            const returnLiked = await customFetch.post('/user/likedMeal', {
                 mealId: imageProps.id,
                 infoLink: imageProps.infoLink,
             });
-            setLiked(liked.data.liked);
-            setNumberOfLiked(liked.data.liked ? numberOfLiked + 1 : numberOfLiked - 1);
+            console.log(returnLiked);
+            setLiked(returnLiked.data.liked);
+            setNumberOfLiked(returnLiked.data.numberOfLiked);
+            // setLiked(returnLiked.data.liked);
+            // setNumberOfLiked(returnLiked.data.numberOfLiked);
         } else {
             toast.error('Please login to like');
         }

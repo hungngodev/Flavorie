@@ -7,11 +7,11 @@ import {
     GridItem,
     HStack,
     IconButton,
+    Image,
     VStack,
     useDisclosure,
 } from '@chakra-ui/react';
-import { useQuery } from '@tanstack/react-query';
-import { ChakraStylesConfig, Select } from 'chakra-react-select';
+import { Select, SelectItem } from '@nextui-org/select';
 import { motion } from 'framer-motion';
 import {
     Clipboard,
@@ -25,51 +25,13 @@ import {
     VideoOff,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import ProgressiveImage from 'react-progressive-graceful-image';
 import { Link, useParams } from 'react-router-dom';
-import ImageSlide from '../components/meals/ImageSlide';
+import ImageSlide, { BackendData } from '../components/meals/ImageSlide';
 import { Chat, NameInput, VideoPlayer } from '../components/meeting';
 import { useRoom, useUser } from '../hooks';
 import { ws } from '../providers/RoomProvider';
 import { PeerState } from '../reducers/peerReducer';
-import customFetch from '../utils/customFetch';
-
-const menuStyles: ChakraStylesConfig = {
-    container: (baseStyles, state) => ({
-        ...baseStyles,
-        width: '30%',
-
-        border: 'none',
-    }),
-    control: (baseStyles, state) => ({
-        ...baseStyles,
-        border: 'none',
-    }),
-    indicatorsContainer: (baseStyles, state) => ({
-        backgroundColor: 'transparent',
-        background: 'transparent',
-    }),
-    indicatorSeparator: (baseStyles, state) => ({
-        backgroundColor: 'gray.600',
-    }),
-    dropdownIndicator: (baseStyles, state) => ({
-        backgroundColor: 'transparent',
-    }),
-    valueContainer: (baseStyles, state) => ({
-        ...baseStyles,
-        border: 'none',
-        paddingInline: '0',
-        fontSize: 'xl',
-        color: 'blackAlpha.700',
-    }),
-};
-
-const likedMealQuery = {
-    queryKey: ['likedMeal'],
-    queryFn: async () => {
-        const response = await customFetch.get('/user/likedMeal');
-        return response;
-    },
-};
 
 const Room = () => {
     const { id } = useParams();
@@ -85,21 +47,15 @@ const Room = () => {
         toggleMic,
         videoStatus,
         micStatus,
+        currentMeal: mealChoice,
+        setCurrentMeal: setMealChoice,
+        mealDatas,
+        currentMealInfo,
     } = useRoom();
     const { userName, userId } = useUser();
     const [focus, setFocus] = useState(screenSharingId);
 
-    const { data: likedMeal, status } = useQuery(likedMealQuery);
-    const mealSuggestions =
-        status !== 'pending' ? likedMeal?.data?.likedMeals?.map((meal: any) => meal.likedMeal.title) : [''];
-    console.log(likedMeal);
-    const menuSuggestion = {
-        label: 'Suggested Menu',
-        options: mealSuggestions,
-    };
-    const [mealChoice, setMealChoice] = useState(status !== 'pending' ? mealSuggestions[0] : []);
-    console.log(mealSuggestions);
-    console.log(mealChoice);
+    const mealOptions = mealDatas.map((meal: BackendData) => ({ key: meal.title, label: meal.title }));
 
     useEffect(() => {
         setFocus(screenSharingId);
@@ -128,152 +84,152 @@ const Room = () => {
 
     const peerVideos = [...Object.values(peersToShow as PeerState)];
     return (
-        <Grid
-            templateRows="repeat(14, 1fr)"
-            templateColumns="repeat(1, 1fr)"
-            height="100%"
-            width="100%"
-            position="relative"
-        >
-            <GridItem rowSpan={13} colSpan={1}>
-                <HStack height="100%" width="100%" alignItems={'start'} padding={'5px'}>
-                    <VStack>
-                        <Grid
-                            height={'80%'}
-                            width="100%"
-                            templateColumns={`repeat(5,1fr)`}
-                            templateRows={`repeat(2,1fr)`}
-                        >
-                            {focusingVideo && (
-                                <GridItem rowSpan={3} colSpan={4} padding={'8px'} onClick={() => setFocus('')}>
-                                    <Card
-                                        width={'full'}
-                                        height="full"
-                                        display={'flex'}
-                                        justify={'center'}
-                                        align={'center'}
-                                    >
-                                        <VideoPlayer stream={focusingVideo} />
-                                    </Card>
-                                </GridItem>
-                            )}
+        <Box height="100%" width="100%" position="relative">
+            <HStack height="100%" width="100%" padding={'5px'}>
+                <VStack width="full" height="full ">
+                    <Grid height={'60%'} width="100%" templateColumns={`repeat(5,1fr)`} templateRows={`repeat(2,1fr)`}>
+                        {focusingVideo && (
+                            <GridItem rowSpan={3} colSpan={3} padding={'8px'} onClick={() => setFocus('')}>
+                                <Card width={'full'} height="full" display={'flex'} justify={'center'} align={'center'}>
+                                    <VideoPlayer stream={focusingVideo} />
+                                </Card>
+                            </GridItem>
+                        )}
 
-                            {focus !== userId && (
-                                <GridItem rowSpan={1} colSpan={1} padding={'8px'} onClick={() => setFocus(userId)}>
-                                    <Card
-                                        width={'full'}
-                                        height="full"
-                                        display={'flex'}
-                                        justify={'center'}
-                                        align={'center'}
-                                    >
+                        {focus !== userId && (
+                            <GridItem rowSpan={1} colSpan={1} padding={'8px'} onClick={() => setFocus(userId)}>
+                                <Card width={'full'} height="full" display={'flex'} justify={'center'} align={'center'}>
+                                    <CardBody>
+                                        <VideoPlayer stream={stream} />
+                                        <NameInput />
+                                    </CardBody>
+                                </Card>
+                            </GridItem>
+                        )}
+                        {peerVideos
+                            .filter((peer) => !!peer.stream)
+                            .map((peer, index) => (
+                                <GridItem
+                                    key={index}
+                                    rowSpan={1}
+                                    colSpan={1}
+                                    padding={'8px'}
+                                    onClick={() => setFocus(peer.userId)}
+                                >
+                                    <Card width={'full'} height="full">
                                         <CardBody>
-                                            <VideoPlayer stream={stream} />
-                                            <NameInput />
+                                            <VideoPlayer stream={peer.stream} />
+                                            <div>{peer.userName}</div>
                                         </CardBody>
                                     </Card>
                                 </GridItem>
-                            )}
-                            {peerVideos
-                                .filter((peer) => !!peer.stream)
-                                .map((peer, index) => (
-                                    <GridItem
-                                        key={index}
-                                        rowSpan={1}
-                                        colSpan={1}
-                                        padding={'8px'}
-                                        onClick={() => setFocus(peer.userId)}
-                                    >
-                                        <Card width={'full'} height="full">
-                                            <CardBody>
-                                                <VideoPlayer stream={peer.stream} />
-                                                <div>{peer.userName}</div>
-                                            </CardBody>
-                                        </Card>
-                                    </GridItem>
-                                ))}
-                        </Grid>
-                        <HStack width={'full'} height="full">
-                            <Select
-                                chakraStyles={menuStyles}
-                                defaultValue={mealSuggestions[0]}
-                                value={mealChoice}
-                                options={[menuSuggestion]}
-                                onChange={(newValue: any) => {
-                                    setMealChoice(newValue);
-                                }}
-                            />
-                            {status !== 'pending' && mealSuggestions.some((e: string) => e === mealChoice) && (
-                                <Box width="40vh" height="full" mx="auto" px={4}>
-                                    <ImageSlide
-                                        backendData={
-                                            likedMeal?.data?.likedMeals?.find(
-                                                (meal: any) => meal.likedMeal.title === mealChoice,
-                                            )?.likedMeal
-                                        }
-                                    />
-                                </Box>
-                            )}
+                            ))}
+                        <GridItem gridColumn={5} gridRow={1} colSpan={1} rowSpan={1}>
+                            <VStack height="full" width="full" justifyContent={'end'}>
+                                <ProgressiveImage
+                                    src={
+                                        mealDatas.find((meal: any) => meal.title === mealChoice)?.imageUrl ||
+                                        'https://cdn.shopify.com/s/files/1/0078/2503/1204/files/c.jpg?v=1582371638'
+                                    }
+                                    placeholder={''}
+                                >
+                                    {(src, loading) => (
+                                        <Image
+                                            style={{
+                                                filter: loading ? 'blur(5px)' : 'blur(0)',
+                                                transition: 'filter 2s',
+                                            }}
+                                            maxH={'26vh'}
+                                            src={src}
+                                            borderRadius={'lg'}
+                                            objectFit="fill"
+                                            onLoad={() => console.log('loaded')}
+                                        />
+                                    )}
+                                </ProgressiveImage>
+                                <Select
+                                    items={mealOptions}
+                                    variant="bordered"
+                                    label="Meal Choice"
+                                    className="w-full"
+                                    selectedKeys={[mealChoice]}
+                                    onChange={(e) => setMealChoice(e.target.value)}
+                                >
+                                    {(meal: { key: string; label: string }) => (
+                                        <SelectItem className="w-full rounded-none bg-white" key={meal.key}>
+                                            {meal.label}
+                                        </SelectItem>
+                                    )}
+                                </Select>
+                            </VStack>
+                        </GridItem>
+                    </Grid>
+                    {currentMealInfo && Object.keys(currentMealInfo).length > 0 && (
+                        <HStack width={'80%'} height="50%">
+                            {mealChoice}
+                            <ImageSlide backendData={currentMealInfo} />
                         </HStack>
-                    </VStack>
-                    <motion.div
-                        {...getDisclosureProps()}
-                        hidden={hidden}
-                        initial={false}
-                        onAnimationStart={() => {
-                            setHidden(false);
-                        }}
-                        onAnimationComplete={() => {
-                            setHidden(!isOpen);
-                        }}
-                        animate={{ width: isOpen ? parseInt(chatWidth) : 0 }}
-                        style={{
-                            overflow: 'hidden',
-                            whiteSpace: 'nowrap',
-                            height: '100%',
-                        }}
-                    >
-                        <Chat />
-                    </motion.div>
-                </HStack>
-            </GridItem>
-            <GridItem rowSpan={1} colSpan={1}>
-                <HStack height="100%" justifyContent="center" alignItems="center" width="100%">
-                    <Button
-                        leftIcon={<Clipboard />}
-                        variant="solid"
-                        onClick={() => navigator.clipboard.writeText(id || '')}
-                    >
-                        Copy room Id
-                    </Button>
+                    )}
+                </VStack>
+                <motion.div
+                    {...getDisclosureProps()}
+                    hidden={hidden}
+                    initial={false}
+                    onAnimationStart={() => {
+                        setHidden(false);
+                    }}
+                    onAnimationComplete={() => {
+                        setHidden(!isOpen);
+                    }}
+                    animate={{ width: isOpen ? parseInt(chatWidth) : 0 }}
+                    style={{
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                        height: '100%',
+                    }}
+                >
+                    <Chat />
+                </motion.div>
+            </HStack>
 
-                    <Button
-                        onClick={shareScreen}
-                        isDisabled={screenSharingId !== userId && screenSharingId !== ''}
-                        padding={0}
-                        leftIcon={screenSharingId == userId ? <ScreenShareOff /> : <MonitorUp />}
-                        aria-label="Share screen"
-                    />
-                    <IconButton
-                        icon={videoStatus ? <Video /> : <VideoOff />}
-                        aria-label="Toggle video"
-                        onClick={toggleVideo}
-                    />
-                    <IconButton icon={micStatus ? <Mic /> : <MicOff />} aria-label="Toggle mic" onClick={toggleMic} />
+            <HStack
+                justifyContent="center"
+                alignItems="center"
+                position="absolute"
+                bottom={0}
+                zIndex={1000}
+                left="50%"
+                transform={'translateX(-50%)'}
+            >
+                <Button
+                    leftIcon={<Clipboard />}
+                    variant="solid"
+                    onClick={() => navigator.clipboard.writeText(id || '')}
+                >
+                    Copy room Id
+                </Button>
 
-                    <IconButton
-                        {...getButtonProps()}
-                        color={'black'}
-                        icon={<MessageSquare />}
-                        aria-label="Toggle chat"
-                    />
+                <Button
+                    onClick={shareScreen}
+                    isDisabled={screenSharingId !== userId && screenSharingId !== ''}
+                    padding={0}
+                    leftIcon={screenSharingId == userId ? <ScreenShareOff /> : <MonitorUp />}
+                    aria-label="Share screen"
+                />
+                <IconButton
+                    icon={videoStatus ? <Video /> : <VideoOff />}
+                    aria-label="Toggle video"
+                    onClick={toggleVideo}
+                />
+                <IconButton icon={micStatus ? <Mic /> : <MicOff />} aria-label="Toggle mic" onClick={toggleMic} />
 
-                    <Link to="/meeting">
-                        <IconButton icon={<PhoneMissed />} aria-label="Leave room" />
-                    </Link>
-                </HStack>
-            </GridItem>
-        </Grid>
+                <IconButton {...getButtonProps()} icon={<MessageSquare />} aria-label="Toggle chat" />
+
+                <Link to="/meeting">
+                    <IconButton icon={<PhoneMissed />} aria-label="Leave room" />
+                </Link>
+            </HStack>
+        </Box>
     );
 };
 
