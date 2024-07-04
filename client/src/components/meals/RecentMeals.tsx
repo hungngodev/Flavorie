@@ -1,7 +1,9 @@
-import React from 'react'; 
+import React, { useState } from 'react'; 
 import { Box, Heading, Image, Link, Text, HStack, VStack } from '@chakra-ui/react';
 import { useEffect, useRef } from 'react';
 import theme from '../../style/theme';
+import customFetch from '../../utils/customFetch.ts';
+import useToast from '../../hooks/useToast';
 
 export interface RecentMeal {
     image: string;
@@ -11,18 +13,33 @@ export interface RecentMeal {
     infoLink: string; // link to the individual meal
 }
 
-interface RecentMealsProps {
-    meals: RecentMeal[];
-}
 
-export function RecentMeals({ meals }: RecentMealsProps) {
+export function RecentMeals() {
+    const [meals, setMeals] = useState<RecentMeal[]>([])
     const scrollRef = useRef<HTMLDivElement | null>(null);
+    const { notifyError } = useToast();
+
 
     useEffect(() => {
+        const fetchRecentMeals = async () => {
+            try {
+                const response = await customFetch.get('/user/likedMeal')
+                if (response.status === 200){
+                    console.log("Response like meals", response.data.likedMeals)
+                    setMeals(response.data.likedMeals)
+                } else {
+                    notifyError("Cannot load your recent meals. Please try again")
+                }
+            } catch(error){
+                console.log("Error fetching recent meals", error)
+                notifyError("Cannot load your recent meals. Please try again")
+            }
+        }
+        fetchRecentMeals()
         if (scrollRef.current) {
         scrollRef.current.scrollTop = 0;
         }
-    }, []);
+    }, [notifyError]);
 
     return (
         <VStack width={'full'} height={'400px'} mt={'1vh'} mb={'1vh'}>

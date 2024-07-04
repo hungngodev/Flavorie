@@ -10,6 +10,7 @@ import {
   getCart,
   getLeftOver,
   getLikedMeals,
+  getPersonalInfo,
   updateCart,
   updateLeftOver,
   updateLikedMeals,
@@ -24,6 +25,7 @@ const router = Router();
 
 router
   .route("/")
+  .get(checkUser, catchAsync(getPersonalInfo))
   .patch(authenticateUser, upload.array("images"), catchAsync(updateUser));
 
 router

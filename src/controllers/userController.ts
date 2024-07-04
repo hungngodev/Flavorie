@@ -25,6 +25,13 @@ export const updateUser = async (req: Request, res: Response) => {
   await updatedUser.save();
   res.status(StatusCodes.OK).send({ msg: "update user" });
 };
+export const getPersonalInfo = async (req: Request, res: Response) => {
+  const currUser = await UserModel.findById(req.user.userId)
+  if (!currUser){
+    throw new NotFoundError("User not found")
+  }
+  return res.status(StatusCodes.OK).send({currUser})
+}
 
 export const getCart = async (req: Request, res: Response) => {
   if (!req.user) {

@@ -308,8 +308,8 @@ function User({
     weeklyCaloriesData,
 }: UserProps) {
     const nutrientData: NutrientData = { protein, carb, fat, vitamins, minerals };
-    const name = info.name;
-    const lastname = info.lastname;
+    // const name = info.name;
+    // const lastname = info.lastName;
     const badgeLevel = getBadgeLevel(badgesEarned);
     const badgeColor = getBadgeColor(badgeLevel);
 
@@ -325,7 +325,8 @@ function User({
                 <Box>
                     <Box mb="2" display="flex" flexDirection="column" justifyContent="flex-start">
                         <Heading fontSize="20" fontWeight="bold" mt="1">
-                            Hi {name} {lastname},
+                            {/* Hi {name} {lastname}, */}
+                            {/* {name} */}
                         </Heading>
                         <Text mt="1">Welcome back! Let's check the nutrition of your meals for today.</Text>
                     </Box>
@@ -350,22 +351,26 @@ function User({
                                 </Tr>
                             </Thead>
                             <Tbody>
-                                {mealData.map((meal) => (
-                                    <Tr key={meal.mealType}>
-                                        <Td>{meal.mealType}</Td>
-                                        <Td>{meal.carbs}</Td>
-                                        <Td>{meal.protein}</Td>
-                                        <Td>{meal.fat}</Td>
-                                        <Td>{meal.calories}</Td>
-                                        {/* <Td>
-                      <Box bg="lightgray" width={`${meal.caloriesOfGoal}%`} height="10px" />
-                      {meal.caloriesOfGoal}
-                    </Td> */}
-                                    </Tr>
-                                ))}
+                                {mealData ? (
+                                    mealData.map((meal) => (
+                                        <Tr key={meal.mealType}>
+                                            <Td>{meal.mealType}</Td>
+                                            <Td>{meal.carbs}</Td>
+                                            <Td>{meal.protein}</Td>
+                                            <Td>{meal.fat}</Td>
+                                            <Td>{meal.calories}</Td>
+                                            <Td>
+                          {/* <Box bg="lightgray" width={`${meal.caloriesOfGoal}%`} height="10px" />
+                          {meal.caloriesOfGoal} */}
+                        </Td>
+                                        </Tr>
+                                    ))
+                                ) : <Text>No meal</Text>
+                                }
+                                
                             </Tbody>
                         </Table>
-                    </Box>
+                    </Box> 
                     <Box mt="3" mb="2">
                         <Heading mb="2" fontSize="22" fontWeight="bold">
                             Statistics
@@ -516,7 +521,7 @@ function User({
                     <Box mb="2">
                         <WeeklySummary {...weeklySummaryData} />
                     </Box>
-                    <WeeklyCaloriesChart data={weeklyCaloriesData} />
+                    {/* <WeeklyCaloriesChart data={weeklyCaloriesData} /> */}
                 </Box>
             </GridItem>
             <GridItem rowSpan={2} colSpan={4} ml="2" mr="5" mt="2">
