@@ -10,15 +10,20 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { QueryClient, useQuery } from '@tanstack/react-query';
+import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
 import lottie from 'lottie-web';
 import { useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Params, useLocation, useParams } from 'react-router-dom';
 import errorIllustration from '../../public/images/404-error-removebg-preview.png';
 import dumbCatLoaderAnimation from '../assets/animations/dumb-cat-loader.json';
 import { ImageSlider, PostFooter, PostHeader } from '../components/community/post/index';
 import { PostObjectType, parsePost } from '../components/community/post/types';
+import { selectDeleteStatus } from '../slices/posts/DeletePost';
+import { selectLikeStatus } from '../slices/posts/LikePost';
+import { selectUpdateStatus } from '../slices/posts/UpdatePost';
 import customFetch from '../utils/customFetch';
+
 const postQuery = (postId: string) => {
   return {
     queryKey: ['community-post', postId],
@@ -38,6 +43,7 @@ export const loader =
   };
 
 const FullPost = () => {
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const [post, setPost] = useState<PostObjectType | null>(null);
 
@@ -45,16 +51,21 @@ const FullPost = () => {
 
   const { postId } = useParams();
   const { data: queryData, status, fetchStatus } = useQuery<any>(postQuery(postId ?? ''));
-  const { search } = useLocation();
-  const searchParams = new URLSearchParams(search);
-  const index = parseInt(searchParams.get('index') ?? '-1');
+
+  const deleteStatus = useSelector(selectDeleteStatus);
+  const updateStatus = useSelector(selectUpdateStatus);
+  const likeStatus = useSelector(selectLikeStatus);
 
   useEffect(() => {
-    console.log(queryData, index);
+    console.log(queryData);
     if (status === 'success') {
       setPost(parsePost([queryData?.post])[0]);
     }
   }, [queryData, status, fetchStatus]);
+
+  useEffect(() => {
+    queryClient.invalidateQueries();
+  }, [deleteStatus, updateStatus, likeStatus]);
 
   useEffect(() => {
     lottie.loadAnimation({
@@ -69,14 +80,12 @@ const FullPost = () => {
   return status === 'pending' ? (
     <Box
       marginInline="auto"
-      maxWidth={{ base: '100%', md: '80%', lg: '60%' }}
+      maxWidth={{ base: '80dvw', md: '70dvw', lg: '60dvw' }}
       marginBlock={4}
       ref={animationRef}
       id="animation-container"
-    >
-      Loading...
-    </Box>
-  ) : status === 'error' || !post || index === -1 ? (
+    ></Box>
+  ) : status === 'error' || !post ? (
     <AspectRatio marginInline="auto" maxWidth={{ base: '100%', md: '90%', lg: '85%' }} ratio={4 / 3}>
       <Image src={errorIllustration} alt="error-image" />
     </AspectRatio>
@@ -89,13 +98,7 @@ const FullPost = () => {
       opacity={loading ? 0.5 : 1}
     >
       <CardHeader paddingBottom={0}>
-        <PostHeader
-          isFullPage={true}
-          postId={postId ?? post.id ?? ''}
-          postData={post}
-          postIndex={index}
-          setLoading={setLoading}
-        />
+        <PostHeader isFullPage={true} postId={postId ?? post.id ?? ''} postData={post} setLoading={setLoading} />
       </CardHeader>
 
       <CardBody>
@@ -104,11 +107,11 @@ const FullPost = () => {
           <Text>{post.body}</Text>
         </VStack>
         {post.media && post.media.length > 0 && (
-          <ImageSlider postIndex={index} action="direct" slides={post.media} postId={postId ?? post.id ?? ''} />
+          <ImageSlider action="direct" slides={post.media} postId={postId ?? post.id ?? ''} />
         )}
       </CardBody>
       <CardFooter>
-        <PostFooter postId={postId ?? post.id ?? ''} postIndex={index} postData={post} />
+        <PostFooter postId={postId ?? post.id ?? ''} postData={post} />
       </CardFooter>
     </Card>
   );

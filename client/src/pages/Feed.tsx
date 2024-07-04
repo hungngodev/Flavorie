@@ -50,8 +50,8 @@ const Feed = () => {
     queryFn: fetchFeed,
     initialPageParam: 1,
     getNextPageParam: (lastPage) => lastPage.nextPage,
-    retry: false,
-    retryDelay: 1000,
+    retry: 5,
+    retryDelay: 3000,
   });
 
   const scrollVirtualizer = useVirtualizer({
@@ -59,7 +59,7 @@ const Feed = () => {
     getScrollElement: () => parentRef.current,
     estimateSize: (index) => 200,
     gap: 30,
-    getItemKey: (index) => posts[index].id,
+    getItemKey: (index) => posts[index]?.id,
     measureElement: (element, entry, instance) => {
       const direction = instance.scrollDirection;
       if (instance.isScrolling && direction && direction === 'backward') {
@@ -134,7 +134,6 @@ const Feed = () => {
               marginInline="auto"
               width="100%"
               postId={post.id}
-              postIndex={virtualItem.index}
             />
           ) : null;
         })}
