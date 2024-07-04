@@ -74,27 +74,28 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
                     autoPlay={false}
                     lottieRef={lottieCartRef}
                 />
-
-                <button
-                    onClick={() => {
-                        onSubmit('add');
-                        // socket.emit('sendToInstacart', fields);
-                        lottieCartRef.current?.playSegments([0, 135]);
-                    }}
-                    className=" rounded-md bg-indigo-500 p-3 text-white"
-                >
-                    Save
-                </button>
-                <button
-                    onClick={() => {
-                        onSubmit('transfer');
-                        // socket.emit('sendToInstacart', fields);
-                        lottieCartRef.current?.playSegments([0, 135]);
-                    }}
-                    className=" rounded-md bg-indigo-500 p-3 text-white"
-                >
-                    Transfer to Fridge
-                </button>
+                <VStack mt="5" alignItems="left">
+                    <button
+                        onClick={() => {
+                            onSubmit('add');
+                            // socket.emit('sendToInstacart', fields);
+                            lottieCartRef.current?.playSegments([0, 135]);
+                        }}
+                        className=" rounded-full bg-indigo-500 py-3 px-5 text-white"
+                    >
+                        Send to Instacart
+                    </button>
+                    <button
+                        onClick={() => {
+                            onSubmit('transfer');
+                            // socket.emit('sendToInstacart', fields);
+                            lottieCartRef.current?.playSegments([0, 135]);
+                        }}
+                        className=" rounded-full bg-indigo-500 py-3 px-5 text-white"
+                    >
+                        Transfer to Fridge
+                    </button>
+                </VStack>
                 {/* <IconButton
                     icon={<ChevronDown />}
                     aria-label="right"

@@ -160,7 +160,7 @@ export default function LeftOver({ height }: { height?: string }) {
                             toast.error('Please login to save your leftOver', { position: 'top-right' });
                         }
                     }}
-                    className=" rounded-md bg-indigo-500 p-2 text-white"
+                    className=" rounded-full bg-indigo-500 p-3 text-white"
                 >
                     Save
                 </button>

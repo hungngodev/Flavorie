@@ -243,7 +243,7 @@ export default function Ingredient() {
             <IconButton
                 position="absolute"
                 mr="3"
-                mt="3"
+                mt="5"
                 top="0"
                 right="0"
                 zIndex={10}
@@ -310,7 +310,7 @@ export default function Ingredient() {
                                 setHovering(true);
                             }}
                             onMouseLeave={() => setHovering(false)}
-                            className=" relative rounded-full bg-indigo-300 px-4 py-2 text-white"
+                            className=" relative rounded-full bg-indigo-300 mt-4 px-4 py-2 text-white"
                             style={{
                                 transformStyle: 'preserve-3d',
                             }}
@@ -357,6 +357,7 @@ export default function Ingredient() {
                                             control={control}
                                             lottieCartRef={lottieCartRef}
                                             height="50vh"
+                                            
                                         />
                                     ) : (
                                         <LeftOver height="50vh" />
