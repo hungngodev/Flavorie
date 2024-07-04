@@ -15,7 +15,8 @@ export const PostSlice = createSlice({
   initialState,
   reducers: {
     getFeed: (state: PostState, action: PayloadAction<{ posts: PostObjectType[] }>) => {
-      state.posts = [...action.payload.posts];
+      // state.posts = [...action.payload.posts];
+      return { posts: [...action.payload.posts] };
     },
 
     addPosts: (state: PostState, action: PayloadAction<{ post: PostObjectType[] }>) => {
@@ -36,11 +37,18 @@ export const PostSlice = createSlice({
       state.posts = updatedPosts;
     },
 
-    updatePost: (state: PostState, action: PayloadAction<{ postIndex: number; post: PostObjectType[] }>) => {
-      const { postIndex, post } = action.payload;
-      const updatedPosts = [...state.posts];
-      updatedPosts[postIndex] = post[0];
-      return { posts: updatedPosts };
+    updatePost: (state: PostState, action: PayloadAction<{ post: PostObjectType[] }>) => {
+      const { post } = action.payload;
+      const postIndex = state.posts.findIndex((p) => p.id === post[0].id); // Assuming each post has a unique 'id' field
+      if (postIndex !== -1) {
+        // Check if the post was found
+        const updatedPosts = [...state.posts];
+        console.log('updated posts: ');
+        console.log(updatedPosts);
+        updatedPosts[postIndex] = post[0];
+        return { posts: [...updatedPosts] };
+      }
+      return state; // Return the original state if post not found
     },
 
     deletePost: (state: PostState, action: PayloadAction<{ postId: string | undefined }>) => {
@@ -60,4 +68,5 @@ export const selectPostsByIndex = (index: number) => (state: RootState) => state
 
 export const selectPostById = (postId: string) => (state: RootState) =>
   state.posts.posts.find((post) => post.id === postId) as PostObjectType;
+
 export default PostSlice.reducer;

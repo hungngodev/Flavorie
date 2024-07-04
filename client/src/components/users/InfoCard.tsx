@@ -3,20 +3,19 @@ import { Avatar, Box, Card, CardBody, Divider, Flex, HStack, Heading, IconButton
 import React from 'react';
 
 export interface PersonalProps {
-    avatar: {
-      src: string;
-      username: string;
-    };
-    email: string;
-    phone: string;
-    address: {
-      city: string;
-      state: string;
-      country: string;
-      zipcode?: string;
-    };
-};
-
+  avatar: {
+    src: string;
+    username: string;
+  };
+  email: string;
+  phone: string;
+  address: {
+    city: string;
+    state: string;
+    country: string;
+    zipcode?: string;
+  };
+}
 
 const UserCard: React.FC<PersonalProps> = ({ avatar, email, phone, address }) => {
   return (

@@ -9,22 +9,13 @@ import { GoDotFill } from 'react-icons/go';
 import { useNavigate } from 'react-router-dom';
 import { BasePostProps, MediaObjectType } from './types';
 
-interface ImageSliderProps extends StackProps, BasePostProps {
+interface ImageSliderProps extends BasePostProps, StackProps {
   slides: MediaObjectType[];
   onClose?: (arg?: any) => void;
   action: 'display' | 'direct';
 }
 
-const ImageSlider: React.FC<ImageSliderProps> = ({
-  children,
-  slides,
-  onClose,
-  postId,
-  action,
-  postIndex,
-  postData,
-  ...props
-}) => {
+const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, onClose, postId, action, postData, ...props }) => {
   const navigate = useNavigate();
   const [imageSlides, setImageSlides] = useState<MediaObjectType[]>(slides);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -109,11 +100,10 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
                   zIndex={2}
                   rounded="lg"
                   maxHeight="80dvh"
-                  maxWidth="60dvw"
                   cursor="pointer"
                   onClick={
                     action === 'direct'
-                      ? () => navigate(`/community/${postId}?index=${postIndex}`, { state: { post: postData } })
+                      ? () => navigate(`/community/${postId}`, { state: { post: postData } })
                       : () => {}
                   }
                 />

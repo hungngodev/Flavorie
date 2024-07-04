@@ -49,15 +49,7 @@ interface PostFormExpandProps extends BasePostProps {
   setLoading?: (arg?: any) => void;
 }
 
-const PostFormExpand: React.FC<PostFormExpandProps> = ({
-  isOpen,
-  onClose,
-  action,
-  preload,
-  postIndex,
-  postId,
-  setLoading,
-}) => {
+const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, action, preload, postId, setLoading }) => {
   const theme = useTheme();
 
   const webCamRef = useRef<Webcam>(null);
@@ -102,7 +94,7 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({
             console.log(newFormData);
 
             await dispatch(updateRequest({ postId, newFormData }))
-              .then((res: any) => dispatch(updatePost({ post: parsePost([res.payload.post]), postIndex: postIndex })))
+              .then((res: any) => dispatch(updatePost({ post: parsePost([res.payload.post]) })))
               .then(() => onClose());
           }
           break;
@@ -261,7 +253,6 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({
 
             <ImageSlider
               postId={postId}
-              postIndex={postIndex}
               action="display"
               slides={previewMedia}
               onClose={handleFileRemove}
