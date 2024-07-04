@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import UploadReceiptForm from '../components/UploadReceiptForm';
 import ImageScan from '../components/ingredients/ImageScan';
 import useAuth from '../hooks/useAuth';
+import useToast from '../hooks/useToast.tsx';
 import {
     Heading,
     Box,
@@ -24,34 +25,19 @@ import Footer from '../components/nav/Footer.tsx';
 
 const ReceiptScan: React.FC = () => {
     const { currentUser } = useAuth();
-    const toast = useToast();
+    const {notifyError, notifySuccess} = useToast()
     const [file, setFile] = useState<File | null>(null);
     const [backgroundImage, setBackgroundImage] = useState('');
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (!file) {
-            toast({
-                title: 'Error',
-                description: 'Please upload files',
-                status: 'error',
-                duration: 2000,
-                isClosable: true,
-                // position: 'top-right',
-            });
+            notifyError("Please upload your receipt")
             return;
         }
 
         if (currentUser.status === 'unauthenticated') {
-            toast({
-                title: 'Error',
-                description: 'Please log in or sign up to submit receipt',
-                status: 'error',
-                duration: 2000,
-                isClosable: true,
-                // position: 'top-right',
-            });
-            return;
+            notifyError("Please log in to upload receipts")
         }
 
         const reader = new FileReader();
@@ -60,14 +46,7 @@ const ReceiptScan: React.FC = () => {
             const filename = file.name;
             console.log('submitting receipt');
             socket.emit('submitReceipt', { base64, filename });
-            toast({
-                title: 'Success',
-                description: 'Submit receipt successfully',
-                status: 'success',
-                duration: 2000,
-                isClosable: true,
-                // position: 'top-right',
-            });
+            notifySuccess("Submit receipt successfully")
         };
 
         reader.readAsDataURL(file);

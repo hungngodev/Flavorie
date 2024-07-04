@@ -103,6 +103,7 @@ interface UploadImageProps {
 }
 
 const UploadImage: React.FC<UploadImageProps> = ({ setFile, backgroundImage, setBackgroundImage }) => {
+    
     const controls = useAnimation();
     const startAnimation = () => controls.start('hover');
     const stopAnimation = () => controls.stop();
