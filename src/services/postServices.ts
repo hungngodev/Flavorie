@@ -199,30 +199,36 @@ export const updatePostDocument = async (
       ].filter(post => !post.url.startsWith("blob")),
       privacy,
       location,
-      react,
-      review,
     };
 
     console.log("update data", updateData);
 
     const updatedPost = await PostModel.findByIdAndUpdate(postId, updateData, {
       new: true,
-    }).populate([
-      { path: "author", select: "id name avatar" },
-      {
-        path: "review",
-        select: "content",
-        populate: {
-          path: "userId",
-          select: "id name avatar",
-        },
-      },
-    ]);
+    }).populate([{ path: "author", select: "id name avatar" }]);
+
     if (!updatedPost) throw new ServerError("Failed to update post");
 
     await updatedPost.save();
 
-    return updatedPost;
+    const returnPost = await PostModel.findOne({ _id: postId }).populate([
+      {
+        path: "review",
+        populate: { path: "userId", select: "id name avatar" },
+      },
+      {
+        path: "author",
+        select: "id name avatar",
+      },
+    ]);
+
+    if (!returnPost) {
+      throw new ServerError("Post not found");
+    }
+    await recursivePopulate(returnPost.review);
+
+    console.log(returnPost);
+    return returnPost;
   } catch (err) {
     throw new ServerError(`${err}`);
   }
@@ -263,14 +269,16 @@ export const deletePostDocument = async (postId: string) => {
       const queueSize = reviews.length;
       for (let i = 0; i < queueSize; i++) {
         const review = reviews.shift();
-        if (review) {
-          deleteQueue.push(review._id as Types.ObjectId);
-          if (review.childrenReview.length > 0) {
-            reviews.push(...review.childrenReview);
+        const reviewDoc = await ReviewModel.findById(review);
+        if (reviewDoc) {
+          deleteQueue.push(reviewDoc._id);
+          if (reviewDoc.childrenReview.length > 0) {
+            reviews.push(...reviewDoc.childrenReview);
           }
         }
       }
     }
+
     // use bulkwrite to send multiple delete operations in one batch, reducing network round-trips
     if (deleteQueue.length > 0) {
       const bulkOps = deleteQueue.map(reviewId => ({
@@ -295,7 +303,7 @@ export const deletePostDocument = async (postId: string) => {
 export const reactPostDocument = async (
   userId: string,
   postId: string,
-): Promise<Document> => {
+): Promise<Document | null> => {
   try {
     const post = await PostModel.findById(postId).populate({
       path: "author",
@@ -313,7 +321,25 @@ export const reactPostDocument = async (
       post.reactCount = Math.max(0, post.reactCount + 1);
     }
     await post.save();
-    return post;
+
+    const returnPost = await PostModel.findOne({ _id: postId }).populate([
+      {
+        path: "review",
+        populate: { path: "userId", select: "id name avatar" },
+      },
+      {
+        path: "author",
+        select: "id name avatar",
+      },
+    ]);
+
+    if (!returnPost) {
+      throw new ServerError("Post not found");
+    }
+
+    await recursivePopulate(returnPost?.review);
+    await returnPost?.save();
+    return returnPost;
   } catch (err) {
     throw new ServerError(`${err}`);
   }
