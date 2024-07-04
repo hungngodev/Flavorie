@@ -100,6 +100,7 @@ function Card({ id, imgLink, title, height, width, onClick, amount, unitShort, n
                                     color: theme.colors.palette_indigo,
                                     textDecoration: 'underline',
                                 }}
+                                className="select-none"
                                 letterSpacing={1}
                             >
                                 {title.slice(0, 20)}

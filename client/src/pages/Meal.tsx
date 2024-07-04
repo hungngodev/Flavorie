@@ -10,16 +10,16 @@ import customFetch from '../utils/customFetch';
 
 // Default values shown
 export interface Meal {
-    id: string;
-    _id: string;
-    title: string;
-    description: string;
-    image: string;
-    category: string;
-    numberOfLiked: number;
-    liked?: boolean;
-    // price: string;
-    infoLink: string;
+      id: string;
+      _id: string;
+      title: string;
+      description: string;
+      image: string;
+      category: string;
+      numberOfLiked: number;
+      liked?: boolean;
+      // price: string;
+      infoLink: string;
 }
 
 const mealData = {
@@ -1318,36 +1318,43 @@ export const loader =
     };
 
 function Meal() {
-    const params = useLoaderData();
-    // const { data: queryData, status } = useQuery(allMealsQuery(params as { [key: string]: string }));
-    // console.log(queryData);
+      const params = useLoaderData();
+      // const { data: queryData, status } = useQuery(allMealsQuery(params as { [key: string]: string }));
+    console.log(queryData);
+      // console.log(queryData);
     // const mealData = queryData?.data;
-    // console.log(mealData);
+    console.log(mealData);
+
+      // console.log(mealData);
 
     return (
-        <Flex flexDir={'column'} width={'100%'} height={'100%'} alignItems={'center'}>
-            <Specialty />
-            <SearchBar autoCompleteLink="/meal/autocomplete" />
-            {status === 'pending' ? (
-                <Flex justifyContent={'center'} alignItems={'center'} height={'100%'}>
-                    <Lottie animationData={Ingredient} loop={true} style={{ height: 600 }} />,
-                </Flex>
-            ) : (
-                <div>
-                    {Object.entries(mealData).map(
-                        (entry, index) =>
-                            (entry[1] as Meal[]).length > 0 && (
-                                <ListOfMeals
+            <Flex flexDir={'column'} width={'100%'} height={'100%'} alignItems={'center'}>
+                  <Specialty />
+                  <SearchBar autoCompleteLink="/meal/autocomplete" />
+                  {status === 'pending' ? (
+                        <Flex justifyContent={'center'} alignItems={'center'} height={'100%'}>
+                              <Lottie animationData={Ingredient} loop={true} style={{ height: 600 }} />,
+                        </Flex>
+                  ) : (
+                        <div>
+                              {Object.entries(mealData).map(
+                                    (entry, index) =>
+                                          (entry[1] as Meal[]).length > 0 && (
+                                                <ListOfMeals
+                                   
                                     key={index + 'listMeal'}
+                                   
                                     Type={entry[0].toString()}
+                                   
                                     meals={entry[1] as Meal[]}
+                               
                                 />
-                            ),
-                    )}
-                </div>
-            )}
-        </Flex>
-    );
+                                          ),
+                              )}
+                        </div>
+                  )}
+            </Flex>
+      );
 }
 
 export default Meal;

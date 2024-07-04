@@ -10,36 +10,19 @@ import {
     NumberInputField,
     VStack,
 } from '@chakra-ui/react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { ChevronDown, ChevronUp } from 'lucide-react';
-import { useEffect, useMemo, useRef } from 'react';
-import { Controller, useFieldArray, useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
-import { useAuth } from '../../hooks';
+import { useEffect } from 'react';
+import { Control, Controller, FieldArrayWithId } from 'react-hook-form';
+import { leftOverData } from '../../pages/Ingredient';
 import theme from '../../style/theme';
-import customFetch from '../../utils/customFetch';
-
-export type leftOverData = {
-    leftOver: {
-        id: string;
-        name: string;
-        image: string;
-        quantity: string;
-    }[];
-};
-
-const leftOverQuery = {
-    queryKey: ['leftOver'],
-    queryFn: async () => {
-        const data = await customFetch.get('/user/leftOver');
-        return data;
-    },
-};
-export default function LeftOver({ height }: { height?: string }) {
-    const { data: leftOverData, status: leftOverStatus } = useQuery(leftOverQuery);
-    const queryClient = useQueryClient();
-
+interface LeftOverProps {
+    height: string;
+    removeItem: (index: number) => void;
+    onSubmit: () => void;
+    fields: FieldArrayWithId<leftOverData, 'leftOver', 'id'>[];
+    control: Control<leftOverData>;
+}
+export default function LeftOver({ height, removeItem, onSubmit, fields, control }: LeftOverProps) {
     useEffect(() => {
         console.log('changing');
         queryClient.invalidateQueries({
@@ -154,11 +137,7 @@ export default function LeftOver({ height }: { height?: string }) {
                 <button
                     onClick={(e) => {
                         e.preventDefault();
-                        if (auth.currentUser.status === 'authenticated') {
-                            onSubmit();
-                        } else {
-                            toast.error('Please login to save your leftOver', { position: 'top-right' });
-                        }
+                        onSubmit();
                     }}
                     className=" rounded-full bg-indigo-500 p-3 text-white"
                 >
@@ -182,7 +161,6 @@ export default function LeftOver({ height }: { height?: string }) {
                 }}
             >
                 <VStack
-                    ref={scrollLeftOverRef}
                     spacing={8}
                     width={'100%'}
                     height={height}

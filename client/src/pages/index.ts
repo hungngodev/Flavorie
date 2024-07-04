@@ -2,7 +2,6 @@ export { default as Feed } from './Feed';
 export { default as FullPost } from './FullPost';
 export { default as Main } from './Home';
 export { default as Ingredient } from './Ingredient';
-export { default as IngredientLanding } from './IngredientLanding';
 export { default as Login } from './Login';
 export { default as Meal } from './Meal';
 export { default as Meeting } from './Meeting';

@@ -1,9 +1,12 @@
 import axios from "axios";
 import FormData from "form-data";
+import { url } from "inspector";
 import mongoose from "mongoose";
 import { Socket } from "socket.io";
+import IngredientModel from "../models/IngredientModel.ts";
 import NotificationModel from "../models/NotificationModel.ts";
 import { cloudinary } from "../services/cloudinary/cloudinaryServices.ts";
+import { groceryGenerating } from "../services/puppeteer/connecting.ts";
 
 const FLASK_SERVICE_URL = "http://127.0.0.1:5000/scan-receipts";
 
@@ -111,6 +114,44 @@ export const notificationHandler = (socket: Socket) => {
   });
 
   socket.on("sendToInstacart", async data => {
-    console.log("sendToInstacart", data);
+    const ingredients = await IngredientModel.find({
+      _id: {
+        $in: data.map((ingredient: { itemId: string }) => ingredient.itemId),
+      },
+    });
+    const listOfNames = ingredients.map(ingredient => ingredient.name);
+    console.log(
+      "ingredients",
+      ingredients.map(ingredient => ingredient.name),
+    );
+
+    try {
+      const response = await groceryGenerating(listOfNames);
+      socket.emit("processReceipt", "Let's go to Instacart!");
+      const notification = new NotificationModel({
+        userId: socket.data.user.userId,
+        status: false,
+        message: {
+          title: "Connecting With Instacart Successfully!",
+          data: response,
+          notificationType: "instacart",
+        },
+        timestamp: new Date(),
+      });
+      await notification.save();
+    } catch (error) {
+      console.log("Error connecting to Instacart", error);
+      socket.emit("error", "Failed to connect to Instacart");
+      const notification = new NotificationModel({
+        userId: socket.data.user.userId,
+        status: false,
+        message: {
+          title:
+            "Cannot connect to Instacart because the system is overloading. Please try again!",
+        },
+        timestamp: new Date(),
+      });
+      await notification.save();
+    }
   });
 };

@@ -139,6 +139,7 @@ const Slider: React.FC<SliderProps> = ({
 
   const handleFocus = () => setTrackIsActive(true);
 
+  // scroll 3 slides
   // const handleDecrementClick = () => {
   //   setTrackIsActive(true);
   //   !(activeItem === positions.length - positions.length) && setActiveItem((prev) => prev - 1);
@@ -161,6 +162,23 @@ const Slider: React.FC<SliderProps> = ({
     !(activeItem >= positions.length - constraint) &&
       setActiveItem((prev) => Math.min(prev + 2, positions.length - constraint));
   };
+
+  // scroll 1 slide
+  // const handleDecrementClick = () => {
+  //     setTrackIsActive(true);
+  //     if (activeItem > 0) {
+  //         setActiveItem((prev) => Math.max(prev - 1, 0));
+  //     }
+  // };
+
+  // // Scroll by 1 slide at a time
+  // const handleIncrementClick = () => {
+  //     setTrackIsActive(true);
+  //     if (activeItem < positions.length - constraint) {
+  //         setActiveItem((prev) => Math.min(prev + 1, positions.length - constraint));
+  //     }
+  // };
+
 
   return (
     <>

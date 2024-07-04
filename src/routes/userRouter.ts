@@ -8,9 +8,11 @@ import {
 } from "../controllers/notificationController.ts";
 import {
   getCart,
+  getCookedMeals,
   getLeftOver,
   getLikedMeals,
   updateCart,
+  updateCookedMeals,
   updateLeftOver,
   updateLikedMeals,
   updateUser,
@@ -40,6 +42,11 @@ router
   .route("/likedMeal")
   .get(authenticateUser, catchAsync(getLikedMeals))
   .post(authenticateUser, catchAsync(updateLikedMeals));
+
+router
+  .route("/cookedMeal")
+  .get(authenticateUser, catchAsync(getCookedMeals))
+  .post(authenticateUser, catchAsync(updateCookedMeals));
 
 router
   .route("/notifications/cnt")

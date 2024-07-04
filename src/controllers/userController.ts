@@ -3,6 +3,8 @@ import { StatusCodes } from "http-status-codes";
 import { NotFoundError } from "../errors/customErrors.ts";
 import MealModel from "../models/MealModel.ts";
 import UserModel from "../models/UserModel.ts";
+import { createMeal } from "../services/mealServices.ts";
+import { getMealByIdAPI } from "../services/spoonacular/spoonacularServices.ts";
 import {
   changeItemTypes,
   getUserItems,
@@ -57,7 +59,7 @@ export const updateCart = async (req: Request, res: Response) => {
 };
 
 export const updateLeftOver = async (req: Request, res: Response) => {
-  console.log(req.body);
+  console.log("leftOver", req.body);
   await modifyUserItems(req.user.userId, req.body.leftOver, "leftOver");
 
   res.status(StatusCodes.OK).send({ msg: "update leftOver" });
@@ -70,7 +72,14 @@ export const getLikedMeals = async (req: Request, res: Response) => {
 
 export const updateLikedMeals = async (req: Request, res: Response) => {
   console.log(req.body);
-  const { mealId } = req.body;
+  let { mealId, infoLink } = req.body;
+  if (!mealId) {
+    console.log("Creating not existing meal for like");
+    const id = infoLink.match(/\d+/)[0];
+    const mealInfo = await getMealByIdAPI(id);
+    mealId = await createMeal(mealInfo, "spoonacular");
+  }
+
   const liked = await toggleLikedItem(req.user.userId, mealId, "likedMeal");
   const likedMeals = await MealModel.findById(mealId);
   if (!likedMeals) {
@@ -82,6 +91,24 @@ export const updateLikedMeals = async (req: Request, res: Response) => {
     likedMeals.numberOfLiked -= 1;
   }
   await likedMeals.save();
-  const myLikedMeals = await getUserItems(req.user.userId, "likedMeal");
-  res.status(StatusCodes.OK).send({ liked, myLikedMeals });
+  res
+    .status(StatusCodes.OK)
+    .send({ liked, numberOfLiked: likedMeals.numberOfLiked });
+};
+
+export const getCookedMeals = async (req: Request, res: Response) => {
+  const cookedMeals = await getUserItems(req.user.userId, "cookedMeal");
+  res.status(StatusCodes.OK).send({ cookedMeals });
+};
+
+export const updateCookedMeals = async (req: Request, res: Response) => {
+  console.log(req.body);
+  await toggleLikedItem(req.user.userId, req.body.mealId, "cookedMeal");
+  const user = await UserModel.findById(req.user.userId);
+  if (user) {
+    user.points += 10;
+    await user.save();
+  }
+
+  res.status(StatusCodes.OK).send({ msg: "update cookedMeal" });
 };

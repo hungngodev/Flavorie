@@ -44,11 +44,23 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
     const { currentUser } = useAuth();
     const handleLike = async () => {
         if (currentUser.status === 'authenticated') {
-            const liked = await customFetch.post('/user/likedMeal', {
+            setLiked(!liked);
+            setNumberOfLiked(
+                !liked
+                    ? imageProps.numberOfLiked + 1
+                    : imageProps.numberOfLiked - 1 > 0
+                      ? imageProps.numberOfLiked - 1
+                      : 0,
+            );
+            const returnLiked = await customFetch.post('/user/likedMeal', {
                 mealId: imageProps.id,
+                infoLink: imageProps.infoLink,
             });
-            setLiked(liked.data.liked);
-            setNumberOfLiked(liked.data.liked ? numberOfLiked + 1 : numberOfLiked - 1);
+            console.log(returnLiked);
+            setLiked(returnLiked.data.liked);
+            setNumberOfLiked(returnLiked.data.numberOfLiked);
+            // setLiked(returnLiked.data.liked);
+            // setNumberOfLiked(returnLiked.data.numberOfLiked);
         } else {
             toast.error('Please login to like');
         }
@@ -112,7 +124,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
                             right="4"
                             ml={1}
                         >
-                            {numberOfLiked}
+                            {numberOfLiked ? numberOfLiked : 0}
                         </Text>
                     </HStack>
                 </HStack>
@@ -122,18 +134,3 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
 };
 
 export default ImageCard;
-
-// Instruction to use
-
-// copy this prop to function App in App.tsx
-// const imageProps = {
-//   src: "../public/images/baked-brie-with-roasted-mushrooms.webp",
-//   alt: "Baked brie with roasted mushroom",
-//   title: "Baked brie with roasted mushroom"
-//   description: "Baked brie cheese with roasted mushroom on top.",
-//   borderRadius: '8px',
-//   price: '$4.8'
-// }
-
-// copy this line in return in App.tsx
-//<ImageCard imageProps={imageProps} />

@@ -1,5 +1,6 @@
 import { Peer } from 'peerjs';
 import React from 'react';
+import { BackendData } from '../components/meals/ImageSlide';
 import { PeerState } from '../reducers/peerReducer';
 
 export type RoomContextType = {
@@ -15,6 +16,10 @@ export type RoomContextType = {
     toggleMic: () => void;
     videoStatus: boolean;
     micStatus: boolean;
+    currentMeal: string;
+    setCurrentMeal: (meal: string) => void;
+    mealDatas: BackendData[];
+    currentMealInfo: BackendData;
 };
 
 const RoomContext = React.createContext<RoomContextType>({
@@ -27,6 +32,10 @@ const RoomContext = React.createContext<RoomContextType>({
     toggleMic: () => {},
     videoStatus: true,
     micStatus: true,
+    currentMeal: '',
+    setCurrentMeal: () => {},
+    mealDatas: [],
+    currentMealInfo: {} as BackendData,
 });
 
 export default RoomContext;

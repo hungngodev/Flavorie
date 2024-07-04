@@ -73,36 +73,38 @@ export async function modifyUserItems(
   items: Item[],
   type: string,
 ): Promise<void> {
-  if (!items || items.length === 0) {
+  if (!items || items.length === 0 || items === undefined || items === null) {
     const existingItems = await ItemModel.find({ userId: userId, type: type });
     for (const existingItem of existingItems) {
       await ItemModel.findByIdAndDelete(existingItem._id);
     }
   }
-  for (const item of items) {
-    const existingItem = await ItemModel.findOne({
-      userId: userId,
-      itemId: item.itemId,
-      type: type,
-    });
-    if (existingItem) {
-      existingItem.quantity = item.quantity;
-      // existingItem.unit = item.unit;
-      await existingItem.save();
-    } else {
-      await ItemModel.create({ ...item, userId: userId, type: type });
+  try {
+    for (const item of items) {
+      const existingItem = await ItemModel.findOne({
+        userId: userId,
+        itemId: item.itemId,
+        type: type,
+      });
+      if (existingItem) {
+        existingItem.quantity = item.quantity;
+        // existingItem.unit = item.unit;
+        await existingItem.save();
+      } else {
+        await ItemModel.create({ ...item, userId: userId, type: type });
+      }
     }
-  }
-  const existingItems = await ItemModel.find({ userId: userId, type: type });
-  for (const existingItem of existingItems) {
-    const item = items.find(
-      item => item.itemId.toString() === existingItem.itemId.toString(),
-    );
-    if (!item) {
-      console.log("deleting item", type);
-      await ItemModel.findByIdAndDelete(existingItem._id);
+    const existingItems = await ItemModel.find({ userId: userId, type: type });
+    for (const existingItem of existingItems) {
+      const item = items.find(
+        item => item.itemId.toString() === existingItem.itemId.toString(),
+      );
+      if (!item) {
+        console.log("deleting item", type);
+        await ItemModel.findByIdAndDelete(existingItem._id);
+      }
     }
-  }
+  } catch (e) {}
 }
 
 export async function changeItemTypes(
@@ -112,26 +114,16 @@ export async function changeItemTypes(
   newType: string,
 ) {
   for (const item of items) {
-    const existingItem = await ItemModel.findOne({
+    const currentNewTypeItem = await ItemModel.findOne({
       userId: userId,
       itemId: item.itemId,
-      type: previousType,
+      type: newType,
     });
-    if (existingItem) {
-      const currentNewTypeItem = await ItemModel.findOne({
-        userId: userId,
-        itemId: item.itemId,
-        type: newType,
-      });
-      if (currentNewTypeItem) {
-        currentNewTypeItem.quantity = 
-          parseInt(`${currentNewTypeItem.quantity}`) +
-          parseInt(`${existingItem.quantity}`),
-        await currentNewTypeItem.save();
-      } else {
-        existingItem.type = newType as typeItem;
-        await existingItem.save();
-      }
+    if (currentNewTypeItem) {
+      currentNewTypeItem.quantity =
+        parseInt(`${currentNewTypeItem.quantity}`) +
+        parseInt(`${item.quantity}`);
+      await currentNewTypeItem.save();
     } else {
       await ItemModel.create({
         ...item,
@@ -140,19 +132,13 @@ export async function changeItemTypes(
       });
     }
   }
-  // const existingItems = await ItemModel.find({
-  //   userId: userId,
-  //   type: previousType,
-  // });
-  // for (const existingItem of existingItems) {
-  //   const item = items.find(
-  //     item => item.itemId.toString() === existingItem.itemId.toString(),
-  //   );
-  //   if (!item) {
-  //     console.log("deleting item");
-  //     await ItemModel.findByIdAndDelete(existingItem._id);
-  //   }
-  // }
+  const existingItems = await ItemModel.find({
+    userId: userId,
+    type: previousType,
+  });
+  for (const existingItem of existingItems) {
+    await ItemModel.findByIdAndDelete(existingItem._id);
+  }
 }
 
 export async function toggleLikedItem(
@@ -163,7 +149,7 @@ export async function toggleLikedItem(
   const existingItem = await ItemModel.findOne({
     userId: userId,
     itemId: itemId,
-    type: "likedMeal",
+    type: type,
   });
   if (existingItem) {
     await ItemModel.findByIdAndDelete(existingItem._id);

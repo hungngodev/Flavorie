@@ -18,6 +18,7 @@ export interface User {
   allergy: string[];
   diet: string;
   statistic: string[];
+  points: number;
 }
 
 interface UserDocument extends User, mongoose.Document {}
@@ -106,6 +107,10 @@ const UserSchema = new mongoose.Schema<UserDocument, UserModel>({
   statistic: {
     type: [String],
     default: [],
+  },
+  points: {
+    type: Number,
+    default: 0,
   },
 });
 

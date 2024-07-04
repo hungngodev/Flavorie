@@ -15,7 +15,7 @@ interface IngredientLineProps {
 export default function IngredientLine({ subCategory, index, addFunction }: IngredientLineProps) {
     const scrollRefs = useRef<HTMLDivElement | null>();
     const [currentView, setCurrentView] = useState<number>(0);
-    const size = 6;
+    const size = 7;
     // const view = 7;
     function scroll(direction: 'left' | 'right') {
         // const scrollRef = scrollRefs.current;
