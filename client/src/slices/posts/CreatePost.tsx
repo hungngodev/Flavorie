@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { PostRequestType } from '../../components/community/post/types';
 import customFetch from '../../utils/customFetch';
-import { initialState, getTemplateSlice } from './utils';
+import { getTemplateSlice, initialState } from '../utils';
 
 export const createRequest = createAsyncThunk('createPost/fetchPost', async (data: PostRequestType) => {
   const formData = new FormData();

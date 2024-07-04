@@ -8,6 +8,13 @@ import {
   postReducer,
   savePostReducer,
 } from '../slices/posts/index';
+import {
+  getReviewReducer,
+  createReviewReducer,
+  editReviewReducer,
+  deleteReviewReducer,
+  reviewReducer,
+} from '../slices/reviews';
 
 export const store = configureStore({
   reducer: {
@@ -18,6 +25,11 @@ export const store = configureStore({
     deletePost: deletePostReducer,
     savePost: savePostReducer,
     hidePost: hidePostReducer,
+    getReview: getReviewReducer,
+    createReview: createReviewReducer,
+    editReview: editReviewReducer,
+    deleteReview: deleteReviewReducer,
+    reviews: reviewReducer,
   },
 });
 

@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from '../../store/store';
 import customFetch from '../../utils/customFetch';
-import { getTemplateSlice, initialState } from './utils';
+import { getTemplateSlice, initialState } from '../utils';
 
 export const hideRequest = createAsyncThunk('hidePost/hide', async ({ postId }: { postId: string }) => {
   const response = await customFetch.post(`/community/post/hide/${postId}`);

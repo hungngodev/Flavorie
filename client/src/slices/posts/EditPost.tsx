@@ -1,7 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import customFetch from '../../utils/customFetch';
-import { initialState, getTemplateSlice } from './utils';
-import { PostRequestType } from '../../components/community/post/types';
+import { getTemplateSlice, initialState } from '../utils';
 
 interface EditRequestPayload {
   postId: string;
