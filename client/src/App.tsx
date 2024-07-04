@@ -1,3 +1,4 @@
+import React from 'react';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -9,9 +10,9 @@ import { loader as FeedLoader } from './pages/Feed';
 import { loader as PostLoader } from './pages/FullPost';
 import { loader as ingredientsLoader } from './pages/Ingredient';
 import { loader as mealsLoader } from './pages/Meal';
-import Receipt from './pages/Receipt.tsx';
-import ReceiptScan from './pages/ReceiptScan.tsx';
-import { loader as recipeLoader } from './pages/Recipe.tsx';
+import Receipt from './pages/Receipt';
+import ReceiptScan from './pages/ReceiptScan';
+import { loader as recipeLoader } from './pages/Recipe';
 import {
     Feed,
     FullPost,
@@ -26,7 +27,7 @@ import {
     Room,
     User,
 } from './pages/index';
-import ToastProvider from './providers/ToastProvider.tsx';
+import ToastProvider from './providers/ToastProvider';
 import { store as reduxStore } from './store/store';
 import theme from './style/theme';
 

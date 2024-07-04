@@ -1,19 +1,5 @@
-import {
-    Box,
-    Button,
-    Card,
-    CardBody,
-    CardFooter,
-    Divider,
-    HStack,
-    Heading,
-    Image,
-    Stack,
-    Text,
-    useTheme,
-} from '@chakra-ui/react';
+import { Box, Card, CardBody, CardFooter, HStack, Heading, Image, Stack, Text, useTheme } from '@chakra-ui/react';
 import React from 'react';
-// import Heart from 'react-animated-heart';
 import Heart from 'react-animated-heart';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -67,42 +53,66 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
     };
 
     return (
-        <Card maxW="sm" boxShadow="md" borderRadius="xl" variant={'outline'} bgColor={theme.colors.palette_indigo}>
+        <Card maxW="sm" boxShadow="md" borderRadius="xl" variant={'outline'} bgColor={theme.colors.white_purple}>
             <CardBody>
                 <Image
                     src={imageProps.src}
                     borderRadius={imageProps.borderRadius || 'lg'}
                     width="300px"
-                    height="150px"
+                    height="200px"
                     objectFit="cover"
                 />
-                <Stack mt="2" spacing="1">
-                    <Box height={'52px'}>
-                        <Heading size="lg" fontSize="23" fontWeight="bold">
+                <Stack mt="5" spacing="1">
+                    <Box height={'58px'}>
+                        <Heading size="lg" color="gray.600" fontSize="23" fontWeight="bold" textTransform="capitalize">
                             {imageProps.title.toString().slice(0, 40)}
                         </Heading>
                     </Box>
                     {imageProps.description && (
-                        <Box height={'60px'}>
-                            <Text w="full">{imageProps.description.replace(/<[^>]*>/g, '').slice(0, 90) + '...'}</Text>
+                        <Box height={'60px'} mt="2">
+                            <Text color="gray.700" w="full">
+                                {imageProps.description.replace(/<[^>]*>/g, '').slice(0, 90) + '...'}
+                            </Text>
                         </Box>
                     )}
                 </Stack>
             </CardBody>
-            <Divider borderColor="base.200" />
+            {/* <Divider borderColor="base.200" /> */}
             <CardFooter>
-                <HStack>
-                    <Box position="relative">
+                <HStack mt="1" mb="4">
+                    <Link
+                        to={imageProps.infoLink}
+                        style={{
+                            color: theme.colors.palette_purple,
+                            textDecoration: 'underline',
+                        }}
+                    >
+                        See more
+                    </Link>
+                    <HStack
+                        position="absolute"
+                        bottom="1"
+                        right="1"
+                        objectFit="fill"
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        borderRadius="full"
+                        mr="1"
+                    >
                         <Heart isClick={liked || false} onClick={handleLike} />
-                        <Text fontSize="sm" fontWeight="bold" color="white" position={'absolute'} top="10" right="6">
+                        <Text
+                            fontSize="md"
+                            fontWeight="bold"
+                            color="gray.400"
+                            position={'absolute'}
+                            top="10"
+                            right="4"
+                            ml={1}
+                        >
                             {numberOfLiked ? numberOfLiked : 0}
                         </Text>
-                    </Box>
-                    <Link to={imageProps.infoLink}>
-                        <Button variant="solid" colorScheme="blue" fontWeight="bold">
-                            See more
-                        </Button>
-                    </Link>
+                    </HStack>
                 </HStack>
             </CardFooter>
         </Card>

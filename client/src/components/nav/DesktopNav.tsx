@@ -11,16 +11,22 @@ import {
     Popover,
     PopoverContent,
     PopoverTrigger,
+    PopoverArrow,
+    PopoverCloseButton,
+    PopoverBody,
     Stack,
     Text,
+    IconButton,
     useColorModeValue,
     useTheme,
 } from '@chakra-ui/react';
 import { FaBell } from 'react-icons/fa';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import useAuth from '../../hooks/useAuth.tsx';
-import useNotification from '../../hooks/useNotification.tsx';
+import useAuth from '../../hooks/useAuth';
+import useNotification from '../../hooks/useNotification';
 import { NavItem } from './NavBar';
+import NotificationBell from '../notifications/NotificationBell';
 
 export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
     const theme = useTheme();
@@ -34,22 +40,14 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
         <>
             <Flex align={'center'} justifyContent={'space-between'} gap={4}>
                 <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
-                    {/* <Text
-                        textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
-                        fontFamily={'heading'}
-                        color={useColorModeValue('gray.800', 'white')}
-                        as="b"
-                    >
-                        Flavorie
-                    </Text> */}
                     <Image
                         ml="2"
-                        boxSize="50px"
+                        boxSize="48px"
                         objectFit="cover"
                         src="../public/images/branding/Logo.png"
                         alt="logo"
                     />
-                    <Flex display={{ base: 'none', md: 'flex' }} ml={6}>
+                    <Flex display={{ base: 'none', md: 'flex' }} ml={6} flexDirection="column" justifyContent="center">
                         <Stack direction={'row'} spacing={4}>
                             {NavItems.map((navItem) => (
                                 <Box key={navItem.label}>
@@ -121,28 +119,44 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
                         </>
                     ) : (
                         <>
-                            <Box position="relative" display="inline-block">
-                                <Link to="/notifications">
-                                    <FaBell color="gray" size="24px" />
-                                    {numberOfNotifications > 0 && (
-                                        <Circle
-                                            size="17px"
-                                            bg="tomato"
-                                            color="white"
-                                            position="absolute"
-                                            top="-4px"
-                                            right="-6px"
-                                            fontSize="0.8rem"
-                                            display="flex"
-                                            alignItems="center"
-                                            justifyContent="center"
-                                        >
-                                            {numberOfNotifications}
-                                        </Circle>
-                                    )}
-                                </Link>
-                            </Box>
+                            <Popover>
+                                <PopoverTrigger>
+                                    <Box mr="3" position="relative" display="inline-block">
+                                        <IconButton
+                                            aria-label="Notifications"
+                                            icon={<FaBell />}
+                                            variant="ghost"
+                                            color="gray.600"
+                                            size="lg"
+                                        />
+                                        {numberOfNotifications > 0 && (
+                                            <Circle
+                                                size="17px"
+                                                bg="red"
+                                                color="white"
+                                                position="absolute"
+                                                top="-3px"
+                                                right="0px"
+                                                fontSize="0.8rem"
+                                                display="flex"
+                                                alignItems="center"
+                                                justifyContent="center"
+                                            >
+                                                {numberOfNotifications}
+                                            </Circle>
+                                        )}
+                                    </Box>
+                                </PopoverTrigger>
+                                <PopoverContent objectFit="cover" w="365px" flexDirection="column" justifyContent="center">
+                                    <PopoverArrow />
+                                    <PopoverCloseButton />
+                                    <PopoverBody>
+                                        <NotificationBell />
+                                    </PopoverBody>
+                                </PopoverContent>
+                            </Popover>
                             <Button
+                                mr="1"
                                 display={{ base: 'none', md: 'inline-flex' }}
                                 fontSize={'sm'}
                                 fontWeight={600}

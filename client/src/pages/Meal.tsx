@@ -52,7 +52,7 @@ function Meal() {
     console.log(mealData);
 
     return (
-        <Flex flexDir={'column'} width={'100%'} height={'100%'} alignItems={'center'}>
+        <Flex flexDir={'column'} width={'100%'} height={'100%'} alignItems={'c  enter'}>
             <Specialty />
             <SearchBar autoCompleteLink="/meal/autocomplete" />
             {status === 'pending' ? (
