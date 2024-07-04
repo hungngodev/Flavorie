@@ -24,7 +24,8 @@ interface PostProps extends StackProps, BasePostProps {
 }
 
 const Post = forwardRef<HTMLDivElement, PostProps>(
-  ({ postData, headerProps, bodyProps, footerProps, postIndex, postId, ...containerProps }, ref) => {
+  ({ postData, headerProps, bodyProps, footerProps, postId, ...containerProps }, ref) => {
+    // console.log(postData);
     // const theme = useTheme();
 
     const auth = useAuth();
@@ -42,13 +43,7 @@ const Post = forwardRef<HTMLDivElement, PostProps>(
         opacity={loading ? 0.5 : 1}
       >
         <CardHeader paddingBottom={0} {...headerProps}>
-          <PostHeader
-            postData={postData}
-            postId={postData.id}
-            postIndex={postIndex}
-            setLoading={setLoading}
-            isFullPage={false}
-          />
+          <PostHeader postData={postData} postId={postData.id} setLoading={setLoading} isFullPage={false} />
         </CardHeader>
 
         <CardBody {...bodyProps}>
@@ -57,17 +52,11 @@ const Post = forwardRef<HTMLDivElement, PostProps>(
             <Text>{postData.body}</Text>
           </VStack>
           {postData.media.length && postData.media.length > 0 ? (
-            <ImageSlider
-              postIndex={postIndex}
-              action="direct"
-              slides={postData.media}
-              postId={postId}
-              postData={postData}
-            />
+            <ImageSlider action="direct" slides={postData.media} postId={postId} postData={postData} />
           ) : null}
         </CardBody>
         <CardFooter {...footerProps}>
-          <PostFooter postData={postData} postIndex={postIndex} postId={postData.id} setLoading={setLoading} />
+          <PostFooter postData={postData} postId={postData.id} setLoading={setLoading} />
         </CardFooter>
       </Card>
     );

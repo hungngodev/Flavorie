@@ -7,6 +7,8 @@ import {
   ModalBody,
   ModalCloseButton,
   Button,
+  Box,
+  VStack,
 } from '@chakra-ui/react';
 import React, { useState, useRef, useEffect, memo } from 'react';
 import { BasePostProps } from '../post/types';
@@ -17,30 +19,14 @@ import { Params, useLocation, useParams } from 'react-router-dom';
 import { CreateReview } from '../../../slices/reviews/CreateReview';
 import { updatePost } from '../../../slices/posts/PostState';
 import customFetch from '../../../utils/customFetch';
-import { createReview } from '@/slices/reviews/CreateReview';
+import { createReview } from '../../../slices/reviews/CreateReview';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../../store/store';
 import { ReviewExpandProps } from './types';
 
-// const reviewQuery = (postId: string) => {
-//   return {
-//     queryKey: ['community-review', postId],
-//     queryFn: async () => {
-//       const request = await customFetch.get(`/community/post/${postId}`);
-//       console.log(request.data);
-//       return request.data;
-//     },
-//   };
-// };
-
-// export const loader =
-//   (queryClient: QueryClient) =>
-//   async ({ params }: { params: Params }) => {
-//     queryClient.ensureQueryData(reviewQuery(params.postId ?? ''));
-//     return null;
-//   };
-
-const ReviewExpand: React.FC<ReviewExpandProps> = ({ onClose, isOpen, postIndex, postId, postData }) => {
+const ReviewExpand: React.FC<ReviewExpandProps> = ({ onClose, isOpen, postId, postData, reviews }) => {
+  console.log(postData);
+  console.log(reviews);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -62,12 +48,16 @@ const ReviewExpand: React.FC<ReviewExpandProps> = ({ onClose, isOpen, postIndex,
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} motionPreset="slideInRight">
+    <Modal isOpen={isOpen} onClose={onClose} motionPreset="slideInRight" size="xl" blockScrollOnMount={false}>
       <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Your reviews</ModalHeader>
+      <ModalContent marginBlock="auto" minWidth="65dvw" maxHeight="100%">
+        <ModalHeader>{`${postData?.author.name}'s reviews`}</ModalHeader>
         <ModalCloseButton />
-        {/* <ModalBody>{queryData && queryData?.review.map((item) => <ReviewCard />)}</ModalBody> */}
+        <ModalBody overflow="auto">
+          <VStack gap={4} width="100%" alignItems="start">
+            {reviews?.map((review) => <ReviewCard review={review} />)}
+          </VStack>
+        </ModalBody>
 
         <ModalFooter>
           <ReviewForm onSubmit={submitReview} />

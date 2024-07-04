@@ -7,12 +7,10 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
 
   return (
     <Box ml="5" mt="2" mb="2">
-      <HStack>
-        <Avatar name={review.author.username} src={review.author.src} />
-        <Box borderWidth="1px" p="2" borderRadius="lg" bg="base.50">
-          <Text fontWeight="bold" mb="2">
-            {review.author.username}
-          </Text>
+      <HStack gap={4} alignItems="start">
+        <Avatar name={review.author.name} src={review.author.avatar} />
+        <Box borderWidth="1px" px="4" py="1" borderRadius="lg" backgroundColor="blackAlpha.50">
+          <Text fontWeight="bold">{review.author.name}</Text>
           <Text mb="2">{review.content}</Text>
         </Box>
       </HStack>
@@ -22,7 +20,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
         </Button>
       )}
       {showReplies && (
-        <VStack spacing="4" align="start" pl="4">
+        <VStack gap={6} align="start" pl="4">
           {review.children.map((reply) => (
             <ReviewCard key={reply.id} review={reply} />
           ))}

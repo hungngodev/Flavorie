@@ -1,5 +1,6 @@
 import { z } from 'zod';
-const BaseObject = z
+import { parseReviews } from '../review/types';
+export const BaseObject = z
   .object({
     id: z.string().optional(),
     author: z.object({
@@ -19,32 +20,6 @@ export const MediaObject = z.object({
   description: z.string(),
 });
 
-export const ReactObject = BaseObject.extend({
-  body: z.enum(['like', 'dislike']),
-});
-
-const BaseReview = BaseObject.extend({
-  reacts: z.array(ReactObject),
-});
-
-type ReviewType = z.infer<typeof BaseReview> & {
-  reviews: ReviewType[];
-};
-
-export const ReviewObject: z.ZodType<ReviewType> = BaseReview.extend({
-  //id: z.string().optional(),
-  //author: z.object({
-  //  id: z.string().optional(),
-  //  location: z.string().optional(),
-  //  avatar: z.string().optional(),
-  //  name: z.string(),
-  //}),
-  // body: z.string().optional(),
-  postid: z.string().optional(),
-  reviews: z.lazy(() => ReviewObject.array()),
-  media: z.array(MediaObject).optional(),
-});
-
 const Privacy = z.enum(['public', 'private', 'friend']);
 
 // schema for front end post
@@ -60,7 +35,7 @@ export const PostObject = BaseObject.extend({
   media: z.array(MediaObject),
   location: z.string(),
   privacy: Privacy,
-  reviews: z.array(ReviewObject).optional(),
+  reviews: z.array(z.any()),
   hiddenTo: z.array(z.string()).optional(),
   reacts: z.array(z.string()).optional(),
   reactCount: z.number().optional(),
@@ -88,7 +63,7 @@ export const PostResponseObject = z.object({
   media: z.array(MediaObject.extend({ _id: z.string() })),
   react: z.array(z.string()),
   hiddenTo: z.array(z.string()),
-  // review: z.array(ReviewObject.extend({ _id: z.string() })),
+  review: z.array(z.any()),
   reactCount: z.number(),
   reviewCount: z.number(),
   createdAt: z.date(),
@@ -108,9 +83,9 @@ export const PostEditObject = PostRequest.extend({
   savedPreviewMedia: z.array(MediaObject).optional(),
 });
 
-export type PostRequestType = z.infer<typeof PostRequest>;
-
 export type MediaObjectType = z.infer<typeof MediaObject>;
+
+export type PostRequestType = z.infer<typeof PostRequest>;
 
 export type PostObjectType = z.infer<typeof PostObject>;
 
@@ -118,9 +93,11 @@ export type PostResponseObjectType = z.infer<typeof PostResponseObject>;
 
 export type PostEditObjectType = z.infer<typeof PostEditObject>;
 
+// export type ReviewObjectType = z.infer<typeof ReviewObject>;
+// export type ReviewType = z.infer<typeof ReviewObject>;
+
 export interface BasePostProps {
   postId: string;
-  postIndex: number;
   postData?: PostObjectType;
 }
 
@@ -161,11 +138,10 @@ export const parsePost = (backEndPosts: PostResponseObjectType[]) => {
     hiddenTo: post.hiddenTo,
     location: post.location,
     privacy: post.privacy,
-    reviews: [],
+    reviews: parseReviews(post.review),
     reacts: post.react,
     reactCount: post.reactCount,
     reviewCount: post.reviewCount,
     date: post.createdAt,
   }));
-  // Dependency array ensures useMemo is only re-computed when backEndPosts changes
 };
