@@ -51,7 +51,8 @@ const PostHeader = memo<PostHeaderProps>(({ postId, setLoading, postData, preloa
 
     const dispatch = useDispatch<AppDispatch>();
 
-    const post = useSelector((state: RootState) => selectPostById(postId)(state));
+    const selectorPost = useSelector((state: RootState) => selectPostById(postId)(state));
+    const post = postData ?? selectorPost;
 
     const deleteStatus: string = useSelector(selectDeleteStatus);
     const saveStatus: string = useSelector(selectSaveStatus);

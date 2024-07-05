@@ -54,7 +54,7 @@ const FullPost = () => {
             setPost(parsePost([queryData?.post])[0]);
             queryClient.invalidateQueries();
         }
-    }, [status]);
+    }, [queryData, status, fetchStatus]);
 
     useEffect(() => {
         lottie.loadAnimation({
@@ -102,9 +102,7 @@ const FullPost = () => {
 
                 <CardBody>
                     <VStack gap={2} alignItems="start" marginBottom={2}>
-                        <Heading size="lg" fontWeight={400}>
-                            {post.header}
-                        </Heading>
+                        <Heading size="lg">{post.header}</Heading>
                         <Text>{post.body}</Text>
                     </VStack>
                     {post.media && post.media.length > 0 && (
