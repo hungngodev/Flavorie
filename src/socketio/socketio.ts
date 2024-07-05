@@ -2,6 +2,7 @@ import { Server, Socket } from "socket.io";
 import { notificationHandler } from "../handler/notificationHandler.ts";
 import { roomHandler } from "../handler/roomHandler.ts";
 import { verifyJWT } from "../utils/tokenUtils.ts";
+import { gestureHandler } from "../handler/gestureHandler.ts";
 
 const authenticateSocketIO = (socket: Socket, next: Function) => {
   try {
@@ -37,6 +38,7 @@ const setUpSocketIO = (server: any) => {
   io.on("connection", (socket: Socket) => {
     roomHandler(socket);
     notificationHandler(socket);
+    gestureHandler(socket)
   });
 
   return io;
