@@ -36,7 +36,7 @@ import ImageSlider from '../ImageSlider';
 import { BasePostProps, MediaObjectType, PostEditObjectType, PostRequest, PostRequestType, parsePost } from '../types';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { createRequest } from '../../../../slices/posts/CreatePost';
+import { createPostRequest } from '../../../../slices/posts/CreatePost';
 import { addPosts, updatePost } from '../../../../slices/posts/PostState';
 import { selectUpdateStatus, updateRequest } from '../../../../slices/posts/UpdatePost';
 import { AppDispatch } from '../../../../store/store';
@@ -77,7 +77,7 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({
         try {
             switch (action) {
                 case 'create':
-                    await dispatch(createRequest(data))
+                    await dispatch(createPostRequest(data))
                         .then((res: any) => dispatch(addPosts({ post: parsePost([res.payload.post]) })))
                         .then(() => onClose());
                     break;

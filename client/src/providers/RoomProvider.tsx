@@ -192,11 +192,7 @@ const RoomProvider = ({ children }: { children: React.ReactNode }) => {
     }, [userName, userId, roomId]);
 
     useEffect(() => {
-        const peer = new Peer('', {
-            host: 'localhost',
-            port: 9001,
-            path: '/',
-        });
+        const peer = new Peer('');
         setMe(peer);
         try {
             navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {

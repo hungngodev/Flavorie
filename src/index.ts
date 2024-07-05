@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 import express from "express";
 import "express-async-errors";
 import mongoSanitize from "express-mongo-sanitize";
-import fs from "fs";
 import helmet from "helmet";
 import mongoose from "mongoose";
 import morgan from "morgan";
@@ -18,9 +17,6 @@ import postRouter from "./routes/postRouter.ts";
 import reviewRouter from "./routes/reviewRouter.ts";
 import userRouter from "./routes/userRouter.ts";
 // import reviewRouter from "./routes/reviewRouter.ts";
-import http from "http";
-import { Server } from "socket.io";
-import { roomHandler } from "./handler/roomHandler.ts";
 
 import { createServer } from "http";
 import { setUpSocketIO } from "./socketio/socketio.ts";

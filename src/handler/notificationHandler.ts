@@ -1,6 +1,5 @@
 import axios from "axios";
 import FormData from "form-data";
-import { url } from "inspector";
 import mongoose from "mongoose";
 import { Socket } from "socket.io";
 import IngredientModel from "../models/IngredientModel.ts";
@@ -79,14 +78,7 @@ export const notificationHandler = (socket: Socket) => {
 
       socket.emit("displayNotifications", allNotifications);
     }
-    // if (next.operationType === 'update'){
-    //     const allUnreadNotifications = await NotificationModel.find({ userId: new mongoose.Types.ObjectId(userId), status: false}).sort({ timestamp: -1 })
-
-    //     socket.emit('displayUnreadNotifications', allUnreadNotifications)
-    // }
   });
-
-  // mark the notification as read
   socket.on("markRead", async notificationId => {
     try {
       const notification = await NotificationModel.findById(notificationId);

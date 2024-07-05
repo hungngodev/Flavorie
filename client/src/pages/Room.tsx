@@ -12,6 +12,7 @@ import {
     useDisclosure,
 } from '@chakra-ui/react';
 import { Select, SelectItem } from '@nextui-org/select';
+import axios from 'axios';
 import { motion } from 'framer-motion';
 import {
     Clipboard,
@@ -32,11 +33,6 @@ import { Chat, NameInput, VideoPlayer } from '../components/meeting';
 import { useRoom, useUser } from '../hooks';
 import { ws } from '../providers/RoomProvider';
 import { PeerState } from '../reducers/peerReducer';
-import axios from 'axios';
-
-const mockData: BackendData = {
-    // mockData content
-};
 
 const Room = () => {
     const { id } = useParams();
@@ -59,9 +55,9 @@ const Room = () => {
     } = useRoom();
     const { userName, userId } = useUser();
     const [focus, setFocus] = useState(screenSharingId);
-    const [direction, setDirection] = useState("");
+    const [direction, setDirection] = useState('');
     const [currSlide, setCurrSlide] = useState(0);
-    // const mealOptions = mealDatas.map((meal: BackendData) => ({ key: meal.title, label: meal.title }));
+    const mealOptions = mealDatas.map((meal: BackendData) => ({ key: meal.title, label: meal.title }));
 
     useEffect(() => {
         setFocus(screenSharingId);
@@ -104,7 +100,7 @@ const Room = () => {
     const sendFrameToServer = async () => {
         const canvas = canvasRef.current;
         const context = canvas?.getContext('2d');
-        if (context && myVideoRef.current) {
+        if (context && myVideoRef.current && canvas) {
             context.drawImage(myVideoRef.current, 0, 0, canvas.width, canvas.height);
             const dataUrl = canvas.toDataURL('image/jpeg');
             const blob = await (await fetch(dataUrl)).blob();
@@ -118,7 +114,7 @@ const Room = () => {
                         'Content-Type': 'multipart/form-data',
                     },
                 });
-                console.log("Hand gesture", response.data.action);
+                console.log('Hand gesture', response.data.action);
                 switch (response.data.action) {
                     case 'left-arrow':
                         setCurrSlide((prev) => Math.max(prev - 2, 0));
@@ -193,7 +189,7 @@ const Room = () => {
                                 </GridItem>
                             ))}
                         <GridItem gridColumn={5} gridRow={1} colSpan={1} rowSpan={2} padding={2}>
-                            {/* <VStack height="full" width="90%" justifyContent={'end'}>
+                            <VStack height="full" width="90%" justifyContent={'end'}>
                                 <ProgressiveImage
                                     src={
                                         mealDatas.find((meal: { title: string }) => meal.title === mealChoice)
@@ -230,12 +226,12 @@ const Room = () => {
                                         </SelectItem>
                                     )}
                                 </Select>
-                            </VStack> */}
+                            </VStack>
                         </GridItem>
                     </Grid>
-                    {mockData && Object.keys(mockData).length > 0 && (
+                    {currentMealInfo && Object.keys(currentMealInfo).length > 0 && (
                         <HStack width={'80%'} height="40vh" flexShrink={0}>
-                            <ImageSlide backendData={mockData} />
+                            <ImageSlide backendData={currentMealInfo} />
                         </HStack>
                     )}
                 </VStack>
