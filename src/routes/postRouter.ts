@@ -5,6 +5,7 @@ import {
   createPostController,
   deletePostController,
   getPostController,
+  getUserPostController,
   hidePostController,
   newFeedController,
   reactPostController,
@@ -35,7 +36,10 @@ const apiLimiter = rateLimiter({
   message: { msg: "IP rate limit exceeded, retry in 15 minutes." },
 });
 
+router.get("/post/user", apiLimiter, checkUser, getUserPostController);
+
 router.get("/post/:postid", checkUser, apiLimiter, getPostController);
+
 router.get("/feed", checkUser, apiLimiter, newFeedController);
 router.post(
   "/post",

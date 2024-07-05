@@ -54,7 +54,7 @@ export const getPostDocumentById = async (
       throw new ServerError("Post not found");
     }
     await recursivePopulate(post.review);
-    console.log(post);
+
     return post as Document;
   } catch (err) {
     throw new ServerError(`${err}`);
@@ -86,7 +86,6 @@ export const getFeedDocument = async (
   for (let post of postLists) {
     await recursivePopulate(post.review);
   }
-  console.log(postLists);
   return postLists.map(post => post.toJSON() as Document);
 };
 
@@ -201,8 +200,6 @@ export const updatePostDocument = async (
       location,
     };
 
-    console.log("update data", updateData);
-
     const updatedPost = await PostModel.findByIdAndUpdate(postId, updateData, {
       new: true,
     }).populate([{ path: "author", select: "id name avatar" }]);
@@ -227,7 +224,6 @@ export const updatePostDocument = async (
     }
     await recursivePopulate(returnPost.review);
 
-    console.log(returnPost);
     return returnPost;
   } catch (err) {
     throw new ServerError(`${err}`);
@@ -379,21 +375,46 @@ export const hidePostDocument = async (
       select: "name id avatar",
     });
     const user = await UserModel.findById(userId);
-    console.log("here");
 
     if (!post || !user) throw new PostError("Post or user not found");
-    console.log(post.hiddenTo);
+
     const updatedPost = await updateFieldArray(post.hiddenTo, userId);
 
     if (!updatedPost) throw new ServerError("Failed to save post");
     post.hiddenTo = updatedPost as Types.DocumentArray<Types.ObjectId>;
-    console.log(post.hiddenTo);
+
     await post.save();
-    console.log(post);
 
     return post;
   } catch (err) {
     console.log(err);
     throw new ServerError(`${err}`);
   }
+};
+
+export const getUserPostDocument = async (
+  userId: string,
+  limit: number = 5,
+): Promise<{ userList: Document[]; savedList: Document[] }> => {
+  const user = await UserModel.findById(userId)
+    .populate({
+      path: "savedPost",
+      select: "id header body createdAt",
+      populate: { path: "author", select: "name avatar" },
+    })
+    .sort({ createdAt: -1 })
+    .limit(limit);
+  if (!user) {
+    throw new ServerError("User not found");
+  }
+  const userList = await PostModel.find({ author: userId })
+    .select("_id header body author createdAt")
+    .populate({ path: "author", select: "id name avatar" })
+    .sort({ createdAt: -1 })
+    .limit(limit);
+  if (!userList) {
+    throw new ServerError("Failed to get posts");
+  }
+  const savedList = user.savedPost;
+  return { userList: userList, savedList: savedList };
 };
