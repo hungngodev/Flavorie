@@ -19,7 +19,7 @@ export const Button: React.FC<ButtonProps> = ({
             type={type}
             data-testid={testId}
             onClick={onClick}
-            className={cn('rounded-lg bg-violet-300 p-2 text-white hover:bg-indigo-500/80', className)}
+            className={cn('mt-2 rounded-lg bg-indigo-500/80 p-2 text-white hover:bg-violet-300', className)}
         >
             {children}
         </button>

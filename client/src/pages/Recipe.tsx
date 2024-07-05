@@ -14,7 +14,7 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 import { QueryClient, useQuery } from '@tanstack/react-query';
-import { FaPrint, FaSave, FaShareAlt, FaStar } from 'react-icons/fa';
+import { FaPrint, FaSave, FaShareAlt, FaStar, FaCheck } from 'react-icons/fa';
 import { Params, useLoaderData } from 'react-router-dom';
 import ImageSlide, { BackendData } from '../components/meals/ImageSlide';
 import theme from '../style/theme';
@@ -23,6 +23,29 @@ import DOMPurify from 'dompurify';
 
 // Default values shown
 
+function formatString(inputString: any) {
+    // Ensure input is a string and trim any leading/trailing whitespace
+    inputString = inputString.toString().trim();
+
+    // Check if the input string is empty
+    if (inputString === '') {
+        return '';
+    }
+
+    // Convert camelCase to spaced words
+    inputString = inputString.replace(/([a-z])([A-Z])/g, '$1 $2');
+
+    // Convert the first character to uppercase and the rest to lowercase
+    let formattedString = inputString.charAt(0).toUpperCase() + inputString.slice(1).toLowerCase();
+
+    // Replace any non-alphanumeric characters (except spaces) with spaces
+    formattedString = formattedString.replace(/[^a-zA-Z0-9 ]/g, ' ');
+
+    // Replace multiple spaces with a single space
+    formattedString = formattedString.replace(/\s+/g, ' ');
+
+    return formattedString;
+}
 const individualMealQuery = (id: string) => {
     return {
         queryKey: ['individualMeal', id],
@@ -48,7 +71,7 @@ const Recipe = () => {
     }
     const extractedData = queryData?.data;
     const recipeData: BackendData = extractedData;
-    const cleanTitle = DOMPurify.sanitize(recipeData.title, { ALLOWED_TAGS: [] });  
+    const cleanDescription = DOMPurify.sanitize(recipeData.description, { ALLOWED_TAGS: [] });  
     const averageStar = 5;
     const numReviews = 100;
     const calories = 100;
@@ -76,14 +99,22 @@ const Recipe = () => {
                         objectFit="cover"
                         position="relative"
                     >
-                        <Image src={recipeData.imageUrl} alt={recipeData.title} objectFit="cover" borderRadius="md" />
+                        <Image
+                            rounded="lg"
+                            w="800px"
+                            h="700px"
+                            src={recipeData.imageUrl}
+                            alt={recipeData.title}
+                            objectFit="cover"
+                            borderRadius="md"
+                        />
                         <Box
                             position="absolute"
-                            bottom="0"
+                            bottom="2"
                             left="0"
                             right="0"
-                            p={4}
                             display="flex"
+                            flexDirection="row"
                             flexWrap="wrap"
                             justifyContent="left"
                             alignItems="center"
@@ -92,13 +123,15 @@ const Recipe = () => {
                                 <Tag
                                     key={index}
                                     bg="rgba(126, 126, 126, 0.4)"
+                                    // backgroundColor={theme.colors.palette_indigo}
+                                    p={2}
                                     color="white"
                                     borderRadius="full"
                                     fontSize="20"
-                                    m={1}
+                                    m={2}
                                 >
                                     <TagLabel px={1} py={1}>
-                                        {tag}
+                                        {formatString(tag)}
                                     </TagLabel>
                                 </Tag>
                             ))}
@@ -140,10 +173,16 @@ const Recipe = () => {
                             fontWeight="bold"
                             textAlign="center"
                         >
-                            {cleanTitle}
+                            {recipeData.title}
                         </Heading>
-                        <Text justifyContent="center" alignItems="center" color="gray.500" fontSize={26}>
-                            {recipeData.description}
+                        <Text
+                            justifyContent="justify"
+                            textAlign="justify"
+                            alignItems="center"
+                            color="gray.500"
+                            fontSize={18}
+                        >
+                            {cleanDescription}
                         </Text>
                         <HStack mt="2" justifyContent="center" alignItems="center" fontSize="14">
                             <Text color={theme.colors.palette_purple} fontSize={18} ml={2}>
@@ -158,8 +197,8 @@ const Recipe = () => {
                                 ({numReviews})
                             </Text>
                         </HStack>
-                        <HStack justifyContent="flex-end" width="100%" mt={8}>
-                            <ButtonGroup spacing={2} mb={10}>
+                        <HStack justifyContent="center" width="100%" mt={8}>
+                            <ButtonGroup spacing={2} mb={5}>
                                 <Button variant="outline" rightIcon={<FaSave color={theme.colors.palette_purple} />}>
                                     Save
                                 </Button>
@@ -172,9 +211,12 @@ const Recipe = () => {
                                 <Button variant="outline" rightIcon={<FaShareAlt />}>
                                     Share
                                 </Button>
+                                <Button variant="outline" rightIcon={<FaCheck />}>
+                                    Done
+                                </Button>
                             </ButtonGroup>
                         </HStack>
-                        <Text fontSize="14" textAlign="center" textColor="gray.500">
+                        <Text fontSize="14" textAlign="center" textColor="gray.500" mb="4">
                             * Source: {recipeData.source}
                         </Text>
                     </Box>

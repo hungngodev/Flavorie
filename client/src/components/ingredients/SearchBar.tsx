@@ -48,11 +48,12 @@ export const SearchBar = ({ autoCompleteLink }: { autoCompleteLink: string }) =>
     };
   }, [query]);
 
+ 
   return (
       <Flex width="100%" justifyContent={'center'}>
           <VStack ref={ref as React.LegacyRef<HTMLDivElement>} width={'40%'} gap={0}>
               <Form onSubmit={() => setFocus(false)} style={{ width: '100%' }}>
-                  <Stack width="100%" justify="center">
+                  <Stack width="100%" justify="center" mb="25">
                       <InputGroup borderRadius={5} size="md" width={'100%'} minWidth={'30vw'}>
                           <Input
                               pr="4.5rem"
@@ -74,7 +75,9 @@ export const SearchBar = ({ autoCompleteLink }: { autoCompleteLink: string }) =>
                               onClick={() => submit(buttonRef.current)}
                           />
                       </InputGroup>
-                      <Box
+                      {
+                        items?.length >0 && (
+                          <Box
                           w="94%"
                           maxWidth="70vw"
                           justifyContent="flex-start"
@@ -88,7 +91,8 @@ export const SearchBar = ({ autoCompleteLink }: { autoCompleteLink: string }) =>
                       >
                           {focus &&
                               (status !== 'pending' ? (
-                                  items.map((item: { title: string }, index: number) => (
+                                  <VStack width="100%" gap={2}>
+                                    {items.map((item: { title: string }, index: number) => (
                                       <div className="w-full hover:bg-slate-400">
                                           <Flex
                                               key={index}
@@ -100,17 +104,26 @@ export const SearchBar = ({ autoCompleteLink }: { autoCompleteLink: string }) =>
                                                   setQuery(item.title);
                                                   setFocus(false);
                                               }}
+                                              onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                  setQuery(item.title);
+                                                  setFocus(false);
+                                                }
+                                              }}
                                           >
                                               {item.title}
                                           </Flex>
                                       </div>
-                                  ))
+                                  ))}
+                                  </VStack>
                               ) : (
                                   <div className="mt-4">
                                       <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
                                   </div>
                               ))}
                       </Box>
+                        )
+                      }
                   </Stack>
               </Form>
           </VStack>
