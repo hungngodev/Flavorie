@@ -118,6 +118,7 @@ export const baseCall = async (
       if (error instanceof AxiosError) {
         // throw new NotFoundError(`Error: ${error.response?.data}`);
         console.log("Change key");
+        console.dir(error);
         SpoonacularTrack.currentKey = currentKey + 1;
         SpoonacularTrack.usageCount = 0;
         SpoonacularTrack.callPerMin = 0;
@@ -168,17 +169,20 @@ export const findIngredientById = async (cagetory: string, id: Number) => {
 
 export const getAllMealsComplexSearch = async (
   query: string,
-  diet: string[],
-  intolerances: string[],
+  diet: string,
+  intolerances: string,
   sort: string,
   number: number,
 ) => {
   return await baseCall(EndPoint.COMPLEX_SEARCH, {
     query: query,
-    diet: diet.join(","),
-    intolerances: intolerances.join(","),
+    diet: diet,
+    intolerances: intolerances,
     sort: sort,
     number: number.toString(),
+    addRecipeInformation: "true",
+    addRecipeInstructions: "true",
+    instructionsRequired: "true",
   });
 };
 
@@ -212,7 +216,7 @@ export const getRandomMealsAPI = async (
 ) => {
   return await baseCall(EndPoint.RANDOM_RECIPES, {
     number: number?.toString(),
-    tags: includeTags,
+    "include-tags": includeTags,
     "exclude-tags": excludeTags,
   });
 };

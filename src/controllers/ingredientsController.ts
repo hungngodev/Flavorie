@@ -9,17 +9,23 @@ import {
   findIngredients,
 } from "../services/ingredientServices.ts";
 import { getAllIngredientsAPI } from "../services/spoonacular/spoonacularServices.ts";
+import { getUserItems } from "../services/userServices.ts";
 
 export const getAllIngredients = async (req: Request, res: Response) => {
   const { category, sideBar } = req.query;
   const allergy = [];
   const diet = [];
+  const leftOver = [];
   if (req.user) {
     const thisUser = await User.findOne({ _id: req.user.userId });
     if (thisUser) {
       allergy.push(...thisUser.allergy);
       diet.push(thisUser.diet);
+      const myLeftOver = await getUserItems(req.user.userId, "leftOver");
+      leftOver.push(...myLeftOver);
     }
+    allergy.map(allergy => allergy.toString().toLowerCase());
+    diet.map(diet => diet.toString().toLowerCase());
   }
 
   if (category === "/") {

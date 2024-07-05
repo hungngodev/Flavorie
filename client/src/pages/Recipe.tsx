@@ -12,14 +12,14 @@ import {
     TagLabel,
     Text,
 } from '@chakra-ui/react';
-import React from 'react';
 import { QueryClient, useQuery } from '@tanstack/react-query';
+import Lottie from 'lottie-react';
 import { FaPrint, FaSave, FaShareAlt, FaStar } from 'react-icons/fa';
 import { Params, useLoaderData } from 'react-router-dom';
+import RecipeLoading from '../assets/animations/RecipeLoading.json';
 import ImageSlide, { BackendData } from '../components/meals/ImageSlide';
 import theme from '../style/theme';
 import customFetch from '../utils/customFetch';
-
 
 // Default values shown
 
@@ -44,7 +44,11 @@ const Recipe = () => {
     const mealId = useLoaderData();
     const { data: queryData, status } = useQuery(individualMealQuery((mealId as string) ?? ''));
     if (status === 'pending') {
-        return <div>Loading...</div>;
+        return (
+            <HStack w="full" h={'full'} alignItems={'center'} justifyContent={'center'}>
+                <Lottie animationData={RecipeLoading} style={{ width: 800, height: 800 }} loop={true} />
+            </HStack>
+        );
     }
     const extractedData = queryData?.data;
     const recipeData: BackendData = extractedData;
@@ -62,7 +66,6 @@ const Recipe = () => {
 
     return (
         <Stack alignItems="center" justifyContent="center">
-            `
             <Grid templateRows="repeat(5)" templateColumns="repeat(4, 2fr)" mt="6" width="100%">
                 <GridItem rowSpan={5} colSpan={2} ml={4} objectFit="cover">
                     <Box

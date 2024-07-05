@@ -47,7 +47,7 @@ export function IngredientsMain({ addFunction, data }: IngredientsMainProps) {
                     onChange={(page) => setPage(page)}
                     total={Math.ceil(data.results.length / size)}
                     color="primary"
-                    initialPage={3}
+                    initialPage={page}
                     space-y-10
                 />
             </div>
