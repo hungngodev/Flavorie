@@ -112,7 +112,7 @@ const UploadImage: React.FC<UploadImageProps> = ({ setFile, backgroundImage, set
                                 spacing="4"
                             >
                                 <Box height="20" width="14" position="relative" mt="10">
-                                    <PreviewImage variants={third} backgroundImage={backgroundImage} />
+                                    <PreviewImage backgroundImage={backgroundImage} />
                                 </Box>
                                 <Stack p="8" textAlign="center" spacing="1">
                                     <Heading fontSize="lg" color="gray.700" fontWeight="bold">

@@ -11,20 +11,7 @@ import { loader as mealsLoader } from './pages/Meal';
 import Receipt from './pages/Receipt';
 import ReceiptScan from './pages/ReceiptScan';
 import { loader as recipeLoader } from './pages/Recipe';
-import {
-    Feed,
-    FullPost,
-    Ingredient,
-    Login,
-    Main,
-    Meal,
-    Meeting,
-    Notifications,
-    Recipe,
-    Register,
-    Room,
-    User,
-} from './pages/index';
+import { Feed, FullPost, Ingredient, Login, Main, Meal, Meeting, Recipe, Register, Room, User } from './pages/index';
 import ToastProvider from './providers/ToastProvider';
 import { store as reduxStore } from './store/store';
 import theme from './style/theme';
@@ -107,10 +94,6 @@ const router = createBrowserRouter([
             {
                 path: 'upload-receipts',
                 element: <ReceiptScan />,
-            },
-            {
-                path: 'notifications',
-                element: <Notifications />,
             },
             {
                 path: 'receipts/:id',
