@@ -137,7 +137,7 @@ const Room = () => {
     }, []);
 
     return (
-        <Box height="100%" width="100%" position="relative">
+        <Box height="full" width="100%" position="relative">
             <HStack height="100%" width="100%" padding={'5px'}>
                 <VStack width="full" height="full" gap={2}>
                     <Grid height={'60vh'} width="100%" templateColumns={`repeat(5,1fr)`} templateRows={`repeat(2,1fr)`}>
