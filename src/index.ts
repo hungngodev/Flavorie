@@ -45,7 +45,7 @@ const port = process.env.PORT || 5100;
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.resolve(__dirname, "../client/dist")));
+// app.use(express.static(path.resolve(__dirname, "../client/dist")));
 
 app.use(mongoSanitize());
 

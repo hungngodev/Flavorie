@@ -130,11 +130,11 @@ export const getRandomMealsUnauthenticated = async (
         }
       }
       const mealsReturn = {
-        randomMeals: await processingMeals(randomMeals),
-        sideMeals: await processingMeals(sideMeals),
-        mainMeals: await processingMeals(mainMeals),
-        dessertMeals: await processingMeals(dessertMeals),
-        suggestedMeals: await processingMeals(suggestedMeals),
+        "Random Meals": await processingMeals(randomMeals),
+        "Side Meals": await processingMeals(sideMeals),
+        "Main Meals": await processingMeals(mainMeals),
+        "Dessert Meals": await processingMeals(dessertMeals),
+        "Suggested Meals": await processingMeals(suggestedMeals),
       };
       return res.json(mealsReturn).status(StatusCodes.OK);
     }
@@ -262,7 +262,7 @@ export const getRanDomMealsAuthenticated = async (
       15,
     );
     const suggestedMeals =
-      leftOver.length !== 0
+      leftOver.length !== 0 && req.user
         ? await Promise.all(
             (await getAllMealsByIngredientsAPI(leftOver.join(","), 20)).map(
               async (meal: any) => {
