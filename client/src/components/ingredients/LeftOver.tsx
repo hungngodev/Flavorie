@@ -2,6 +2,7 @@ import { DeleteIcon } from '@chakra-ui/icons';
 import {
     Flex,
     HStack,
+    Button, 
     IconButton,
     Image,
     NumberDecrementStepper,
@@ -15,7 +16,6 @@ import { useEffect } from 'react';
 import { Control, Controller, FieldArrayWithId } from 'react-hook-form';
 import { leftOverData } from '../../pages/Ingredient';
 import theme from '../../style/theme';
-
 interface LeftOverProps {
     height: string;
     removeItem: (index: number) => void;
@@ -25,92 +25,8 @@ interface LeftOverProps {
 }
 export default function LeftOver({ height, removeItem, onSubmit, fields, control }: LeftOverProps) {
     useEffect(() => {
-        console.log('changing');
-        queryClient.invalidateQueries({
-            queryKey: ['leftOver'],
-        });
-    }, [queryClient]);
-    const { control, handleSubmit, setValue } = useForm<leftOverData>({
-        defaultValues: {
-            leftOver: useMemo(
-                () =>
-                    leftOverStatus === 'success'
-                            ? leftOverData.data.leftOver.map(
-                                (item: { leftOver: { _id: string; name: string; image: string }; quantity: string }) => {
-                                    return {
-                                        id: item.leftOver._id,
-                                        name: item.leftOver.name,
-                                        image: item.leftOver.image,
-                                        quantity: item.quantity,
-                                    };
-                                },
-                            )
-                        : [],
-                [leftOverData, leftOverStatus],
-            ),
-        },
-    });
-    useEffect(() => {
-        if (leftOverStatus === 'success') {
-            console.log(leftOverData);
-            setValue(
-                'leftOver',
-                leftOverData.data.leftOver.map(
-                    (item: { leftOver: { _id: string; name: string; image: string }; quantity: string }) => {
-                        return {
-                            id: item.leftOver._id,
-                            name: item.leftOver.name,
-                            image: item.leftOver.image,
-                            quantity: item.quantity,
-                        };
-                    },
-                ),
-            );
-        }
-    }, [leftOverData, leftOverStatus, setValue]);
-    const { fields, remove: removeFunction } = useFieldArray({
-        control,
-        name: 'leftOver',
-    });
-
-    const onSubmit = () => {
-        handleSubmit((data: leftOverData) => {
-            console.log(data);
-            const results = data.leftOver.map((item) => {
-                return {
-                    itemId: item.id,
-                    quantity: parseInt(item.quantity),
-                    unit: 'unit',
-                    userId: '',
-                    type: 'leftOver',
-                };
-            });
-            customFetch.patch(
-                '/user/leftOver',
-                {
-                    leftOver: results,
-                },
-                {
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                },
-            );
-            queryClient.invalidateQueries({
-                queryKey: ['leftOver'],
-            });
-        })();
-    };
-    const auth = useAuth();
-    const scrollLeftOverRef = useRef<HTMLDivElement>(null);
-    function scroll(direction: 'up' | 'down', distance: number) {
-        if (scrollLeftOverRef.current) {
-            if (direction === 'up') scrollLeftOverRef.current.scrollTop -= distance;
-            else scrollLeftOverRef.current.scrollTop += distance;
-        }
-    }
-    const removeItem = (index: number) => {
-        removeFunction(index);
-    };
-
+        console.log('fields', fields);
+    }, [fields]);
     return (
         <Flex
             marginTop={'4vh'}
@@ -125,34 +41,20 @@ export default function LeftOver({ height, removeItem, onSubmit, fields, control
             bg={'#fef9ff'}
             borderColor={theme.colors.palette_purple}
         >
-            <HStack mt="7">
-                {/* <IconButton
-                    icon={<ChevronUp />}
-                    aria-label="left"
-                    onClick={() => scroll('up', 100)}
-                    variant="solid"
-                    colorScheme="blue"
-                    size="xs"
-                    height="50%"
-                /> */}
-                <button
+            <HStack mt="8">
+                <Button
                     onClick={(e) => {
                         e.preventDefault();
                         onSubmit();
                     }}
-                    className=" rounded-full bg-indigo-500 p-3 text-white"
+                    rounded="md"
+                    
+                    px={3}
+                    py={2}
+                    color="white"
                 >
                     Save
-                </button>
-                {/* <IconButton
-                    icon={<ChevronDown />}
-                    aria-label="right"
-                    onClick={() => scroll('down', 100)}
-                    variant="solid"
-                    colorScheme="blue"
-                    size="xs"
-                    height="50%"
-                /> */}
+                </Button>
             </HStack>
 
             <form

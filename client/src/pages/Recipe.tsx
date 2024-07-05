@@ -19,7 +19,7 @@ import { Params, useLoaderData } from 'react-router-dom';
 import ImageSlide, { BackendData } from '../components/meals/ImageSlide';
 import theme from '../style/theme';
 import customFetch from '../utils/customFetch';
-
+import DOMPurify from 'dompurify';
 
 // Default values shown
 
@@ -48,6 +48,7 @@ const Recipe = () => {
     }
     const extractedData = queryData?.data;
     const recipeData: BackendData = extractedData;
+    const cleanTitle = DOMPurify.sanitize(recipeData.title, { ALLOWED_TAGS: [] });  
     const averageStar = 5;
     const numReviews = 100;
     const calories = 100;
@@ -62,7 +63,6 @@ const Recipe = () => {
 
     return (
         <Stack alignItems="center" justifyContent="center">
-            `
             <Grid templateRows="repeat(5)" templateColumns="repeat(4, 2fr)" mt="6" width="100%">
                 <GridItem rowSpan={5} colSpan={2} ml={4} objectFit="cover">
                     <Box
@@ -140,7 +140,7 @@ const Recipe = () => {
                             fontWeight="bold"
                             textAlign="center"
                         >
-                            {recipeData.title}
+                            {cleanTitle}
                         </Heading>
                         <Text justifyContent="center" alignItems="center" color="gray.500" fontSize={26}>
                             {recipeData.description}

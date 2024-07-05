@@ -1,4 +1,4 @@
-import { Box, HStack, IconButton, VStack } from '@chakra-ui/react';
+import { Box, Heading, HStack, IconButton, VStack } from '@chakra-ui/react';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import { Hero } from '../../components';

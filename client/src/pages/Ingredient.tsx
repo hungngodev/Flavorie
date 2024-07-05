@@ -13,8 +13,8 @@ import { Nutrition } from '../components/ingredients/NutritionCard';
 import socket from '../socket/socketio.tsx';
 import theme from '../style/theme';
 import customFetch from '../utils/customFetch';
-import Lottie from 'lottie-react';
-import { extendTheme } from '@chakra-ui/react';
+
+// import { PaginationTable } from 'table-pagination-chakra-ui';
 
 waveform.register();
 
@@ -114,15 +114,15 @@ export default function Ingredient() {
                 () =>
                     cartStatus === 'success'
                         ? cartData.data.cart.map(
-                              (item: { cart: { _id: string; name: string; image: string }; quantity: string }) => {
-                                  return {
-                                      id: item.cart._id,
-                                      name: item.cart.name,
-                                      image: item.cart.image,
-                                      quantity: item.quantity,
-                                  };
-                              },
-                          )
+                                (item: { cart: { _id: string; name: string; image: string }; quantity: string }) => {
+                                    return {
+                                        id: item.cart._id,
+                                        name: item.cart.name,
+                                        image: item.cart.image,
+                                        quantity: item.quantity,
+                                    };
+                                },
+                            )
                         : [],
                 [cartData, cartStatus],
             ),
@@ -376,7 +376,7 @@ export default function Ingredient() {
                     className={`no-visible-scrollbar relative 
             mt-2 flex w-full max-w-full
             flex-row items-center justify-start
-            overflow-auto [perspective:1000px] sm:overflow-visible gap-2`}
+            gap-2 overflow-auto [perspective:1000px] sm:overflow-visible`}
                 >
                     {propTabs.map((tab, idx) => (
                         <button
@@ -388,7 +388,7 @@ export default function Ingredient() {
                                 active.value !== tab.value && setHovering(true);
                             }}
                             onMouseLeave={() => setHovering(false)}
-                            className=" relative rounded-full bg-indigo-300 mt-4 px-4 py-2 text-white"
+                            className=" relative mt-4 rounded-full bg-indigo-300 px-4 py-2 text-white"
                             style={{
                                 transformStyle: 'preserve-3d',
                             }}
@@ -397,10 +397,9 @@ export default function Ingredient() {
                                 <motion.div
                                     layoutId="clickedbutton"
                                     transition={{ type: 'spring', bounce: 0.3, duration: 0.6 }}
-                                    className="absolute inset-0 rounded-full bg-indigo-500 px-4 py-3 text-white"
+                                    className="absolute inset-0 rounded-full bg-indigo-500 px-4 py-2 text-white"
                                 />
                             )}
-
                             <span className="relative block text-white dark:text-white">{tab.title}</span>
                         </button>
                     ))}
@@ -435,7 +434,6 @@ export default function Ingredient() {
                                             control={control}
                                             lottieCartRef={lottieCartRef}
                                             height="50vh"
-                                            
                                         />
                                     ) : (
                                         <LeftOver

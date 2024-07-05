@@ -25,7 +25,7 @@ const SocketProvider: React.FC<SocketContextProviderProps> = ({ children }) => {
 
         socket.on('processReceipt', (data) => {
             console.log('Process receipt successfully', data);
-            // notifySuccess('Process your receipts successfully');
+            notifySuccess('Process your receipts successfully');
         });
 
         socket.on('processInstacart', (data) => {

@@ -9,6 +9,11 @@ import {
     NumberInput,
     NumberInputField,
     VStack,
+    Button,
+    Menu,
+    MenuButton,
+    MenuList,
+    MenuItem,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import Lottie, { LottieRefCurrentProps } from 'lottie-react';
@@ -16,6 +21,7 @@ import { RefObject, useEffect } from 'react';
 import { Control, Controller, FieldArrayWithId } from 'react-hook-form';
 import { Cart } from '../../assets/animations';
 import { CartData } from '../../pages/Ingredient';
+import { ChevronDownIcon } from '@chakra-ui/icons';
 import theme from '../../style/theme';
 
 type CartProps = {
@@ -33,6 +39,12 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
     useEffect(() => {
         console.log('fields', fields);
     }, [fields]);
+
+    const handleMenuItemClick = (action: string) => {
+        onSubmit(action);
+        lottieCartRef.current?.playSegments([0, 135]);
+    };
+
     return (
         <Flex
             marginTop={'4vh'}
@@ -47,18 +59,7 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
             maxH={'85vh'}
             bg={'#fef9ff'}
         >
-            <HStack mr="3">
-                {/* <IconButton
-                    icon={<ChevronUp />}
-                    aria-label="left"
-                    onClick={() => scroll('up', 100)}
-                    variant="solid"
-                    bg={theme.colors.palette_indigo}
-                    size="xs"
-                    height="50%"
-                    ml="2"
-                /> */}
-
+            <HStack>
                 <Lottie
                     animationData={Cart}
                     style={{ height: 100 }}
@@ -66,38 +67,24 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
                     autoPlay={false}
                     lottieRef={lottieCartRef}
                 />
-                <VStack mt="5" alignItems="left">
-                    <button
-                        onClick={() => {
-                            onSubmit('add');
-                            // socket.emit('sendToInstacart', fields);
-                            lottieCartRef.current?.playSegments([0, 135]);
-                        }}
-                        className=" rounded-full bg-indigo-500 py-3 px-5 text-white"
+                <Menu>
+                    <MenuButton
+                        as={Button}
+                        rightIcon={<ChevronDownIcon />}
+                        color="white"
+                        bg={theme.colors.palette_purple}    
                     >
-                        Send to Instacart
-                    </button>
-                    <button
-                        onClick={() => {
-                            onSubmit('transfer');
-                            // socket.emit('sendToInstacart', fields);
-                            lottieCartRef.current?.playSegments([0, 135]);
-                        }}
-                        className=" rounded-full bg-indigo-500 py-3 px-5 text-white"
-                    >
-                        Transfer to Fridge
-                    </button>
-                </VStack>
-                {/* <IconButton
-                    icon={<ChevronDown />}
-                    aria-label="right"
-                    onClick={() => scroll('down', 100)}
-                    variant="solid"
-                    bg={theme.colors.palette_indigo}
-                    size="xs"
-                    height="50%"
-                    mr="2"
-                /> */}
+                        Actions
+                    </MenuButton>
+                    <MenuList>
+                        <MenuItem onClick={() => handleMenuItemClick('add')}>Save it</MenuItem>
+                        <MenuItem onClick={() => handleMenuItemClick('transfer')}>
+                            Transfer to fridge
+                        </MenuItem>
+                        <MenuItem onClick={() => handleMenuItemClick('send')}>Send to Instacart</MenuItem>
+                        <MenuItem onClick={() => handleMenuItemClick('deleteAll')}>Delete all</MenuItem>
+                    </MenuList>
+                </Menu>
             </HStack>
 
             <form

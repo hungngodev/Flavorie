@@ -1,24 +1,10 @@
-import {
-    Box,
-    Button,
-    Card,
-    CardBody,
-    CardFooter,
-    Divider,
-    HStack,
-    Heading,
-    Image,
-    Stack,
-    Text,
-    useTheme,
-} from '@chakra-ui/react';
+import { Box, Card, CardBody, CardFooter, HStack, Heading, Image, Stack, Text, useTheme } from '@chakra-ui/react';
 import React from 'react';
 import Heart from 'react-animated-heart';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../hooks';
 import customFetch from '../../utils/customFetch';
-import theme from '../../style/theme';
 
 interface ImageCardProps {
     imageProps: {

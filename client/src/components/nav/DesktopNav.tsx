@@ -131,13 +131,13 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
                                         />
                                         {numberOfNotifications > 0 && (
                                             <Circle
-                                                size="17px"
+                                                size="15px"
                                                 bg="red"
                                                 color="white"
                                                 position="absolute"
-                                                top="-3px"
-                                                right="0px"
-                                                fontSize="0.8rem"
+                                                top="2px"
+                                                right="4px"
+                                                fontSize="0.6rem"
                                                 display="flex"
                                                 alignItems="center"
                                                 justifyContent="center"
