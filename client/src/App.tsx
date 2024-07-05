@@ -85,10 +85,10 @@ const router = createBrowserRouter([
             element: <FullPost />,
             loader: PostLoader(queryClient),
           },
-          {
-            path: 'reviews',
-            element: <Reviews />,
-          },
+          // {
+          //   path: 'reviews',
+          //   element: <Reviews />,
+          // },
         ],
       },
 
