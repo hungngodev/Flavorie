@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box, HStack, Image, Text, VStack } from '@chakra-ui/react';
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
@@ -17,13 +18,13 @@ export function RecentMeals({ likedMeal, status }: RecentMeal) {
     if (status === 'pending') return <div>Loading...</div>;
 
     return (
-        <VStack width={'full'} height={'400px'} mt={'1vh'} mb={'1vh'}>
+        <VStack width={'full'} height={'60vh'} mt={'1vh'} mb={'1vh'}>
             <Box width="full" height="42px">
-                <HStack bg="rgba(153, 102, 255, 0.3)" borderRadius="md" height="100%" width="100%" spacing={0}>
+                <HStack bg="rgba(153, 102, 255, 0.3)" borderRadius="md" height="100%" width="100%" spacing={2}>
                     <Box
                         textAlign="center"
                         height="100%"
-                        width="55%"
+                        width="60%"
                         display="flex"
                         alignItems="center"
                         justifyContent="center"
@@ -31,13 +32,13 @@ export function RecentMeals({ likedMeal, status }: RecentMeal) {
                     >
                         <Text fontWeight="bold">Meal</Text>
                     </Box>
-                    <Box height="100%" width="22%" display="flex" justifyContent="center" flexDirection="column">
+                    <Box height="100%" width="20%" display="flex" justifyContent="center" flexDirection="column">
                         <Text fontWeight="bold">Calories</Text>
                     </Box>
                     <Box
                         textAlign="center"
                         height="100%"
-                        width="23%"
+                        width="20%"
                         display="flex"
                         alignItems="center"
                         justifyContent="center"
@@ -47,13 +48,14 @@ export function RecentMeals({ likedMeal, status }: RecentMeal) {
                 </HStack>
             </Box>
             <Box
-                height="269px"
+                height="full"
                 width="full"
                 overflowY="auto"
                 ref={scrollRef}
                 border="1px"
                 borderColor={theme.colors.palette_lavender}
                 borderRadius="md"
+                bg={'black'}
             >
                 {likedMeal.length > 0 ? (
                     likedMeal.map((meal: any, index: number) => (
@@ -82,15 +84,14 @@ export function RecentMeals({ likedMeal, status }: RecentMeal) {
                                     </Text>
                                 </Link>
                             </Box>
-                            <Box width="22%">
-                                <Text color="base.400">{Math.round(Math.random() * 500)} kCal</Text>
+                            <Box width="20%">
+                                <Text color="base.400" paddingLeft="1rem">
+                                    {Math.round(Math.random() * 500)} kCal
+                                </Text>
                             </Box>
-                            <Box width="23%">
+                            <Box width="20%">
                                 <Text flex="1" textAlign="right" color="base.400">
-                                    {new Date(meal.createdAt.toString()).toLocaleDateString('en-US', {
-                                        month: 'short',
-                                        day: 'numeric',
-                                    })}
+                                    {new Date(meal.createdAt.toString()).toLocaleDateString('en-US', {})}
                                 </Text>
                             </Box>
                         </Box>

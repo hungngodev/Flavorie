@@ -1,4 +1,6 @@
-import { Box, Flex, IconButton, useDisclosure } from '@chakra-ui/react';
+import { Box, Flex, Grid, GridItem, HStack, Heading, IconButton, Text, VStack, useDisclosure } from '@chakra-ui/react';
+import { Pagination } from '@nextui-org/pagination';
+import { Select, SelectItem } from '@nextui-org/select';
 import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
 import { waveform } from 'ldrs';
@@ -6,14 +8,15 @@ import { LottieRefCurrentProps } from 'lottie-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { FaShoppingCart } from 'react-icons/fa';
-import { Params, useParams } from 'react-router-dom';
+import { Params, useLoaderData, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { Cart, CategorySidebar, IngredientsMain, LeftOver, TypeWriter } from '../components';
+import { Cart, CategorySidebar, IngredientCard, IngredientsMain, LeftOver, TypeWriter } from '../components';
+import IngredientLine from '../components/ingredients/IngredientLine.tsx';
 import { Nutrition } from '../components/ingredients/NutritionCard';
+import { SearchBar } from '../components/ingredients/SearchBar';
 import socket from '../socket/socketio.tsx';
 import theme from '../style/theme';
 import customFetch from '../utils/customFetch';
-
 // import { PaginationTable } from 'table-pagination-chakra-ui';
 
 waveform.register();
@@ -22,6 +25,9 @@ const allIngredientsQuery = (category: string) => {
     return {
         queryKey: ['ingredients', category],
         queryFn: async () => {
+            if (category === '/') {
+                return null;
+            }
             const data = await customFetch('/ingredient', {
                 params: {
                     category: category,
@@ -31,6 +37,22 @@ const allIngredientsQuery = (category: string) => {
         },
     };
 };
+
+const searchIngredientQuery = (queries: { [key: string]: string }) => {
+    const search = queries.search;
+    return {
+        queryKey: search ? ['ingredients', search] : ['ingredients'],
+        queryFn: async () => {
+            const data = await customFetch('/ingredient/search', {
+                params: {
+                    search: search,
+                },
+            });
+            return data;
+        },
+    };
+};
+
 const leftOverQuery = {
     queryKey: ['leftOver'],
     queryFn: async () => {
@@ -48,11 +70,13 @@ export const cartQuery = {
 
 export const loader =
     (queryClient: QueryClient) =>
-    async ({ params }: { params: Params }) => {
-        queryClient.ensureQueryData(allIngredientsQuery(params.category ?? ''));
+    async ({ params, request }: { params: Params; request: Request }) => {
+        const queries: { [key: string]: string } = Object.fromEntries(new URL(request.url).searchParams.entries());
+        queryClient.ensureQueryData(allIngredientsQuery(params.category ?? '/'));
+        queryClient.ensureQueryData(searchIngredientQuery(queries));
         queryClient.ensureQueryData(cartQuery);
         queryClient.ensureQueryData(leftOverQuery);
-        return null;
+        return queries;
     };
 export type UserItem = {
     id: string;
@@ -92,10 +116,19 @@ export type Category = {
 };
 
 export default function Ingredient() {
+    const queries = useLoaderData();
+    const currentSearchQuery = (queries as { [key: string]: string }).search;
     let { category: currentCategory } = useParams<{ category: string }>();
     currentCategory = currentCategory === undefined ? '/' : currentCategory;
 
     const { data: queryData, status } = useQuery(allIngredientsQuery(currentCategory));
+    const { data: searchData, status: searchStatus } = useQuery(
+        searchIngredientQuery(queries as { [key: string]: string }),
+    );
+    const [mealChoice, setMealChoice] = useState(0);
+    const [page, setPage] = useState(1);
+    const size = currentSearchQuery && currentSearchQuery !== '' ? 20 : 15;
+    console.log(searchData);
     // const queryData = mockData;
     const ingredientData = queryData?.data.category[0];
     const { data: cartData, status: cartStatus } = useQuery(cartQuery);
@@ -168,9 +201,6 @@ export default function Ingredient() {
             });
         lottieCartRef.current?.playSegments([150, 185]);
     };
-    useEffect(() => {
-        console.log(cartStatus);
-    }, [cartStatus]);
 
     const onSubmit = (operation: string) => {
         handleSubmit(async (data: CartData) => {
@@ -237,7 +267,6 @@ export default function Ingredient() {
         },
     });
     useEffect(() => {
-        console.log(leftOverData);
         if (leftOverStatus === 'success') {
             setValue2(
                 'leftOver',
@@ -261,7 +290,6 @@ export default function Ingredient() {
 
     const onSubmit2 = () => {
         handleSubmit2((data: leftOverData) => {
-            console.log(data);
             const results = data.leftOver.map((item) => {
                 return {
                     itemId: item.id,
@@ -351,7 +379,121 @@ export default function Ingredient() {
                     ) : currentCategory !== '/' ? (
                         <IngredientsMain data={ingredientData} addFunction={addFunction} />
                     ) : (
-                        <div>Category not found</div>
+                        <VStack width={'full'} height={'full'} justifyContent={'start'} alignItems={'center'}>
+                            <Heading mt="4" mb="4" fontSize="60" fontWeight="bold" color={theme.colors.palette_purple}>
+                                {`Lets Find Some Ingredients`.toUpperCase()}
+                            </Heading>
+                            <SearchBar autoCompleteLink="/ingredient/autocomplete" />
+                            <Heading mt="4" mb="4" fontSize="30" fontWeight="bold" color={theme.colors.palette_purple}>
+                                {currentSearchQuery && currentSearchQuery !== ''
+                                    ? `Search Results for "${currentSearchQuery}"`.toUpperCase()
+                                    : page === 1 && 'EXPLORE WHAT WE HAVE'}
+                            </Heading>
+                            {searchStatus === 'pending' ? (
+                                <VStack width="full" height={'full'} justifyContent={'center'} alignItems={'center'}>
+                                    <l-waveform size="100" stroke="3.5" speed="1" color="black"></l-waveform>
+                                    <TypeWriter words={moreCookingJokes} duration={5000} />
+                                </VStack>
+                            ) : (
+                                <VStack spacing={0} width={'95%'} height={'150%'} justifyContent={'start'}>
+                                    {page === 1 && !(currentSearchQuery && currentSearchQuery !== '') && (
+                                        <VStack width={'100%'} height={'100%'} alignItems={'start'}>
+                                            <Select
+                                                items={searchData?.data.result.map(
+                                                    (currentLiked: any, index: number) => ({
+                                                        key: index,
+                                                        label: currentLiked.meal.title,
+                                                    }),
+                                                )}
+                                                variant="bordered"
+                                                label="Select a meal"
+                                                className="w-full"
+                                                selectedKeys={[mealChoice]}
+                                                onChange={(e) => setMealChoice(parseInt(e.target.value))}
+                                            >
+                                                {(meal: { key: string; label: string }) => (
+                                                    <SelectItem className="w-full rounded-none bg-white" key={meal.key}>
+                                                        {meal.label}
+                                                    </SelectItem>
+                                                )}
+                                            </Select>
+
+                                            <HStack justifyContent={'start'} width="full">
+                                                <IngredientLine
+                                                    index={0}
+                                                    addFunction={addFunction}
+                                                    subCategory={{
+                                                        queryKey:
+                                                            'Missing Ingredients for ' +
+                                                            searchData?.data.result[mealChoice].meal.title,
+                                                        ingredients:
+                                                            searchData?.data.result[mealChoice].missingIngredients,
+                                                    }}
+                                                />
+                                            </HStack>
+                                        </VStack>
+                                    )}
+                                    <Heading
+                                        mt="4"
+                                        mb="4"
+                                        fontSize="30"
+                                        fontWeight="bold"
+                                        color={theme.colors.palette_purple}
+                                    >
+                                        Try out some ingredients
+                                    </Heading>
+                                    <Grid
+                                        width={'100%'}
+                                        height={'100%'}
+                                        templateColumns={'repeat(5,1fr)'}
+                                        templateRows={
+                                            currentSearchQuery && currentSearchQuery !== ''
+                                                ? 'repeat(4,1fr)'
+                                                : 'repeat(3,1fr)'
+                                        }
+                                    >
+                                        {searchData?.data.ingredients
+                                            .slice((page - 1) * size, page * size)
+                                            .map((ingredient: Ingredient, index: number) => (
+                                                <GridItem
+                                                    colSpan={1}
+                                                    rowSpan={1}
+                                                    key={ingredient.id + index + Math.random() * 1000000}
+                                                >
+                                                    <IngredientCard
+                                                        id={ingredient.id}
+                                                        imgLink={ingredient.image}
+                                                        title={ingredient.name}
+                                                        category={ingredient.category}
+                                                        height="7vw"
+                                                        width="12vw"
+                                                        onClick={() => {
+                                                            addFunction(ingredient);
+                                                        }}
+                                                        amount={ingredient.amount}
+                                                        unitShort={ingredient.unitShort}
+                                                        nutrition={ingredient.nutrition}
+                                                    />
+                                                </GridItem>
+                                            ))}
+                                    </Grid>
+                                    <div className="flex h-[100px] items-center gap-10">
+                                        <Pagination
+                                            showControls
+                                            onChange={(page) => setPage(page)}
+                                            total={Math.ceil(searchData?.data.numberOfIngredients / size)}
+                                            color="primary"
+                                            initialPage={page}
+                                            space-y-10
+                                        />
+                                    </div>
+
+                                    <Text color="gray.600" fontSize={'1.3rem'} mt="6">
+                                        {searchData?.data.numberOfIngredients} Ingredients
+                                    </Text>
+                                </VStack>
+                            )}
+                        </VStack>
                     )}
                 </Flex>
             </div>

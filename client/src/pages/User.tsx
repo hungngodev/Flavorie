@@ -380,27 +380,38 @@ function User() {
                             <Tbody>
                                 {status !== 'pending' ? (
                                     cookedMeal ? (
-                                        cookedMeal.slice(0, 3).map((meal: any) => (
-                                            <Tr key={meal.likedMeal.id}>
-                                                <Td>
-                                                    {
-                                                        meal.likedMeal.dishTypes[
-                                                            Math.round(
-                                                                Math.random() * meal.likedMeal.dishTypes.length,
-                                                            ) - 1
-                                                        ]
-                                                    }
-                                                </Td>
-                                                <Td>{meal.carbs}</Td>
-                                                <Td>{meal.protein}</Td>
-                                                <Td>{meal.fat}</Td>
-                                                <Td>{meal.calories}</Td>
-                                                <Td>
-                                                    {/* <Box bg="lightgray" width={`${meal.caloriesOfGoal}%`} height="10px" />
+                                        cookedMeal.slice(0, 3).map(
+                                            (meal: {
+                                                likedMeal: {
+                                                    id: string;
+                                                    dishTypes: string[];
+                                                };
+                                                carbs: number;
+                                                protein: number;
+                                                fat: number;
+                                                calories: number;
+                                            }) => (
+                                                <Tr key={meal.likedMeal.id}>
+                                                    <Td>
+                                                        {
+                                                            meal.likedMeal.dishTypes[
+                                                                Math.round(
+                                                                    Math.random() * meal.likedMeal.dishTypes.length,
+                                                                ) - 1
+                                                            ]
+                                                        }
+                                                    </Td>
+                                                    <Td>{meal.carbs}</Td>
+                                                    <Td>{meal.protein}</Td>
+                                                    <Td>{meal.fat}</Td>
+                                                    <Td>{meal.calories}</Td>
+                                                    <Td>
+                                                        {/* <Box bg="lightgray" width={`${meal.caloriesOfGoal}%`} height="10px" />
                           {meal.caloriesOfGoal} */}
-                                                </Td>
-                                            </Tr>
-                                        ))
+                                                    </Td>
+                                                </Tr>
+                                            ),
+                                        )
                                     ) : (
                                         <Text>No meal</Text>
                                     )
