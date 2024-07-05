@@ -12,7 +12,7 @@ import {
     useDisclosure,
 } from '@chakra-ui/react';
 import { Select, SelectItem } from '@nextui-org/select';
-import axios from 'axios';
+import socket from '../socket/socketio';
 import { motion } from 'framer-motion';
 import {
     Clipboard,
@@ -95,7 +95,23 @@ const Room = () => {
         if (myVideoRef.current && stream) {
             myVideoRef.current.srcObject = stream;
         }
-    }, [stream, focus]);
+    }, [stream]);
+
+    useEffect(() => {
+        socket?.on('receiveAction', (action) => {
+            console.log("Hand gesture action", action)
+            switch (action){
+                case 'left-arrow':
+                    setCurrSlide((prev) => Math.max(prev - 2, 0));
+                    break;
+                case 'right-arrow':
+                    setCurrSlide((prev) => prev + 2);
+                    break;
+                default:
+                    break;
+            }
+        })
+    })
 
     const sendFrameToServer = async () => {
         const canvas = canvasRef.current;
@@ -104,35 +120,37 @@ const Room = () => {
             context.drawImage(myVideoRef.current, 0, 0, canvas.width, canvas.height);
             const dataUrl = canvas.toDataURL('image/jpeg');
             const blob = await (await fetch(dataUrl)).blob();
-
-            const formData = new FormData();
-            formData.append('image', blob, 'frame.jpg');
-
-            try {
-                const response = await axios.post('http://127.0.0.1:5000/virtual-mouse', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
-                console.log('Hand gesture', response.data.action);
-                switch (response.data.action) {
-                    case 'left-arrow':
-                        setCurrSlide((prev) => Math.max(prev - 2, 0));
-                        break;
-                    case 'right-arrow':
-                        setCurrSlide((prev) => prev + 2);
-                        break;
-                    default:
-                        break;
-                }
-            } catch (err) {
-                console.error('Error sending frame to server:', err);
-            }
+            const file = new File([blob], 'frame.jpg', { type: 'image/jpeg' });
+            socket?.emit('sendFrame', {
+                image: file
+            })
+            // const formData = new FormData();
+            // formData.append('image', blob, 'frame.jpg');
+            // try {
+            //     const response = await axios.post('http://127.0.0.1:5000/virtual-mouse', formData, {
+            //         headers: {
+            //             'Content-Type': 'multipart/form-data',
+            //         },
+            //     });
+            //     console.log("Hand gesture", response.data.action);
+            //     switch (response.data.action) {
+            //         case 'left-arrow':
+            //             setCurrSlide((prev) => Math.max(prev - 2, 0));
+            //             break;
+            //         case 'right-arrow':
+            //             setCurrSlide((prev) => prev + 2);
+            //             break;
+            //         default:
+            //             break;
+            //     }
+            // } catch (err) {
+            //     console.error('Error sending frame to server:', err);
+            // }
         }
     };
 
     useEffect(() => {
-        const interval = setInterval(sendFrameToServer, 1000);
+        const interval = setInterval(sendFrameToServer, 5000);
         return () => clearInterval(interval);
     }, []);
 
