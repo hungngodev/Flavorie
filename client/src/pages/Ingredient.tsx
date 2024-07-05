@@ -147,15 +147,15 @@ export default function Ingredient() {
                 () =>
                     cartStatus === 'success'
                         ? cartData.data.cart.map(
-                                (item: { cart: { _id: string; name: string; image: string }; quantity: string }) => {
-                                    return {
-                                        id: item.cart._id,
-                                        name: item.cart.name,
-                                        image: item.cart.image,
-                                        quantity: item.quantity,
-                                    };
-                                },
-                            )
+                              (item: { cart: { _id: string; name: string; image: string }; quantity: string }) => {
+                                  return {
+                                      id: item.cart._id,
+                                      name: item.cart.name,
+                                      image: item.cart.image,
+                                      quantity: item.quantity,
+                                  };
+                              },
+                          )
                         : [],
                 [cartData, cartStatus],
             ),
@@ -396,43 +396,48 @@ export default function Ingredient() {
                                 </VStack>
                             ) : (
                                 <VStack spacing={0} width={'95%'} height={'150%'} justifyContent={'start'}>
-                                    {page === 1 && !(currentSearchQuery && currentSearchQuery !== '') && (
-                                        <VStack width={'100%'} height={'100%'} alignItems={'start'}>
-                                            <Select
-                                                items={searchData?.data.result.map(
-                                                    (currentLiked: any, index: number) => ({
-                                                        key: index,
-                                                        label: currentLiked.meal.title,
-                                                    }),
-                                                )}
-                                                variant="bordered"
-                                                label="Select a meal"
-                                                className="w-5/6"
-                                                selectedKeys={[mealChoice]}
-                                                onChange={(e) => setMealChoice(parseInt(e.target.value))}
-                                            >
-                                                {(meal: { key: string; label: string }) => (
-                                                    <SelectItem className="w-full rounded-none bg-white" key={meal.key}>
-                                                        {meal.label}
-                                                    </SelectItem>
-                                                )}
-                                            </Select>
+                                    {page === 1 &&
+                                        searchData?.data.result.length > 0 &&
+                                        !(currentSearchQuery && currentSearchQuery !== '') && (
+                                            <VStack width={'100%'} height={'100%'} alignItems={'start'}>
+                                                <Select
+                                                    items={searchData?.data.result.map(
+                                                        (currentLiked: any, index: number) => ({
+                                                            key: index,
+                                                            label: currentLiked.meal.title,
+                                                        }),
+                                                    )}
+                                                    variant="bordered"
+                                                    label="Select a meal"
+                                                    className="w-5/6"
+                                                    selectedKeys={[mealChoice]}
+                                                    onChange={(e) => setMealChoice(parseInt(e.target.value))}
+                                                >
+                                                    {(meal: { key: string; label: string }) => (
+                                                        <SelectItem
+                                                            className="w-full rounded-none bg-white"
+                                                            key={meal.key}
+                                                        >
+                                                            {meal.label}
+                                                        </SelectItem>
+                                                    )}
+                                                </Select>
 
-                                            <HStack justifyContent={'start'} width="full">
-                                                <IngredientLine
-                                                    index={0}
-                                                    addFunction={addFunction}
-                                                    subCategory={{
-                                                        queryKey:
-                                                            'Missing Ingredients for ' +
-                                                            searchData?.data.result[mealChoice].meal.title,
-                                                        ingredients:
-                                                            searchData?.data.result[mealChoice].missingIngredients,
-                                                    }}
-                                                />
-                                            </HStack>
-                                        </VStack>
-                                    )}
+                                                <HStack justifyContent={'start'} width="full">
+                                                    <IngredientLine
+                                                        index={0}
+                                                        addFunction={addFunction}
+                                                        subCategory={{
+                                                            queryKey:
+                                                                'Missing Ingredients for ' +
+                                                                searchData?.data.result[mealChoice].meal.title,
+                                                            ingredients:
+                                                                searchData?.data.result[mealChoice].missingIngredients,
+                                                        }}
+                                                    />
+                                                </HStack>
+                                            </VStack>
+                                        )}
                                     <Heading mb="4" fontSize="30" fontWeight="bold" color={theme.colors.palette_purple}>
                                         Try out some ingredients
                                     </Heading>

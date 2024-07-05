@@ -1,4 +1,3 @@
-'use client';
 import { ChevronRightIcon } from '@chakra-ui/icons';
 import {
     Avatar,
@@ -22,6 +21,7 @@ import {
 } from '@chakra-ui/react';
 import { FaBell } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import Logo from '../../assets/Logo.png';
 import useAuth from '../../hooks/useAuth';
 import useNotification from '../../hooks/useNotification';
 import NotificationBell from '../notifications/NotificationBell';
@@ -39,13 +39,7 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
         <>
             <Flex align={'center'} justifyContent={'space-between'} gap={4}>
                 <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
-                    <Image
-                        ml="2"
-                        boxSize="48px"
-                        objectFit="cover"
-                        src="../public/images/branding/Logo.png"
-                        alt="logo"
-                    />
+                    <Image ml="2" boxSize="48px" objectFit="cover" src={Logo} alt="logo" />
                     <Flex display={{ base: 'none', md: 'flex' }} ml={6} flexDirection="column" justifyContent="center">
                         <Stack direction={'row'} spacing={4}>
                             {NavItems.map((navItem) => (

@@ -20,7 +20,7 @@ export function RecentMeals({ likedMeal, status }: RecentMeal) {
     return (
         <VStack width={'full'} height={'60vh'} mt={'1vh'} mb={'1vh'}>
             <Box width="full" height="42px">
-                <HStack bg="rgba(153, 102, 255, 0.3)" borderRadius="md" height="100%" width="100%" spacing={2}>
+                <HStack borderRadius="md" height="100%" width="100%" spacing={2}>
                     <Box
                         textAlign="center"
                         height="100%"
