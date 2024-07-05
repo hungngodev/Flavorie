@@ -1,22 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
-
 import { Box, Button, HStack, Icon, IconButton, Image, StackProps } from '@chakra-ui/react';
-
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { motion, useAnimationControls } from 'framer-motion';
 import { X } from 'lucide-react';
 import { GoDotFill } from 'react-icons/go';
 import { useNavigate } from 'react-router-dom';
-import { MediaObjectType } from './types';
+import { BasePostProps, MediaObjectType } from './types';
 
-interface ImageSliderProps extends StackProps {
+interface ImageSliderProps extends BasePostProps, StackProps {
   slides: MediaObjectType[];
   onClose?: (arg?: any) => void;
-  postId?: string;
   action: 'display' | 'direct';
 }
 
-const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, onClose, postId, action, ...props }) => {
+const ImageSlider: React.FC<ImageSliderProps> = ({ slides, onClose, postId, action, postData }) => {
   const navigate = useNavigate();
   const [imageSlides, setImageSlides] = useState<MediaObjectType[]>(slides);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -100,9 +97,13 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, onClose, po
                   marginInline="auto"
                   zIndex={2}
                   rounded="lg"
-                  maxHeight="100%"
+                  maxHeight="70dvh"
                   cursor="pointer"
-                  onClick={action === 'direct' ? () => navigate(`/community/${postId}`) : () => {}}
+                  onClick={
+                    action === 'direct'
+                      ? () => navigate(`/community/${postId}`, { state: { post: postData } })
+                      : () => {}
+                  }
                 />
               ) : (
                 <Box
@@ -150,7 +151,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, onClose, po
         )}
         {onClose && (
           <Button
-            onClick={(e) => {
+            onClick={() => {
               onClose(currentIndex);
               setCurrentIndex((cur) => Math.max(cur - 1, 0));
             }}

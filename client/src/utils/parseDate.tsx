@@ -1,5 +1,12 @@
-export default function parseDate(dateString: string) {
-  const date = new Date(dateString);
+export default function parseDate(createdDate: string | undefined, updatedDate?: string | undefined) {
+  if (!createdDate) return new Date().toDateString();
+  let date = new Date(createdDate);
+  if (updatedDate) {
+    const compareDate = new Date(updatedDate);
+    if (compareDate > date) {
+      date = compareDate;
+    }
+  }
   const diff = Date.now() - date.getTime();
 
   switch (true) {
@@ -11,6 +18,8 @@ export default function parseDate(dateString: string) {
       return `${Math.floor(diff / (1000 * 60 * 60))}h ago`;
     case diff < 1000 * 60 * 60 * 24 * 7:
       return `${Math.floor(diff / (1000 * 60 * 60 * 24))}d ago`;
+    case diff < 1000 * 60 * 60 * 24 * 7 * 4:
+      return `${Math.floor(diff / (1000 * 60 * 60 * 24))}months ago`;
     default:
       return date.toDateString();
   }

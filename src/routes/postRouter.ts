@@ -5,6 +5,7 @@ import {
   createPostController,
   deletePostController,
   getPostController,
+  getUserPostController,
   hidePostController,
   newFeedController,
   reactPostController,
@@ -30,12 +31,15 @@ const upload = multer({
 
 const router = Router();
 const apiLimiter = rateLimiter({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
+  windowMs: 20 * 60 * 1000,
+  max: 10000,
   message: { msg: "IP rate limit exceeded, retry in 15 minutes." },
 });
 
+router.get("/post/user", apiLimiter, checkUser, getUserPostController);
+
 router.get("/post/:postid", checkUser, apiLimiter, getPostController);
+
 router.get("/feed", checkUser, apiLimiter, newFeedController);
 router.post(
   "/post",

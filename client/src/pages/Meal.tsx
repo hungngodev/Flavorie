@@ -1,4 +1,3 @@
-import React from 'react';
 import { Flex } from '@chakra-ui/react';
 import { QueryClient, useQuery } from '@tanstack/react-query';
 import { miyagi } from 'ldrs';

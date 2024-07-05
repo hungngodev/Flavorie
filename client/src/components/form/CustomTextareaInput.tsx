@@ -4,11 +4,6 @@ import {
   FormErrorMessage,
   FormHelperText,
   FormLabel,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  InputProps,
-  InputRightElement,
   HStack,
   Textarea,
   TextareaProps,
@@ -17,7 +12,7 @@ import React from 'react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 
 interface CustomTextareaInput<T extends FieldValues> extends TextareaProps {
-  isInValid?: boolean;
+  isError?: boolean;
   label?: string;
   helperText?: string;
   errorText?: string;
@@ -27,11 +22,11 @@ interface CustomTextareaInput<T extends FieldValues> extends TextareaProps {
 }
 
 const CustomTextareaInput: React.ForwardRefRenderFunction<HTMLInputElement, CustomTextareaInput<FieldValues>> = (
-  { label, helperText, errorText, isInValid, containerProps, control, fieldProps, ...props },
+  { label, helperText, errorText, isError, containerProps, control, fieldProps, ...props },
   forwardedRef,
 ) => {
   return (
-    <FormControl isInvalid={isInValid} {...containerProps}>
+    <FormControl isInvalid={isError} {...containerProps}>
       <HStack width="100%" justifyContent="space-between" align="center" margin={0} padding={0}>
         <FormLabel fontSize="xl" color={props.color} margin={0} padding={0}>
           {label}

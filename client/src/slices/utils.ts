@@ -8,7 +8,7 @@ export const initialState: PostState = {
   error: null,
 };
 
-export const getTemplateSlice = (name: string, initialState: any, thunk: any) => {
+export const getTemplateSlice = (name: string, initialState: any, thunk: any): any => {
   return createSlice({
     name,
     initialState,

@@ -1,9 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
 import z, { string } from "zod";
-import { BadRequestError } from "../errors/customErrors.ts";
-import ExpressError from "../utils/ExpressError.ts";
-import UserModel from "../models/UserModel.ts";
+import { BadRequestError, ExpressError } from "../errors/customErrors.ts";
+
 // login
 export const logInData = z.object({
   email: z.string().email(),
@@ -57,20 +56,31 @@ const ReviewSchema = z.object({
     message: "Invalid postId",
   }),
   content: z.string().nonempty({ message: "Content is required" }),
+  timestamp: z.date().default(new Date()),
+  childrenReview: z
+    .array(
+      z.string().refine(val => mongoose.Types.ObjectId.isValid(val), {
+        message: "Invalid childrenReview id",
+      }),
+    )
+    .optional(),
+  parentReview: z
+    .string()
+    .nullable()
+    .refine(val => val === null || mongoose.Types.ObjectId.isValid(val), {
+      message: "Invalid parentReview id",
+    })
+    .optional(),
 });
 
-export const validateReview = async (req: Request, res: Response, next: NextFunction,) => {
+export const validateReview = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     ReviewSchema.parse(req.body);
-    const user = await UserModel.findById(req.user.userId);
-    if(!user){
-      throw new BadRequestError("User not found")
-    }
-    if(req.body.content.length == 0){
-      throw new BadRequestError("No content")
-    }
     next();
-    
   } catch (error) {
     if (error instanceof z.ZodError) {
       const msg = error.errors.map(err => err.message).join(",");
@@ -80,25 +90,3 @@ export const validateReview = async (req: Request, res: Response, next: NextFunc
     }
   }
 };
-
-
-// mock data for register
-// const sampleRegis = {
-//     username: "Sophie",
-//     email: "sophie.abc@gmail.com",
-//     password: "12345678",
-//     reEnterPassword: "12345678",
-// };
-
-// console.log(sampleRegis);
-// const mockRequest = { body: sampleRegis } as Request;
-// const mockResponse = {} as Response;
-// const mockNext: NextFunction = (error?: any) => {
-//     if (error) {
-//         console.error("Error caught in validateRegisterInput:", error);
-//         return;
-//     }
-//     console.log('Registration successful');
-// };
-
-// validateRegisterInput(mockRequest, mockResponse, mockNext);

@@ -22,92 +22,95 @@ export interface User {
 
 interface UserDocument extends User, mongoose.Document {}
 export type UserModel = mongoose.Model<UserDocument>;
-const UserSchema = new mongoose.Schema<UserDocument, UserModel>({
-  name: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: String,
-  lastName: {
-    type: String,
-    default: "lastName",
-  },
-  location: {
-    type: String,
-    default: "my city",
-  },
-  role: {
-    type: String,
-    enum: ["user", "admin"],
-    default: "user",
-  },
-  savedPost: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Post",
-    },
-  ],
-  //   hidenPosts: [
-  //     {
-  //       type: mongoose.Schema.Types.ObjectId,
-  //       ref: "Post",
-  //     },
-  //   ],
-  avatar: String,
-  avatarFileName: String,
-  avatarPublicId: String,
-  preferences: {
-    type: [String],
-    default: [],
-  },
-  allergy: [
-    {
+const UserSchema = new mongoose.Schema<UserDocument, UserModel>(
+  {
+    name: {
       type: String,
-      enum: [
-        "Dairy",
-        "Egg",
-        "Gluten",
-        "Grain",
-        "Peanut",
-        "Seafood",
-        "Sesame",
-        "Shellfish",
-        "Soy",
-        "Sulfite",
-        "Tree Nut",
-        "Wheat",
-      ],
+      required: true,
+      unique: true,
     },
-  ],
-  diet: [
-    {
+    email: {
       type: String,
-      enum: [
-        "Gluten Free",
-        "Ketogenic",
-        "Vegetarian",
-        "Lacto-Vegetarian",
-        "Ovo-Vegetarian",
-        "Vegan",
-        "Pescetarian",
-        "Paleo",
-        "Primal",
-        "Whole30",
-        "Low FODMAP",
-      ],
+      required: true,
+      unique: true,
     },
-  ],
-  statistic: {
-    type: [String],
-    default: [],
+    password: String,
+    lastName: {
+      type: String,
+      default: "lastName",
+    },
+    location: {
+      type: String,
+      default: "my city",
+    },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
+    savedPost: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Post",
+      },
+    ],
+    //   hidenPosts: [
+    //     {
+    //       type: mongoose.Schema.Types.ObjectId,
+    //       ref: "Post",
+    //     },
+    //   ],
+    avatar: String,
+    avatarFileName: String,
+    avatarPublicId: String,
+    preferences: {
+      type: [String],
+      default: [],
+    },
+    allergy: [
+      {
+        type: String,
+        enum: [
+          "Dairy",
+          "Egg",
+          "Gluten",
+          "Grain",
+          "Peanut",
+          "Seafood",
+          "Sesame",
+          "Shellfish",
+          "Soy",
+          "Sulfite",
+          "Tree Nut",
+          "Wheat",
+        ],
+      },
+    ],
+    diet: [
+      {
+        type: String,
+        enum: [
+          "Gluten Free",
+          "Ketogenic",
+          "Vegetarian",
+          "Lacto-Vegetarian",
+          "Ovo-Vegetarian",
+          "Vegan",
+          "Pescetarian",
+          "Paleo",
+          "Primal",
+          "Whole30",
+          "Low FODMAP",
+        ],
+      },
+    ],
+    statistic: {
+      type: [String],
+      default: [],
+    },
   },
-});
+  { strict: false, timestamps: true },
+);
 
 UserSchema.methods.toJSON = function () {
   let obj = this.toObject();

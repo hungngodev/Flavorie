@@ -10,12 +10,8 @@ import {
   StackProps,
   Text,
   VStack,
-  useTheme,
 } from '@chakra-ui/react';
 import { forwardRef, useState } from 'react';
-import { useSelector } from 'react-redux';
-import useAuth from '../../../hooks/useAuth';
-import { selectPosts } from '../../../slices/posts/PostState';
 import { ImageSlider, PostFooter, PostHeader } from './index';
 import { BasePostProps, PostObjectType } from './types';
 
@@ -27,57 +23,41 @@ interface PostProps extends StackProps, BasePostProps {
 }
 
 const Post = forwardRef<HTMLDivElement, PostProps>(
-  ({ postData, headerProps, bodyProps, footerProps, index, postId, ...containerProps }, ref) => {
-    const theme = useTheme();
+  ({ postData, headerProps, bodyProps, footerProps, postId, ...containerProps }, ref) => {
+    // console.log(postData);
+    // const theme = useTheme();
 
-    const auth = useAuth();
-    const posts = useSelector(selectPosts);
-    const post = posts[index!]; // Get post data from redux state
+    // const auth = useAuth();
+    // const posts = useSelector(selectPosts);
+    // const post = postIndex ? posts[postIndex] : null; // Get post data from redux state
 
-    const { id } = auth.currentUser;
     const [loading, setLoading] = useState(false);
-    // const [isVisible, setIsVisible] = useState(
-    // !post.hiddenTo?.includes(id) &&
-    //   (post.privacy === 'public' ||
-    //     post.privacy === 'friend' ||
-    //     (post.privacy === 'private' && post.author.id === id)),
-    // );
-
-    // useEffect(() => {
-    //   setIsVisible(
-    //     () =>
-    //       (!post.hiddenTo?.includes(id) && post.privacy === 'public') ||
-    //       post.privacy === 'friend' ||
-    //       (post.privacy === 'private' && post.author.id === id),
-    //   );
-    // }, [auth.currentUser.id, post, setIsVisible]);
-
-    // all hidden posts are stricttly hidden
 
     return (
       <Card
-        marginBlock={4}
         {...containerProps}
-        height="auto"
         ref={ref}
-        position="relative"
         backdropBlur={loading && 'blur(10px)'}
         pointerEvents={loading ? 'none' : 'auto'}
         opacity={loading ? 0.5 : 1}
       >
         <CardHeader paddingBottom={0} {...headerProps}>
-          <PostHeader postId={post.id} index={index} setLoading={setLoading} />
+          <PostHeader postData={postData} postId={postData.id} setLoading={setLoading} isFullPage={false} />
         </CardHeader>
 
         <CardBody {...bodyProps}>
           <VStack gap={2} alignItems="start" marginBottom={2}>
-            <Heading size="lg">{post.header}</Heading>
-            <Text>{post.body}</Text>
+            <Heading size="lg" fontWeight={400}>
+              {postData.header}
+            </Heading>
+            <Text>{postData.body}</Text>
           </VStack>
-          {post.media.length > 0 && <ImageSlider action="direct" slides={post.media} postId={postId} />}
+          {postData.media.length && postData.media.length > 0 ? (
+            <ImageSlider action="direct" slides={postData.media} postId={postId} postData={postData} />
+          ) : null}
         </CardBody>
         <CardFooter {...footerProps}>
-          <PostFooter index={index} postId={post.id} setLoading={setLoading} />
+          <PostFooter postData={postData} postId={postData.id} setLoading={setLoading} />
         </CardFooter>
       </Card>
     );

@@ -7,6 +7,7 @@ import {
   deletePostDocument,
   getFeedDocument,
   getPostDocumentById,
+  getUserPostDocument,
   hidePostDocument,
   reactPostDocument,
   savePostDocument,
@@ -57,8 +58,8 @@ export const updatePostController = PostErorHandler(async (req, res) => {
 
 export const deletePostController = PostErorHandler(async (req, res) => {
   const { postid } = req.params;
-  console.log("delete request received");
-  await deletePostDocument(postid);
+  const { userId } = req.user;
+  await deletePostDocument(postid, userId);
   return res.status(StatusCodes.OK).json({ message: "Post deleted" });
 });
 
@@ -104,10 +105,23 @@ export const savePostController = PostErorHandler(async (req, res) => {
     .json({ message: "Post hidden", post: post });
 });
 
+export const getUserPostController = PostErorHandler(async (req, res) => {
+  const { userId } = req.user;
+  const { limit } = req.params;
+  const posts = await getUserPostDocument(userId, parseInt(limit));
+  if (!posts) {
+    throw new ServerError("Post not found");
+  }
+  return res.status(StatusCodes.OK).send({
+    message: "Post hidden",
+    userList: posts.userList,
+    savedList: posts.savedList,
+  });
+});
+
 export const hidePostController = PostErorHandler(async (req, res) => {
   const { postid } = req.params;
   const { userId } = req.user;
-  console.log("at controller", postid, userId);
   const post = await hidePostDocument(postid, userId);
   if (!post) {
     throw new ServerError("Post not found");
