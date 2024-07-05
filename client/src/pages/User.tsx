@@ -133,9 +133,9 @@ const NutrientChart = (nutrients: NutrientData) => {
 
 // Weekly summary
 export type WeeklyData = {
-    weeklyProtein: number;
-    weeklyCarb: number;
-    weeklyFat: number;
+    weeklyProtein?: number;
+    weeklyCarb?: number;
+    weeklyFat?: number;
 };
 
 const WeeklySummary = ({ weeklyProtein, weeklyCarb, weeklyFat }: WeeklyData) => {
@@ -312,7 +312,6 @@ const getNutritionQuery = (range: string) => ({
     },
 });
 
-
 const userQuery = {
     queryKey: ['user'],
     queryFn: async () => {
@@ -322,7 +321,6 @@ const userQuery = {
 };
 
 function User() {
-    
     // const nutrientData: NutrientData = { protein, carb, fat, vitamins, minerals };
     // const nutrientData = {
     //     protein: '20',
@@ -350,7 +348,7 @@ function User() {
     const badgesEarned = 2;
     const badgeLevel = getBadgeLevel(badgesEarned * 100);
     const badgeColor = getBadgeColor(badgeLevel);
-    // const { data: cookedMeal, status } = useQuery(likedMealsQuery);
+    const { data: cookedMeal, status } = useQuery(likedMealsQuery);
     const { data: likedMeal, status: likedMealStatus } = useQuery(likedMealsQuery);
     const { data: userData, status: userStatus } = useQuery(userQuery);
     const {data: dailyNutrientData, isLoading: isLoadingNutrition} = useQuery(getNutritionQuery("daily"))
@@ -399,29 +397,39 @@ function User() {
                             </Thead>
                             <Tbody>
                                 {status !== 'pending' ? (
-                                    likedMeal ? (          
-                                        likedMeal?.length > 0 &&                                                                    
-                                        likedMeal?.map((meal: any) => (
-                                            <Tr key={meal?.likedMeal?.id}>
-                                                <Td>
-                                                    {
-                                                        meal?.likedMeal?.dishTypes[
-                                                            Math.round(
-                                                                Math.random() * meal.likedMeal.dishTypes.length,
-                                                            ) - 1
-                                                        ]
-                                                    }
-                                                </Td>
-                                                <Td>{meal.carbs}</Td>
-                                                <Td>{meal.protein}</Td>
-                                                <Td>{meal.fat}</Td>
-                                                <Td>{meal.calories}</Td>
-                                                <Td> 
-                                                    <Box bg="lightgray" width={`${meal.caloriesOfGoal}%`} height="10px" />
-                          {meal.caloriesOfGoal} 
-                                                </Td>
-                                            </Tr>
-                                        ))
+                                    cookedMeal ? (
+                                        cookedMeal.slice(0, 3).map(
+                                            (meal: {
+                                                likedMeal: {
+                                                    id: string;
+                                                    dishTypes: string[];
+                                                };
+                                                carbs: number;
+                                                protein: number;
+                                                fat: number;
+                                                calories: number;
+                                            }) => (
+                                                <Tr key={meal.likedMeal.id}>
+                                                    <Td>
+                                                        {
+                                                            meal.likedMeal.dishTypes[
+                                                                Math.round(
+                                                                    Math.random() * meal.likedMeal.dishTypes.length,
+                                                                ) - 1
+                                                            ]
+                                                        }
+                                                    </Td>
+                                                    <Td>{meal.carbs}</Td>
+                                                    <Td>{meal.protein}</Td>
+                                                    <Td>{meal.fat}</Td>
+                                                    <Td>{meal.calories}</Td>
+                                                    <Td>
+                                                        {/* <Box bg="lightgray" width={`${meal.caloriesOfGoal}%`} height="10px" />
+                          {meal.caloriesOfGoal} */}
+                                                    </Td>
+                                                </Tr>
+                                            ),
+                                        )
                                     ) : (
                                         <Text>No meal</Text>
                                     )
@@ -430,7 +438,7 @@ function User() {
                                 )}
                             </Tbody>
                         </Table>
-                    </Box> 
+                    </Box>
                     <Box mt="3" mb="2">
                         <Heading mb="2" fontSize="22" fontWeight="bold">
                             Statistics
@@ -492,7 +500,7 @@ function User() {
                                             <FaHeart size={24} color="pink" />
                                             <Box mr="2" mb="1">
                                                 <Text ml="2" fontSize="lg" fontWeight="bold">
-                                                    {likedMealStatus === 'pending' ? 0 : likedMeal?.length}
+                                                    {likedMealStatus === 'pending' ? 0 : likedMeal.length}
                                                 </Text>
                                                 <Text ml="2" color="base.400" fontSize="14">
                                                     Recipes rated
@@ -573,7 +581,7 @@ function User() {
                         Daily Summary
                     </Heading>
                     <Box>
-                        {isLoadingNutrition ? (
+                    {isLoadingNutrition ? (
                             <div>Loading...</div>
                         ) : (
                             <NutrientChart {...dailyNutrientData} />
@@ -585,7 +593,7 @@ function User() {
                         Weekly Summary
                     </Heading>
                     <Box mb="2">
-                        {isLoadingWeekly ? (
+                    {isLoadingWeekly ? (
                             <div>Loading...</div>
                         ) : (
                         <WeeklySummary {...weeklySummaryData} />
@@ -599,7 +607,7 @@ function User() {
                     <Heading fontSize="22" fontWeight="bold" mb={1}>
                         Recent Meals
                     </Heading>
-                    <RecentMeals likedMeal={likedMeal} status={status} />
+                    <RecentMeals likedMeal={cookedMeal} status={status} />
                 </Box>
             </GridItem>
         </Grid>
