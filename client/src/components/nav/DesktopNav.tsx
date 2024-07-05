@@ -7,26 +7,25 @@ import {
     Circle,
     Flex,
     Icon,
+    IconButton,
     Image,
     Popover,
+    PopoverArrow,
+    PopoverBody,
+    PopoverCloseButton,
     PopoverContent,
     PopoverTrigger,
-    PopoverArrow,
-    PopoverCloseButton,
-    PopoverBody,
     Stack,
     Text,
-    IconButton,
     useColorModeValue,
     useTheme,
 } from '@chakra-ui/react';
 import { FaBell } from 'react-icons/fa';
-import React from 'react';
 import { Link } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import useNotification from '../../hooks/useNotification';
-import { NavItem } from './NavBar';
 import NotificationBell from '../notifications/NotificationBell';
+import { NavItem } from './NavBar';
 
 export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
     const theme = useTheme();
@@ -92,7 +91,7 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
                         </Stack>
                     </Flex>
                 </Flex>
-                <Stack flex={{ base: 2, md: 0 }} justify={'flex-end'} direction={'row'} spacing={2}>
+                <Stack flex={{ base: 2, md: 0 }} justify={'flex-end'} direction={'row'} spacing={2} alignItems="center">
                     {auth.currentUser.status !== 'authenticated' ? (
                         <>
                             <Button
@@ -147,7 +146,12 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
                                         )}
                                     </Box>
                                 </PopoverTrigger>
-                                <PopoverContent objectFit="cover" w="365px" flexDirection="column" justifyContent="center">
+                                <PopoverContent
+                                    objectFit="cover"
+                                    w="365px"
+                                    flexDirection="column"
+                                    justifyContent="center"
+                                >
                                     <PopoverArrow />
                                     <PopoverCloseButton />
                                     <PopoverBody>
