@@ -33,11 +33,6 @@ import { Chat, NameInput, VideoPlayer } from '../components/meeting';
 import { useRoom, useUser } from '../hooks';
 import { ws } from '../providers/RoomProvider';
 import { PeerState } from '../reducers/peerReducer';
-import axios from 'axios';
-
-const mockData: BackendData = {
-    // mockData content
-};
 
 const Room = () => {
     const { id } = useParams();
@@ -60,9 +55,9 @@ const Room = () => {
     } = useRoom();
     const { userName, userId } = useUser();
     const [focus, setFocus] = useState(screenSharingId);
-    const [direction, setDirection] = useState("");
+    const [direction, setDirection] = useState('');
     const [currSlide, setCurrSlide] = useState(0);
-    // const mealOptions = mealDatas.map((meal: BackendData) => ({ key: meal.title, label: meal.title }));
+    const mealOptions = mealDatas.map((meal: BackendData) => ({ key: meal.title, label: meal.title }));
 
     useEffect(() => {
         setFocus(screenSharingId);
@@ -121,7 +116,7 @@ const Room = () => {
     const sendFrameToServer = async () => {
         const canvas = canvasRef.current;
         const context = canvas?.getContext('2d');
-        if (context && myVideoRef.current) {
+        if (context && myVideoRef.current && canvas) {
             context.drawImage(myVideoRef.current, 0, 0, canvas.width, canvas.height);
             const dataUrl = canvas.toDataURL('image/jpeg');
             const blob = await (await fetch(dataUrl)).blob();
@@ -160,7 +155,7 @@ const Room = () => {
     }, []);
 
     return (
-        <Box height="100%" width="100%" position="relative">
+        <Box height="full" width="100%" position="relative">
             <HStack height="100%" width="100%" padding={'5px'}>
                 <VStack width="full" height="full" gap={2}>
                     <Grid height={'60vh'} width="100%" templateColumns={`repeat(5,1fr)`} templateRows={`repeat(2,1fr)`}>
@@ -211,8 +206,8 @@ const Room = () => {
                                     </Card>
                                 </GridItem>
                             ))}
-                        <GridItem gridColumn={5} gridRow={1} colSpan={1} rowSpan={2} padding={2}>
-                            {/* <VStack height="full" width="90%" justifyContent={'end'}>
+                        <GridItem colSpan={1} rowSpan={1} padding={2}>
+                            <VStack height="full" width="100%" justifyContent={'end'}>
                                 <ProgressiveImage
                                     src={
                                         mealDatas.find((meal: { title: string }) => meal.title === mealChoice)
@@ -249,12 +244,12 @@ const Room = () => {
                                         </SelectItem>
                                     )}
                                 </Select>
-                            </VStack> */}
+                            </VStack>
                         </GridItem>
                     </Grid>
-                    {mockData && Object.keys(mockData).length > 0 && (
-                        <HStack width={'80%'} height="40vh" flexShrink={0}>
-                            <ImageSlide backendData={mockData} />
+                    {currentMealInfo && Object.keys(currentMealInfo).length > 0 && (
+                        <HStack width={'100%'} height="40vh">
+                            <ImageSlide backendData={currentMealInfo} />
                         </HStack>
                     )}
                 </VStack>

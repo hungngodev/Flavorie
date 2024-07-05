@@ -2,6 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { PostRequestType } from '../../components/community/post/types';
 import customFetch from '../../utils/customFetch';
 import { getTemplateSlice, initialState } from '../utils';
+import { RootState } from '../../store/store';
 
 export const createPostRequest = createAsyncThunk('createPost/fetchPost', async (data: PostRequestType) => {
   const formData = new FormData();
@@ -19,5 +20,6 @@ export const createPostRequest = createAsyncThunk('createPost/fetchPost', async 
 });
 
 export const CreatePost = getTemplateSlice('createPost', initialState, createPostRequest);
+export const selectPostCreateStatus = (state: RootState) => (state.createPost as any).status;
 
 export default CreatePost.reducer;

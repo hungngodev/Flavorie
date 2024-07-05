@@ -73,6 +73,8 @@ const FullPost = () => {
             marginBlock={4}
             ref={animationRef}
             id="animation-container"
+            backgroundRepeat="no-repeat"
+            height="fit-content"
         ></Box>
     ) : status === 'error' || !post ? (
         <AspectRatio marginInline="auto" maxWidth={{ base: '100%', md: '90%', lg: '85%' }} ratio={4 / 3}>
@@ -100,9 +102,7 @@ const FullPost = () => {
 
                 <CardBody>
                     <VStack gap={2} alignItems="start" marginBottom={2}>
-                        <Heading size="lg" fontWeight={400}>
-                            {post.header}
-                        </Heading>
+                        <Heading size="lg">{post.header}</Heading>
                         <Text>{post.body}</Text>
                     </VStack>
                     {post.media && post.media.length > 0 && (

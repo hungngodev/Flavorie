@@ -6,10 +6,6 @@ import {
     IconButton,
     Input,
     InputGroup,
-    Menu,
-    MenuButton,
-    MenuItem,
-    MenuList,
     Modal,
     ModalBody,
     ModalCloseButton,
@@ -25,8 +21,8 @@ import {
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Camera, Ellipsis, Images, SmilePlus, X } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Camera, Images, SmilePlus, X } from 'lucide-react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import Webcam from 'react-webcam';
 import { useAuth } from '../../../../hooks/index';
@@ -46,19 +42,10 @@ interface PostFormExpandProps extends BasePostProps {
     onClose: () => void;
     preload?: PostEditObjectType | null;
     action: 'update' | 'create';
-    index: number;
     setLoading?: (arg?: any) => void;
 }
 
-const PostFormExpand: React.FC<PostFormExpandProps> = ({
-    isOpen,
-    onClose,
-    action,
-    preload,
-    index,
-    postId,
-    setLoading,
-}) => {
+const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, action, preload, postId, setLoading }) => {
     const theme = useTheme();
 
     const webCamRef = useRef<Webcam>(null);
@@ -74,10 +61,11 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({
     const dispatch = useDispatch<AppDispatch>();
 
     const submitPost: SubmitHandler<PostRequestType> = async (data) => {
+        console.log(data);
         try {
             switch (action) {
                 case 'create':
-                    await dispatch(createRequest(data))
+                    await dispatch(createPostRequest(data))
                         .then((res: any) => dispatch(addPosts({ post: parsePost([res.payload.post]) })))
                         .then(() => onClose());
                     break;
@@ -102,9 +90,10 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({
                         console.log(newFormData);
 
                         await dispatch(updateRequest({ postId, newFormData }))
-                            .then((res: any) =>
-                                dispatch(updatePost({ post: parsePost([res.payload.post]), postIndex: index })),
-                            )
+                            .then((res: any) => {
+                                console.log(res);
+                                dispatch(updatePost({ post: parsePost([res.payload.post]) }));
+                            })
                             .then(() => onClose());
                     }
                     break;
@@ -126,7 +115,6 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({
         formState: { errors },
         setValue,
         getValues,
-        watch,
     } = useForm<PostRequestType>({
         resolver: zodResolver(PostRequest),
         defaultValues: preload
@@ -147,10 +135,14 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({
         shouldFocusError: true,
     });
 
-    const { fields, append, remove } = useFieldArray({
+    const { append, remove } = useFieldArray({
         control,
         name: 'media',
     });
+
+    useEffect(() => {
+        console.log(errors);
+    }, [errors]);
 
     // add file to the useField and update the state for preview
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -235,7 +227,7 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({
                                             variant="ghost"
                                             fontSize="xl"
                                             fontWeight="semibold"
-                                            isInvalid={errors.header ? true : false}
+                                            isError={errors.header ? true : false}
                                             errorText={errors.header?.message}
                                         />
                                     </HStack>
@@ -250,7 +242,7 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({
                                         variant="ghost"
                                         placeholder="What is going on?"
                                         fieldProps={fieldProps}
-                                        isInvalid={errors.body ? true : false}
+                                        isError={errors.body ? true : false}
                                         errorText={errors.body?.message}
                                     />
                                 )}
@@ -258,6 +250,7 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({
                         </InputGroup>
 
                         <ImageSlider
+                            postId={postId}
                             action="display"
                             slides={previewMedia}
                             onClose={handleFileRemove}
@@ -273,25 +266,8 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({
                                     position="absolute"
                                     top={2}
                                     right={2}
+                                    backgroundColor="blackAlpha.100"
                                 />
-                                <Menu>
-                                    <MenuButton
-                                        position="absolute"
-                                        top={2}
-                                        left={2}
-                                        as={IconButton}
-                                        icon={<Ellipsis color="black" />}
-                                        size="md"
-                                        isRound={true}
-                                        color="white"
-                                        padding={2}
-                                    />
-                                    <MenuList>
-                                        <MenuItem>
-                                            <Button></Button>
-                                        </MenuItem>
-                                    </MenuList>
-                                </Menu>
 
                                 {useWebcam && <Webcam ref={webCamRef} audio={false} />}
                             </Box>
@@ -392,4 +368,4 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({
         </Modal>
     );
 };
-export default PostFormExpand;
+export default memo(PostFormExpand);

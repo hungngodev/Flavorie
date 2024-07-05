@@ -11,7 +11,7 @@
     "client": "cd client && npm run dev",
     "peerjs": "cd peerjs && npm run dev",
     "flask-server": "cd src && cd flask-server && python3 run.py",
-    "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\" \"npm run peerjs\" \"npm run flask-server\"       "
+    "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\" \"npm run flask-server\"   "
   },
   "keywords": [],
   "author": "",

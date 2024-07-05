@@ -5,7 +5,6 @@ import { Provider as ReduxProvider } from 'react-redux';
 import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
 import { HomeLayout, MeetingLayout, RoomLayout } from './layouts';
-import { loader as FeedLoader } from './pages/Feed';
 import { loader as PostLoader } from './pages/FullPost';
 import { loader as ingredientsLoader } from './pages/Ingredient';
 import { loader as mealsLoader } from './pages/Meal';
@@ -92,7 +91,6 @@ const router = createBrowserRouter([
                     {
                         index: true,
                         element: <Feed />,
-                        loader: FeedLoader(queryClient),
                     },
                     {
                         path: ':postId',
