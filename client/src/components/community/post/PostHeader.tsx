@@ -1,6 +1,7 @@
 import {
   AlertDialog,
   AlertDialogContent,
+  AlertDialogFooter,
   AlertDialogOverlay,
   Avatar,
   Button,
@@ -18,7 +19,7 @@ import {
   useDisclosure,
   useTheme,
 } from '@chakra-ui/react';
-import { Bookmark, Check, CircleAlert, Ellipsis, EyeOff, Pencil, Trash, Undo2 } from 'lucide-react';
+import { Bookmark, Check, CircleAlert, Ellipsis, Pencil, Trash, Undo2 } from 'lucide-react';
 import { memo, useEffect, useRef, useState } from 'react';
 import { FaUserCircle } from 'react-icons/fa';
 import PostFormExpand from './form/PostFormExpand';
@@ -29,7 +30,7 @@ import { toast } from 'react-toastify';
 import cooking from '../../../../public/images/let-him-cook.jpg';
 import useAuth from '../../../hooks/useAuth';
 import { deletePostRequest, selectDeleteStatus } from '../../../slices/posts/DeletePost';
-import { hideRequest, selectHideStatus } from '../../../slices/posts/HidePost';
+import { selectHideStatus } from '../../../slices/posts/HidePost';
 import { deletePost, selectPostById, updatePost } from '../../../slices/posts/PostState';
 import { saveRequest, selectSaveStatus } from '../../../slices/posts/SavePost';
 import { AppDispatch, RootState } from '../../../store/store';
@@ -117,7 +118,7 @@ const PostHeader = memo<PostHeaderProps>(({ postId, setLoading, postData, preloa
             {post?.author.name}
           </Text>
           <HStack color="blackAlpha.600">
-            <Text>{parseDate(post?.createdAt, post?.updatedAt)}</Text>
+            <Text>{parseDate(post?.createdAt)}</Text>
           </HStack>
         </VStack>
       </HStack>
@@ -150,14 +151,14 @@ const PostHeader = memo<PostHeaderProps>(({ postId, setLoading, postData, preloa
               onClick={() => {
                 dispatch(saveRequest({ postId })).then((res: any) => {
                   dispatch(updatePost({ post: parsePost([res.payload.post]) }));
-                  toast.success('Post saved !'), { position: 'top-right', icon: <Check /> };
                 });
+                toast.success('Post saved !'), { position: 'top-right', icon: <Check /> };
               }}
             >
               Save post
             </MenuItem>
             <MenuDivider />
-            <MenuItem
+            {/* <MenuItem
               icon={<EyeOff />}
               command="⌘H"
               onClick={() => {
@@ -167,16 +168,24 @@ const PostHeader = memo<PostHeaderProps>(({ postId, setLoading, postData, preloa
               }}
             >
               Hide
-            </MenuItem>
+            </MenuItem> */}
             <MenuItem icon={<CircleAlert />} command="⌘R" onClick={toastModal.onOpen}>
               <Button variant="ghost" paddingInline={0}>
                 Report
               </Button>
-              <AlertDialog isOpen={toastModal.isOpen} leastDestructiveRef={cancelRef} onClose={toastModal.onClose}>
+              <AlertDialog
+                isCentered
+                isOpen={toastModal.isOpen}
+                leastDestructiveRef={cancelRef}
+                onClose={toastModal.onClose}
+              >
                 {' '}
                 <AlertDialogOverlay>
                   <AlertDialogContent>
                     <Image src={cooking} />
+                    <AlertDialogFooter>
+                      <Text>{`We will let ${post.author.name} know that he is not cooking! Meanwhile here's a meme`}</Text>
+                    </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialogOverlay>
               </AlertDialog>

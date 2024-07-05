@@ -11,6 +11,7 @@ import {
   Button,
   HStack,
   IconButton,
+  Image,
   Menu,
   MenuButton,
   MenuItem,
@@ -18,9 +19,11 @@ import {
   Text,
   Textarea,
   VStack,
+  useDisclosure,
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { FaEllipsis } from 'react-icons/fa6';
+import cooking from '../../../../public/images/let-him-cook.jpg';
 import theme from '../../../style/theme';
 import ReviewForm from './ReviewForm';
 // import axios from "axios";
@@ -42,6 +45,7 @@ import { parseDate } from '../../../utils/index';
 import { ReviewCardProps } from './types';
 
 const ReviewCard: React.FC<ReviewCardProps> = ({ review, postId }) => {
+  console.log(postId);
   const auth = useAuth(); //
   const { id, status } = auth.currentUser;
   const [showReplies, setShowReplies] = useState(false);
@@ -57,6 +61,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, postId }) => {
   const deleteStatus = useSelector(selectDeleteReviewStatus);
   const createStatus = useSelector(selectCreateReviewStatus);
 
+  const alertModal = useDisclosure();
   const queryClient = useQueryClient();
 
   const dispatch = useDispatch<AppDispatch>();
@@ -119,7 +124,6 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, postId }) => {
     <Box
       ml="5"
       mt="2"
-      width="auto"
       maxWidth="100%"
       rounded="lg"
       backdropBlur={loading && 'blur(13px)'}
@@ -155,6 +159,11 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, postId }) => {
                     value={editedContent}
                     onKeyDown={(e) => handleKeyDownReply(e)}
                     onChange={(e) => setEditedContent(e.target.value)}
+                    sx={{
+                      '::file-selector-button': {
+                        display: 'none',
+                      },
+                    }}
                   />
 
                   <IconButton
@@ -192,7 +201,25 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, postId }) => {
                     Edit
                   </MenuItem>
                 )}
-                <MenuItem icon={<WarningTwoIcon />}>Report</MenuItem>
+                <MenuItem icon={<WarningTwoIcon />}>
+                  Report
+                  <AlertDialog
+                    isCentered
+                    isOpen={alertModal.isOpen}
+                    leastDestructiveRef={cancelRef}
+                    onClose={alertModal.onClose}
+                  >
+                    {' '}
+                    <AlertDialogOverlay>
+                      <AlertDialogContent>
+                        <Image src={cooking} />
+                        <AlertDialogFooter>
+                          <Text>{`We will let ${review.author.name} know that he is not cooking! Meanwhile here's a meme`}</Text>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialogOverlay>
+                  </AlertDialog>
+                </MenuItem>
                 {canEdit && status === 'authenticated' && (
                   <MenuItem icon={<DeleteIcon />} onClick={() => setAlertOpen(true)}>
                     Delete

@@ -13,15 +13,12 @@ import {
 import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
 import lottie from 'lottie-web';
 import { useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { Params, useLocation, useParams } from 'react-router-dom';
+import { Params, useParams } from 'react-router-dom';
 import errorIllustration from '../../public/images/404-error-removebg-preview.png';
 import dumbCatLoaderAnimation from '../assets/animations/dumb-cat-loader.json';
 import { ImageSlider, PostFooter, PostHeader } from '../components/community/post/index';
 import { PostObjectType, parsePost } from '../components/community/post/types';
-import { selectDeleteStatus } from '../slices/posts/DeletePost';
-import { selectLikeStatus } from '../slices/posts/LikePost';
-import { selectUpdateStatus } from '../slices/posts/UpdatePost';
+import { ReviewCard, ReviewForm } from '../components/community/review/index';
 import customFetch from '../utils/customFetch';
 
 const postQuery = (postId: string) => {
@@ -52,21 +49,12 @@ const FullPost = () => {
   const { postId } = useParams();
   const { data: queryData, status, fetchStatus } = useQuery<any>(postQuery(postId ?? ''));
 
-  const deleteStatus = useSelector(selectDeleteStatus);
-  const updateStatus = useSelector(selectUpdateStatus);
-  const likeStatus = useSelector(selectLikeStatus);
-
   useEffect(() => {
-    console.log(queryData);
     if (status === 'success') {
       setPost(parsePost([queryData?.post])[0]);
+      queryClient.invalidateQueries();
     }
   }, [queryData, status, fetchStatus]);
-
-  useEffect(() => {
-    setLoading(deleteStatus === 'loading' || updateStatus === 'loading' || likeStatus === 'loading');
-    queryClient.invalidateQueries();
-  }, [deleteStatus, updateStatus, likeStatus]);
 
   useEffect(() => {
     lottie.loadAnimation({
@@ -81,7 +69,7 @@ const FullPost = () => {
   return status === 'pending' ? (
     <Box
       marginInline="auto"
-      maxWidth={{ base: '80dvw', md: '70dvw', lg: '60dvw' }}
+      maxWidth={{ base: '70dvw', md: '60dvw', lg: '40dvw' }}
       marginBlock={4}
       ref={animationRef}
       id="animation-container"
@@ -91,30 +79,40 @@ const FullPost = () => {
       <Image src={errorIllustration} alt="error-image" />
     </AspectRatio>
   ) : (
-    <Card
-      height="auto"
-      position="relative"
-      backdropBlur={loading && 'blur(13px)'}
-      pointerEvents={loading ? 'none' : 'auto'}
-      opacity={loading ? 0.5 : 1}
-    >
-      <CardHeader paddingBottom={0}>
-        <PostHeader isFullPage={true} postId={postId ?? post.id ?? ''} postData={post} setLoading={setLoading} />
-      </CardHeader>
+    <VStack height="100%" justifyContent="space-between">
+      <Card
+        height="auto"
+        position="relative"
+        backdropBlur={loading && 'blur(13px)'}
+        pointerEvents={loading ? 'none' : 'auto'}
+        opacity={loading ? 0.5 : 1}
+        width="100%"
+        gap={4}
+      >
+        <CardHeader paddingBottom={0}>
+          <PostHeader isFullPage={true} postId={postId ?? post.id ?? ''} postData={post} setLoading={setLoading} />
+        </CardHeader>
 
-      <CardBody>
-        <VStack gap={2} alignItems="start" marginBottom={2}>
-          <Heading size="lg">{post.header}</Heading>
-          <Text>{post.body}</Text>
-        </VStack>
-        {post.media && post.media.length > 0 && (
-          <ImageSlider action="direct" slides={post.media} postId={postId ?? post.id ?? ''} />
-        )}
-      </CardBody>
-      <CardFooter>
-        <PostFooter postId={postId ?? post.id ?? ''} postData={post} />
-      </CardFooter>
-    </Card>
+        <CardBody>
+          <VStack gap={2} alignItems="start" marginBottom={2}>
+            <Heading size="lg">{post.header}</Heading>
+            <Text>{post.body}</Text>
+          </VStack>
+          {post.media && post.media.length > 0 && (
+            <ImageSlider action="direct" slides={post.media} postId={postId ?? post.id ?? ''} />
+          )}
+        </CardBody>
+        <CardFooter>
+          <PostFooter isFullPage={true} postId={postId ?? post.id ?? ''} postData={post} />
+        </CardFooter>
+      </Card>
+      <VStack flex={1} width="100%" height="100%" justifyContent="space-between">
+        <VStack gap={4} width="100%" alignItems="start" maxHeight="50dvh" overflow="auto">
+          {post?.reviews?.map((review) => <ReviewCard review={review} postId={postId ?? ''} />)}
+        </VStack>{' '}
+        <ReviewForm action="create" postId={postId ?? ''} parentReviewId={null} />{' '}
+      </VStack>
+    </VStack>
   );
 };
 export default FullPost;

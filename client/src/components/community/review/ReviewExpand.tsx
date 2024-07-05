@@ -81,7 +81,7 @@ const ReviewExpand: React.FC<ReviewExpandProps> = ({ onClose, isOpen, postId, re
       >
         <ModalHeader>{`${post?.author.name ?? postData?.author.name}'s reviews`}</ModalHeader>
         <ModalCloseButton />
-        <ModalBody overflow="auto">
+        <ModalBody overflowY="auto">
           <VStack gap={4} width="100%" alignItems="start">
             {reviews?.map((review) => <ReviewCard review={review} postId={postId} />)}
           </VStack>

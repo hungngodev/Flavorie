@@ -92,6 +92,11 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ postId, onSubmit, action, paren
                   borderColor={theme.colors.palette_indigo}
                   ref={textRef}
                   onKeyDown={handleKeyDown}
+                  sx={{
+                    '::file-selector-button': {
+                      display: 'none',
+                    },
+                  }}
                 />
                 {error && (
                   <Box color="red.500" mt={2}>

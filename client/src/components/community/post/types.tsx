@@ -114,33 +114,51 @@ export const PlaceHolderPost: PostObjectType = {
   reviews: [],
   location: '',
 };
+export const DisplayPost = z.object({
+  author: z.object({
+    id: z.string(),
+    name: z.string(),
+    avatar: z.string(),
+  }),
+  id: z.string(),
+  header: z.string(),
+  body: z.string(),
+});
+
+export type DisplayPostType = z.infer<typeof DisplayPost>;
 
 export const parsePost = (backEndPosts: PostResponseObjectType[]): PostObjectType[] => {
   if (!backEndPosts) return [];
 
-  return backEndPosts.map((post: PostResponseObjectType) => ({
-    id: post._id,
-    author: {
-      id: post.author._id,
-      name: post.author.name,
-      avatar: post.author.avatar,
-    },
-    header: post.header,
-    body: post.body,
-    media: post.media.map((media: MediaObjectType) => ({
-      type: media.type,
-      url: media.url,
-      metadata: media.metadata,
-      description: media.description ?? 'Image of post',
-    })),
-    hiddenTo: post.hiddenTo,
-    location: post.location,
-    privacy: post.privacy,
-    reviews: parseReviews(post.review),
-    reacts: post.react,
-    reactCount: post.reactCount,
-    reviewCount: post.reviewCount,
-    createdAt: post.createdAt,
-    updatedAt: post.updatedAt,
-  }));
+  return backEndPosts.map((post: PostResponseObjectType) => {
+    console.log(post);
+    return {
+      id: post._id,
+      author: {
+        id: post.author._id,
+        name: post.author.name,
+        avatar: post.author.avatar,
+      },
+      header: post.header,
+      body: post.body,
+      media:
+        post.media && post.media.length > 0
+          ? post.media.map((media: MediaObjectType) => ({
+              type: media.type,
+              url: media.url,
+              metadata: media.metadata,
+              description: media.description ?? 'Image of post',
+            }))
+          : [],
+      hiddenTo: post.hiddenTo,
+      location: post.location,
+      privacy: post.privacy,
+      reviews: post.review && post.review.length > 0 ? parseReviews(post.review) : [],
+      reacts: post.react,
+      reactCount: post.reactCount,
+      reviewCount: post.reviewCount,
+      createdAt: post.createdAt,
+      updatedAt: post.updatedAt,
+    };
+  });
 };
