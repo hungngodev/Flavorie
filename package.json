@@ -5,13 +5,13 @@
   "type": "module",
   "scripts": {
     "setup-project": "npm i && cd client && npm i",
-    "setup-production-app": "npm i && cd client && npm i && npm run build && cd src && cd scan-receipts && pip install -r requirements.txt",
+    "setup-production-app": "npm i && cd client && npm i && npm run build && cd src && cd flask-server && pip install -r requirements.txt",
     "build": "npx tsc",
     "server": "nodemon --watch 'src/**/*' -e ts --exec \"node --no-warnings --loader ts-node/esm ./src/index.ts\" ",
     "client": "cd client && npm run dev",
     "peerjs": "cd peerjs && npm run dev",
-    "scan-receipts": "cd src && cd scan-receipts && python3 run.py",
-    "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\" \"npm run peerjs\" \"npm run scan-receipts\"       "
+    "flask-server": "cd src && cd flask-server && python3 run.py",
+    "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\" \"npm run peerjs\" \"npm run flask-server\"       "
   },
   "keywords": [],
   "author": "",

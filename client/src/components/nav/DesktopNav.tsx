@@ -92,7 +92,7 @@ export const DesktopNav = ({ NavItems }: { NavItems: NavItem[] }) => {
                         </Stack>
                     </Flex>
                 </Flex>
-                <Stack flex={{ base: 2, md: 0 }} justify={'flex-end'} direction={'row'} spacing={2}>
+                <Stack flex={{ base: 2, md: 0 }} justify={'flex-end'} direction={'row'} spacing={2} alignItems="center">
                     {auth.currentUser.status !== 'authenticated' ? (
                         <>
                             <Button

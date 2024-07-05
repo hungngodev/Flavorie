@@ -1,4 +1,6 @@
-export {VideoPlayer} from './VideoPlayer';
+// import VideoPlayer from './VideoPlayer';
+
+export {default as VideoPlayer} from './VideoPlayer';
 export {default as Join} from './Join';
 export {Chat} from './chat/Chat';
 export {ShareScreenButton} from './ShareScreeenButton';

@@ -2,34 +2,38 @@ import { Router } from "express";
 import {
   createReview,
   deleteReview,
+  getReviews,
   updateReview,
 } from "../controllers/reviewController.ts";
 import {
   authenticateUser,
   authorizeReviewOwner,
+  checkUser,
 } from "../middleware/authMiddleware.ts";
 import { validateReview } from "../middleware/validateMiddleware.ts";
-import Review from "../models/Review.ts";
+import { default as Review } from "../models/Review.ts";
 import { catchAsync } from "../utils/catchAsync.ts";
 
 const router = Router();
 
+router.get("/review/:postId", checkUser, catchAsync(getReviews));
+
 router.post(
-  "/:postId",
-  authenticateUser,
-  validateReview,
+  "/review/:postId",
+  // authenticateUser,
+  checkUser,
   catchAsync(createReview),
 );
 router.put(
-  "/:postId/:reviewId",
-  authenticateUser,
+  "/review/:postId/:reviewId",
+  checkUser,
   authorizeReviewOwner,
-  validateReview,
+  // validateReview,
   catchAsync(updateReview),
 );
 router.delete(
-  "/:postId/:reviewId",
-  authenticateUser,
+  "/review/:postId/:reviewId",
+  checkUser,
   authorizeReviewOwner,
   catchAsync(deleteReview),
 );

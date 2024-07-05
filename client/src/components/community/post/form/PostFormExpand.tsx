@@ -126,6 +126,7 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({
         formState: { errors },
         setValue,
         getValues,
+        watch,
     } = useForm<PostRequestType>({
         resolver: zodResolver(PostRequest),
         defaultValues: preload
