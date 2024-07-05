@@ -114,7 +114,7 @@ export const searchIngredients = async (req: Request, res: Response) => {
     return res
       .json({
         result,
-        numberOfIngredients: randomIngredients.length + 7,
+        numberOfIngredients: randomIngredients.length,
         ingredients: randomIngredients,
       })
       .status(StatusCodes.OK);

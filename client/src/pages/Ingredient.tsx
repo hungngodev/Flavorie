@@ -407,7 +407,7 @@ export default function Ingredient() {
                                                 )}
                                                 variant="bordered"
                                                 label="Select a meal"
-                                                className="w-full"
+                                                className="w-4/5"
                                                 selectedKeys={[mealChoice]}
                                                 onChange={(e) => setMealChoice(parseInt(e.target.value))}
                                             >
@@ -433,13 +433,7 @@ export default function Ingredient() {
                                             </HStack>
                                         </VStack>
                                     )}
-                                    <Heading
-                                        mt="4"
-                                        mb="4"
-                                        fontSize="30"
-                                        fontWeight="bold"
-                                        color={theme.colors.palette_purple}
-                                    >
+                                    <Heading mb="4" fontSize="30" fontWeight="bold" color={theme.colors.palette_purple}>
                                         Try out some ingredients
                                     </Heading>
                                     <Grid
@@ -451,6 +445,7 @@ export default function Ingredient() {
                                                 ? 'repeat(4,1fr)'
                                                 : 'repeat(3,1fr)'
                                         }
+                                        mb="2"
                                     >
                                         {searchData?.data.ingredients
                                             .slice((page - 1) * size, page * size)
@@ -559,7 +554,7 @@ export default function Ingredient() {
                                 style={{
                                     scale: 1 - idx * 0.05,
                                     left: hovering ? idx * -50 : 0,
-                                    zIndex: -idx + 100,
+                                    zIndex: -idx,
                                     opacity: 1 - idx * 0.3,
                                 }}
                                 animate={{

@@ -2,7 +2,7 @@ import { DeleteIcon } from '@chakra-ui/icons';
 import { Box, Button, Heading, HStack, IconButton, Link, Text, VStack } from '@chakra-ui/react';
 import { formatDistanceToNow } from 'date-fns';
 import { useEffect, useState } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Notification } from '../../contexts/NotificationContext';
 import useAuth from '../../hooks/useAuth';
 import useNotification from '../../hooks/useNotification';
@@ -22,7 +22,11 @@ const NotificationBell = () => {
             markAsRead(notificationId);
         }
         const data = await fetchNotificationById(notificationId);
-        if (data) {
+        if (data && data.message?.data && data.message.notificationType === 'instacart') {
+            console.log('data', data.message.data);
+            window.open(data.message.data, '_blank');
+        }
+        if (data && data.message?.data && data.message.notificationType !== 'instacart') {
             navigate(`/receipts/${notificationId}`);
         }
     };
@@ -58,11 +62,11 @@ const NotificationBell = () => {
                             textAlign="left"
                             justifyContent="space-between"
                             alignItems="center"
-                            _hover={{ bg: "base.50" }}
+                            _hover={{ bg: 'base.50' }}
                         >
                             <HStack textAlign="left" w="100%" justify="space-between">
                                 <Box flex="1">
-                                    <Link as={RouterLink} ml="0" onClick={() => handleClick(noti)}>
+                                    <Link ml="0" onClick={() => handleClick(noti)}>
                                         <Text color="black" fontSize="14" fontWeight={noti.status ? 'normal' : 'bold'}>
                                             {noti.message.title}
                                         </Text>
