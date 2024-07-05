@@ -16,6 +16,7 @@ export const EndPoint = {
   ANALYZE_INSTRUCTIONS: "/recipes/analyzeInstructions",
   COMPLEX_SEARCH: "/recipes/complexSearch",
   AUTO_COMPLETE: "/recipes/autocomplete",
+  GET_NUTRITION: "/recipes/guessNutrition"
 };
 
 const baseURL = axios.create({
@@ -229,6 +230,10 @@ export const analyzeInstruction = async (instructions: string) => {
     instructions: instructions,
   });
 };
+
+export const getNutritionAPI = async (query: string) => {
+  return await baseCall(EndPoint.GET_NUTRITION, { title: query });
+}
 interface DietDefinition {
   name: string;
   description: string;

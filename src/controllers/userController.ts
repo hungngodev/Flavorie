@@ -8,10 +8,12 @@ import { getMealByIdAPI } from "../services/spoonacular/spoonacularServices.ts";
 import {
   changeItemTypes,
   getUserItems,
+  getUserItemsTimed,
   modifyOrdinaryInfo,
   modifyUserItems,
   toggleLikedItem,
 } from "../services/userServices.ts";
+import IngredientModel from "../models/IngredientModel.ts";
 
 export const updateUser = async (req: Request, res: Response) => {
   const updatedUser = await UserModel.findById(req.user.userId);
@@ -74,7 +76,7 @@ export const updateLeftOver = async (req: Request, res: Response) => {
 
 export const getLikedMeals = async (req: Request, res: Response) => {
   const likedMeals = await getUserItems(req.user.userId, "likedMeal");
-  res.status(StatusCodes.OK).send({ likedMeals });
+  res.status(StatusCodes.OK).send({ likedMeals});
 };
 
 export const updateLikedMeals = async (req: Request, res: Response) => {
@@ -120,33 +122,98 @@ export const updateCookedMeals = async (req: Request, res: Response) => {
   res.status(StatusCodes.OK).send({ msg: "update cookedMeal" });
 };
 
-export const getNutrition = async (req: Request, res: Response) => {
-  const nutrientData = {
-    protein: "20",
-    carb: "30",
-    fat: "10",
-    vitamins: "5",
-    minerals: "5",
-  };
-  const weeklySummaryData = {
-    weeklyProtein: 70,
-    weeklyCarb: 50,
-    weeklyFat: 30,
-  };
 
-  const weeklyCaloriesData = [
-    { date: "Mon", weeklyCalories: "200" },
-    { date: "Tue", weeklyCalories: "250" },
-    { date: "Wed", weeklyCalories: "300" },
-    { date: "Thu", weeklyCalories: "280" },
-    { date: "Fri", weeklyCalories: "350" },
-    { date: "Sat", weeklyCalories: "400" },
-    { date: "Sun", weeklyCalories: "370" },
-  ];
+// export const getNutrition = async (req: Request, res: Response) => {
+  // const nutrientData = {
+  //   protein: "20",
+  //   carb: "30",
+  //   fat: "10",
+  //   vitamins: "5",
+  //   minerals: "5",
+  // };
+  // const weeklySummaryData = {
+  //   weeklyProtein: 70,
+  //   weeklyCarb: 50,
+  //   weeklyFat: 30,
+  // };
+
+  // const weeklyCaloriesData = [
+  //   { date: "Mon", weeklyCalories: "200" },
+  //   { date: "Tue", weeklyCalories: "250" },
+  //   { date: "Wed", weeklyCalories: "300" },
+  //   { date: "Thu", weeklyCalories: "280" },
+  //   { date: "Fri", weeklyCalories: "350" },
+  //   { date: "Sat", weeklyCalories: "400" },
+  //   { date: "Sun", weeklyCalories: "370" },
+  // ];
+  // const likedMeal = await getUserItems(req.user.userId, "likedMeal");
+  // const nutrientData = {
+  //   protein: 0,
+  //   carb: 0,
+  //   fat: 0,
+  //   vitamins: 0,
+  //   minerals: 0,
+  // };
   // di qua tat ca cac likedMeal getUserItems(userId, "likedMeal")
   // tinh toan ra duoc nutrientData
   // likedMeal co mot field la allIngredients
   // moi ingredient co mot field la nutrient
   // moi nutrient co mot field la amount
   // moi nutrient co mot field la unit
-};
+// };
+
+export const getNutrition = async (req: Request, res: Response) => {
+  const range = req.query.range as string
+  const nutritionInfo = {
+    protein: 0,
+    carb: 0,
+    fat: 0,
+    vitamins: 0,
+    minerals: 0,
+  };
+  
+  const likedMeal = await getUserItemsTimed(req.user.userId, "likedMeal", range);
+  const datalikedmeal = JSON.parse(JSON.stringify(likedMeal));
+  for (const meal of datalikedmeal){
+    for (const ingredientId of meal?.likedMeal?.allIngredients){
+      const ingredientDocument = await IngredientModel.findById(ingredientId);
+      if (!ingredientDocument){
+        console.log("Cannot find ingredients")
+        throw new NotFoundError("Ingredient not found");
+      } else {
+        const dataIngredient = JSON.parse(JSON.stringify(ingredientDocument));
+        const nutritionData = dataIngredient?.nutrition.nutrients
+        if (!nutritionData){
+          console.log("Nutrition data is undefined")
+          throw new NotFoundError("Nutrition data not found");
+        }
+        for (const data of nutritionData){
+          if (data.name.toLowerCase().includes("protein")){
+            nutritionInfo.protein += data.amount;
+          }
+          if (data.name.toLowerCase().includes("fat")){
+            nutritionInfo.fat += data.amount;
+          }
+          if (data.name.toLowerCase().includes("vitamin")){
+            nutritionInfo.vitamins += data.amount;
+          }
+          if (data.name.toLowerCase().includes("carb")){
+            nutritionInfo.carb += data.amount;
+          }
+          else {
+            nutritionInfo.minerals += data.amount
+          }
+        }
+      }
+  }
+}
+return res.status(StatusCodes.OK).send({
+  nutritionInfo: {
+    protein: Math.round(nutritionInfo.protein),
+    carb: Math.round(nutritionInfo.carb),
+    fat: Math.round(nutritionInfo.fat),
+    vitamins: Math.round(nutritionInfo.vitamins / 1000),
+    minerals: Math.round(nutritionInfo.minerals / 1000),
+  }
+});
+}

@@ -95,3 +95,6 @@ export const getSuggestionIngredients = async (req: Request, res: Response) => {
       .json(new ServerError("Failed to search ingredients"));
   }
 };
+// export const getIndividualIngredientInfo = async (req: Request, res: Response) => {
+
+// }

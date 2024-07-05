@@ -72,6 +72,27 @@ export async function getUserItems(userId: string, type: string) {
   return items;
 }
 
+export async function getUserItemsTimed(userId: string, type: string, range: string){
+  const startDay = new Date()
+  const endDay = new Date()
+  if (range === 'daily'){
+    startDay.setHours(0, 0, 0, 0)
+    endDay.setHours(23, 59, 59, 999)
+  }
+  else if (range === 'weekly'){
+    startDay.setDate(startDay.getDate() - startDay.getDay())
+    startDay.setHours(0, 0, 0, 0)
+
+    endDay.setDate(endDay.getDate() + (6 - endDay.getDay()))
+    endDay.setHours(23, 59, 59, 999)
+  }
+  const items = await ItemModel.find({userId: userId, type: type, updatedAt: {
+    $gte: startDay,
+    $lt: endDay
+  }}).populate(type).populate("userId")
+  return items
+}
+
 export async function modifyUserItems(
   userId: string,
   items: Item[],

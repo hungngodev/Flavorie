@@ -44,11 +44,11 @@ interface RecentMeals {
 
 // polar area chart
 export type NutrientData = {
-    protein: string;
-    carb: string;
-    fat: string;
-    vitamins: string;
-    minerals: string;
+    protein: number;
+    carb: number;
+    fat: number;
+    vitamins: number;
+    minerals: number;
 };
 
 const generateChartData = ({ protein, carb, fat, vitamins, minerals }: NutrientData) => {
@@ -300,6 +300,19 @@ const likedMealsQuery = {
     },
 };
 
+const getNutritionQuery = (range: string) => ({
+    queryKey: ['nutrition', range],
+    queryFn: async () => {
+        const response = await customFetch('/user/nutrition', {
+            params: {
+                range: range
+            }
+        })
+        return response.data.nutritionInfo;
+    },
+});
+
+
 const userQuery = {
     queryKey: ['user'],
     queryFn: async () => {
@@ -309,19 +322,20 @@ const userQuery = {
 };
 
 function User() {
+    
     // const nutrientData: NutrientData = { protein, carb, fat, vitamins, minerals };
-    const nutrientData = {
-        protein: '20',
-        carb: '30',
-        fat: '10',
-        vitamins: '5',
-        minerals: '5',
-    };
-    const weeklySummaryData = {
-        weeklyProtein: 70,
-        weeklyCarb: 50,
-        weeklyFat: 30,
-    };
+    // const nutrientData = {
+    //     protein: '20',
+    //     carb: '30',
+    //     fat: '10',
+    //     vitamins: '5',
+    //     minerals: '5',
+    // };
+    // const weeklySummaryData = {
+    //     weeklyProtein: 70,
+    //     weeklyCarb: 50,
+    //     weeklyFat: 30,
+    // };
 
     const weeklyCaloriesData = [
         { date: 'Mon', weeklyCalories: '200' },
@@ -336,10 +350,16 @@ function User() {
     const badgesEarned = 2;
     const badgeLevel = getBadgeLevel(badgesEarned * 100);
     const badgeColor = getBadgeColor(badgeLevel);
-    const { data: cookedMeal, status } = useQuery(likedMealsQuery);
+    // const { data: cookedMeal, status } = useQuery(likedMealsQuery);
     const { data: likedMeal, status: likedMealStatus } = useQuery(likedMealsQuery);
     const { data: userData, status: userStatus } = useQuery(userQuery);
-
+    const {data: dailyNutrientData, isLoading: isLoadingNutrition} = useQuery(getNutritionQuery("daily"))
+    const {data: weeklyNutrientData, isLoading: isLoadingWeekly} = useQuery(getNutritionQuery("weekly"))
+    const weeklySummaryData = weeklyNutrientData ? {
+        weeklyProtein: weeklyNutrientData.protein,
+        weeklyCarb: weeklyNutrientData.carb,
+        weeklyFat: weeklyNutrientData.fat
+    } : null
     return (
         <Grid templateRows="repeat(3, 2fr)" templateColumns="repeat(10, 3fr)" mt="3">
             <GridItem rowSpan={3} colSpan={3} objectFit="cover" ml="4" mr="6">
@@ -379,12 +399,13 @@ function User() {
                             </Thead>
                             <Tbody>
                                 {status !== 'pending' ? (
-                                    cookedMeal ? (
-                                        cookedMeal.slice(0, 3).map((meal: any) => (
-                                            <Tr key={meal.likedMeal.id}>
+                                    likedMeal ? (          
+                                        likedMeal?.length > 0 &&                                                                    
+                                        likedMeal?.map((meal: any) => (
+                                            <Tr key={meal?.likedMeal?.id}>
                                                 <Td>
                                                     {
-                                                        meal.likedMeal.dishTypes[
+                                                        meal?.likedMeal?.dishTypes[
                                                             Math.round(
                                                                 Math.random() * meal.likedMeal.dishTypes.length,
                                                             ) - 1
@@ -395,9 +416,9 @@ function User() {
                                                 <Td>{meal.protein}</Td>
                                                 <Td>{meal.fat}</Td>
                                                 <Td>{meal.calories}</Td>
-                                                <Td>
-                                                    {/* <Box bg="lightgray" width={`${meal.caloriesOfGoal}%`} height="10px" />
-                          {meal.caloriesOfGoal} */}
+                                                <Td> 
+                                                    <Box bg="lightgray" width={`${meal.caloriesOfGoal}%`} height="10px" />
+                          {meal.caloriesOfGoal} 
                                                 </Td>
                                             </Tr>
                                         ))
@@ -409,7 +430,7 @@ function User() {
                                 )}
                             </Tbody>
                         </Table>
-                    </Box>
+                    </Box> 
                     <Box mt="3" mb="2">
                         <Heading mb="2" fontSize="22" fontWeight="bold">
                             Statistics
@@ -471,7 +492,7 @@ function User() {
                                             <FaHeart size={24} color="pink" />
                                             <Box mr="2" mb="1">
                                                 <Text ml="2" fontSize="lg" fontWeight="bold">
-                                                    {likedMealStatus === 'pending' ? 0 : likedMeal.length}
+                                                    {likedMealStatus === 'pending' ? 0 : likedMeal?.length}
                                                 </Text>
                                                 <Text ml="2" color="base.400" fontSize="14">
                                                     Recipes rated
@@ -552,7 +573,11 @@ function User() {
                         Daily Summary
                     </Heading>
                     <Box>
-                        <NutrientChart {...nutrientData} />
+                        {isLoadingNutrition ? (
+                            <div>Loading...</div>
+                        ) : (
+                            <NutrientChart {...dailyNutrientData} />
+                        )}
                     </Box>
                 </Box>
                 <Box mt="4">
@@ -560,7 +585,11 @@ function User() {
                         Weekly Summary
                     </Heading>
                     <Box mb="2">
+                        {isLoadingWeekly ? (
+                            <div>Loading...</div>
+                        ) : (
                         <WeeklySummary {...weeklySummaryData} />
+                        )}
                         <WeeklyCaloriesChart data={weeklyCaloriesData} />
                     </Box>
                 </Box>
@@ -570,7 +599,7 @@ function User() {
                     <Heading fontSize="22" fontWeight="bold" mb={1}>
                         Recent Meals
                     </Heading>
-                    <RecentMeals likedMeal={cookedMeal} status={status} />
+                    <RecentMeals likedMeal={likedMeal} status={status} />
                 </Box>
             </GridItem>
         </Grid>
