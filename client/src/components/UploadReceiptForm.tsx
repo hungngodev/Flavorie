@@ -3,27 +3,6 @@ import { motion, useAnimation } from 'framer-motion';
 import React from 'react';
 import theme from '../style/theme';
 
-const third = {
-    rest: {
-        scale: 1.2,
-        filter: 'grayscale(80%)',
-        transition: {
-            duration: 0.5,
-            type: 'tween',
-            ease: 'easeIn',
-        },
-    },
-    hover: {
-        scale: 1.4,
-        filter: 'grayscale(0%)',
-        transition: {
-            duration: 0.4,
-            type: 'tween',
-            ease: 'easeOut',
-        },
-    },
-};
-
 const PreviewImage = forwardRef<BoxProps, typeof Box>((props, ref) => {
     return (
         <Box

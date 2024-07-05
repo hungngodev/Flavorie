@@ -1,12 +1,8 @@
 {
-  "include": ["src/**/*",
-  "peerjs/**/*"
-],
+  "include": ["src/**/*", "peerjs/**/*", "src/index.ts"],
   "compilerOptions": {
     "resolveJsonModule": true,
-    "lib": [
-      "es2022"
-    ],
+    "lib": ["es2022"],
     "module": "es2022",
     "target": "es2022",
     "strict": true,

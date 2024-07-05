@@ -57,7 +57,7 @@ function Meal() {
             <Specialty />
             <SearchBar autoCompleteLink="/meal/autocomplete" />
             {status === 'pending' ? (
-                <Flex justifyContent={'center'} alignItems={'center'} height={'100%'}>
+                <Flex mt="5" justifyContent={'center'} alignItems={'center'} height={'100%'}>
                     <Lottie animationData={Ingredient} loop={true} style={{ height: 600 }} />,
                 </Flex>
             ) : (

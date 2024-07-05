@@ -1,8 +1,8 @@
 import { Server, Socket } from "socket.io";
+import { gestureHandler } from "../handler/gestureHandler.ts";
 import { notificationHandler } from "../handler/notificationHandler.ts";
 import { roomHandler } from "../handler/roomHandler.ts";
 import { verifyJWT } from "../utils/tokenUtils.ts";
-import { gestureHandler } from "../handler/gestureHandler.ts";
 
 const authenticateSocketIO = (socket: Socket, next: Function) => {
   try {
@@ -27,7 +27,7 @@ const authenticateSocketIO = (socket: Socket, next: Function) => {
 const setUpSocketIO = (server: any) => {
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:5173",
+      origin: "*",
       credentials: true,
       methods: ["GET", "POST"],
     },
@@ -36,9 +36,10 @@ const setUpSocketIO = (server: any) => {
 
   io.use(authenticateSocketIO);
   io.on("connection", (socket: Socket) => {
+    console.log("connected");
     roomHandler(socket);
     notificationHandler(socket);
-    gestureHandler(socket)
+    gestureHandler(socket);
   });
 
   return io;

@@ -163,7 +163,7 @@ function ImageSlide({ backendData, currSlideIndex }: ImageSlideProps) {
                 ingredients: [],
                 equipment: [],
             },
-            ...instruction.steps.map((step, stepIndex) => ({
+            ...instruction.steps.map((step) => ({
                 type: 'detail' as const,
                 title: '',
                 description: step.step,

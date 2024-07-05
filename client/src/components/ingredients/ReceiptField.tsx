@@ -45,26 +45,26 @@ export const loader =
     };
 
 const menuStyles: ChakraStylesConfig = {
-    container: (baseStyles, state) => ({
+    container: (baseStyles) => ({
         ...baseStyles,
         width: '100%',
         border: 'none',
     }),
-    control: (baseStyles, state) => ({
+    control: (baseStyles) => ({
         ...baseStyles,
         border: 'none',
     }),
-    indicatorsContainer: (baseStyles, state) => ({
+    indicatorsContainer: () => ({
         backgroundColor: 'transparent',
         background: 'transparent',
     }),
-    indicatorSeparator: (baseStyles, state) => ({
+    indicatorSeparator: () => ({
         backgroundColor: 'gray.600',
     }),
-    dropdownIndicator: (baseStyles, state) => ({
+    dropdownIndicator: () => ({
         backgroundColor: 'transparent',
     }),
-    valueContainer: (baseStyles, state) => ({
+    valueContainer: (baseStyles) => ({
         ...baseStyles,
         border: 'none',
         paddingInline: '0',
@@ -207,7 +207,7 @@ function ReceiptField<T extends ZodType<any, any, any>>({
                                     update(index, fields, { name: e.target.value });
                                     updateReceipt(e.target.value);
                                 }}
-                                onBlur={(e) => {
+                                onBlur={() => {
                                     toggleChange();
                                 }}
                                 control={

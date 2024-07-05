@@ -35,8 +35,6 @@ import { PeerState } from '../reducers/peerReducer';
 import socket from '../socket/socketio';
 
 export const SlideContext = createContext({
-    currSlide: 0,
-    setCurrSlide: (slide: number) => {},
     direction: '',
 });
 
@@ -62,7 +60,7 @@ const Room = () => {
     const { userName, userId } = useUser();
     const [focus, setFocus] = useState(screenSharingId);
     const [direction, setDirection] = useState('');
-    const [currSlide, setCurrSlide] = useState(0);
+
     const mealOptions = mealDatas.map((meal: BackendData) => ({ key: meal.title, label: meal.title }));
 
     useEffect(() => {
@@ -101,7 +99,7 @@ const Room = () => {
         if (myVideoRef.current && stream) {
             myVideoRef.current.srcObject = stream;
         }
-    }, [stream]);
+    }, [stream, focus]);
 
     useEffect(() => {
         socket?.on('receiveAction', (action) => {
@@ -145,7 +143,7 @@ const Room = () => {
     }, [direction]);
 
     return (
-        <SlideContext.Provider value={{ currSlide, setCurrSlide, direction }}>
+        <SlideContext.Provider value={{ direction }}>
             <Box height="full" width="100%" position="relative">
                 <HStack height="100%" width="100%" padding={'5px'}>
                     <VStack width="full" height="full" gap={2}>
@@ -170,7 +168,7 @@ const Room = () => {
                             )}
 
                             {focus !== userId && (
-                                <GridItem rowSpan={1} colSpan={1} padding={'8px'} onClick={() => setFocus(userId)}>
+                                <GridItem rowSpan={1} colSpan={1} padding={'8px'}>
                                     <Card
                                         width={'full'}
                                         height="full"
@@ -189,6 +187,7 @@ const Room = () => {
                                                     height: '90%',
                                                     objectFit: 'cover',
                                                 }}
+                                                onClick={() => setFocus(userId)}
                                             />
                                             <NameInput />
                                             <canvas
@@ -291,9 +290,9 @@ const Room = () => {
                     justifyContent="center"
                     alignItems="center"
                     position="absolute"
-                    bottom={0}
-                    zIndex={1000}
-                    left="50%"
+                    top={0}
+                    zIndex={2000}
+                    right={0}
                     transform={'translateX(-50%)'}
                 >
                     <Button

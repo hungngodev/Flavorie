@@ -9,6 +9,11 @@ import {
     NumberInput,
     NumberInputField,
     VStack,
+    Button,
+    Menu,
+    MenuButton,
+    MenuList,
+    MenuItem,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import Lottie, { LottieRefCurrentProps } from 'lottie-react';
@@ -16,6 +21,7 @@ import { RefObject, useEffect } from 'react';
 import { Control, Controller, FieldArrayWithId } from 'react-hook-form';
 import { Cart } from '../../assets/animations';
 import { CartData } from '../../pages/Ingredient';
+import { ChevronDownIcon } from '@chakra-ui/icons';
 import theme from '../../style/theme';
 
 type CartProps = {
@@ -33,6 +39,12 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
     useEffect(() => {
         console.log('fields', fields);
     }, [fields]);
+
+    const handleMenuItemClick = (action: string) => {
+        onSubmit(action);
+        lottieCartRef.current?.playSegments([0, 135]);
+    };
+
     return (
         <Flex
             marginTop={'4vh'}
@@ -48,53 +60,31 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
             bg={'#fef9ff'}
         >
             <HStack>
-                <VStack>
-                    <Lottie
-                        animationData={Cart}
-                        style={{ height: 100 }}
-                        loop={false}
-                        autoPlay={false}
-                        lottieRef={lottieCartRef}
-                    />
-                    <button
-                        onClick={() => {
-                            onSubmit('add');
-                            // socket.emit('sendToInstacart', fields);
-                            lottieCartRef.current?.playSegments([0, 135]);
-                        }}
-                        className=" rounded-full bg-indigo-500 px-5 py-3 text-white"
+                <Lottie
+                    animationData={Cart}
+                    style={{ height: 100 }}
+                    loop={false}
+                    autoPlay={false}
+                    lottieRef={lottieCartRef}
+                />
+                <Menu>
+                    <MenuButton
+                        as={Button}
+                        rightIcon={<ChevronDownIcon />}
+                        color="white"
+                        bg={theme.colors.palette_purple}    
                     >
-                        Save it
-                    </button>
-                    <button
-                        onClick={() => {
-                            onSubmit('transfer');
-                            // socket.emit('sendToInstacart', fields);
-                            lottieCartRef.current?.playSegments([0, 135]);
-                        }}
-                        className=" rounded-full bg-indigo-500 px-5 py-3 text-white"
-                    >
-                        Transfer to Fridge
-                    </button>
-                    <button
-                        onClick={() => {
-                            onSubmit('send');
-                            lottieCartRef.current?.playSegments([0, 135]);
-                        }}
-                        className=" rounded-full bg-indigo-500 px-5 py-3 text-white"
-                    >
-                        Send To Instacart
-                    </button>
-                    <button
-                        onClick={() => {
-                            onSubmit('deleteAll');
-                            lottieCartRef.current?.playSegments([0, 135]);
-                        }}
-                        className=" rounded-full bg-indigo-500 px-5 py-3 text-white"
-                    >
-                        Delete ALL
-                    </button>
-                </VStack>
+                        Actions
+                    </MenuButton>
+                    <MenuList>
+                        <MenuItem onClick={() => handleMenuItemClick('add')}>Save it</MenuItem>
+                        <MenuItem onClick={() => handleMenuItemClick('transfer')}>
+                            Transfer to fridge
+                        </MenuItem>
+                        <MenuItem onClick={() => handleMenuItemClick('send')}>Send to Instacart</MenuItem>
+                        <MenuItem onClick={() => handleMenuItemClick('deleteAll')}>Delete all</MenuItem>
+                    </MenuList>
+                </Menu>
             </HStack>
 
             <form

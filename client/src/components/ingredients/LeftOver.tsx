@@ -2,6 +2,7 @@ import { DeleteIcon } from '@chakra-ui/icons';
 import {
     Flex,
     HStack,
+    Button, 
     IconButton,
     Image,
     NumberDecrementStepper,
@@ -40,16 +41,20 @@ export default function LeftOver({ height, removeItem, onSubmit, fields, control
             bg={'#fef9ff'}
             borderColor={theme.colors.palette_purple}
         >
-            <HStack>
-                <button
+            <HStack mt="8">
+                <Button
                     onClick={(e) => {
                         e.preventDefault();
                         onSubmit();
                     }}
-                    className=" rounded-full bg-indigo-500 p-3 text-white"
+                    rounded="md"
+                    
+                    px={3}
+                    py={2}
+                    color="white"
                 >
                     Save
-                </button>
+                </Button>
             </HStack>
 
             <form

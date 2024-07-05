@@ -1,6 +1,5 @@
-// import Peer from 'peerjs';
-import { useQuery } from '@tanstack/react-query';
 import Peer from 'peerjs';
+import { useQuery } from '@tanstack/react-query';
 import { useEffect, useReducer, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BackendData } from '../components/meals/ImageSlide';

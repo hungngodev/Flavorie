@@ -76,3 +76,9 @@ body {
         @apply opacity-100;
     }
 }
+.trapezoid {
+    /* z-index:50;
+    color:"red";
+    height: 100%;
+    width: 100%; */
+}

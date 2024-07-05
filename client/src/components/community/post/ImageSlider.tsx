@@ -14,7 +14,7 @@ interface ImageSliderProps extends BasePostProps, StackProps {
     children?: React.ReactNode;
 }
 
-const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, onClose, postId, action, postData, ...props }) => {
+const ImageSlider: React.FC<ImageSliderProps> = ({ slides, onClose, postId, action, postData }) => {
     const navigate = useNavigate();
     const [imageSlides, setImageSlides] = useState<MediaObjectType[]>(slides);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -162,7 +162,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, onClose, po
                 )}
                 {onClose && (
                     <Button
-                        onClick={(e) => {
+                        onClick={() => {
                             onClose(currentIndex);
                             setCurrentIndex((cur) => Math.max(cur - 1, 0));
                         }}

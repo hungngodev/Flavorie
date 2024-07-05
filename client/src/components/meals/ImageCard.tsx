@@ -63,8 +63,8 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
                     objectFit="cover"
                 />
                 <Stack mt="5" spacing="1">
-                    <Box height={'58px'}>
-                        <Heading size="lg" color="gray.600" fontSize="23" fontWeight="bold" textTransform="capitalize">
+                    <Box height={'68px'}>
+                        <Heading size="lg" color="gray.600" fontSize="21" fontWeight="bold" textTransform="capitalize">
                             {imageProps.title.toString().slice(0, 40)}
                         </Heading>
                     </Box>

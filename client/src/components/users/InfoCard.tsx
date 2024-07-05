@@ -33,7 +33,6 @@ export interface PersonalProps {
 
 const UserCard = () => {
     const [isEditing, setIsEditing] = useState(false);
-    const handleEditClick = () => setIsEditing(true);
     const [userInfo, setUserInfo] = useState<PersonalProps>();
     const { notifyError, notifySuccess } = useToast();
     const { handleSubmit, control, setValue, reset } = useForm({

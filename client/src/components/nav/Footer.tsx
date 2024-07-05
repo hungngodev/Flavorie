@@ -43,7 +43,7 @@ const Footer = () => {
                                 icon={<Icon as={FaFacebook} />}
                                 variant="ghost"
                                 color="white"
-                                fontSize="22px"
+                                fontSize="25px"
                                 fontWeight="bold"
                                 rounded="full"
                                 _hover={{ color: 'gray.300' }}
@@ -55,7 +55,7 @@ const Footer = () => {
                                 icon={<Icon as={FaInstagram} />}
                                 variant="ghost"
                                 color="white"
-                                fontSize="24px"
+                                fontSize="25px"
                                 fontWeight="bold"
                                 rounded="full"
                                 _hover={{ color: 'gray.300' }}
@@ -67,7 +67,7 @@ const Footer = () => {
                                 icon={<Icon as={FaEnvelope} />}
                                 variant="ghost"
                                 color="white"
-                                fontSize="24px"
+                                fontSize="25px"
                                 rounded="full"
                                 _hover={{ color: 'gray.300' }}
                             />

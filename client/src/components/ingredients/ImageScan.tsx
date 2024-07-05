@@ -1,24 +1,23 @@
+import { Box, Button, ButtonGroup, Flex, HStack, Image, VStack } from '@chakra-ui/react';
 import React, { useCallback, useRef, useState } from 'react';
 import Webcam from 'react-webcam';
-import { Box, Button, ButtonGroup, Flex, HStack, Image, VStack, Text } from '@chakra-ui/react';
-import socket from '../../socket/socketio';
-import useToast from '../../hooks/useToast';
 import useAuth from '../../hooks/useAuth';
-
+import useToast from '../../hooks/useToast';
+import socket from '../../socket/socketio';
 
 const CustomWebcam: React.FC = () => {
-    const webcamRef = useRef<Webcam>(null); 
+    const webcamRef = useRef<Webcam>(null);
     const [imgSrc, setImgSrc] = useState<string | null>(null);
     const [message, setMessage] = useState<string | null>(null);
-    const {notifyError, notifySuccess, notifyWarning} = useToast()
-    const auth = useAuth()
+    const { notifyError, notifySuccess } = useToast();
+    const auth = useAuth();
 
     // capture photo
     const capture = useCallback(() => {
         if (webcamRef.current) {
-        const imageSrc = webcamRef.current.getScreenshot();
-        setImgSrc(imageSrc);
-        setMessage(null)
+            const imageSrc = webcamRef.current.getScreenshot();
+            setImgSrc(imageSrc);
+            setMessage(null);
         }
     }, [webcamRef]);
 
@@ -30,45 +29,48 @@ const CustomWebcam: React.FC = () => {
 
     // submit photo
     const submit = () => {
-        if (auth.currentUser.status === 'unauthenticated'){
-            notifyError('Please log in or sign up to submit receipt')
+        console.log(message);
+        if (auth.currentUser.status === 'unauthenticated') {
+            notifyError('Please log in or sign up to submit receipt');
             return;
         }
         if (imgSrc) {
-            const filename = `webcam-photo-${Date.now()}.jpg`
-            socket?.emit('submitReceipt', {'base64': imgSrc, filename})
+            const filename = `webcam-photo-${Date.now()}.jpg`;
+            socket?.emit('submitReceipt', { base64: imgSrc, filename });
             notifySuccess('Submit receipt successfully');
         }
     };
 
     return (
-        <Flex className="container" direction='column' align='center' justify='center'>
+        <Flex className="container" direction="column" align="center" justify="center">
             {imgSrc ? (
-                <Image src={imgSrc} alt="webcam"/>
-            ): (
-                <Webcam 
-                    height={800} 
-                    width={800} 
-                    ref={webcamRef} 
+                <Image src={imgSrc} alt="webcam" />
+            ) : (
+                <Webcam
+                    height={800}
+                    width={800}
+                    ref={webcamRef}
                     screenshotFormat="image/jpeg"
-                    screenshotQuality={0.9} 
+                    screenshotQuality={0.9}
                 />
             )}
             <Box className="btn-container" alignItems="center">
-            {imgSrc ? (
-                <HStack>
-                    <ButtonGroup>
-                        <Button mt='3' onClick={retake} colorScheme="blue" variant="outline">
-                            Retake photo
-                        </Button>
-                        <Button mt='3' onClick={submit} colorScheme="blue">
-                            Submit
-                        </Button>
-                    </ButtonGroup> 
-                </HStack>
-            ) : (
-                <Button mt='3' onClick={capture} colorScheme="blue">Capture photo</Button>
-            )}
+                {imgSrc ? (
+                    <HStack>
+                        <ButtonGroup>
+                            <Button mt="3" onClick={retake} colorScheme="blue" variant="outline">
+                                Retake photo
+                            </Button>
+                            <Button mt="3" onClick={submit} colorScheme="blue">
+                                Submit
+                            </Button>
+                        </ButtonGroup>
+                    </HStack>
+                ) : (
+                    <Button mt="3" onClick={capture} colorScheme="blue">
+                        Capture photo
+                    </Button>
+                )}
             </Box>
         </Flex>
     );

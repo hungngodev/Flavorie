@@ -9,12 +9,13 @@ import IngredientLine from './IngredientLine';
 type IngredientsMainProps = {
     data: Category;
     addFunction: (ingredientData: Ingredient) => void;
-};
+}
 
 export function IngredientsMain({ addFunction, data }: IngredientsMainProps) {
     const [page, setPage] = useState(1);
     const size = 3;
     const dataToRender = data.results.slice((page - 1) * size, page * size);
+
 
     return (
         <VStack
@@ -51,7 +52,7 @@ export function IngredientsMain({ addFunction, data }: IngredientsMainProps) {
                     space-y-10
                 />
             </div>
-            <Text color="gray.600" fontSize={'1.3rem'} mt="6">
+            <Text color="gray.500" fontSize={'1.2rem'} mt="6">
                 {data.totalNumberOfIngredients} Ingredients
             </Text>
         </VStack>

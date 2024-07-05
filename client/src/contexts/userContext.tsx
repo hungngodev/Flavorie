@@ -7,9 +7,9 @@ export type UserContextType = {
 };
 
 const UserContext = React.createContext<UserContextType>({
-    userId: "",
-    userName: "",
-    setUserName: (userName: string) => {},
+    userId: '',
+    userName: '',
+    setUserName: () => {},
 });
 
 export default UserContext;

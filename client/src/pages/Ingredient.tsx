@@ -147,15 +147,15 @@ export default function Ingredient() {
                 () =>
                     cartStatus === 'success'
                         ? cartData.data.cart.map(
-                              (item: { cart: { _id: string; name: string; image: string }; quantity: string }) => {
-                                  return {
-                                      id: item.cart._id,
-                                      name: item.cart.name,
-                                      image: item.cart.image,
-                                      quantity: item.quantity,
-                                  };
-                              },
-                          )
+                                (item: { cart: { _id: string; name: string; image: string }; quantity: string }) => {
+                                    return {
+                                        id: item.cart._id,
+                                        name: item.cart.name,
+                                        image: item.cart.image,
+                                        quantity: item.quantity,
+                                    };
+                                },
+                            )
                         : [],
                 [cartData, cartStatus],
             ),
@@ -537,7 +537,6 @@ export default function Ingredient() {
                                     className="absolute inset-0 rounded-full bg-indigo-500 px-4 py-2 text-white"
                                 />
                             )}
-
                             <span className="relative block text-white dark:text-white">{tab.title}</span>
                         </button>
                     ))}

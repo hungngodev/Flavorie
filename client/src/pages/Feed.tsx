@@ -115,6 +115,7 @@ const Feed = () => {
         gap: 30,
         getItemKey: (index) => posts[index]?.id,
         measureElement: (element, entry, instance) => {
+            console.log(entry);
             const direction = instance.scrollDirection;
             if (instance.isScrolling && direction && direction === 'backward') {
                 const indexKey = Number(element.getAttribute('data-index'));
