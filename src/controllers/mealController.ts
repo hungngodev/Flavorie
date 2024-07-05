@@ -164,7 +164,7 @@ export const getRanDomMealsAuthenticated = async (
       const thisUser = await User.findOne({ _id: req.user.userId });
       if (thisUser) {
         allergy.push(...thisUser.allergy);
-        diet.push(thisUser.diet);
+        diet.push(...thisUser.diet);
         const myLeftOver = JSON.parse(
           JSON.stringify(await getUserItems(req.user.userId, "leftOver")),
         );
@@ -181,7 +181,7 @@ export const getRanDomMealsAuthenticated = async (
         "",
       )
       .slice(0, -1);
-    const queryDiet = diet[0]
+    const queryDiet = diet
       .reduce(
         (acc: string, curr: string) =>
           `${curr.toString().toLowerCase()}|${acc}`,
@@ -294,11 +294,11 @@ export const getRanDomMealsAuthenticated = async (
           )
         : [];
     const mealsReturn = {
-      "Random Meals": await processingMeals(randomMeals.recipes),
-      "Side Meals": await processingMeals(sideMeals.recipes),
       "Main Meals": await processingMeals(mainMeals.recipes),
-      "Dessert Meals": await processingMeals(dessertMeals.recipes),
+      "Random Meals": await processingMeals(randomMeals.recipes),
       "Suggested for you": suggestedMeals,
+      "Side Meals": await processingMeals(sideMeals.recipes),
+      "Dessert Meals": await processingMeals(dessertMeals.recipes),
     };
     return res.json(mealsReturn).status(StatusCodes.OK);
   } catch (error) {

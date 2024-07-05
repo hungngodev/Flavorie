@@ -17,6 +17,7 @@ interface ImageCardProps {
         infoLink: string;
         numberOfLiked: number;
         liked?: boolean;
+        percentOfEnough: number;
     };
 }
 
@@ -51,7 +52,6 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
             toast.error('Please login to like');
         }
     };
-
     return (
         <Card maxW="sm" boxShadow="md" borderRadius="xl" variant={'outline'} bgColor={theme.colors.white_purple}>
             <CardBody>

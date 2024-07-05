@@ -140,11 +140,12 @@ const Room = () => {
                                     </Card>
                                 </GridItem>
                             ))}
-                        <GridItem gridColumn={5} gridRow={1} colSpan={1} rowSpan={2} padding={2}>
+                        <GridItem colSpan={1} rowSpan={2} padding={2}>
                             <VStack height="full" width="90%" justifyContent={'end'}>
                                 <ProgressiveImage
                                     src={
-                                        mealDatas.find((meal: any) => meal.title === mealChoice)?.imageUrl ||
+                                        mealDatas.find((meal: { title: string }) => meal.title === mealChoice)
+                                            ?.imageUrl ||
                                         'https://cdn.shopify.com/s/files/1/0078/2503/1204/files/c.jpg?v=1582371638'
                                     }
                                     placeholder={''}

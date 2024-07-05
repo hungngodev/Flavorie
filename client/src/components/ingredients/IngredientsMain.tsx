@@ -41,7 +41,7 @@ export function IngredientsMain({ addFunction, data }: IngredientsMainProps) {
                     />
                 ))}
             </VStack>
-            <div className="flex flex-wrap items-center gap-10">
+            <div className="flex h-[100px] flex-wrap items-center gap-10">
                 <Pagination
                     showControls
                     onChange={(page) => setPage(page)}
