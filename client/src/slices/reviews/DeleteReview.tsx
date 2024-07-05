@@ -2,6 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { ReviewRequestType } from '../../components/community/review/types';
 import customFetch from '../../utils/customFetch';
 import { getTemplateSlice, initialState } from '../utils';
+import { RootState } from '../../store/store';
 
 export const deleteReviewRequest = createAsyncThunk(
   'deleteReview/fetchReview',
@@ -12,5 +13,7 @@ export const deleteReviewRequest = createAsyncThunk(
 );
 
 export const DeleteReview = getTemplateSlice('deleteReview', initialState, deleteReviewRequest);
+
+export const selectDeleteReviewStatus = (state: RootState) => (state.deleteReview as any).status;
 
 export default DeleteReview.reducer;

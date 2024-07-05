@@ -1,32 +1,27 @@
 import {
   Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
-  Button,
-  Box,
-  VStack,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Text,
+  VStack,
 } from '@chakra-ui/react';
-import React, { useState, useRef, useEffect, memo } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { BasePostProps } from '../post/types';
-import ReviewCard from './ReviewCard';
-import ReviewForm from './ReviewForm';
-import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Params, useLocation, useParams } from 'react-router-dom';
-import { updatePost, selectPostById } from '../../../slices/posts/PostState';
+import { useQueryClient } from '@tanstack/react-query';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectPostById, updatePost } from '../../../slices/posts/PostState';
 import { selectCreateReviewStatus } from '../../../slices/reviews/CreateReview';
 import { createReviewRequest } from '../../../slices/reviews/index';
-import { useDispatch } from 'react-redux';
 import { AppDispatch, RootState } from '../../../store/store';
-import { useSelector } from 'react-redux';
+import ReviewCard from './ReviewCard';
+import ReviewForm from './ReviewForm';
 import { ReviewExpandProps } from './types';
 
-const ReviewExpand: React.FC<ReviewExpandProps> = ({ onClose, isOpen, postId, reviews }) => {
+const ReviewExpand: React.FC<ReviewExpandProps> = ({ onClose, isOpen, postId, reviews, postData }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -84,7 +79,7 @@ const ReviewExpand: React.FC<ReviewExpandProps> = ({ onClose, isOpen, postId, re
         pointerEvents={loading ? 'none' : 'auto'}
         opacity={loading ? 0.5 : 1}
       >
-        <ModalHeader>{`${post?.author.name}'s reviews`}</ModalHeader>
+        <ModalHeader>{`${post?.author.name ?? postData?.author.name}'s reviews`}</ModalHeader>
         <ModalCloseButton />
         <ModalBody overflow="auto">
           <VStack gap={4} width="100%" alignItems="start">
@@ -94,7 +89,7 @@ const ReviewExpand: React.FC<ReviewExpandProps> = ({ onClose, isOpen, postId, re
         </ModalBody>
 
         <ModalFooter>
-          <ReviewForm postId={postId} parentReviewId={null} />
+          <ReviewForm action="create" postId={postId} parentReviewId={null} />
         </ModalFooter>
       </ModalContent>
     </Modal>

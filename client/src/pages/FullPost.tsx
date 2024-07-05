@@ -64,6 +64,7 @@ const FullPost = () => {
   }, [queryData, status, fetchStatus]);
 
   useEffect(() => {
+    setLoading(deleteStatus === 'loading' || updateStatus === 'loading' || likeStatus === 'loading');
     queryClient.invalidateQueries();
   }, [deleteStatus, updateStatus, likeStatus]);
 

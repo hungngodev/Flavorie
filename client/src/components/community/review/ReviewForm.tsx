@@ -1,23 +1,30 @@
-import { Avatar, Box, Button, FormControl, HStack, Textarea, VStack, Text, Link, useTheme } from '@chakra-ui/react';
-import React, { useState } from 'react';
-import theme from '../../../style/theme';
-import customFetch from '../../../utils/customFetch';
+import { Avatar, Box, Button, FormControl, HStack, Link, Text, Textarea, VStack, useTheme } from '@chakra-ui/react';
+import React, { useEffect, useRef, useState } from 'react';
 // import { createReview } from '../../../utils/reviewService';
+import { useQueryClient } from '@tanstack/react-query';
+import { useDispatch, useSelector } from 'react-redux';
 import useAuth from '../../../hooks/useAuth';
-import { createReviewRequest } from '../../../slices/reviews/index';
-import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useDispatch } from 'react-redux';
+import {
+  createReviewRequest,
+  selectCreateReviewStatus,
+  selectDeleteReviewStatus,
+  selectEditReviewStatus,
+} from '../../../slices/reviews/index';
 import { AppDispatch } from '../../../store/store';
-
-interface InputProps {
+interface ReviewFormProps {
   onSubmit?: (arg?: any) => void;
   postId: string;
   parentReviewId: string | null;
+  action: 'edit' | 'create';
 }
 
-const ReviewForm: React.FC<InputProps> = ({ postId, onSubmit, parentReviewId }) => {
+const ReviewForm: React.FC<ReviewFormProps> = ({ postId, onSubmit, action, parentReviewId }) => {
   const [inputContent, setInputContent] = useState('');
   const [error, setError] = useState('');
+  const [isDisplayed, setIsDisplayed] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  const textRef = useRef<HTMLTextAreaElement>(null);
 
   const queryClient = useQueryClient();
   const auth = useAuth();
@@ -25,6 +32,10 @@ const ReviewForm: React.FC<InputProps> = ({ postId, onSubmit, parentReviewId }) 
 
   const dispatch = useDispatch<AppDispatch>();
   const theme = useTheme();
+
+  const editStatus = useSelector(selectEditReviewStatus);
+  const deleteStatus = useSelector(selectDeleteReviewStatus);
+  const createStatus = useSelector(selectCreateReviewStatus);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -38,23 +49,33 @@ const ReviewForm: React.FC<InputProps> = ({ postId, onSubmit, parentReviewId }) 
       createReviewRequest({ postId, content: inputContent, parentReview: parentReviewId ?? null }),
     ).then(() => {
       queryClient.invalidateQueries();
+      if (action === 'edit') {
+        setIsDisplayed(false);
+      }
     });
-
-    // if (!response.data) {
-    //   setError('Error creating review');
-    // }
-    // console.dir(response);
-    // const { _id, username, src, content } = response;
-
-    // if (onSubmit) {
-    //   onSubmit({ _id, postId, content, username, src, parentReviewId });
-    // }
     setInputContent('');
     setError('');
   };
 
-  return (
-    <HStack align="start" spacing="2" width="100%">
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault(); // Prevents adding a new line in the textarea
+      handleSubmit(event); // Triggers form submit
+    }
+  };
+  useEffect(() => {
+    setLoading(deleteStatus === 'loading' || editStatus === 'loading' || createStatus === 'loading');
+  }, [editStatus, deleteStatus, createStatus]);
+
+  return isDisplayed ? (
+    <HStack
+      align="start"
+      spacing="2"
+      width="100%"
+      backdropBlur={loading && 'blur(13px)'}
+      pointerEvents={loading ? 'none' : 'auto'}
+      opacity={loading ? 0.5 : 1}
+    >
       {auth.currentUser.status === 'authenticated' && <Avatar name={username} src={avatar} />}
       <Box p="0" bg="white" borderRadius="md" width="100%">
         {auth.currentUser.status === 'authenticated' ? (
@@ -69,6 +90,8 @@ const ReviewForm: React.FC<InputProps> = ({ postId, onSubmit, parentReviewId }) 
                   placeholder="Leave your comment here"
                   border="1px"
                   borderColor={theme.colors.palette_indigo}
+                  ref={textRef}
+                  onKeyDown={handleKeyDown}
                 />
                 {error && (
                   <Box color="red.500" mt={2}>
@@ -82,7 +105,10 @@ const ReviewForm: React.FC<InputProps> = ({ postId, onSubmit, parentReviewId }) 
                   borderColor={theme.colors.palette_indigo}
                   color={theme.colors.palette_purple}
                   fontWeight="bold"
-                  onClick={() => setInputContent('')}
+                  onClick={() => {
+                    setInputContent('');
+                    setIsDisplayed(false);
+                  }}
                 >
                   Cancel
                 </Button>
@@ -102,7 +128,7 @@ const ReviewForm: React.FC<InputProps> = ({ postId, onSubmit, parentReviewId }) 
         )}
       </Box>
     </HStack>
-  );
+  ) : null;
 };
 
 export default ReviewForm;

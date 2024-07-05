@@ -16,6 +16,7 @@ import {
   Text,
   VStack,
   useDisclosure,
+  useTheme,
 } from '@chakra-ui/react';
 import { Bookmark, Check, CircleAlert, Ellipsis, EyeOff, Pencil, Trash, Undo2 } from 'lucide-react';
 import { memo, useEffect, useRef, useState } from 'react';
@@ -27,13 +28,14 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import cooking from '../../../../public/images/let-him-cook.jpg';
 import useAuth from '../../../hooks/useAuth';
-import { selectDeleteStatus } from '../../../slices/posts/DeletePost';
-import { deletePostRequest } from '../../../slices/posts/DeletePost';
+import { deletePostRequest, selectDeleteStatus } from '../../../slices/posts/DeletePost';
 import { hideRequest, selectHideStatus } from '../../../slices/posts/HidePost';
-import { deletePost, selectPosts, updatePost, selectPostById } from '../../../slices/posts/PostState';
+import { deletePost, selectPostById, updatePost } from '../../../slices/posts/PostState';
 import { saveRequest, selectSaveStatus } from '../../../slices/posts/SavePost';
 import { AppDispatch, RootState } from '../../../store/store';
+import { parseDate } from '../../../utils/index';
 import { BasePostProps, PostEditObjectType, parsePost } from './types';
+
 interface PostHeaderProps extends BasePostProps, StackProps {
   preloadData?: PostEditObjectType;
   setLoading?: (arg?: any) => void;
@@ -42,13 +44,15 @@ interface PostHeaderProps extends BasePostProps, StackProps {
 
 const PostHeader = memo<PostHeaderProps>(({ postId, setLoading, postData, preloadData, isFullPage, ...props }) => {
   const auth = useAuth();
-  const { id } = auth.currentUser;
+  const { id, status } = auth.currentUser;
   const navigate = useNavigate();
   const cancelRef = useRef(null);
 
   const dispatch = useDispatch<AppDispatch>();
 
   const post = postData ?? useSelector((state: RootState) => selectPostById(postId)(state));
+
+  const theme = useTheme();
 
   const deleteStatus: string = useSelector(selectDeleteStatus);
   const saveStatus: string = useSelector(selectSaveStatus);
@@ -112,6 +116,9 @@ const PostHeader = memo<PostHeaderProps>(({ postId, setLoading, postData, preloa
           <Text fontWeight="semibold" fontSize="lg">
             {post?.author.name}
           </Text>
+          <HStack color="blackAlpha.600">
+            <Text>{parseDate(post?.createdAt, post?.updatedAt)}</Text>
+          </HStack>
         </VStack>
       </HStack>
       <Menu>
@@ -123,72 +130,82 @@ const PostHeader = memo<PostHeaderProps>(({ postId, setLoading, postData, preloa
           isRound={true}
           fontSize="2xl"
         />
-        <MenuList zIndex="200">
-          {isFullPage && (
-            <MenuItem icon={<Undo2 />} command="⌘R" onClick={() => navigate('/community')}>
-              Return
-            </MenuItem>
-          )}
-          {isFullPage && <MenuDivider />}
-          {canUpdate && (
-            <MenuItem icon={<Pencil />} command="⌘U" onClick={updateForm.onOpen}>
-              Update
-            </MenuItem>
-          )}
+        {status === 'authenticated' ? (
+          <MenuList zIndex="200">
+            {isFullPage && (
+              <MenuItem icon={<Undo2 />} command="⌘R" onClick={() => navigate('/community')}>
+                Return
+              </MenuItem>
+            )}
+            {isFullPage && <MenuDivider />}
+            {canUpdate && (
+              <MenuItem icon={<Pencil />} command="⌘U" onClick={updateForm.onOpen}>
+                Edit
+              </MenuItem>
+            )}
 
-          <MenuItem
-            icon={<Bookmark />}
-            command="⌘S"
-            onClick={() => {
-              dispatch(saveRequest({ postId })).then((res: any) => {
-                dispatch(updatePost({ post: parsePost([res.payload.post]) }));
-                toast.success('Post saved !'), { position: 'top-right', icon: <Check /> };
-              });
-            }}
-          >
-            Save post
-          </MenuItem>
-          <MenuDivider />
-          <MenuItem
-            icon={<EyeOff />}
-            command="⌘H"
-            onClick={() => {
-              dispatch(hideRequest({ postId })).then((res: any) => {
-                dispatch(updatePost({ post: parsePost([res.payload.post]) }));
-              });
-            }}
-          >
-            Hide
-          </MenuItem>
-          <MenuItem icon={<CircleAlert />} command="⌘R" onClick={toastModal.onOpen}>
-            <Button variant="ghost" paddingInline={0}>
-              Report
-            </Button>
-            <AlertDialog isOpen={toastModal.isOpen} leastDestructiveRef={cancelRef} onClose={toastModal.onClose}>
-              {' '}
-              <AlertDialogOverlay>
-                <AlertDialogContent>
-                  <Image src={cooking} />
-                </AlertDialogContent>
-              </AlertDialogOverlay>
-            </AlertDialog>
-          </MenuItem>
-          {canUpdate && (
             <MenuItem
-              icon={<Trash />}
-              command="⌘D"
-              onClick={async () => {
-                dispatch(deletePostRequest(postId)).then(() => {
-                  dispatch(deletePost({ postId }));
-                  toast.success('Post deleted !'), { position: 'top-right', icon: <Check /> };
-                  if (isFullPage) navigate('/community');
+              icon={<Bookmark />}
+              command="⌘S"
+              onClick={() => {
+                dispatch(saveRequest({ postId })).then((res: any) => {
+                  dispatch(updatePost({ post: parsePost([res.payload.post]) }));
+                  toast.success('Post saved !'), { position: 'top-right', icon: <Check /> };
                 });
               }}
             >
-              Delete
+              Save post
             </MenuItem>
-          )}
-        </MenuList>
+            <MenuDivider />
+            <MenuItem
+              icon={<EyeOff />}
+              command="⌘H"
+              onClick={() => {
+                dispatch(hideRequest({ postId })).then((res: any) => {
+                  dispatch(updatePost({ post: parsePost([res.payload.post]) }));
+                });
+              }}
+            >
+              Hide
+            </MenuItem>
+            <MenuItem icon={<CircleAlert />} command="⌘R" onClick={toastModal.onOpen}>
+              <Button variant="ghost" paddingInline={0}>
+                Report
+              </Button>
+              <AlertDialog isOpen={toastModal.isOpen} leastDestructiveRef={cancelRef} onClose={toastModal.onClose}>
+                {' '}
+                <AlertDialogOverlay>
+                  <AlertDialogContent>
+                    <Image src={cooking} />
+                  </AlertDialogContent>
+                </AlertDialogOverlay>
+              </AlertDialog>
+            </MenuItem>
+            {canUpdate && (
+              <MenuItem
+                icon={<Trash />}
+                command="⌘D"
+                onClick={async () => {
+                  dispatch(deletePostRequest(postId)).then(() => {
+                    dispatch(deletePost({ postId }));
+                    toast.success('Post deleted !'), { position: 'top-right', icon: <Check /> };
+                    if (isFullPage) navigate('/community');
+                  });
+                }}
+              >
+                Delete
+              </MenuItem>
+            )}
+          </MenuList>
+        ) : (
+          <MenuList>
+            <MenuItem as="a" href="/login">
+              <Text width="100%" textAlign="center" color="backAlpha.700" fontWeight="semibold" size="lg">
+                Sign in and get cooking now!
+              </Text>
+            </MenuItem>
+          </MenuList>
+        )}
       </Menu>
     </HStack>
   );

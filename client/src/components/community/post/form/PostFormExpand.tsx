@@ -271,6 +271,7 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, action
                   position="absolute"
                   top={2}
                   right={2}
+                  backgroundColor="blackAlpha.100"
                 />
                 <Menu>
                   <MenuButton
@@ -278,11 +279,11 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, action
                     top={2}
                     left={2}
                     as={IconButton}
-                    icon={<Ellipsis color="black" />}
+                    icon={<Ellipsis color="white" />}
                     size="md"
                     isRound={true}
-                    color="white"
                     padding={2}
+                    backgroundColor="blackAlpha.100"
                   />
                   <MenuList>
                     <MenuItem>

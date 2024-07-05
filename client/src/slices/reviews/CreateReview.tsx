@@ -13,5 +13,7 @@ export const createReviewRequest = createAsyncThunk('createReview/fetchReview', 
 });
 
 export const CreateReview = getTemplateSlice('createReview', initialState, createReviewRequest);
+
 export const selectCreateReviewStatus = (state: RootState) => (state.createReview as any).status;
+
 export default CreateReview.reducer;

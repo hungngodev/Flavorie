@@ -13,4 +13,6 @@ export const editReviewRequest = createAsyncThunk(
 
 export const EditReview = getTemplateSlice('editReview', initialState, editReviewRequest);
 
+export const selectEditReviewStatus = (state: any) => (state.editReview as any).status;
+
 export default EditReview.reducer;

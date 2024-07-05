@@ -1,6 +1,5 @@
 import { z } from 'zod';
-import { parseReviews } from '../review/types';
-import { ReviewObject } from '../review/types';
+import { ReviewObject, ReviewResponseObject, parseReviews } from '../review/types';
 export const BaseObject = z
   .object({
     id: z.string().optional(),
@@ -42,7 +41,8 @@ export const PostObject = BaseObject.extend({
   reactCount: z.number().optional(),
   reviewCount: z.number().optional(),
   shares: z.array(z.string()).optional(),
-  date: z.date().optional(),
+  createdAt: z.string().optional(),
+  updatedAt: z.string().optional(),
 }).required({
   author: true,
   header: true,
@@ -64,11 +64,11 @@ export const PostResponseObject = z.object({
   media: z.array(MediaObject.extend({ _id: z.string() })),
   react: z.array(z.string()),
   hiddenTo: z.array(z.string()),
-  review: z.array(ReviewObject),
+  review: z.array(ReviewResponseObject),
   reactCount: z.number(),
   reviewCount: z.number(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
   _v: z.number(),
 });
 
@@ -115,7 +115,7 @@ export const PlaceHolderPost: PostObjectType = {
   location: '',
 };
 
-export const parsePost = (backEndPosts: PostResponseObjectType[]) => {
+export const parsePost = (backEndPosts: PostResponseObjectType[]): PostObjectType[] => {
   if (!backEndPosts) return [];
 
   return backEndPosts.map((post: PostResponseObjectType) => ({
@@ -140,6 +140,7 @@ export const parsePost = (backEndPosts: PostResponseObjectType[]) => {
     reacts: post.react,
     reactCount: post.reactCount,
     reviewCount: post.reviewCount,
-    date: post.createdAt,
+    createdAt: post.createdAt,
+    updatedAt: post.updatedAt,
   }));
 };

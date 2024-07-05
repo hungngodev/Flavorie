@@ -99,7 +99,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, onClose, po
                   marginInline="auto"
                   zIndex={2}
                   rounded="lg"
-                  maxHeight="80dvh"
+                  maxHeight="70dvh"
                   cursor="pointer"
                   onClick={
                     action === 'direct'

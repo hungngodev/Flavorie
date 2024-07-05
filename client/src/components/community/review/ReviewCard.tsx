@@ -19,40 +19,43 @@ import {
   Textarea,
   VStack,
 } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaEllipsis } from 'react-icons/fa6';
 import theme from '../../../style/theme';
 import ReviewForm from './ReviewForm';
-import { PersonalProps } from '../../users/InfoCard';
 // import axios from "axios";
+import { useQueryClient } from '@tanstack/react-query';
 import { FaTimes } from 'react-icons/fa';
 import { IoIosSend } from 'react-icons/io';
+import { useDispatch, useSelector } from 'react-redux';
 import useAuth from '../../../hooks/useAuth';
-import { createReview, updateReview } from '../../../utils/reviewService';
-import { useDispatch } from 'react-redux';
+import {
+  createReviewRequest,
+  deleteReviewRequest,
+  editReviewRequest,
+  selectCreateReviewStatus,
+  selectDeleteReviewStatus,
+  selectEditReviewStatus,
+} from '../../../slices/reviews/index';
 import { AppDispatch } from '../../../store/store';
-import { Review, ReviewObjectType } from './types';
-import { BasePostProps } from '../post/types';
-import { deletePost } from '../../../slices/posts/PostState';
-import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
-import { deleteReviewRequest, editReviewRequest, createReviewRequest } from '../../../slices/reviews/index';
-export interface Post {
-  id: string;
-  body: string;
-}
-
-interface ReviewCardProps extends BasePostProps {
-  review: ReviewObjectType;
-}
+import { parseDate } from '../../../utils/index';
+import { ReviewCardProps } from './types';
 
 const ReviewCard: React.FC<ReviewCardProps> = ({ review, postId }) => {
+  const auth = useAuth(); //
+  const { id, status } = auth.currentUser;
   const [showReplies, setShowReplies] = useState(false);
   const [reply, setReply] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(review.content);
   const [isAlertOpen, setAlertOpen] = useState(false);
+  const [canEdit, setCanEdit] = useState(id === review.author.id);
+  const [loading, setLoading] = useState(false);
   const cancelRef = React.useRef<HTMLButtonElement>(null);
-  const auth = useAuth(); //
+
+  const editStatus = useSelector(selectEditReviewStatus);
+  const deleteStatus = useSelector(selectDeleteReviewStatus);
+  const createStatus = useSelector(selectCreateReviewStatus);
 
   const queryClient = useQueryClient();
 
@@ -61,15 +64,19 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, postId }) => {
   const handleReply = async (content: string, parentReviewId: string) => {
     try {
       console.log(review.postId, content);
-      const response = await createReview(review.postId, content, parentReviewId);
-      setReply(false);
+      // const response = await createReview(review.postId, content, parentReviewId);
+      const request = dispatch(
+        createReviewRequest({ postId: review.postId, content, parentReview: parentReviewId }),
+      ).then((res) => {
+        setReply(false);
+      });
     } catch (error) {
       console.error('Failed to create reply: ', error);
     }
   };
 
   const handleEdit = async ({ postId, reviewId, content }: { postId: string; reviewId: string; content: string }) => {
-    if (!postId || !reviewId || auth.currentUser.status !== 'authenticated') return;
+    if (!postId || !reviewId || status !== 'authenticated') return;
     console.log('here');
     if (isEditing) {
       try {
@@ -86,22 +93,46 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, postId }) => {
   };
 
   const handleDelete = async ({ postId, reviewId }: { postId: string; reviewId: string }) => {
-    if (!postId || !reviewId || auth.currentUser.status !== 'authenticated') return;
+    if (!postId || !reviewId || status !== 'authenticated') return;
     const request = dispatch(deleteReviewRequest({ postId, reviewId })).then((res) => {
       setAlertOpen(false);
       queryClient.invalidateQueries();
     });
   };
 
+  const handleKeyDownReply = (event: React.KeyboardEvent) => {
+    console.log('clicked');
+    if (editedContent === '') {
+      return;
+    }
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault(); // Prevents adding a new line in the textarea
+      handleEdit({ postId: postId, reviewId: review.id, content: editedContent }); // Triggers form submit
+    }
+  };
+
+  useEffect(() => {
+    setLoading(deleteStatus === 'loading' || editStatus === 'loading' || createStatus === 'loading');
+  }, [editStatus, deleteStatus, createStatus]);
+
   return (
-    <Box ml="5" mt="2">
+    <Box
+      ml="5"
+      mt="2"
+      width="auto"
+      maxWidth="100%"
+      rounded="lg"
+      backdropBlur={loading && 'blur(13px)'}
+      pointerEvents={loading ? 'none' : 'auto'}
+      opacity={loading ? 0.5 : 1}
+    >
       <HStack align="start" mb="4" spacing="2">
         <Avatar name={review.author.name} src={review.author.avatar} />
         <VStack spacing="2" align="start" w="full">
           <HStack width="full">
             <Box borderWidth="1px" p="2" borderRadius="lg" bg="base.50" width="600px">
               <HStack justifyContent="space-between" alignItems="center">
-                <Text fontWeight="bold" mb="2">
+                <Text fontWeight="semibold" mb="2">
                   {review.author.name}
                 </Text>
                 {isEditing && (
@@ -119,20 +150,28 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, postId }) => {
                 )}
               </HStack>
               {isEditing ? (
-                <Box position="relative">
-                  <Textarea value={editedContent} onChange={(e) => setEditedContent(e.target.value)} />
-                  <Box position="absolute" bottom="1" right="0">
-                    <IconButton
-                      variant="normal"
-                      color={theme.colors.palette_purple}
-                      icon={<IoIosSend />}
-                      onClick={() => {
-                        console.log('here');
-                        handleEdit({ postId: postId, reviewId: review.id, content: editedContent });
-                      }}
-                      aria-label="Save"
-                    />
-                  </Box>
+                <Box position="relative" width="100%">
+                  <Textarea
+                    value={editedContent}
+                    onKeyDown={(e) => handleKeyDownReply(e)}
+                    onChange={(e) => setEditedContent(e.target.value)}
+                  />
+
+                  <IconButton
+                    position="absolute"
+                    bottom="1"
+                    right="0"
+                    variant="normal"
+                    color={theme.colors.palette_purple}
+                    icon={<IoIosSend />}
+                    onClick={() => {
+                      console.log('here');
+                      handleEdit({ postId: postId, reviewId: review.id, content: editedContent });
+                    }}
+                    isDisabled={editedContent.length === 0}
+                    aria-label="Save"
+                    zIndex={4}
+                  />
                 </Box>
               ) : (
                 <Text>{review.content}</Text>
@@ -148,34 +187,38 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, postId }) => {
                 variant="ghost"
               />
               <MenuList>
-                <MenuItem icon={<EditIcon />} onClick={() => setIsEditing(true)}>
-                  Edit
-                </MenuItem>
+                {canEdit && status === 'authenticated' && (
+                  <MenuItem icon={<EditIcon />} onClick={() => setIsEditing(true)}>
+                    Edit
+                  </MenuItem>
+                )}
                 <MenuItem icon={<WarningTwoIcon />}>Report</MenuItem>
-                <MenuItem icon={<DeleteIcon />} onClick={() => setAlertOpen(true)}>
-                  Delete
-                </MenuItem>
+                {canEdit && status === 'authenticated' && (
+                  <MenuItem icon={<DeleteIcon />} onClick={() => setAlertOpen(true)}>
+                    Delete
+                  </MenuItem>
+                )}
               </MenuList>
             </Menu>
           </HStack>
           <HStack width="600px" justifyContent="space-between">
             <Text fontSize="10" color="base.400" fontWeight="bold">
-              {new Date(review.timestamp).toLocaleString()}
+              {parseDate(review.timestamp)}
             </Text>
-            <Button
-              size="sm"
-              color={theme.colors.palette_purple}
-              fontWeight="bold"
-              variant="link"
-              onClick={() => setReply(!reply)}
-            >
-              Reply
-            </Button>
+            {status === 'authenticated' && (
+              <Button
+                size="sm"
+                color={theme.colors.palette_purple}
+                fontWeight="bold"
+                variant="link"
+                onClick={() => setReply(!reply)}
+              >
+                Reply
+              </Button>
+            )}
           </HStack>
           {reply && (
-            <Box mt="2">
-              <ReviewForm postId={review.postId} onSubmit={() => handleReply} parentReviewId={review.id} />
-            </Box>
+            <ReviewForm action="edit" postId={review.postId} onSubmit={() => handleReply} parentReviewId={review.id} />
           )}
         </VStack>
       </HStack>

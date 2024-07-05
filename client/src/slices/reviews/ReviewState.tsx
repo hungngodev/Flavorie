@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { PostObjectType } from '../../components/community/post/types';
-import { Review } from '../../components/community/review/types';
+import { ReviewObjectType } from '../../components/community/review/types';
 import { RootState } from '../../store/store';
 
 interface ReviewState {
   ids: string[];
-  reviews: { [key: string]: Review };
+  reviews: { [key: string]: ReviewObjectType };
 }
 
 const initialState: ReviewState = {
@@ -17,11 +17,11 @@ export const ReviewSlice = createSlice({
   name: 'reviews',
   initialState,
   reducers: {
-    addReview: (state: ReviewState, action: PayloadAction<{ review: Review }>) => {
+    addReview: (state: ReviewState, action: PayloadAction<{ review: ReviewObjectType }>) => {
       state.ids.push(action.payload.review.id);
       state.reviews[action.payload.review.id] = action.payload.review;
     },
-    updateReview: (state: ReviewState, action: PayloadAction<{ review: Review }>) => {
+    updateReview: (state: ReviewState, action: PayloadAction<{ review: ReviewObjectType }>) => {
       state.reviews[action.payload.review.id] = action.payload.review;
     },
     deleteReview: (state: ReviewState, action: PayloadAction<{ reviewId: string }>) => {
