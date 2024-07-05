@@ -95,7 +95,7 @@ const Room = () => {
         if (myVideoRef.current && stream) {
             myVideoRef.current.srcObject = stream;
         }
-    }, [stream]);
+    }, [stream, focus]);
 
     const sendFrameToServer = async () => {
         const canvas = canvasRef.current;
@@ -188,8 +188,8 @@ const Room = () => {
                                     </Card>
                                 </GridItem>
                             ))}
-                        <GridItem gridColumn={5} gridRow={1} colSpan={1} rowSpan={2} padding={2}>
-                            <VStack height="full" width="90%" justifyContent={'end'}>
+                        <GridItem colSpan={1} rowSpan={1} padding={2}>
+                            <VStack height="full" width="100%" justifyContent={'end'}>
                                 <ProgressiveImage
                                     src={
                                         mealDatas.find((meal: { title: string }) => meal.title === mealChoice)
@@ -230,7 +230,7 @@ const Room = () => {
                         </GridItem>
                     </Grid>
                     {currentMealInfo && Object.keys(currentMealInfo).length > 0 && (
-                        <HStack width={'80%'} height="40vh" flexShrink={0}>
+                        <HStack width={'100%'} height="40vh">
                             <ImageSlide backendData={currentMealInfo} />
                         </HStack>
                     )}

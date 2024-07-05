@@ -215,7 +215,7 @@ function ImageSlide({ backendData, currSlideIndex }: ImageSlideProps) {
                         rounded={5}
                         flex={1}
                         p={5}
-                        display={index === currSlideIndex ? 'flex' : 'none'}
+                        display={index !== currSlideIndex ? 'flex' : 'none'}
                     >
                         {/* <Heading fontSize={{ base: 'xl', md: '2xl' }} fontWeight="bold" mb="3" textAlign="center" w="full">
               {slide.title}

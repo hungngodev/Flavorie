@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { ServerError } from "../errors/customErrors.ts";

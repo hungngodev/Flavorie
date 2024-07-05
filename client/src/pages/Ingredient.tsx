@@ -407,7 +407,7 @@ export default function Ingredient() {
                                                 )}
                                                 variant="bordered"
                                                 label="Select a meal"
-                                                className="w-4/5"
+                                                className="w-5/6"
                                                 selectedKeys={[mealChoice]}
                                                 onChange={(e) => setMealChoice(parseInt(e.target.value))}
                                             >

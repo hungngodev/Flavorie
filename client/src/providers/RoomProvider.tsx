@@ -44,7 +44,6 @@ const RoomProvider = ({ children }: { children: React.ReactNode }) => {
     const [micStatus, setMicStatus] = useState(true);
     const [currentMeal, setCurrentMealRaw] = useState<string>('');
     const [currentMealData, setCurrentMealData] = useState<BackendData>();
-    console.log(currentMealData);
 
     const { data: likedMeal, status } = useQuery(likedMealQuery);
     const mealDatas = status !== 'pending' ? likedMeal?.data?.likedMeals.map((meal: any) => meal.likedMeal) : [];
@@ -119,9 +118,6 @@ const RoomProvider = ({ children }: { children: React.ReactNode }) => {
         }
         ws.emit('toggle-video', { roomId, userId });
     };
-    // useEffect(() => {
-    //     console.log(peers);
-    // }, [peers]);
 
     const toggleMic = async () => {
         if (micStatus) {
@@ -247,7 +243,7 @@ const RoomProvider = ({ children }: { children: React.ReactNode }) => {
 
         me.on('call', (call) => {
             const { userName, userId } = call.metadata;
-            // console.log('call', userName, userId);
+            console.log('call', userName, userId);
             dispatch(addPeerConnectionIdAction(userId, call.peer));
             dispatch(addPeerNameAction(userId, userName));
             call.answer(stream);

@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 // interface VideoPlayerProps{
 //     stream?: MediaStream
@@ -13,8 +13,7 @@ export const VideoPlayer: React.FC<{ stream?: MediaStream }> = ({ stream }) => {
     return (
         <video
             data-testid="peer-video"
-            // ref={videoRef}
-            ref={ref}
+            ref={videoRef}
             autoPlay
             muted={true}
             style={{
@@ -25,4 +24,4 @@ export const VideoPlayer: React.FC<{ stream?: MediaStream }> = ({ stream }) => {
         />
     );
 };
-export default VideoPlayer
+export default VideoPlayer;
