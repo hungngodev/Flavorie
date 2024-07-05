@@ -64,7 +64,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
                 />
                 <Stack mt="5" spacing="1">
                     <Box height={'58px'}>
-                        <Heading size="lg" color="gray.600" fontSize="23" fontWeight="bold" textTransform="capitalize">
+                        <Heading size="lg" color="gray.600" fontSize="20" fontWeight="bold" textTransform="capitalize">
                             {imageProps.title.toString().slice(0, 40)}
                         </Heading>
                     </Box>
@@ -79,7 +79,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
             </CardBody>
             {/* <Divider borderColor="base.200" /> */}
             <CardFooter>
-                <HStack mt="1" mb="4">
+                <HStack mt="3" mb="4">
                     <Link
                         to={imageProps.infoLink}
                         style={{

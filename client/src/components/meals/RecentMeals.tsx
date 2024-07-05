@@ -55,8 +55,8 @@ export function RecentMeals({ likedMeal, status }: RecentMeal) {
                 borderColor={theme.colors.palette_lavender}
                 borderRadius="md"
             >
-                {likedMeal.length > 0 ? (
-                    likedMeal.map((meal: any, index: number) => (
+                {likedMeal?.length > 0 ? (
+                    likedMeal?.map((meal: any, index: number) => (
                         <Box
                             key={index}
                             display="flex"
@@ -69,16 +69,16 @@ export function RecentMeals({ likedMeal, status }: RecentMeal) {
                             width="full"
                         >
                             <Image
-                                src={meal.likedMeal.imageUrl}
-                                alt={meal.likedMeal.title}
+                                src={meal?.likedMeal?.imageUrl}
+                                alt={meal?.likedMeal?.title}
                                 boxSize="50px"
                                 borderRadius="full"
                                 mr="4"
                             />
                             <Box flex="1">
-                                <Link to={`/meals/${meal.likedMeal.id}`}>
+                                <Link to={`/meals/${meal?.likedMeal?.id}`}>
                                     <Text fontWeight="bold" color="purple.500">
-                                        {meal.likedMeal.title}
+                                        {meal?.likedMeal?.title}
                                     </Text>
                                 </Link>
                             </Box>

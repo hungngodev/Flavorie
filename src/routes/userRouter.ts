@@ -11,6 +11,7 @@ import {
   getCookedMeals,
   getLeftOver,
   getLikedMeals,
+  getNutrition,
   getPersonalInfo,
   updateCart,
   updateCookedMeals,
@@ -44,7 +45,8 @@ router
   .route("/likedMeal")
   .get(authenticateUser, catchAsync(getLikedMeals))
   .post(authenticateUser, catchAsync(updateLikedMeals));
-
+router
+.route("/nutrition").get(authenticateUser, catchAsync(getNutrition))
 router
   .route("/cookedMeal")
   .get(authenticateUser, catchAsync(getCookedMeals))
