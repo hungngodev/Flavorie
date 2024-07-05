@@ -20,6 +20,8 @@ export interface Post extends mongoose.Document {
   react: Types.DocumentArray<Types.ObjectId>;
   hiddenTo: Types.DocumentArray<Types.ObjectId>;
   savedTo: Types.DocumentArray<Types.ObjectId>;
+  reactCount: number;
+  reviewCount: number;
 }
 
 interface PostModel extends mongoose.Model<Post> {}
@@ -54,6 +56,14 @@ const PostSchema = new mongoose.Schema<Post, PostModel>(
         },
       },
     ],
+    reactCount: {
+      type: Number,
+      default: 0,
+    },
+    reviewCount: {
+      type: Number,
+      default: 0,
+    },
     privacy: {
       type: String,
       enum: ["public", "private", "friend"],
@@ -88,7 +98,7 @@ const PostSchema = new mongoose.Schema<Post, PostModel>(
       },
     ],
   },
-  { timestamps: true },
+  { timestamps: true, strict: false },
 );
 
 export default mongoose.model<Post, PostModel>("Post", PostSchema);

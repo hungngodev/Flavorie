@@ -8,20 +8,53 @@ import {
 import PostModel, { Post } from "../models/Post.ts";
 import ReviewModel from "../models/Review.ts";
 import UserModel from "../models/UserModel.ts";
-import { parseMedia, parsePublicId, updateFieldArray } from "../utils/index.ts";
+import {
+  parseMedia,
+  parsePublicId,
+  recursivePopulate,
+  updateFieldArray,
+} from "../utils/index.ts";
 import { cloudinary } from "./cloudinary/cloudinaryServices.ts";
+
+PostModel.schema.pre("findOne", function (next) {
+  this.populate([
+    {
+      path: "review",
+      populate: [
+        {
+          path: "childrenReview",
+          model: "Review",
+        },
+        {
+          path: "userId",
+          select: "id name avatar",
+        },
+      ],
+    },
+  ]);
+  next();
+});
 
 export const getPostDocumentById = async (
   postId: string,
 ): Promise<Document> => {
   try {
-    const post = await PostModel.findById(postId).populate({
-      path: "author",
-      select: "name avatar id ",
-    });
+    const post = await PostModel.findOne({ _id: postId }).populate([
+      {
+        path: "review",
+        populate: { path: "userId", select: "id name avatar" },
+      },
+      {
+        path: "author",
+        select: "id name avatar",
+      },
+    ]);
+
     if (!post) {
       throw new ServerError("Post not found");
     }
+    await recursivePopulate(post.review);
+
     return post as Document;
   } catch (err) {
     throw new ServerError(`${err}`);
@@ -42,9 +75,17 @@ export const getFeedDocument = async (
       location: -1,
     })
     .populate({ path: "author", select: "name avatar location " })
+    .populate({
+      path: "review",
+      populate: { path: "userId", select: "id name avatar" },
+    })
     .skip((page - 1) * limit)
     .limit(limit);
+
   if (postLists.length === 0) throw new ServerError("Failed to get posts");
+  for (let post of postLists) {
+    await recursivePopulate(post.review);
+  }
   return postLists.map(post => post.toJSON() as Document);
 };
 
@@ -157,20 +198,33 @@ export const updatePostDocument = async (
       ].filter(post => !post.url.startsWith("blob")),
       privacy,
       location,
-      react,
-      review,
     };
-
-    console.log("update data", updateData);
 
     const updatedPost = await PostModel.findByIdAndUpdate(postId, updateData, {
       new: true,
-    }).populate("author", "id name avatar");
+    }).populate([{ path: "author", select: "id name avatar" }]);
+
     if (!updatedPost) throw new ServerError("Failed to update post");
 
     await updatedPost.save();
 
-    return updatedPost;
+    const returnPost = await PostModel.findOne({ _id: postId }).populate([
+      {
+        path: "review",
+        populate: { path: "userId", select: "id name avatar" },
+      },
+      {
+        path: "author",
+        select: "id name avatar",
+      },
+    ]);
+
+    if (!returnPost) {
+      throw new ServerError("Post not found");
+    }
+    await recursivePopulate(returnPost.review);
+
+    return returnPost;
   } catch (err) {
     throw new ServerError(`${err}`);
   }
@@ -211,14 +265,16 @@ export const deletePostDocument = async (postId: string) => {
       const queueSize = reviews.length;
       for (let i = 0; i < queueSize; i++) {
         const review = reviews.shift();
-        if (review) {
-          deleteQueue.push(review._id as Types.ObjectId);
-          if (review.childrenReview.length > 0) {
-            reviews.push(...review.childrenReview);
+        const reviewDoc = await ReviewModel.findById(review);
+        if (reviewDoc) {
+          deleteQueue.push(reviewDoc._id);
+          if (reviewDoc.childrenReview.length > 0) {
+            reviews.push(...reviewDoc.childrenReview);
           }
         }
       }
     }
+
     // use bulkwrite to send multiple delete operations in one batch, reducing network round-trips
     if (deleteQueue.length > 0) {
       const bulkOps = deleteQueue.map(reviewId => ({
@@ -243,20 +299,43 @@ export const deletePostDocument = async (postId: string) => {
 export const reactPostDocument = async (
   userId: string,
   postId: string,
-): Promise<Array<Types.ObjectId>> => {
+): Promise<Document | null> => {
   try {
-    const post = await PostModel.findById(postId);
+    const post = await PostModel.findById(postId).populate({
+      path: "author",
+      select: "name avatar id",
+    });
     if (!post) throw new PostError("Post not found");
 
     const alreadyLiked = post.react.some(id => id.equals(userId));
 
     if (alreadyLiked) {
       post.react.pull(userId);
+      post.reactCount -= 1;
     } else {
       post.react.push(new Types.ObjectId(userId));
+      post.reactCount = Math.max(0, post.reactCount + 1);
     }
     await post.save();
-    return post.react;
+
+    const returnPost = await PostModel.findOne({ _id: postId }).populate([
+      {
+        path: "review",
+        populate: { path: "userId", select: "id name avatar" },
+      },
+      {
+        path: "author",
+        select: "id name avatar",
+      },
+    ]);
+
+    if (!returnPost) {
+      throw new ServerError("Post not found");
+    }
+
+    await recursivePopulate(returnPost?.review);
+    await returnPost?.save();
+    return returnPost;
   } catch (err) {
     throw new ServerError(`${err}`);
   }
@@ -296,21 +375,46 @@ export const hidePostDocument = async (
       select: "name id avatar",
     });
     const user = await UserModel.findById(userId);
-    console.log("here");
 
     if (!post || !user) throw new PostError("Post or user not found");
-    console.log(post.hiddenTo);
+
     const updatedPost = await updateFieldArray(post.hiddenTo, userId);
 
     if (!updatedPost) throw new ServerError("Failed to save post");
     post.hiddenTo = updatedPost as Types.DocumentArray<Types.ObjectId>;
-    console.log(post.hiddenTo);
+
     await post.save();
-    console.log(post);
 
     return post;
   } catch (err) {
     console.log(err);
     throw new ServerError(`${err}`);
   }
+};
+
+export const getUserPostDocument = async (
+  userId: string,
+  limit: number = 5,
+): Promise<{ userList: Document[]; savedList: Document[] }> => {
+  const user = await UserModel.findById(userId)
+    .populate({
+      path: "savedPost",
+      select: "id header body createdAt",
+      populate: { path: "author", select: "name avatar" },
+    })
+    .sort({ createdAt: -1 })
+    .limit(limit);
+  if (!user) {
+    throw new ServerError("User not found");
+  }
+  const userList = await PostModel.find({ author: userId })
+    .select("_id header body author createdAt")
+    .populate({ path: "author", select: "id name avatar" })
+    .sort({ createdAt: -1 })
+    .limit(limit);
+  if (!userList) {
+    throw new ServerError("Failed to get posts");
+  }
+  const savedList = user.savedPost;
+  return { userList: userList, savedList: savedList };
 };

@@ -150,6 +150,7 @@ const router = createBrowserRouter([
         ],
     },
 ]);
+
 function App() {
     return (
         <ChakraProvider theme={extendTheme(theme)}>

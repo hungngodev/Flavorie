@@ -34,8 +34,8 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 app.use(express.static(path.resolve(__dirname, "./client/dist")));
-app.use(express.json({ limit: '10mb' })); 
-app.use(express.urlencoded({ limit: '5mb', extended: true }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "5mb", extended: true }));
 
 app.use(
   cors({
@@ -69,7 +69,7 @@ app.use("/api/meal", mealRouter);
 app.use("/api/ingredient", ingredientRouter);
 // app.use("/api/scan-receipt", receiptScanRouter)
 app.use("/api/community", postRouter);
-app.use("/api/community/reviews", reviewRouter);
+app.use("/api/community", reviewRouter);
 app.use("/api/bug", bugRouter);
 
 // app.use("*", (req, res) => {
