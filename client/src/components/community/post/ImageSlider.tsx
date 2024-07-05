@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-
 import { Box, Button, HStack, Icon, IconButton, Image, StackProps } from '@chakra-ui/react';
-
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { motion, useAnimationControls } from 'framer-motion';
 import { X } from 'lucide-react';
@@ -15,7 +13,7 @@ interface ImageSliderProps extends BasePostProps, StackProps {
   action: 'display' | 'direct';
 }
 
-const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, onClose, postId, action, postData, ...props }) => {
+const ImageSlider: React.FC<ImageSliderProps> = ({ slides, onClose, postId, action, postData }) => {
   const navigate = useNavigate();
   const [imageSlides, setImageSlides] = useState<MediaObjectType[]>(slides);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -153,7 +151,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ children, slides, onClose, po
         )}
         {onClose && (
           <Button
-            onClick={(e) => {
+            onClick={() => {
               onClose(currentIndex);
               setCurrentIndex((cur) => Math.max(cur - 1, 0));
             }}

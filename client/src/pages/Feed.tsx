@@ -13,14 +13,12 @@ import {
   useTheme,
   Avatar,
   IconButton,
-  Tooltip,
 } from '@chakra-ui/react';
-import { QueryClient, useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import lottie from 'lottie-web';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Params } from 'react-router-dom';
 import errorIllustration from '../../public/images/404-error-removebg-preview.png';
 import dumbCatLoaderAnimation from '../assets/animations/dumb-cat-loader.json';
 import Post from '../components/community/post/Post';
@@ -35,6 +33,10 @@ import { SendHorizontal } from 'lucide-react';
 import parseDate from '../utils/parseDate';
 import { useNavigate } from 'react-router-dom';
 import { selectSaveStatus } from '../slices/posts/SavePost';
+import { selectDeleteReviewStatus } from '../slices/reviews';
+import { selectPostCreateStatus } from '../slices/posts/CreatePost';
+import { selectPostEditStatus } from '../slices/posts/EditPost';
+
 const userPostQuery = (userId: string) => {
   return {
     queryKey: ['user-posts', userId],
@@ -58,18 +60,11 @@ const fetchFeed = async ({
   };
 };
 
-export const loader =
-  (queryClient: QueryClient) =>
-  () =>
-  async ({ params }: { params: Params }) => {
-    queryClient.ensureQueryData({
-      queryKey: ['newsfeed'],
-      queryFn: async () => await customFetch.get(`/community/feed?page=1&limit=5`),
-    });
-  };
-
 const Feed = () => {
-  const saveStatus = useSelector(selectSaveStatus);
+  const saveStatus: string = useSelector(selectSaveStatus);
+  const deleteStatus: string = useSelector(selectDeleteReviewStatus);
+  const createStatus: string = useSelector(selectPostCreateStatus);
+  const editStatus: string = useSelector(selectPostEditStatus);
 
   const theme = useTheme();
   const navigate = useNavigate();
@@ -82,7 +77,7 @@ const Feed = () => {
   const posts = useSelector(selectPosts);
 
   const auth = useAuth();
-  const { id, username } = auth.currentUser;
+  const { id } = auth.currentUser;
 
   const queryClient = useQueryClient();
 
@@ -96,10 +91,15 @@ const Feed = () => {
   }, [queryData, queryStatus, fetchStatus]);
 
   useEffect(() => {
-    if (saveStatus === 'succeeded') {
+    if (
+      saveStatus === 'succeeded' ||
+      deleteStatus === 'succeeded' ||
+      createStatus === 'succeeded' ||
+      editStatus === 'succeeded'
+    ) {
       queryClient.invalidateQueries();
     }
-  }, [saveStatus]);
+  }, [saveStatus, deleteStatus, createStatus, editStatus]);
 
   const { data, error, status, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: ['newsfeed'],
@@ -111,7 +111,7 @@ const Feed = () => {
   const scrollVirtualizer = useVirtualizer({
     count: posts.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: (index) => 200,
+    estimateSize: () => 200,
     gap: 30,
     getItemKey: (index) => posts[index]?.id,
     measureElement: (element, entry, instance) => {
@@ -171,39 +171,43 @@ const Feed = () => {
               </Heading>
             </CardHeader>
             <CardBody maxHeight="40dvh" overflow="auto">
-              {userPost.map((post) => (
-                <Box mb={4} boxShadow="sm" backgroundColor="blackAlpha.50" rounded="md" p={2} width="100%">
-                  <HStack mb={2} width="100%">
-                    <Avatar size="sm" src={post.author.avatar} name={post.author.name} />
-                    <VStack color="blackAlpha.600" gap={0} alignItems="start">
-                      <Text fontSize="sm" fontWeight="semibold" m={0}>
-                        {post?.author.name}
-                      </Text>
-                      <Text fontSize="sm">{parseDate(post?.createdAt)}</Text>
-                    </VStack>
+              {userPost.length > 0 ? (
+                userPost.map((post) => (
+                  <Box mb={4} boxShadow="sm" backgroundColor="blackAlpha.50" rounded="md" p={2} width="100%">
+                    <HStack mb={2} width="100%">
+                      <Avatar size="sm" src={post.author.avatar} name={post.author.name} />
+                      <VStack color="blackAlpha.600" gap={0} alignItems="start">
+                        <Text fontSize="sm" fontWeight="semibold" m={0}>
+                          {post?.author.name}
+                        </Text>
+                        <Text fontSize="sm">{parseDate(post?.createdAt)}</Text>
+                      </VStack>
 
-                    <IconButton
-                      onClick={() => navigate(`/community/${post.id}`)}
-                      marginLeft="auto"
-                      size="sm"
-                      isRound={true}
-                      aria-label="redirect-post-button"
-                      icon={<SendHorizontal />}
-                      color="blackAlpha.700"
-                      backgroundColor="transparent"
-                      _hover={{ backgroundColor: 'transparent' }}
-                    />
-                  </HStack>
-                  <Link href={`/community/${post.id}`} _hover={{ textDecoration: 'none' }}>
-                    <Heading size="sm" color="blackAlpha.700" mb={2}>
-                      {post.header}
-                    </Heading>
-                    <Text size="md" color="blackAlpha.600" noOfLines={1}>
-                      {post.body}
-                    </Text>
-                  </Link>
-                </Box>
-              ))}
+                      <IconButton
+                        onClick={() => navigate(`/community/${post.id}`)}
+                        marginLeft="auto"
+                        size="sm"
+                        isRound={true}
+                        aria-label="redirect-post-button"
+                        icon={<SendHorizontal />}
+                        color="blackAlpha.700"
+                        backgroundColor="transparent"
+                        _hover={{ backgroundColor: 'transparent' }}
+                      />
+                    </HStack>
+                    <Link href={`/community/${post.id}`} _hover={{ textDecoration: 'none' }}>
+                      <Heading size="sm" color="blackAlpha.700" mb={2}>
+                        {post.header}
+                      </Heading>
+                      <Text size="md" color="blackAlpha.600" noOfLines={1}>
+                        {post.body}
+                      </Text>
+                    </Link>
+                  </Box>
+                ))
+              ) : (
+                <Text>Oops nothing here, share your cooking now!</Text>
+              )}
             </CardBody>
           </Card>
           <Card width="100%" maxHeight="40dvh" boxShadow="lg">
@@ -214,39 +218,43 @@ const Feed = () => {
               </Heading>
             </CardHeader>
             <CardBody maxHeight="40dvh" overflow="auto">
-              {savedPost.map((post) => (
-                <Box mb={4} boxShadow="sm" backgroundColor="blackAlpha.50" rounded="md" p={2} width="100%">
-                  <HStack mb={2} width="100%">
-                    <Avatar size="sm" src={post.author.avatar} name={post.author.name} />
-                    <VStack color="blackAlpha.600" gap={0} alignItems="start">
-                      <Text fontSize="sm" fontWeight="semibold" m={0}>
-                        {post?.author.name}
-                      </Text>
-                      <Text fontSize="sm">{parseDate(post?.createdAt)}</Text>
-                    </VStack>
+              {savedPost.length > 0 ? (
+                savedPost.map((post) => (
+                  <Box mb={4} boxShadow="sm" backgroundColor="blackAlpha.50" rounded="md" p={2} width="100%">
+                    <HStack mb={2} width="100%">
+                      <Avatar size="sm" src={post.author.avatar} name={post.author.name} />
+                      <VStack color="blackAlpha.600" gap={0} alignItems="start">
+                        <Text fontSize="sm" fontWeight="semibold" m={0}>
+                          {post?.author.name}
+                        </Text>
+                        <Text fontSize="sm">{parseDate(post?.createdAt)}</Text>
+                      </VStack>
 
-                    <IconButton
-                      onClick={() => navigate(`/community/${post.id}`)}
-                      marginLeft="auto"
-                      size="sm"
-                      isRound={true}
-                      aria-label="redirect-post-button"
-                      icon={<SendHorizontal />}
-                      color="blackAlpha.700"
-                      backgroundColor="transparent"
-                      _hover={{ backgroundColor: 'transparent' }}
-                    />
-                  </HStack>
-                  <Link href={`/community/${post.id}`} _hover={{ textDecoration: 'none' }}>
-                    <Heading size="sm" color="blackAlpha.700" mb={2}>
-                      {post.header}
-                    </Heading>
-                    <Text size="md" color="blackAlpha.600" noOfLines={1}>
-                      {post.body}
-                    </Text>
-                  </Link>
-                </Box>
-              ))}
+                      <IconButton
+                        onClick={() => navigate(`/community/${post.id}`)}
+                        marginLeft="auto"
+                        size="sm"
+                        isRound={true}
+                        aria-label="redirect-post-button"
+                        icon={<SendHorizontal />}
+                        color="blackAlpha.700"
+                        backgroundColor="transparent"
+                        _hover={{ backgroundColor: 'transparent' }}
+                      />
+                    </HStack>
+                    <Link href={`/community/${post.id}`} _hover={{ textDecoration: 'none' }}>
+                      <Heading size="sm" color="blackAlpha.700" mb={2}>
+                        {post.header}
+                      </Heading>
+                      <Text size="md" color="blackAlpha.600" noOfLines={1}>
+                        {post.body}
+                      </Text>
+                    </Link>
+                  </Box>
+                ))
+              ) : (
+                <Text>No cookings saved yet, let's make some!</Text>
+              )}
             </CardBody>
           </Card>
         </VStack>
@@ -267,7 +275,7 @@ const Feed = () => {
 
         <Box width="100%" position="relative" height={`${scrollVirtualizer.getTotalSize()}px`}>
           {scrollVirtualizer.getVirtualItems().map((virtualItem) => {
-            const isLoaderRow = virtualItem.index > posts.length - 1;
+            // const isLoaderRow = virtualItem.index > posts.length - 1;
             const post = posts[virtualItem.index];
             return post ? (
               <Post

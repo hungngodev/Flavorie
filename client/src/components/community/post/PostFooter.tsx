@@ -20,7 +20,6 @@ import { memo, useEffect, useState } from 'react';
 import { FaHeart } from 'react-icons/fa';
 import { FaRegHeart } from 'react-icons/fa6';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import useAuth from '../../../hooks/useAuth';
 import { selectPostById, updatePost } from '../../../slices/posts/PostState';
@@ -51,8 +50,6 @@ const PostFooter = memo<PostFooterProps>(
     const dispatch = useDispatch<AppDispatch>();
     const post = postData ?? useSelector((state: RootState) => selectPostById(postId)(state));
 
-    let location = useLocation();
-
     const [isLiked, setIsLiked] = useState(post?.reacts?.includes(id) ?? false);
     const [url, setUrl] = useState(
       window.location.href.includes(postId) ? window.location.href : `${window.location.href}/${postId}`,
@@ -62,7 +59,7 @@ const PostFooter = memo<PostFooterProps>(
     const likePost = () => {
       likeControl.start({ scale: [1, 1.2, 1], transition: { duration: 0.2, ease: 'easeInOut' } });
       try {
-        const res = dispatch(likePostRequest(postId)).then((res: any) => {
+        dispatch(likePostRequest(postId)).then((res: any) => {
           dispatch(updatePost({ post: parsePost([res.payload.reacts]) }));
           setIsLiked(post?.reacts?.includes(id) ?? false);
         });

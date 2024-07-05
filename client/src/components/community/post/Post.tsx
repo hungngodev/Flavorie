@@ -12,7 +12,6 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { forwardRef, useState } from 'react';
-import useAuth from '../../../hooks/useAuth';
 import { ImageSlider, PostFooter, PostHeader } from './index';
 import { BasePostProps, PostObjectType } from './types';
 
@@ -28,11 +27,10 @@ const Post = forwardRef<HTMLDivElement, PostProps>(
     // console.log(postData);
     // const theme = useTheme();
 
-    const auth = useAuth();
+    // const auth = useAuth();
     // const posts = useSelector(selectPosts);
     // const post = postIndex ? posts[postIndex] : null; // Get post data from redux state
 
-    const { id } = auth.currentUser;
     const [loading, setLoading] = useState(false);
 
     return (
@@ -49,7 +47,9 @@ const Post = forwardRef<HTMLDivElement, PostProps>(
 
         <CardBody {...bodyProps}>
           <VStack gap={2} alignItems="start" marginBottom={2}>
-            <Heading size="lg">{postData.header}</Heading>
+            <Heading size="lg" fontWeight={400}>
+              {postData.header}
+            </Heading>
             <Text>{postData.body}</Text>
           </VStack>
           {postData.media.length && postData.media.length > 0 ? (

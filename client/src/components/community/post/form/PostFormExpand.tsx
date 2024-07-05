@@ -6,10 +6,6 @@ import {
   IconButton,
   Input,
   InputGroup,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -25,7 +21,7 @@ import {
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Camera, Ellipsis, Images, SmilePlus, X } from 'lucide-react';
+import { Camera, SmilePlus, X, Images } from 'lucide-react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import Webcam from 'react-webcam';
@@ -119,7 +115,6 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, action
     formState: { errors },
     setValue,
     getValues,
-    watch,
   } = useForm<PostRequestType>({
     resolver: zodResolver(PostRequest),
     defaultValues: preload
@@ -140,7 +135,7 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, action
     shouldFocusError: true,
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { append, remove } = useFieldArray({
     control,
     name: 'media',
   });
@@ -273,24 +268,6 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, action
                   right={2}
                   backgroundColor="blackAlpha.100"
                 />
-                <Menu>
-                  <MenuButton
-                    position="absolute"
-                    top={2}
-                    left={2}
-                    as={IconButton}
-                    icon={<Ellipsis color="white" />}
-                    size="md"
-                    isRound={true}
-                    padding={2}
-                    backgroundColor="blackAlpha.100"
-                  />
-                  <MenuList>
-                    <MenuItem>
-                      <Button></Button>
-                    </MenuItem>
-                  </MenuList>
-                </Menu>
 
                 {useWebcam && <Webcam ref={webCamRef} audio={false} />}
               </Box>

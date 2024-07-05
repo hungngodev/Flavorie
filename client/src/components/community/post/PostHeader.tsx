@@ -17,7 +17,6 @@ import {
   Text,
   VStack,
   useDisclosure,
-  useTheme,
 } from '@chakra-ui/react';
 import { Bookmark, Check, CircleAlert, Ellipsis, Pencil, Trash, Undo2 } from 'lucide-react';
 import { memo, useEffect, useRef, useState } from 'react';
@@ -36,7 +35,7 @@ import { saveRequest, selectSaveStatus } from '../../../slices/posts/SavePost';
 import { AppDispatch, RootState } from '../../../store/store';
 import { parseDate } from '../../../utils/index';
 import { BasePostProps, PostEditObjectType, parsePost } from './types';
-
+import { useQueryClient } from '@tanstack/react-query';
 interface PostHeaderProps extends BasePostProps, StackProps {
   preloadData?: PostEditObjectType;
   setLoading?: (arg?: any) => void;
@@ -45,6 +44,7 @@ interface PostHeaderProps extends BasePostProps, StackProps {
 
 const PostHeader = memo<PostHeaderProps>(({ postId, setLoading, postData, preloadData, isFullPage, ...props }) => {
   const auth = useAuth();
+  const queryClient = useQueryClient();
   const { id, status } = auth.currentUser;
   const navigate = useNavigate();
   const cancelRef = useRef(null);
@@ -52,8 +52,6 @@ const PostHeader = memo<PostHeaderProps>(({ postId, setLoading, postData, preloa
   const dispatch = useDispatch<AppDispatch>();
 
   const post = postData ?? useSelector((state: RootState) => selectPostById(postId)(state));
-
-  const theme = useTheme();
 
   const deleteStatus: string = useSelector(selectDeleteStatus);
   const saveStatus: string = useSelector(selectSaveStatus);
@@ -98,6 +96,7 @@ const PostHeader = memo<PostHeaderProps>(({ postId, setLoading, postData, preloa
     ) {
       setLoading(() => false);
     }
+    queryClient.invalidateQueries();
   }, [deleteStatus, saveStatus, hideStatus, postId]);
 
   const updateForm = useDisclosure();
@@ -170,7 +169,7 @@ const PostHeader = memo<PostHeaderProps>(({ postId, setLoading, postData, preloa
               Hide
             </MenuItem> */}
             <MenuItem icon={<CircleAlert />} command="⌘R" onClick={toastModal.onOpen}>
-              <Button variant="ghost" paddingInline={0}>
+              <Button variant="ghost" paddingInline={0} fontWeight={400}>
                 Report
               </Button>
               <AlertDialog

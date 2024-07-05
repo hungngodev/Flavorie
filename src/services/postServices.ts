@@ -230,11 +230,15 @@ export const updatePostDocument = async (
   }
 };
 
-export const deletePostDocument = async (postId: string) => {
+export const deletePostDocument = async (postId: string, userId: string) => {
   try {
+    const user = await UserModel.findById(userId);
     const post = await PostModel.findById(postId);
     if (!post) {
       throw new ServerError("Post not found");
+    }
+    if (!user) {
+      throw new ServerError("User not found");
     }
 
     // delete all files in cloudinary
@@ -290,6 +294,10 @@ export const deletePostDocument = async (postId: string) => {
     const deletedPost = await PostModel.deleteOne({ _id: postId });
     if (deletedPost.deletedCount === 0) {
       throw new ServerError("Failed to delete post");
+    }
+    if (user.savedPost.some((savedPost: any) => savedPost.equals(userId))) {
+      user.savedPost.pull(postId);
+      await user.save();
     }
   } catch (err) {
     throw new ServerError(`${err}`);

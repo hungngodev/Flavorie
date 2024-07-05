@@ -11,14 +11,14 @@ import {
   useTheme,
 } from '@chakra-ui/react';
 import { Camera, Images, SmilePlus } from 'lucide-react';
-import { memo, useState } from 'react';
+import { memo } from 'react';
 import { useAuth } from '../../../../hooks/index';
 import PostFormExpand from './PostFormExpand';
 
 export interface PostFormCardProps extends StackProps {}
 
 const PostFormCard = memo<PostFormCardProps>(() => {
-  const [selectedButton, setSelectedButton] = useState<string | null>(null);
+  // const [selectedButton, setSelectedButton] = useState<string | null>(null);
   const theme = useTheme();
   const Buttons = [
     {
@@ -40,10 +40,6 @@ const PostFormCard = memo<PostFormCardProps>(() => {
   const { currentUser } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const handleOpenModal = (buttonName: string) => () => {
-    onOpen();
-    setSelectedButton(buttonName);
-  };
   return (
     <>
       {currentUser.status === 'authenticated' && (
@@ -69,12 +65,13 @@ const PostFormCard = memo<PostFormCardProps>(() => {
           <Divider color="blackAlpha.300" />
           <CardFooter paddingBlock={2}>
             <HStack gap={10} width="100%" justifyContent="flex-start">
-              {Buttons.map((button, index) => (
+              {Buttons.map((button) => (
                 <Button
                   aria-label={button.name}
                   leftIcon={<button.icon color={button.color} />}
                   variant="ghost"
-                  onClick={handleOpenModal(button.name)}
+                  onClick={() => onOpen()}
+                  fontWeight={400}
                 >
                   {button.name}
                 </Button>
