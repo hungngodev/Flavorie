@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import customFetch from '../../utils/customFetch';
 import { getTemplateSlice, initialState } from '../utils';
+import { RootState } from '../../store/store';
 
 interface EditRequestPayload {
   postId: string;
@@ -16,5 +17,6 @@ export const editPostRequest = createAsyncThunk(
 );
 
 export const EditPost = getTemplateSlice('editPost', initialState, editPostRequest);
+export const selectPostEditStatus = (state: RootState) => (state.editPost as any).status;
 
 export default EditPost.reducer;

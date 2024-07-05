@@ -1,10 +1,12 @@
 import { NextFunction, Request, Response } from "express";
-import z, { string } from "zod";
-import { BadRequestError } from "../errors/customErrors.ts";
-import ExpressError from "../utils/ExpressError.ts";
 import mongoose from "mongoose";
-import z, { string } from "zod";
-import { BadRequestError, ExpressError } from "../errors/customErrors.ts";
+import { string, string, default as z, default as z } from "zod";
+import {
+  BadRequestError,
+  BadRequestError,
+  ExpressError,
+} from "../errors/customErrors.ts";
+import ExpressError from "../utils/ExpressError.ts";
 
 // login
 export const logInData = z.object({

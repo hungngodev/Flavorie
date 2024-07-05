@@ -11,15 +11,14 @@ import {
     useTheme,
 } from '@chakra-ui/react';
 import { Camera, Images, SmilePlus } from 'lucide-react';
-import { memo, useState } from 'react';
+import { memo } from 'react';
 import { useAuth } from '../../../../hooks/index';
 import PostFormExpand from './PostFormExpand';
 
 export interface PostFormCardProps extends StackProps {}
 
 const PostFormCard = memo<PostFormCardProps>(() => {
-    const [selectedButton, setSelectedButton] = useState<string | null>(null);
-    console.log(selectedButton);
+    // const [selectedButton, setSelectedButton] = useState<string | null>(null);
     const theme = useTheme();
     const Buttons = [
         {
@@ -41,10 +40,6 @@ const PostFormCard = memo<PostFormCardProps>(() => {
     const { currentUser } = useAuth();
     const { isOpen, onOpen, onClose } = useDisclosure();
 
-    const handleOpenModal = (buttonName: string) => () => {
-        onOpen();
-        setSelectedButton(buttonName);
-    };
     return (
         <>
             {currentUser.status === 'authenticated' && (
@@ -58,12 +53,14 @@ const PostFormCard = memo<PostFormCardProps>(() => {
                                 sx={{ textAlign: 'left', justifyContent: 'flex-start' }}
                                 rounded="lg"
                                 padding={6}
-                                // backgroundColor="blackAlpha.50"
+                                backgroundColor="blackAlpha.50"
+                                color="blackAlpha.700"
+                                _hover={{ backgroundColor: 'blackAlpha.100' }}
                             >
-                                {`What are you thinking today ${currentUser.username}?`}
+                                {`What are you cooking today ${currentUser.username}?`}
                             </Button>
                         </HStack>
-                        <PostFormExpand postId="" index={0} isOpen={isOpen} onClose={onClose} action="create" />
+                        <PostFormExpand postId="" isOpen={isOpen} onClose={onClose} action="create" />
                     </CardBody>
                     <Divider color="blackAlpha.300" />
                     <CardFooter paddingBlock={2}>
@@ -73,7 +70,8 @@ const PostFormCard = memo<PostFormCardProps>(() => {
                                     aria-label={button.name}
                                     leftIcon={<button.icon color={button.color} />}
                                     variant="ghost"
-                                    onClick={handleOpenModal(button.name)}
+                                    onClick={() => onOpen()}
+                                    fontWeight={400}
                                 >
                                     {button.name}
                                 </Button>

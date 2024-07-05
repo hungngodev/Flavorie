@@ -12,7 +12,7 @@ import {
     VStack,
 } from '@chakra-ui/react';
 import { forwardRef, useState } from 'react';
-import useAuth from '../../../hooks/useAuth';
+import { useAuth } from '../../../hooks';
 import { ImageSlider, PostFooter, PostHeader } from './index';
 import { BasePostProps, PostObjectType } from './types';
 
@@ -28,10 +28,11 @@ const Post = forwardRef<HTMLDivElement, PostProps>(
         // console.log(postData);
         // const theme = useTheme();
 
-        const auth = useAuth();
+        // const auth = useAuth();
         // const posts = useSelector(selectPosts);
         // const post = postIndex ? posts[postIndex] : null; // Get post data from redux state
-
+        const auth = useAuth();
+        const { id } = auth.currentUser;
         const [loading, setLoading] = useState(false);
 
         return (

@@ -1,10 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
-
-import { Box, Button, HStack, Icon, IconButton, Image, StackProps } from '@chakra-ui/react';
-
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
+import { Box, Button, HStack, Icon, IconButton, Image, StackProps } from '@chakra-ui/react';
 import { motion, useAnimationControls } from 'framer-motion';
 import { X } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
 import { GoDotFill } from 'react-icons/go';
 import { useNavigate } from 'react-router-dom';
 import { BasePostProps, MediaObjectType } from './types';

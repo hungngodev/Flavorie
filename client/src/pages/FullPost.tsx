@@ -54,7 +54,7 @@ const FullPost = () => {
             setPost(parsePost([queryData?.post])[0]);
             queryClient.invalidateQueries();
         }
-    }, [queryData, status, fetchStatus]);
+    }, [status]);
 
     useEffect(() => {
         lottie.loadAnimation({
@@ -73,6 +73,8 @@ const FullPost = () => {
             marginBlock={4}
             ref={animationRef}
             id="animation-container"
+            backgroundRepeat="no-repeat"
+            height="fit-content"
         ></Box>
     ) : status === 'error' || !post ? (
         <AspectRatio marginInline="auto" maxWidth={{ base: '100%', md: '90%', lg: '85%' }} ratio={4 / 3}>

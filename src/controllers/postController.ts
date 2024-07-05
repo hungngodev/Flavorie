@@ -58,7 +58,8 @@ export const updatePostController = PostErorHandler(async (req, res) => {
 
 export const deletePostController = PostErorHandler(async (req, res) => {
   const { postid } = req.params;
-  await deletePostDocument(postid);
+  const { userId } = req.user;
+  await deletePostDocument(postid, userId);
   return res.status(StatusCodes.OK).json({ message: "Post deleted" });
 });
 
