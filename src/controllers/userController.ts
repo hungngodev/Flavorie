@@ -27,6 +27,13 @@ export const updateUser = async (req: Request, res: Response) => {
   await updatedUser.save();
   res.status(StatusCodes.OK).send({ msg: "update user" });
 };
+export const getPersonalInfo = async (req: Request, res: Response) => {
+  const currUser = await UserModel.findById(req.user.userId);
+  if (!currUser) {
+    throw new NotFoundError("User not found");
+  }
+  return res.status(StatusCodes.OK).send({ currUser });
+};
 
 export const getCart = async (req: Request, res: Response) => {
   if (!req.user) {
@@ -111,4 +118,35 @@ export const updateCookedMeals = async (req: Request, res: Response) => {
   }
 
   res.status(StatusCodes.OK).send({ msg: "update cookedMeal" });
+};
+
+export const getNutrition = async (req: Request, res: Response) => {
+  const nutrientData = {
+    protein: "20",
+    carb: "30",
+    fat: "10",
+    vitamins: "5",
+    minerals: "5",
+  };
+  const weeklySummaryData = {
+    weeklyProtein: 70,
+    weeklyCarb: 50,
+    weeklyFat: 30,
+  };
+
+  const weeklyCaloriesData = [
+    { date: "Mon", weeklyCalories: "200" },
+    { date: "Tue", weeklyCalories: "250" },
+    { date: "Wed", weeklyCalories: "300" },
+    { date: "Thu", weeklyCalories: "280" },
+    { date: "Fri", weeklyCalories: "350" },
+    { date: "Sat", weeklyCalories: "400" },
+    { date: "Sun", weeklyCalories: "370" },
+  ];
+  // di qua tat ca cac likedMeal getUserItems(userId, "likedMeal")
+  // tinh toan ra duoc nutrientData
+  // likedMeal co mot field la allIngredients
+  // moi ingredient co mot field la nutrient
+  // moi nutrient co mot field la amount
+  // moi nutrient co mot field la unit
 };

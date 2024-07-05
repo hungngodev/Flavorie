@@ -69,7 +69,7 @@ export function SidebarItem({ icon, text, active, alert, onClickF, index = 0, li
                   delay: 0.002 + index / 40,
               }}
               key={index}
-              className={`group relative my-1 flex w-min cursor-pointer  items-center rounded-md px-3 py-2 font-medium  transition-colors ${active ? 'bg-violet-200' : 'bg-background text-secondary-foreground  hover:bg-violet-100'}`}
+              className={`capitalize group relative my-1 flex w-min cursor-pointer  items-center rounded-md px-3 py-2 font-medium  transition-colors ${active ? 'bg-violet-200' : 'bg-background text-secondary-foreground  hover:bg-violet-100'}`}
               onClick={onClickF}
           >
               {icon}

@@ -7,8 +7,10 @@ export interface User {
   email: string;
   password: string;
   lastName: string;
-  location: string;
+  city: string;
+  country: string;
   role: string;
+  description: string;
   avatar: string;
   avatarFileName: string;
   avatarPublicId: string;
@@ -39,9 +41,17 @@ const UserSchema = new mongoose.Schema<UserDocument, UserModel>({
     type: String,
     default: "lastName",
   },
-  location: {
+  city: {
     type: String,
     default: "my city",
+  },
+  country: {
+    type: String,
+    default: "US"
+  },
+  description: {
+    type: String,
+    default: "A cute cook"
   },
   role: {
     type: String,

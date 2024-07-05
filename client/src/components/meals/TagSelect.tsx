@@ -1,5 +1,5 @@
 import {Box, HStack, Button, VStack, Text} from "@chakra-ui/react"
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import CustomTag from "./CustomTag"
 import { PiFishSimple, PiGrainsBold, PiShrimp } from "react-icons/pi";
 import { Milk, EggFried, Wheat, WheatOff, Bean, Salad, Nut, FishOff, Cherry, Beef, CandyOff} from "lucide-react";
@@ -7,7 +7,8 @@ import { SlChemistry } from "react-icons/sl";
 import { GiSesame } from "react-icons/gi";
 import { TbBrandPeanut, TbMeatOff } from "react-icons/tb";
 import theme from "../../style/theme";
-
+import customFetch from "../../utils/customFetch";
+import useToast from "../../hooks/useToast";
 export type Allergy = "Dairy" | "Egg" | "Gluten" | "Grain" | "Peanut" | "Seafood" | "Sesame" | "Shellfish" | "Soy" | "Sulfite" | "Tree Nut" | "Wheat";
 export type Diet = "Gluten Free" | "Ketogenic" | "Vegetarian" | "Lacto-Vegetarian" | "Ovo-Vegetarian" | "Vegan" | "Pescetarian" | "Paleo" | "Primal" | "Whole30" | "Low FODMAP"
 export const allergyTypes: Allergy[] = ["Dairy", "Egg", "Gluten", "Grain", "Peanut", "Seafood", "Sesame", "Shellfish", "Soy", "Sulfite", "Tree Nut", "Wheat"];
@@ -44,58 +45,60 @@ const Icons: Record<Allergy | Diet, React.ComponentType> = {
 
 const colorScheme = {
   allergy: {
-    background: 'rgba(255, 192, 203, 0.5)',
-    text: 'rgba(244, 83, 138, 1)', //rgba(244, 83, 138, 1)  rgba(255, 99, 132, 11)
-    selectedBackground: ' rgba(252, 129, 158, 0.5)', // rgba(252, 129, 158, 0.4) rgba(255, 112, 171, 0.48) rgba(242, 123, 189, 0.38) rgba(255, 113, 205, 0.4)  rgba(255, 112, 171, 0.48) rgba(242, 102, 171, 0.4) rgba(255, 106, 194, 0.4)
+    background: 'rgba(212, 193, 236, 0.2)',
+    text: 'rgba(51, 24, 107, 1)', 
+    selectedBackground: ' rgba(159, 159, 237, 0.6)', 
   },
   diet: {
-    background: 'rgba(189, 224, 254, 0.6)',
+    background: 'rgba(189, 224, 254, 0.2)',
     text: 'rgba(16, 67, 159, 1)', // #10439F
-    selectedBackground: 'rgba(57, 167, 255, 0.5)', //rgba(90, 178, 255, 0.5)  rgba(64, 162, 227, 0.4)  rgba(57, 167, 255, 0.5)
+    selectedBackground: 'rgba(57, 167, 255, 0.5)', 
   },
 };
 const TagSelect = () => {
   const [selectedTags, setSelectedTags] = useState<Set<PreferenceType>>(new Set([]));
 
-  // const handleSelect = (field: PreferenceType) => {
-  //   if(selectedTags.has(field)){
-  //     setSelectedTags((prevTags)=>{
-  //       prevTags.delete(field);
-  //       return new Set(prevTags);
-  //     })
-  //   }
-  //   else{
-  //     setSelectedTags((prevTags)=>{
-  //       prevTags.add(field);
-  //       return new Set(prevTags);
-  //     })
-  //   }
-  // }
-
-  // const submitTags = () => {
-  //   const tagRequest = {
-  //     tags: Array.from(selectedTags)
-  //   }
-  //   console.log(tagRequest);
-  // }
-
-  const handleSelect = (field: PreferenceType) => {
-    setSelectedTags((prevTags) => {
-      const newTags = new Set(prevTags);
-      if (newTags.has(field)) {
-        newTags.delete(field);
-      } else {
-        newTags.add(field);
+  const {notifyError} = useToast()
+  useEffect(() => {
+    const fetchDietsAllergy = async () => {
+      try {
+        const response = await customFetch.get('/user')
+        if (response.status === 200){
+          const allergies = response.data.currUser.allergy 
+          const diets = response.data.currUser.diet 
+          setSelectedTags(new Set([...allergies, ...diets]))
+        } else {
+          notifyError("Cannot load your preference. Please try again")
+        }
+      } catch(error){
+        console.log("error fetching preference", error)
+        notifyError("Cannot load your preference. Please try again")
       }
-      return newTags;
-    });
-  };
+    }
+    fetchDietsAllergy()
+  },[notifyError])
+  const handleSelect = async (field: PreferenceType) => {
+    const newTags = new Set(selectedTags)
+    if (newTags.has(field)){
+      newTags.delete(field)
+    } else {
+      newTags.add(field)
+    }
+    setSelectedTags(newTags)
+      try {
+        const response = await customFetch.patch("/user", {
+          allergy: Array.from(newTags).filter((tag): tag is Allergy => allergyTypes.includes(tag as Allergy)),
+          diet: Array.from(newTags).filter((tag): tag is Diet => dietTypes.includes(tag as Diet))
+        })
+        if (response.status !== 200){
+          notifyError("Failed to update your preference. Please try again")
+        }
+      } catch(error){
+        console.log("error updating your preference", error)
+        notifyError("Failed to update your preference. Please try again")
+      }
+    };
   
-// interface TagSelectProps {
-//   handleSelect: (tag : PreferenceType) => void;
-//   selectedTags: Set<PreferenceType>;
-// }
-// const TagSelect: React.FC<TagSelectProps> = ({handleSelect, selectedTags}) => {
 
   return (
     <>

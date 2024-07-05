@@ -48,6 +48,7 @@ const theme = {
         palette_lavender: '#D4C1EC',
         palette_pink: '#FFC0CB',
         palette_blue: '#BDE0FE',
+
         bone_white: '#F9F6EE',
         white_purple: '#fef9ff',
         light_lavender: '#F4ECFF',

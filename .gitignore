@@ -31,9 +31,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-__pycache__/
-*.py[cod]
+
+src/scan-receipts/cc.en.300.bin.gz.part
+src/scan-receipts/app/__pycache__/*
+src/scan-receipts/__pycache__
 venv/
-*.pyc
-*.pyo
-*.pyd
+__pycache__/

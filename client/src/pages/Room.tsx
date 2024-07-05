@@ -25,6 +25,7 @@ import {
     VideoOff,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ProgressiveImage from 'react-progressive-graceful-image';
 import { Link, useParams } from 'react-router-dom';
 import ImageSlide, { BackendData } from '../components/meals/ImageSlide';
@@ -335,6 +336,7 @@ const Room = () => {
         setRoomId(id || '');
     }, [id, setRoomId]);
 
+
     useEffect(() => {
         return () => {
             ws.emit('leave-room', { roomId: id, userId });
@@ -397,6 +399,8 @@ const Room = () => {
     return (
         <Box height="100%" width="100%" position="relative">
             <HStack height="100%" width="100%" padding={'5px'}>
+                <VStack width="full" height="full" gap={2}>
+                    <Grid height={'60vh'} width="100%" templateColumns={`repeat(5,1fr)`} templateRows={`repeat(2,1fr)`}>
                 <VStack width="full" height="full" gap={2}>
                     <Grid height={'60vh'} width="100%" templateColumns={`repeat(5,1fr)`} templateRows={`repeat(2,1fr)`}>
                         {focusingVideo && (

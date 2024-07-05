@@ -14,13 +14,15 @@ import {
     Tr,
     VStack,
 } from '@chakra-ui/react';
+import { useQuery } from '@tanstack/react-query';
 import { Chart, ChartOptions, TooltipItem, registerables } from 'chart.js';
 import { Bar, PolarArea } from 'react-chartjs-2';
 import { FaCheckCircle, FaHeart, FaListAlt, FaMedal, FaStar, FaUtensils } from 'react-icons/fa';
-import RecentMeals, { RecentMeal } from '../components/meals/RecentMeals';
+import RecentMeals from '../components/meals/RecentMeals';
 import TagSelect from '../components/meals/TagSelect';
-import UserCard, { PersonalProps } from '../components/users/InfoCard';
+import UserCard from '../components/users/InfoCard';
 import theme from '../style/theme';
+import customFetch from '../utils/customFetch';
 
 Chart.register(...registerables);
 export interface TableData {
@@ -249,23 +251,23 @@ const WeeklyCaloriesChart = ({ data }: { data: WeeklyCalories[] }) => {
     );
 };
 
-interface UserProps {
-    mealData: TableData[];
-    info: PersonalProps;
-    totalPosts: number;
-    recipesShared: number;
-    recipesRated: number;
-    totalPoints: number;
-    badgesEarned: number;
-    recentMeals: RecentMeal[];
-    protein: string;
-    vitamins: string;
-    carb: string;
-    fat: string;
-    minerals: string;
-    weeklySummaryData: WeeklyData;
-    weeklyCaloriesData: WeeklyCalories[];
-}
+// interface UserProps {
+//     mealData: TableData[];
+//     info: PersonalProps;
+//     totalPosts: number;
+//     recipesShared: number;
+//     recipesRated: number;
+//     totalPoints: number;
+//     badgesEarned: number;
+//     recentMeals: RecentMeal[];
+//     protein: string;
+//     vitamins: string;
+//     carb: string;
+//     fat: string;
+//     minerals: string;
+//     weeklySummaryData: WeeklyData;
+//     weeklyCaloriesData: WeeklyCalories[];
+// }
 
 const getBadgeLevel = (badgesEarned: number): string => {
     if (badgesEarned >= 100) return 'Diamond';
@@ -278,46 +280,71 @@ const getBadgeLevel = (badgesEarned: number): string => {
 const getBadgeColor = (badgeLevel: string): string => {
     switch (badgeLevel) {
         case 'Diamond':
-            return 'blue.200';
+            return 'blue';
         case 'Platinum':
-            return 'base.300';
+            return 'base';
         case 'Gold':
             return 'yellow';
         case 'Silver':
-            return 'base.400';
+            return 'base';
         default:
             return 'gold';
     }
 };
 
-function User({
-    mealData,
-    info,
-    totalPosts,
-    recipesShared,
-    recipesRated,
-    totalPoints,
-    badgesEarned,
-    recentMeals,
-    protein,
-    vitamins,
-    carb,
-    fat,
-    minerals,
-    weeklySummaryData,
-    weeklyCaloriesData,
-}: UserProps) {
-    const nutrientData: NutrientData = { protein, carb, fat, vitamins, minerals };
-    const name = info.name;
-    const lastname = info.lastname;
-    const badgeLevel = getBadgeLevel(badgesEarned);
+const likedMealsQuery = {
+    queryKey: ['likedMeals'],
+    queryFn: async () => {
+        const response = await customFetch.get('/user/likedMeal');
+        return response.data.likedMeals;
+    },
+};
+
+const userQuery = {
+    queryKey: ['user'],
+    queryFn: async () => {
+        const response = await customFetch.get('/user');
+        return response.data;
+    },
+};
+
+function User() {
+    // const nutrientData: NutrientData = { protein, carb, fat, vitamins, minerals };
+    const nutrientData = {
+        protein: '20',
+        carb: '30',
+        fat: '10',
+        vitamins: '5',
+        minerals: '5',
+    };
+    const weeklySummaryData = {
+        weeklyProtein: 70,
+        weeklyCarb: 50,
+        weeklyFat: 30,
+    };
+
+    const weeklyCaloriesData = [
+        { date: 'Mon', weeklyCalories: '200' },
+        { date: 'Tue', weeklyCalories: '250' },
+        { date: 'Wed', weeklyCalories: '300' },
+        { date: 'Thu', weeklyCalories: '280' },
+        { date: 'Fri', weeklyCalories: '350' },
+        { date: 'Sat', weeklyCalories: '400' },
+        { date: 'Sun', weeklyCalories: '370' },
+    ];
+
+    const badgesEarned = 2;
+    const badgeLevel = getBadgeLevel(badgesEarned * 100);
     const badgeColor = getBadgeColor(badgeLevel);
+    const { data: cookedMeal, status } = useQuery(likedMealsQuery);
+    const { data: likedMeal, status: likedMealStatus } = useQuery(likedMealsQuery);
+    const { data: userData, status: userStatus } = useQuery(userQuery);
 
     return (
         <Grid templateRows="repeat(3, 2fr)" templateColumns="repeat(10, 3fr)" mt="3">
             <GridItem rowSpan={3} colSpan={3} objectFit="cover" ml="4" mr="6">
                 <Box height="100%" width="100%">
-                    <UserCard {...info} />
+                    <UserCard />
                     <TagSelect />
                 </Box>
             </GridItem>
@@ -325,7 +352,8 @@ function User({
                 <Box>
                     <Box mb="2" display="flex" flexDirection="column" justifyContent="flex-start">
                         <Heading fontSize="20" fontWeight="bold" mt="1">
-                            Hi {name} {lastname},
+                            {/* Hi {name} {lastname}, */}
+                            {/* {name} */}
                         </Heading>
                         <Text mt="1">Welcome back! Let's check the nutrition of your meals for today.</Text>
                     </Box>
@@ -350,19 +378,35 @@ function User({
                                 </Tr>
                             </Thead>
                             <Tbody>
-                                {mealData.map((meal) => (
-                                    <Tr key={meal.mealType}>
-                                        <Td>{meal.mealType}</Td>
-                                        <Td>{meal.carbs}</Td>
-                                        <Td>{meal.protein}</Td>
-                                        <Td>{meal.fat}</Td>
-                                        <Td>{meal.calories}</Td>
-                                        {/* <Td>
-                      <Box bg="lightgray" width={`${meal.caloriesOfGoal}%`} height="10px" />
-                      {meal.caloriesOfGoal}
-                    </Td> */}
-                                    </Tr>
-                                ))}
+                                {status !== 'pending' ? (
+                                    cookedMeal ? (
+                                        cookedMeal.slice(0, 3).map((meal: any) => (
+                                            <Tr key={meal.likedMeal.id}>
+                                                <Td>
+                                                    {
+                                                        meal.likedMeal.dishTypes[
+                                                            Math.round(
+                                                                Math.random() * meal.likedMeal.dishTypes.length,
+                                                            ) - 1
+                                                        ]
+                                                    }
+                                                </Td>
+                                                <Td>{meal.carbs}</Td>
+                                                <Td>{meal.protein}</Td>
+                                                <Td>{meal.fat}</Td>
+                                                <Td>{meal.calories}</Td>
+                                                <Td>
+                                                    {/* <Box bg="lightgray" width={`${meal.caloriesOfGoal}%`} height="10px" />
+                          {meal.caloriesOfGoal} */}
+                                                </Td>
+                                            </Tr>
+                                        ))
+                                    ) : (
+                                        <Text>No meal</Text>
+                                    )
+                                ) : (
+                                    <Text>Loading...</Text>
+                                )}
                             </Tbody>
                         </Table>
                     </Box>
@@ -389,7 +433,7 @@ function User({
                                             <FaListAlt size={24} color={theme.colors.palette_blue} />
                                             <Box mr="2" mb="1">
                                                 <Text ml="2" fontSize="lg" fontWeight="bold">
-                                                    {totalPosts}
+                                                    {20}
                                                 </Text>
                                                 <Text ml="2" color="base.400" fontSize="14">
                                                     Total posts
@@ -408,7 +452,7 @@ function User({
                                             <FaUtensils size={24} color="gray" />
                                             <Box mr="2" mb="1">
                                                 <Text ml="2" fontSize="lg" fontWeight="bold">
-                                                    {recipesShared}
+                                                    {Math.round(Math.random() * 10) + 1}
                                                 </Text>
                                                 <Text ml="2" color="base.400" fontSize="14">
                                                     Shares
@@ -427,7 +471,7 @@ function User({
                                             <FaHeart size={24} color="pink" />
                                             <Box mr="2" mb="1">
                                                 <Text ml="2" fontSize="lg" fontWeight="bold">
-                                                    {recipesRated}
+                                                    {likedMealStatus === 'pending' ? 0 : likedMeal.length}
                                                 </Text>
                                                 <Text ml="2" color="base.400" fontSize="14">
                                                     Recipes rated
@@ -447,7 +491,9 @@ function User({
                                             <FaStar size={24} color="gold" />
                                             <Box mr="2" mb="1">
                                                 <Text ml="2" fontSize="lg" fontWeight="bold">
-                                                    {totalPoints}
+                                                    {userStatus === 'pending'
+                                                        ? Math.round(Math.random() * 10)
+                                                        : parseInt(userData.currUser.points) + 1}
                                                 </Text>
                                                 <Text ml="2" color="base.400" fontSize="14">
                                                     Total points
@@ -515,8 +561,8 @@ function User({
                     </Heading>
                     <Box mb="2">
                         <WeeklySummary {...weeklySummaryData} />
+                        <WeeklyCaloriesChart data={weeklyCaloriesData} />
                     </Box>
-                    <WeeklyCaloriesChart data={weeklyCaloriesData} />
                 </Box>
             </GridItem>
             <GridItem rowSpan={2} colSpan={4} ml="2" mr="5" mt="2">
@@ -524,22 +570,9 @@ function User({
                     <Heading fontSize="22" fontWeight="bold" mb={1}>
                         Recent Meals
                     </Heading>
-                    <RecentMeals meals={recentMeals} />
+                    <RecentMeals likedMeal={cookedMeal} status={status} />
                 </Box>
             </GridItem>
-            {/* <GridItem rowSpan={2} colSpan={3} mt="2" ml="4">
-        <Box>
-          <Heading fontSize="22" fontWeight="bold" mb={2}>
-            Weekly Summary
-          </Heading>
-          <Box>
-            <WeeklySummary {...weeklySummaryData} />
-          </Box>
-          <Box mt="1">
-            <WeeklyCaloriesChart data={weeklyCaloriesData} />
-          </Box>
-        </Box>
-      </GridItem> */}
         </Grid>
     );
 }
