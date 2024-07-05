@@ -54,7 +54,7 @@ const Room = () => {
     } = useRoom();
     const { userName, userId } = useUser();
     const [focus, setFocus] = useState(screenSharingId);
-
+    const [showButtons, setShowButtons] = useState(false);
     const mealOptions = mealDatas.map((meal: BackendData) => ({ key: meal.title, label: meal.title }));
 
     useEffect(() => {
@@ -200,6 +200,10 @@ const Room = () => {
                 zIndex={1000}
                 left="50%"
                 transform={'translateX(-50%)'}
+                onMouseEnter={() => setShowButtons(true)}
+                onMouseLeave={() => setShowButtons(false)}
+                transition="opacity 0.3s"
+                opacity={showButtons ? 1 : 0}
             >
                 <Button
                     leftIcon={<Clipboard />}

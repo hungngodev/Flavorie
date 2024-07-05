@@ -1401,8 +1401,8 @@ export const loader =
 
 function Meal() {
     const params = useLoaderData();
-    const { data: queryData, status } = useQuery(allMealsQuery(params as { [key: string]: string }));
-    console.log(queryData);
+//     const { data: queryData, status } = useQuery(allMealsQuery(params as { [key: string]: string }));
+//     console.log(queryData);
     // const mealData = queryData?.data;
     // console.log(mealData);
 
