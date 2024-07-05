@@ -56,10 +56,10 @@ export const roomHandler = (socket: Socket) => {
       participants: rooms[roomId],
     });
     console.log("current room info", roomsInfo[roomId]);
-    socket.emit("meal-changed", {
-      currentMeal: roomsInfo[roomId].currentMeal,
-      mealInfo: roomsInfo[roomId].currentMealInfo,
-    });
+    // socket.emit("meal-changed", {
+    //   currentMeal: roomsInfo[roomId].currentMeal,
+    //   mealInfo: roomsInfo[roomId].currentMealInfo,
+    // });
     if (
       roomsInfo[roomId].currentShareId &&
       roomsInfo[roomId].currentShareId !== ""

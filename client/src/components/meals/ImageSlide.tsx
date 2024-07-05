@@ -92,6 +92,7 @@ export const IngredientsList = ({ ingredients }: IngredientsProps) => {
 };
 interface ImageSlideProps {
     backendData: BackendData;
+    currSlideIndex?: number;
 }
 
 interface TitleSlide {
@@ -120,7 +121,7 @@ type Slide = TitleSlide | DetailSlide;
 //   equipment: Equipment[];
 // }
 
-function ImageSlide({ backendData }: ImageSlideProps) {
+function ImageSlide({ backendData, currSlideIndex }: ImageSlideProps) {
     // const colorLevels = ['base.50', 'base.100', 'base.200', 'base.300', 'base.400', 'base.500', 'base.600'];
     const message = [
         'Let’s get started! Gather your ingredients and set up your workspace. You’re on your way to creating something delicious!',
@@ -214,6 +215,7 @@ function ImageSlide({ backendData }: ImageSlideProps) {
                         rounded={5}
                         flex={1}
                         p={5}
+                        display={index === currSlideIndex ? 'flex' : 'none'}
                     >
                         {/* <Heading fontSize={{ base: 'xl', md: '2xl' }} fontWeight="bold" mb="3" textAlign="center" w="full">
               {slide.title}

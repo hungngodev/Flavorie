@@ -32,6 +32,11 @@ import { Chat, NameInput, VideoPlayer } from '../components/meeting';
 import { useRoom, useUser } from '../hooks';
 import { ws } from '../providers/RoomProvider';
 import { PeerState } from '../reducers/peerReducer';
+import axios from 'axios';
+
+const mockData: BackendData = {
+    // mockData content
+};
 
 const Room = () => {
     const { id } = useParams();
@@ -54,15 +59,18 @@ const Room = () => {
     } = useRoom();
     const { userName, userId } = useUser();
     const [focus, setFocus] = useState(screenSharingId);
-
-    const mealOptions = mealDatas.map((meal: BackendData) => ({ key: meal.title, label: meal.title }));
+    const [direction, setDirection] = useState("");
+    const [currSlide, setCurrSlide] = useState(0);
+    // const mealOptions = mealDatas.map((meal: BackendData) => ({ key: meal.title, label: meal.title }));
 
     useEffect(() => {
         setFocus(screenSharingId);
     }, [screenSharingId]);
 
     useEffect(() => {
-        if (stream) ws.emit('join-room', { roomId: id, peerId: me?.id, userName, userId });
+        if (stream) {
+            ws.emit('join-room', { roomId: id, peerId: me?.id, userName, userId });
+        }
     }, [id, me?.id, stream, userName, userId]);
 
     useEffect(() => {
@@ -73,10 +81,9 @@ const Room = () => {
         return () => {
             ws.emit('leave-room', { roomId: id, userId });
         };
-    }, []);
+    }, [id, userId]);
 
     const { [focus]: focusing, ...peersToShow } = peers;
-
     const focusingVideo = focus === userId ? (screenSharingId !== '' ? screenStream : stream) : focusing?.stream;
 
     const { getButtonProps, getDisclosureProps, isOpen } = useDisclosure();
@@ -86,9 +93,53 @@ const Room = () => {
     const peerVideos = [...Object.values(peersToShow as PeerState)];
 
     const myVideoRef = useRef<HTMLVideoElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+
     useEffect(() => {
-        if (myVideoRef.current && stream) myVideoRef.current.srcObject = stream;
+        if (myVideoRef.current && stream) {
+            myVideoRef.current.srcObject = stream;
+        }
     }, [stream]);
+
+    const sendFrameToServer = async () => {
+        const canvas = canvasRef.current;
+        const context = canvas?.getContext('2d');
+        if (context && myVideoRef.current) {
+            context.drawImage(myVideoRef.current, 0, 0, canvas.width, canvas.height);
+            const dataUrl = canvas.toDataURL('image/jpeg');
+            const blob = await (await fetch(dataUrl)).blob();
+
+            const formData = new FormData();
+            formData.append('image', blob, 'frame.jpg');
+
+            try {
+                const response = await axios.post('http://127.0.0.1:5000/virtual-mouse', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+                console.log("Hand gesture", response.data.action);
+                switch (response.data.action) {
+                    case 'left-arrow':
+                        setCurrSlide((prev) => Math.max(prev - 2, 0));
+                        break;
+                    case 'right-arrow':
+                        setCurrSlide((prev) => prev + 2);
+                        break;
+                    default:
+                        break;
+                }
+            } catch (err) {
+                console.error('Error sending frame to server:', err);
+            }
+        }
+    };
+
+    useEffect(() => {
+        const interval = setInterval(sendFrameToServer, 1000);
+        return () => clearInterval(interval);
+    }, []);
+
     return (
         <Box height="100%" width="100%" position="relative">
             <HStack height="100%" width="100%" padding={'5px'}>
@@ -118,6 +169,7 @@ const Room = () => {
                                             }}
                                         />
                                         <NameInput />
+                                        <canvas ref={canvasRef} style={{ display: 'none' }} width="640" height="480" />
                                     </CardBody>
                                 </Card>
                             </GridItem>
@@ -140,8 +192,8 @@ const Room = () => {
                                     </Card>
                                 </GridItem>
                             ))}
-                        <GridItem colSpan={1} rowSpan={2} padding={2}>
-                            <VStack height="full" width="90%" justifyContent={'end'}>
+                        <GridItem gridColumn={5} gridRow={1} colSpan={1} rowSpan={2} padding={2}>
+                            {/* <VStack height="full" width="90%" justifyContent={'end'}>
                                 <ProgressiveImage
                                     src={
                                         mealDatas.find((meal: { title: string }) => meal.title === mealChoice)
@@ -178,13 +230,12 @@ const Room = () => {
                                         </SelectItem>
                                     )}
                                 </Select>
-                            </VStack>
+                            </VStack> */}
                         </GridItem>
                     </Grid>
-                    {currentMealInfo && Object.keys(currentMealInfo).length > 0 && (
+                    {mockData && Object.keys(mockData).length > 0 && (
                         <HStack width={'80%'} height="40vh" flexShrink={0}>
-                            {mealChoice}
-                            <ImageSlide backendData={currentMealInfo} />
+                            <ImageSlide backendData={mockData} />
                         </HStack>
                     )}
                 </VStack>
@@ -230,7 +281,7 @@ const Room = () => {
                     onClick={shareScreen}
                     isDisabled={screenSharingId !== userId && screenSharingId !== ''}
                     padding={0}
-                    leftIcon={screenSharingId == userId ? <ScreenShareOff /> : <MonitorUp />}
+                    leftIcon={screenSharingId === userId ? <ScreenShareOff /> : <MonitorUp />}
                     aria-label="Share screen"
                 />
                 <IconButton

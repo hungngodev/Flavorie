@@ -9,10 +9,11 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from scipy.spatial.distance import cdist
 from bson import ObjectId
+import numpy as np
 
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
+# nltk.download('punkt')
+# nltk.download('stopwords')
+# nltk.download('wordnet')
 
 
 # Extract related information from receipts
@@ -130,3 +131,14 @@ def match_ingredients(items, mongo_client):
         item["potential_matches"] = potential_matches
         matched_items.append(item)
     return matched_items
+
+def get_angle(a, b, c):
+    radians = np.arctan2(c[1] - b[1], c[0] - b[0]) - np.arctan2(a[1] - b[1], a[0] - b[0])
+    angle = np.abs(np.degrees(radians))
+    return angle
+def get_distance (landmark_list):
+    if (len(landmark_list)) < 2:
+        return
+    (x1, y1), (x2, y2) = landmark_list[0], landmark_list[1]
+    L = np.hypot(x2 - x1, y2 - y1)
+    return np.interp(L, [0, 1], [0, 1000])
