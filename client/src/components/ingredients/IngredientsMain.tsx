@@ -41,13 +41,13 @@ export function IngredientsMain({ addFunction, data }: IngredientsMainProps) {
                     />
                 ))}
             </VStack>
-            <div className="flex flex-wrap items-center gap-10">
+            <div className="flex h-[100px] flex-wrap items-center gap-10">
                 <Pagination
                     showControls
                     onChange={(page) => setPage(page)}
                     total={Math.ceil(data.results.length / size)}
                     color="primary"
-                    initialPage={3}
+                    initialPage={page}
                     space-y-10
                 />
             </div>

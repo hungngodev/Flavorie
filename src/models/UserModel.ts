@@ -18,7 +18,7 @@ export interface User {
   //   hidenPosts: Types.DocumentArray<Types.ObjectId>;
   preferences: string[];
   allergy: string[];
-  diet: string;
+  diet: string[];
   statistic: string[];
   points: number;
 }
@@ -47,11 +47,11 @@ const UserSchema = new mongoose.Schema<UserDocument, UserModel>({
   },
   country: {
     type: String,
-    default: "US"
+    default: "US",
   },
   description: {
     type: String,
-    default: "A cute cook"
+    default: "A cute cook",
   },
   role: {
     type: String,
