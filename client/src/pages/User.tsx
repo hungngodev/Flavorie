@@ -350,7 +350,7 @@ function User() {
     const badgesEarned = 2;
     const badgeLevel = getBadgeLevel(badgesEarned * 100);
     const badgeColor = getBadgeColor(badgeLevel);
-    // const { data: cookedMeal, status } = useQuery(likedMealsQuery);
+    const { data: cookedMeal, status } = useQuery(likedMealsQuery);
     const { data: likedMeal, status: likedMealStatus } = useQuery(likedMealsQuery);
     const { data: userData, status: userStatus } = useQuery(userQuery);
     const {data: dailyNutrientData, isLoading: isLoadingNutrition} = useQuery(getNutritionQuery("daily"))
@@ -399,9 +399,9 @@ function User() {
                             </Thead>
                             <Tbody>
                                 {status !== 'pending' ? (
-                                    likedMeal ? (          
-                                        likedMeal?.length > 0 &&                                                                    
-                                        likedMeal?.map((meal: any) => (
+                                    cookedMeal ? (          
+                                                                                                
+                                        cookedMeal.slice(0, 3).map((meal: any) => (
                                             <Tr key={meal?.likedMeal?.id}>
                                                 <Td>
                                                     {
@@ -599,7 +599,7 @@ function User() {
                     <Heading fontSize="22" fontWeight="bold" mb={1}>
                         Recent Meals
                     </Heading>
-                    <RecentMeals likedMeal={likedMeal} status={status} />
+                    <RecentMeals likedMeal={cookedMeal} status={status} />
                 </Box>
             </GridItem>
         </Grid>
