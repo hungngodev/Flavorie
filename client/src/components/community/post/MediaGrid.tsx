@@ -1,22 +1,21 @@
 import {
   Grid,
   GridItem,
-  Skeleton,
   GridProps,
-  ImageProps,
   Image,
-  useDisclosure,
+  ImageProps,
   Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  Skeleton,
   Text,
+  useDisclosure,
 } from '@chakra-ui/react';
+import { memo, useState } from 'react';
 import { MediaObjectType } from './MockPosts';
-import { memo, useRef, useState } from 'react';
 
 interface MediaGridProps extends GridProps {
   mediaData: MediaObjectType[];
@@ -26,7 +25,6 @@ interface MediaGridProps extends GridProps {
 
 const MediaGrid = memo<MediaGridProps>(({ mediaData, isLoaded = true, imageProps, ...props }) => {
   const [slide, setSlide] = useState<MediaObjectType[]>(mediaData.length <= 4 ? mediaData : mediaData.slice(0, 4));
-  const containerRef = useRef<HTMLDivElement | null>(null);
   const dynamic_rows = mediaData.length <= 2 ? 1 : slide.length - 1;
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (

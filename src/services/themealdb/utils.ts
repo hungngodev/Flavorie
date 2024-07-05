@@ -1,7 +1,3 @@
-import { create } from "domain";
-import { get } from "http";
-import IngredientModel from "../../models/IngredientModel.ts";
-import User from "../../models/UserModel.ts";
 import { Areas, Categories, Ingredients } from "./data.ts";
 import { filterParamType } from "./type";
 // get a random key from a data array

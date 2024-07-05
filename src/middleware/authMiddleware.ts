@@ -46,6 +46,7 @@ export const checkUser = (req: Request, res: Response, next: NextFunction) => {
       req.user = { userId, role, testUser };
     } catch (error) {}
   }
+
   next();
 };
 

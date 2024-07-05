@@ -1,9 +1,9 @@
 import React, { useCallback, useRef, useState } from 'react';
 import Webcam from 'react-webcam';
 import { Box, Button, ButtonGroup, Flex, HStack, Image, VStack, Text } from '@chakra-ui/react';
-import socket from '../../socket/socketio.tsx';
-import useToast from '../../hooks/useToast.tsx';
-import useAuth from '../../hooks/useAuth.tsx';
+import socket from '../../socket/socketio';
+import useToast from '../../hooks/useToast';
+import useAuth from '../../hooks/useAuth';
 
 
 const CustomWebcam: React.FC = () => {
@@ -12,7 +12,6 @@ const CustomWebcam: React.FC = () => {
     const [message, setMessage] = useState<string | null>(null);
     const {notifyError, notifySuccess, notifyWarning} = useToast()
     const auth = useAuth()
-
 
     // capture photo
     const capture = useCallback(() => {
@@ -59,7 +58,7 @@ const CustomWebcam: React.FC = () => {
             {imgSrc ? (
                 <HStack>
                     <ButtonGroup>
-                        <Button mt='3' onClick={retake} colorScheme="blue">
+                        <Button mt='3' onClick={retake} colorScheme="blue" variant="outline">
                             Retake photo
                         </Button>
                         <Button mt='3' onClick={submit} colorScheme="blue">
@@ -71,12 +70,6 @@ const CustomWebcam: React.FC = () => {
                 <Button mt='3' onClick={capture} colorScheme="blue">Capture photo</Button>
             )}
             </Box>
-            {/* submission message */}
-            {/* {message && (
-                <Text color="black.500" mt={3}>
-                    {message}   
-                </Text>
-            )}  */}
         </Flex>
     );
 };
@@ -90,7 +83,7 @@ const ImageScan: React.FC = () => {
 
     return (
         <VStack spacing={4} align="center">
-            <Button onClick={toggleWebcam} colorScheme="blue">
+            <Button onClick={toggleWebcam} variant="outline">
                 {showWebcam ? 'Close Webcam' : 'Scan receipt'}
             </Button>
             {showWebcam && <CustomWebcam />}

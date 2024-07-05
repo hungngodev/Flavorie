@@ -10,6 +10,10 @@ from nltk.stem import WordNetLemmatizer
 from scipy.spatial.distance import cdist
 from bson import ObjectId
 
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')
+
 
 # Extract related information from receipts
 def post_process(data):
