@@ -349,6 +349,7 @@ function User() {
     const badgeLevel = getBadgeLevel(badgesEarned * 100);
     const badgeColor = getBadgeColor(badgeLevel);
     const { data: cookedMeal, status } = useQuery(likedMealsQuery);
+    const { data: cookedMeal, status } = useQuery(likedMealsQuery);
     const { data: likedMeal, status: likedMealStatus } = useQuery(likedMealsQuery);
     const { data: userData, status: userStatus } = useQuery(userQuery);
     const {data: dailyNutrientData, isLoading: isLoadingNutrition} = useQuery(getNutritionQuery("daily"))
@@ -607,6 +608,7 @@ function User() {
                     <Heading fontSize="22" fontWeight="bold" mb={1}>
                         Recent Meals
                     </Heading>
+                    <RecentMeals likedMeal={cookedMeal} status={status} />
                     <RecentMeals likedMeal={cookedMeal} status={status} />
                 </Box>
             </GridItem>
