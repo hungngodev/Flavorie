@@ -65,14 +65,124 @@ export async function classifyIngredient() {
                 ingredients: ingredients.map((ingredient: Ingredient) => ({
                     id: ingredient._id.toString(),
                     name: ingredient.name,
-                    image: "https://img.spoonacular.com/ingredients_100x100/" + ingredient.image,
-                    category: ingredient.categoryPath
+                    image: ingredient.image,
+                    category: ingredient.categoryPath,
+                    amount: ingredient.amount,
+                    unit: ingredient.unit,
+                    unitShort: ingredient.unitShort,
+                    nutrition: ingredient.nutrition
                 }))
             })
         }
         outputs.push(categoryResults)
     }
     return outputs
+}
+
+export async function classifyIngredientByAisle() {
+    const aisles = await Ingredients.aggregate([
+        {
+            $project: {
+                name: 1,
+                allAisles: { $split: ["$aisle", ";"] },
+                id: 1,
+                myCagetory: 1,
+                original: 1,
+                originalName: 1,
+                amount: 1,
+                unit: 1,
+                unitShort: 1,
+                unitLong: 1,
+                possibleUnits: 1,
+                estimatedCost: 1,
+                consistency: 1,
+                shoppingListUnits: 1,
+                aisle: 1,
+                image: 1,
+                meta: 1,
+                nutrition: 1,
+                allergy: 1,
+                diet: 1,
+                categoryPath: 1,
+                relevance: 1
+            }
+        },
+        { $unwind: "$allAisles" },
+        {
+            $group: {
+                _id: "$allAisles",
+                ingredients: {
+                    $push: {
+                        _id: "$_id",
+                        id: "$id",
+                        myCagetory: "$myCagetory",
+                        original: "$original",
+                        originalName: "$originalName",
+                        name: "$name",
+                        amount: "$amount",
+                        unit: "$unit",
+                        unitShort: "$unitShort",
+                        unitLong: "$unitLong",
+                        possibleUnits: "$possibleUnits",
+                        estimatedCost: "$estimatedCost",
+                        consistency: "$consistency",
+                        shoppingListUnits: "$shoppingListUnits",
+                        aisle: "$aisle",
+                        image: "$image",
+                        meta: "$meta",
+                        nutrition: "$nutrition",
+                        allergy: "$allergy",
+                        diet: "$diet",
+                        categoryPath: "$categoryPath",
+                        relevance: "$relevance"
+                    }
+                }
+            }
+        },
+        { $sort: { _id: -1 } }
+    ]);
+
+    aisles[aisles.findIndex(aisle => aisle._id == 'Bakery/Bread')].ingredients.push(...(aisles[aisles.findIndex(aisle => aisle._id == 'Baking')].ingredients.concat(aisles[aisles.findIndex(aisle => aisle._id == 'Bread')].ingredients)))
+    const results = [];
+    for (const aisle of aisles.filter(aisle => !['Bread', 'Baking', 'Ethnic', "Online", "Grilling Supplies", "Not in Grocery Store/Homemade"].some(e => e === aisle._id))) {
+        const queryResults = [];
+        let i = 1;
+        let ingredientQuery = [];
+        for (const ingredient of aisle.ingredients) {
+            if (ingredientQuery.length <= 8) {
+                ingredientQuery.push({
+                    id: ingredient._id,
+                    name: ingredient.name,
+                    image: ingredient.image,
+                    category: ingredient.categoryPath,
+                    amount: ingredient.amount,
+                    unit: ingredient.unit,
+                    unitShort: ingredient.unitShort,
+                    nutrition: ingredient.nutrition
+                })
+            }
+            else {
+                queryResults.push({
+                    queryKey: `Row ${i++}`,
+                    ingredients: ingredientQuery
+                })
+                ingredientQuery = [];
+            }
+        }
+
+        results.push({
+            categoryName: aisle._id.includes('Alcohol')
+                ? 'Alcohol' : aisle._id.includes('Canned')
+                    ? 'Canned' : aisle._id.includes('Bakery')
+                        ? 'Bakery' : aisle._id.includes('Produce')
+                            ? 'Fruit' : aisle._id.includes('Ethnic')
+                                ? 'Ethnic' : aisle._id,
+            numberOfQueryKeys: aisle.ingredients.length / 2,
+            totalNumberOfIngredients: aisle.ingredients.length,
+            results: queryResults
+        })
+    }
+    return results
 }
 
 export async function findIngredients(query: string) {

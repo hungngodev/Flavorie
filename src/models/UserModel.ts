@@ -1,84 +1,131 @@
-import bcrypt from 'bcrypt';
-import mongoose from 'mongoose';
+import bcrypt from "bcrypt";
+import mongoose, { Types } from "mongoose";
+import Post from "./Post";
 
 export interface User {
-    name: string;
-    email: string;
-    password: string;
-    lastName: string;
-    location: string;
-    role: string;
-    avatar: string;
-    avatarFileName: string;
-    avatarPublicId: string;
-    preferences: string[];
-    allergy: string[];
-    diet: string;
-    statistic: string[];
+  name: string;
+  email: string;
+  password: string;
+  lastName: string;
+  location: string;
+  role: string;
+  avatar: string;
+  avatarFileName: string;
+  avatarPublicId: string;
+  savedPost: Types.DocumentArray<Types.ObjectId>;
+  //   hidenPosts: Types.DocumentArray<Types.ObjectId>;
+  preferences: string[];
+  allergy: string[];
+  diet: string;
+  statistic: string[];
+  points: number;
 }
-interface UserDocument extends User, mongoose.Document { };
+
+interface UserDocument extends User, mongoose.Document {}
 export type UserModel = mongoose.Model<UserDocument>;
 const UserSchema = new mongoose.Schema<UserDocument, UserModel>({
-    name: {
-        type: String,
-        required: true,
-        unique: true,
+  name: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: String,
+  lastName: {
+    type: String,
+    default: "lastName",
+  },
+  location: {
+    type: String,
+    default: "my city",
+  },
+  role: {
+    type: String,
+    enum: ["user", "admin"],
+    default: "user",
+  },
+  savedPost: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Post",
     },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
+  ],
+  //   hidenPosts: [
+  //     {
+  //       type: mongoose.Schema.Types.ObjectId,
+  //       ref: "Post",
+  //     },
+  //   ],
+  avatar: String,
+  avatarFileName: String,
+  avatarPublicId: String,
+  preferences: {
+    type: [String],
+    default: [],
+  },
+  allergy: [
+    {
+      type: String,
+      enum: [
+        "Dairy",
+        "Egg",
+        "Gluten",
+        "Grain",
+        "Peanut",
+        "Seafood",
+        "Sesame",
+        "Shellfish",
+        "Soy",
+        "Sulfite",
+        "Tree Nut",
+        "Wheat",
+      ],
     },
-    password: String,
-    lastName: {
-        type: String,
-        default: 'lastName',
+  ],
+  diet: [
+    {
+      type: String,
+      enum: [
+        "Gluten Free",
+        "Ketogenic",
+        "Vegetarian",
+        "Lacto-Vegetarian",
+        "Ovo-Vegetarian",
+        "Vegan",
+        "Pescetarian",
+        "Paleo",
+        "Primal",
+        "Whole30",
+        "Low FODMAP",
+      ],
     },
-    location: {
-        type: String,
-        default: 'my city',
-    },
-    role: {
-        type: String,
-        enum: ['user', 'admin'],
-        default: 'user',
-    },
-    avatar: String,
-    avatarFileName: String,
-    avatarPublicId: String,
-    preferences: {
-        type: [String],
-        default: [],
-    },
-    allergy: [{
-        type: String,
-        enum: ["Dairy", "Egg", "Gluten", "Grain", "Peanut", "Seafood", "Sesame", "Shellfish", "Soy", "Sulfite", "Tree Nut", "Wheat"],
-    }],
-    diet: [
-        {
-            type: String,
-            enum: ["Gluten Free", "Ketogenic", "Vegetarian", "Lacto-Vegetarian", "Ovo-Vegetarian", "Vegan", "Pescetarian", "Paleo", "Primal", "Whole30", "Low FODMAP"],
-        }
-    ],
-    statistic: {
-        type: [String],
-        default: [],
-    },
+  ],
+  statistic: {
+    type: [String],
+    default: [],
+  },
+  points: {
+    type: Number,
+    default: 0,
+  },
 });
 
 UserSchema.methods.toJSON = function () {
-    let obj = this.toObject();
-    delete obj.password;
-    return obj;
+  let obj = this.toObject();
+  delete obj.password;
+  return obj;
 };
 
-UserSchema.pre('save', async function (next) {
-    const user = this;
-    if (user.isModified('password')) {
-        user.password = await bcrypt.hash(user.password, 8);
-    }
-    next();
+UserSchema.pre("save", async function (next) {
+  const user = this;
+  if (user.isModified("password")) {
+    user.password = await bcrypt.hash(user.password, 8);
+  }
+  next();
 });
 
-
-export default mongoose.model<UserDocument, UserModel>('User', UserSchema);
+export default mongoose.model<UserDocument, UserModel>("User", UserSchema);
