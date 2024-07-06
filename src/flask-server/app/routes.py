@@ -51,25 +51,40 @@ hands = mpHands.Hands(
 )
 
 screen_width, screen_height = pyautogui.size()
+# def move_mouse(idx_finger):
+#     if idx_finger:
+#         x = int(idx_finger.x * screen_width)
+#         y = int(idx_finger.y * screen_height)
+#         pyautogui.moveTo(x, y)
 
-# left arrow: nam tay
+
+# 4 fingers for left arrow
 def left_arrow(landmark_list):
     return (
-        get_angle(landmark_list[5], landmark_list[6], landmark_list[8]) < 40 
-        and get_angle(landmark_list[9], landmark_list[10], landmark_list[12]) < 40
-        and get_angle(landmark_list[13], landmark_list[14], landmark_list[16]) < 40
-        and get_angle(landmark_list[17], landmark_list[18], landmark_list[20]) < 40
+        get_angle(landmark_list[5], landmark_list[6], landmark_list[8]) > 90
+        and get_angle(landmark_list[9], landmark_list[10], landmark_list[12]) > 90
+        and get_angle(landmark_list[13], landmark_list[14], landmark_list[16]) > 90
+        and get_angle(landmark_list[0], landmark_list[1], landmark_list[4]) > 90
+        and get_angle(landmark_list[17], landmark_list[18], landmark_list[20]) > 90
     )
 
-# right arrow: mo tay
+
+# 3 fingers for left click
+def left_click(landmark_list, thumb_distance):
+    return (
+        get_angle(landmark_list[5], landmark_list[6], landmark_list[8]) > 90
+        and get_angle(landmark_list[9], landmark_list[10], landmark_list[12]) > 90
+        and get_angle(landmark_list[13], landmark_list[14], landmark_list[16]) > 90
+        and thumb_distance > 50
+    )
+
+
+# thumb finger for right arrow
 def right_arrow(landmark_list):
     return (
-        get_angle(landmark_list[5], landmark_list[6], landmark_list[8]) > 160
-        and get_angle(landmark_list[9], landmark_list[10], landmark_list[12]) > 160
-        and get_angle(landmark_list[13], landmark_list[14], landmark_list[16]) > 160
-        and get_angle(landmark_list[17], landmark_list[18], landmark_list[20]) > 160
+        get_angle(landmark_list[9], landmark_list[10], landmark_list[12]) < 50
+        and get_angle(landmark_list[0], landmark_list[1], landmark_list[4]) > 90
     )
-
 
 
 # find index finger
@@ -80,13 +95,25 @@ def find_finger(processed):
     return None, None
 def detect_gestures(frame, landmark_list, processed):
     if (len(landmark_list)) >= 21:
-                
-        if left_arrow(landmark_list):
-            return "left-arrow"
+        idx_finger = find_finger(processed)
+
+        thumb_distance = get_distance([landmark_list[4], landmark_list[5]])
+        # if (
+        #     thumb_distance < 50
+        #     and get_angle(landmark_list[5], landmark_list[6], landmark_list[8]) > 90
+        # ):
+        #     # move_mouse(idx_finger)
+        #     return "move-mouse"
         if right_arrow(landmark_list):
-            # pyautogui.press("b")
             return "right-arrow"
-        
+        elif left_arrow(landmark_list):
+            # pyautogui.press("left")
+            # pyautogui.press("b")
+            return "left-arrow"
+        # elif left_click(landmark_list, thumb_distance):
+            # mouse.press(Button.left)
+            # mouse.release(Button.left)
+            # return "left-click"
 
 @cross_origin()
 

@@ -339,7 +339,29 @@ function User() {
     const { data: cookedMeal, status } = useQuery(likedMealsQuery);
     const { data: likedMeal, status: likedMealStatus } = useQuery(likedMealsQuery);
     const { data: userData, status: userStatus } = useQuery(userQuery);
-
+    const Dailydata = [
+        {
+            mealType: 'Breakfast',
+            calories: 120.4,
+            carbs: 53.7,
+            protein: 62.4,
+            fat: 14.5,
+        },
+        {
+            mealType: 'Lunch',
+            calories: 280.6,
+            carbs: 130.7,
+            protein: 136.2,
+            fat: 18.4,
+        },
+        {
+            mealType: 'Dinner',
+            calories: 220.7,
+            carbs: 89.4,
+            protein: 100.9,
+            fat: 19.8,
+        },
+    ];
     return (
         <Grid templateRows="repeat(3, 2fr)" templateColumns="repeat(10, 3fr)" mt="3">
             <GridItem rowSpan={3} colSpan={3} objectFit="cover" ml="4" mr="6">
@@ -379,39 +401,20 @@ function User() {
                             </Thead>
                             <Tbody>
                                 {status !== 'pending' ? (
-                                    cookedMeal ? (
-                                        cookedMeal.slice(0, 3).map(
-                                            (meal: {
-                                                likedMeal: {
-                                                    id: string;
-                                                    dishTypes: string[];
-                                                };
-                                                carbs: number;
-                                                protein: number;
-                                                fat: number;
-                                                calories: number;
-                                            }) => (
-                                                <Tr key={meal.likedMeal.id}>
-                                                    <Td>
-                                                        {
-                                                            meal.likedMeal.dishTypes[
-                                                                Math.round(
-                                                                    Math.random() * meal.likedMeal.dishTypes.length,
-                                                                ) - 1
-                                                            ]
-                                                        }
-                                                    </Td>
-                                                    <Td>{meal.carbs}</Td>
-                                                    <Td>{meal.protein}</Td>
-                                                    <Td>{meal.fat}</Td>
-                                                    <Td>{meal.calories}</Td>
-                                                    <Td>
-                                                        {/* <Box bg="lightgray" width={`${meal.caloriesOfGoal}%`} height="10px" />
+                                    Dailydata ? (
+                                        Dailydata.slice(0, 3).map((meal, index: number) => (
+                                            <Tr key={index + 'meal'}>
+                                                <Td>{meal.mealType}</Td>
+                                                <Td>{meal.carbs}</Td>
+                                                <Td>{meal.protein}</Td>
+                                                <Td>{meal.fat}</Td>
+                                                <Td>{meal.calories}</Td>
+                                                <Td>
+                                                    {/* <Box bg="lightgray" width={`${meal.caloriesOfGoal}%`} height="10px" />
                           {meal.caloriesOfGoal} */}
-                                                    </Td>
-                                                </Tr>
-                                            ),
-                                        )
+                                                </Td>
+                                            </Tr>
+                                        ))
                                     ) : (
                                         <Text>No meal</Text>
                                     )

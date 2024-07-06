@@ -27,7 +27,7 @@ const authenticateSocketIO = (socket: Socket, next: Function) => {
 const setUpSocketIO = (server: any) => {
   const io = new Server(server, {
     cors: {
-      origin: "*",
+      origin: "http://localhost:5173",
       credentials: true,
       methods: ["GET", "POST"],
     },
