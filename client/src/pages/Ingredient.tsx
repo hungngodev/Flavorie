@@ -216,6 +216,19 @@ export default function Ingredient() {
                               type: 'cart',
                           };
                       });
+            if (operation === 'send') {
+                socket.emit('sendToInstacart', results);
+                toast.success('Your cart has been sent to Instacart');
+            }
+            if (operation === 'transfer' || operation === 'send') {
+                await queryClient.invalidateQueries({
+                    queryKey: ['leftOver'],
+                });
+                await queryClient.ensureQueryData(leftOverQuery);
+            }
+            queryClient.invalidateQueries({
+                queryKey: ['cart'],
+            });
             await customFetch.patch(
                 '/user/cart',
                 {
@@ -226,19 +239,6 @@ export default function Ingredient() {
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 },
             );
-            if (operation === 'transfer' || operation === 'send') {
-                await queryClient.invalidateQueries({
-                    queryKey: ['leftOver'],
-                });
-                await queryClient.ensureQueryData(leftOverQuery);
-            }
-            if (operation === 'send') {
-                socket.emit('sendToInstacart', results);
-                toast.success('Your cart has been sent to Instacart');
-            }
-            queryClient.invalidateQueries({
-                queryKey: ['cart'],
-            });
         })();
     };
 

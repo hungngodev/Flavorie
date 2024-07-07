@@ -108,6 +108,7 @@ export const notificationHandler = (socket: Socket) => {
   });
 
   socket.on("sendToInstacart", async data => {
+    console.log("send to instacart", data);
     const ingredients = await IngredientModel.find({
       _id: {
         $in: data.map((ingredient: { itemId: string }) => ingredient.itemId),
