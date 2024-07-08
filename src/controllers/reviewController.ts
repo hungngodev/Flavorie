@@ -46,6 +46,10 @@ export const createReview = async (req: Request, res: Response) => {
     console.log("error no user");
     return res.status(404).send({ error: "User not found" });
   }
+  if (!user) {
+    console.log("error no user");
+    return res.status(404).send({ error: "User not found" });
+  }
 
   try {
     const post = await PostModel.findById(postId);
