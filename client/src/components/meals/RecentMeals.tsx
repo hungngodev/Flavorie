@@ -55,7 +55,6 @@ export function RecentMeals({ likedMeal, status }: RecentMeal) {
                 border="1px"
                 borderColor={theme.colors.palette_lavender}
                 borderRadius="md"
-                bg={'black'}
             >
                 {likedMeal.length > 0 ? (
                     likedMeal.map((meal: any, index: number) => (

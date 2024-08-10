@@ -184,9 +184,7 @@ const UserCard = () => {
                                         />
                                     </HStack>
                                 ) : (
-                                    <Box ml="2">
-                                        {userInfo?.name} {userInfo?.lastName}
-                                    </Box>
+                                    <Box ml="2">{userInfo?.name}</Box>
                                 )}
                             </Heading>
                             <Text>

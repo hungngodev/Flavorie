@@ -3,13 +3,22 @@ import { gestureHandler } from "../handler/gestureHandler.ts";
 import { notificationHandler } from "../handler/notificationHandler.ts";
 import { roomHandler } from "../handler/roomHandler.ts";
 import { verifyJWT } from "../utils/tokenUtils.ts";
-
+interface Cookies {
+  [key: string]: string;
+}
 const authenticateSocketIO = (socket: Socket, next: Function) => {
   try {
     const cookie = socket.handshake.headers.cookie;
-    const tokenMatch = cookie?.match(/token=([^;]+)/);
-    const token = tokenMatch ? tokenMatch[1] : null;
-
+    const cookies: Cookies = {};
+    if (cookie) {
+      cookie.split(";").forEach(cookie => {
+        const [key, value] = cookie.trim().split("=");
+        cookies[key] = value;
+      });
+    }
+    const token = cookies["flavorie_session_token"] || undefined;
+    console.log("COOKIE", cookies);
+    // console.log("authenticate", token);
     if (token) {
       const { userId, role } = verifyJWT(token);
       socket.data.user = { userId, role };
