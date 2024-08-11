@@ -2,7 +2,7 @@ import { HStack, Heading, IconButton, VStack } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
-import { Ingredient, SubCategory } from '../../pages/Ingredient';
+import { Ingredient, SubCategory } from '../../layouts/IngredientLayout';
 import theme from '../../style/theme';
 import IngredientCard from './Card';
 

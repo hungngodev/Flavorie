@@ -1,8 +1,8 @@
 import { DeleteIcon } from '@chakra-ui/icons';
 import {
+    Button,
     Flex,
     HStack,
-    Button, 
     IconButton,
     Image,
     NumberDecrementStepper,
@@ -14,7 +14,7 @@ import {
 import { motion } from 'framer-motion';
 import { useEffect } from 'react';
 import { Control, Controller, FieldArrayWithId } from 'react-hook-form';
-import { leftOverData } from '../../pages/Ingredient';
+import { leftOverData } from '../../layouts/IngredientLayout';
 import theme from '../../style/theme';
 interface LeftOverProps {
     height: string;
@@ -48,7 +48,6 @@ export default function LeftOver({ height, removeItem, onSubmit, fields, control
                         onSubmit();
                     }}
                     rounded="md"
-                    
                     px={3}
                     py={2}
                     color="white"

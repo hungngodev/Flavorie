@@ -17,7 +17,7 @@ const authenticateSocketIO = (socket: Socket, next: Function) => {
       });
     }
     const token = cookies["flavorie_session_token"] || undefined;
-    console.log("COOKIE", cookies);
+    // console.log("COOKIE", cookies);
     // console.log("authenticate", token);
     if (token) {
       const { userId, role } = verifyJWT(token);

@@ -4,44 +4,37 @@ import { ServerError } from "../errors/customErrors.ts";
 import IngredientModel from "../models/IngredientModel.ts";
 import User from "../models/UserModel.ts";
 import {
+  CategoryResults,
   classifyIngredient,
-  classifyIngredientByAisle,
   findIngredients,
 } from "../services/ingredientServices.ts";
+import { getAndStoreInRedis } from "../services/redisClient/index.ts";
 import {
   getAllIngredientsAPI,
   getIngredientsAutoCompleteAPI,
 } from "../services/spoonacular/spoonacularServices.ts";
 import { getUserItems } from "../services/userServices.ts";
+import { IngredientBank } from "../utils/queryBank.ts";
 
 export const getAllIngredients = async (req: Request, res: Response) => {
   const { category, sideBar } = req.query;
-
-  if (category === "/") {
-    return res.status(StatusCodes.OK).json({
-      category: [],
-      categories: [],
-    });
-  }
-  console.log("category querying", category);
+  // console.log("category querying", category);
+  const categories = Object.keys(IngredientBank);
   try {
-    const classifiedIngredients = await classifyIngredient();
+    console.log("Checking from Redis for ingredients");
+    const redisKey = "ingredients " + category;
+    const classifiedIngredients: CategoryResults = (await getAndStoreInRedis(
+      redisKey,
+      3600,
+      async () => await classifyIngredient(category?.toString() || ""),
+    )) as CategoryResults;
     if (sideBar)
       return res.status(StatusCodes.OK).json({
-        categories: classifiedIngredients.map(
-          SubCategory => SubCategory.categoryName,
-        ),
+        categories,
       });
-    console.log(
-      classifiedIngredients.map(SubCategory => SubCategory.categoryName),
-    );
     return res.status(StatusCodes.OK).json({
-      category: classifiedIngredients.filter(
-        SubCategory => SubCategory.categoryName === category,
-      ),
-      categories: classifiedIngredients.map(
-        SubCategory => SubCategory.categoryName,
-      ),
+      category: classifiedIngredients,
+      categories,
     });
   } catch (e) {
     console.error("Error classifying ingredients:", e);
@@ -110,7 +103,7 @@ export const searchIngredients = async (req: Request, res: Response) => {
     const randomIngredients = await IngredientModel.aggregate([
       { $sample: { size: 40 } },
     ]);
-    console.log("randomIngredients", randomIngredients);
+    // console.log("randomIngredients", randomIngredients);
     return res
       .json({
         result,
@@ -134,7 +127,8 @@ export const searchIngredients = async (req: Request, res: Response) => {
         ingredientName.toLowerCase().trim(),
         10,
       );
-      console.log("spoonacularIngredients", spoonacularIngredients);
+      ingredients.push(...spoonacularIngredients);
+      // console.log("spoonacularIngredients", spoonacularIngredients);
     }
 
     return res

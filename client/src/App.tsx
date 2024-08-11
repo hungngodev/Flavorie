@@ -2,16 +2,32 @@ import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Provider as ReduxProvider } from 'react-redux';
-import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
-import { HomeLayout, MeetingLayout, RoomLayout } from './layouts';
+import { HomeLayout, IngredientLayout, MeetingLayout, RoomLayout } from './layouts';
+import { loader as ingredientsLoader } from './layouts/IngredientLayout';
+import {
+    Category,
+    Feed,
+    FullPost,
+    IngredientLanding,
+    Login,
+    Main,
+    Meal,
+    Meeting,
+    Recipe,
+    Register,
+    Room,
+    User,
+} from './pages';
+import { loader as categoryLoader } from './pages/Category';
 import { loader as PostLoader } from './pages/FullPost';
-import { loader as ingredientsLoader } from './pages/Ingredient';
+import { loader as ingredientLandingLoader } from './pages/IngredientLanding';
 import { loader as mealsLoader } from './pages/Meal';
 import Receipt from './pages/Receipt';
 import ReceiptScan from './pages/ReceiptScan';
 import { loader as recipeLoader } from './pages/Recipe';
-import { Feed, FullPost, Ingredient, Login, Main, Meal, Meeting, Recipe, Register, Room, User } from './pages/index';
+
 import ToastProvider from './providers/ToastProvider';
 import { store as reduxStore } from './store/store';
 import theme from './style/theme';
@@ -43,17 +59,18 @@ const router = createBrowserRouter([
             },
             {
                 path: 'ingredients',
-                element: <Outlet />,
+                element: <IngredientLayout />,
+                loader: ingredientsLoader(queryClient),
                 children: [
                     {
                         index: true,
-                        element: <Ingredient />,
-                        loader: ingredientsLoader(queryClient),
+                        element: <IngredientLanding />,
+                        loader: ingredientLandingLoader(queryClient),
                     },
                     {
                         path: ':category',
-                        element: <Ingredient />,
-                        loader: ingredientsLoader(queryClient),
+                        element: <Category />,
+                        loader: categoryLoader(queryClient),
                     },
                 ],
             },

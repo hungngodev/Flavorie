@@ -1,27 +1,26 @@
-import { DeleteIcon } from '@chakra-ui/icons';
+import { ChevronDownIcon, DeleteIcon } from '@chakra-ui/icons';
 import {
+    Button,
     Flex,
     HStack,
     IconButton,
     Image,
+    Menu,
+    MenuButton,
+    MenuItem,
+    MenuList,
     NumberDecrementStepper,
     NumberIncrementStepper,
     NumberInput,
     NumberInputField,
     VStack,
-    Button,
-    Menu,
-    MenuButton,
-    MenuList,
-    MenuItem,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import Lottie, { LottieRefCurrentProps } from 'lottie-react';
 import { RefObject, useEffect } from 'react';
 import { Control, Controller, FieldArrayWithId } from 'react-hook-form';
 import { Cart } from '../../assets/animations';
-import { CartData } from '../../pages/Ingredient';
-import { ChevronDownIcon } from '@chakra-ui/icons';
+import { CartData } from '../../layouts/IngredientLayout';
 import theme from '../../style/theme';
 
 type CartProps = {
@@ -72,15 +71,13 @@ export default function CartToBuy({ removeFunction, onSubmit, fields, control, l
                         as={Button}
                         rightIcon={<ChevronDownIcon />}
                         color="white"
-                        bg={theme.colors.palette_purple}    
+                        bg={theme.colors.palette_purple}
                     >
                         Actions
                     </MenuButton>
                     <MenuList>
                         <MenuItem onClick={() => handleMenuItemClick('add')}>Save it</MenuItem>
-                        <MenuItem onClick={() => handleMenuItemClick('transfer')}>
-                            Transfer to fridge
-                        </MenuItem>
+                        <MenuItem onClick={() => handleMenuItemClick('transfer')}>Transfer to fridge</MenuItem>
                         <MenuItem onClick={() => handleMenuItemClick('send')}>Send to Instacart</MenuItem>
                         <MenuItem onClick={() => handleMenuItemClick('deleteAll')}>Delete all</MenuItem>
                     </MenuList>

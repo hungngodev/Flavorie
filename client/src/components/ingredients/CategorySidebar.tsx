@@ -106,8 +106,8 @@ export function SidebarItem({ icon, text, active, alert, onClickF, index = 0, li
                 {!expanded && (
                     <motion.div
                         className={` invisible absolute left-full z-50 ml-1  w-min
-              -translate-x-3 text-nowrap rounded-md capitalize  text-gray-600 text-secondary-foreground opacity-20 
-              transition-all group-hover:visible group-hover:translate-x-0 group-hover:opacity-100`}
+-translate-x-3 text-nowrap rounded-md capitalize  text-gray-600 text-secondary-foreground opacity-20 
+transition-all group-hover:visible group-hover:translate-x-0 group-hover:opacity-100`}
                     >
                         {text}
                     </motion.div>

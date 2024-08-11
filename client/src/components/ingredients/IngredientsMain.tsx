@@ -1,7 +1,7 @@
 import { Heading, Text, VStack } from '@chakra-ui/react';
 import { Pagination } from '@nextui-org/pagination';
 import { useState } from 'react';
-import { Category, Ingredient } from '../../pages/Ingredient';
+import { Category, Ingredient } from '../../layouts/IngredientLayout';
 import theme from '../../style/theme';
 import IngredientLine from './IngredientLine';
 // import { Previous, Paginator, PageGroup, Page, Next, generatePages } from 'chakra-paginator';
@@ -9,13 +9,12 @@ import IngredientLine from './IngredientLine';
 type IngredientsMainProps = {
     data: Category;
     addFunction: (ingredientData: Ingredient) => void;
-}
+};
 
 export function IngredientsMain({ addFunction, data }: IngredientsMainProps) {
     const [page, setPage] = useState(1);
     const size = 3;
     const dataToRender = data.results.slice((page - 1) * size, page * size);
-
 
     return (
         <VStack

@@ -133,10 +133,10 @@ const Room = () => {
         }
     };
 
-    useEffect(() => {
-        const interval = setInterval(sendFrameToServer, 200);
-        return () => clearInterval(interval);
-    }, []);
+    // useEffect(() => {
+    //     const interval = setInterval(sendFrameToServer, 200);
+    //     return () => clearInterval(interval);
+    // }, []);
 
     useEffect(() => {
         console.log('direction', direction);

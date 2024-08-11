@@ -24,58 +24,54 @@ type QueryResults = {
     category: string[];
   }[];
 };
-type CategoryResults = {
+export type CategoryResults = {
   categoryName: string;
   numberOfQueryKeys: number;
   totalNumberOfIngredients: number;
   results: QueryResults[];
 };
-export async function classifyIngredient() {
-  const outputs: CategoryResults[] = [];
-  for (const category in IngredientBank) {
-    const queryKeys = IngredientBank[category as keyof typeof IngredientBank];
-    const categoryResults: CategoryResults = {
-      categoryName: category,
-      numberOfQueryKeys: queryKeys.length,
-      totalNumberOfIngredients: 0,
-      results: [],
-    };
+export async function classifyIngredient(category: string) {
+  const queryKeys = IngredientBank[category as keyof typeof IngredientBank];
+  const categoryResults: CategoryResults = {
+    categoryName: category,
+    numberOfQueryKeys: queryKeys.length,
+    totalNumberOfIngredients: 0,
+    results: [],
+  };
 
-    for (const key of queryKeys) {
-      const ingredients = await Ingredients.aggregate([
-        {
-          $match: {
-            originalName: { $regex: key, $options: "i" },
-            relevance: { $exists: true },
-          },
+  for (const key of queryKeys) {
+    const ingredients = await Ingredients.aggregate([
+      {
+        $match: {
+          originalName: { $regex: key, $options: "i" },
+          relevance: { $exists: true },
         },
-        {
-          $addFields: { relevance_count: { $size: "$relevance" } },
-        },
-        {
-          $sort: { relevance_count: -1 },
-        },
-      ]);
+      },
+      {
+        $addFields: { relevance_count: { $size: "$relevance" } },
+      },
+      {
+        $sort: { relevance_count: -1 },
+      },
+    ]);
 
-      categoryResults.totalNumberOfIngredients += ingredients.length;
-      if (ingredients.length === 0) continue;
-      categoryResults.results.push({
-        queryKey: key,
-        ingredients: ingredients.map((ingredient: Ingredient) => ({
-          id: ingredient._id.toString(),
-          name: ingredient.name,
-          image: ingredient.image,
-          category: ingredient.categoryPath,
-          amount: ingredient.amount,
-          unit: ingredient.unit,
-          unitShort: ingredient.unitShort,
-          nutrition: ingredient.nutrition,
-        })),
-      });
-    }
-    outputs.push(categoryResults);
+    categoryResults.totalNumberOfIngredients += ingredients.length;
+    if (ingredients.length === 0) continue;
+    categoryResults.results.push({
+      queryKey: key,
+      ingredients: ingredients.map((ingredient: Ingredient) => ({
+        id: ingredient._id.toString(),
+        name: ingredient.name,
+        image: ingredient.image,
+        category: ingredient.categoryPath,
+        amount: ingredient.amount,
+        unit: ingredient.unit,
+        unitShort: ingredient.unitShort,
+        nutrition: ingredient.nutrition,
+      })),
+    });
   }
-  return outputs;
+  return categoryResults;
 }
 
 export async function classifyIngredientByAisle() {

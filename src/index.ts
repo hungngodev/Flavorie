@@ -16,12 +16,16 @@ import mealRouter from "./routes/mealRouter.ts";
 import postRouter from "./routes/postRouter.ts";
 import reviewRouter from "./routes/reviewRouter.ts";
 import userRouter from "./routes/userRouter.ts";
+import redisClient from "./services/redisClient/index.ts";
 // import reviewRouter from "./routes/reviewRouter.ts";
 
 import { createServer } from "http";
 import { setUpSocketIO } from "./socketio/socketio.ts";
 
 dotenv.config();
+redisClient.on("connect", () => {
+  console.log("Redis at index");
+});
 const app = express();
 
 // public

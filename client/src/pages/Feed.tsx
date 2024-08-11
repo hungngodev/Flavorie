@@ -51,13 +51,18 @@ const fetchFeed = async ({
     pageParam = 1,
 }: {
     pageParam: number;
-}): Promise<{ data: PostResponseObjectType[]; currentPage: number; nextPage: number | null }> => {
-    const fetch = await customFetch.get(`/community/feed?page=${pageParam}&limit=5`);
-    return {
-        data: fetch.data.posts,
-        currentPage: pageParam,
-        nextPage: pageParam + 1,
-    };
+}): Promise<{ data: PostResponseObjectType[]; currentPage: number; nextPage: number | null } | null> => {
+    try {
+        const fetch = await customFetch.get(`/community/feed?page=${pageParam}&limit=5`);
+        return {
+            data: fetch.data.posts,
+            currentPage: pageParam,
+            nextPage: pageParam + 1,
+        };
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
 };
 
 const Feed = () => {
@@ -105,9 +110,21 @@ const Feed = () => {
         queryKey: ['newsfeed'],
         queryFn: fetchFeed,
         initialPageParam: 1,
-        getNextPageParam: (lastPage) => lastPage.nextPage,
+        getNextPageParam: (lastPage) => {
+            if (lastPage === null) {
+                return undefined;
+            }
+            if (lastPage.nextPage === null) {
+                return undefined;
+            }
+            if (lastPage.currentPage < lastPage.nextPage) {
+                return lastPage.nextPage;
+            }
+            return undefined;
+        },
     });
-
+    console.log(isFetchingNextPage);
+    console.log(hasNextPage);
     const scrollVirtualizer = useVirtualizer({
         count: posts.length,
         getScrollElement: () => parentRef.current,
@@ -115,7 +132,7 @@ const Feed = () => {
         gap: 30,
         getItemKey: (index) => posts[index]?.id,
         measureElement: (element, entry, instance) => {
-            console.log(entry);
+            entry;
             const direction = instance.scrollDirection;
             if (instance.isScrolling && direction && direction === 'backward') {
                 const indexKey = Number(element.getAttribute('data-index'));
@@ -129,7 +146,7 @@ const Feed = () => {
 
     useEffect(() => {
         const [lastItem] = [...scrollVirtualizer.getVirtualItems()].reverse();
-
+        console.log(lastItem);
         if (!lastItem) {
             return;
         }
@@ -142,8 +159,13 @@ const Feed = () => {
     useEffect(() => {
         const updateFeed = async () => {
             if (status === 'success' && data) {
-                const postload = data?.pages.flatMap((page) => parsePost(page.data));
-                await dispatch(getFeed({ posts: postload }));
+                const postload = data?.pages.flatMap((page) => {
+                    if (page) {
+                        return parsePost(page.data);
+                    }
+                    return [];
+                });
+                dispatch(getFeed({ posts: postload }));
             }
         };
 
