@@ -48,7 +48,6 @@ export function IngredientsMain({ addFunction, data }: IngredientsMainProps) {
                     total={Math.ceil(data.results.length / size)}
                     color="primary"
                     initialPage={page}
-                    space-y-10
                 />
             </div>
             <Text color="gray.500" fontSize={'1.2rem'} mt="6">

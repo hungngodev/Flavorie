@@ -112,9 +112,9 @@ export default function Ingredient() {
     currentCategory = currentCategory === undefined ? '/' : currentCategory;
 
     const { data: cartData, status: cartStatus } = useQuery(cartQuery);
-    const { data: leftOverData, status: leftOverStatus } = useQuery(leftOverQuery);
+    const { data: leftOverData, status: leftOverStatus, refetch: refetchLeftOver } = useQuery(leftOverQuery);
     const queryClient = useQueryClient();
-
+    console.log(cartData, leftOverData);
     const fridgeWidth = '500';
     const { getButtonProps, getDisclosureProps, isOpen } = useDisclosure();
     const [hidden, setHidden] = useState(!isOpen);
@@ -200,15 +200,6 @@ export default function Ingredient() {
                 socket.emit('sendToInstacart', results);
                 toast.success('Your cart has been sent to Instacart');
             }
-            if (operation === 'transfer' || operation === 'send') {
-                await queryClient.invalidateQueries({
-                    queryKey: ['leftOver'],
-                });
-                await queryClient.ensureQueryData(leftOverQuery);
-            }
-            queryClient.invalidateQueries({
-                queryKey: ['cart'],
-            });
             await customFetch.patch(
                 '/user/cart',
                 {
@@ -219,6 +210,16 @@ export default function Ingredient() {
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 },
             );
+            if (operation === 'transfer' || operation === 'send') {
+                await queryClient.invalidateQueries({ queryKey: ['leftOver'] });
+                toast.success('Your cart has been transferred to left over');
+            }
+            if (operation === 'add') {
+                toast.success('Your cart has been saved');
+            }
+            queryClient.invalidateQueries({
+                queryKey: ['cart'],
+            });
         })();
     };
 
@@ -269,7 +270,7 @@ export default function Ingredient() {
     });
 
     const onSubmit2 = () => {
-        handleSubmit2((data: leftOverData) => {
+        handleSubmit2(async (data: leftOverData) => {
             const results = data.leftOver.map((item) => {
                 return {
                     itemId: item.id,
@@ -280,7 +281,7 @@ export default function Ingredient() {
                 };
             });
             console.log(results);
-            customFetch.patch(
+            await customFetch.patch(
                 '/user/leftOver',
                 {
                     leftOver: results.length > 0 ? results : [],
@@ -289,7 +290,7 @@ export default function Ingredient() {
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 },
             );
-            queryClient.invalidateQueries({
+            await queryClient.invalidateQueries({
                 queryKey: ['leftOver'],
             });
         })();

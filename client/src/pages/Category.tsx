@@ -40,7 +40,6 @@ export default function Category() {
     currentCategory = currentCategory === undefined ? '/' : currentCategory;
 
     const { data: queryData, status } = useQuery(allIngredientsQuery(currentCategory));
-    console.log(queryData);
     const ingredientData = queryData?.data.category;
     return (
         <>

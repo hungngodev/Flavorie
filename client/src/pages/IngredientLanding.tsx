@@ -65,7 +65,7 @@ function IngredientLanding() {
                     {page === 1 &&
                         searchData?.data.result.length > 0 &&
                         !(currentSearchQuery && currentSearchQuery !== '') && (
-                            <VStack width={'100%'} height={'100%'} alignItems={'start'}>
+                            <VStack width={'100%'} height={'50%'} alignItems={'start'}>
                                 <Select
                                     items={searchData?.data.result.map((currentLiked: any, index: number) => ({
                                         key: index,
