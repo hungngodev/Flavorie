@@ -1,44 +1,12 @@
 from io import BytesIO
-from flask import Blueprint, request, jsonify
-from flask_cors import cross_origin
 import numpy as np
 import pyautogui
-import requests
-from app.tasks import process_receipt_task
 from PIL import Image
 import cv2
 import mediapipe as mp
-from pynput.mouse import Controller
 from .utils import get_angle, get_distance
+import base64
 
-main = Blueprint("main", __name__)
-
-@main.route("/scan-receipts", methods=["POST"])
-def scan_receipt():
-    if "receipt" not in request.form:
-        return jsonify({"error": "No receipt variables"}), 400
-
-    # img_url received from nodejs
-    img_url = request.form["receipt"]
-
-    if img_url == "":
-        return jsonify({"error": "No selected file"}), 400
-    try:
-        # fetch img data from url, stream=True allows writing even when the download is not done
-        response = requests.get(img_url, stream=True)
-
-        # if error occur, return httperror object
-        response.raise_for_status()
-
-        # response.content is in bytes
-        img = Image.open(BytesIO(response.content)).convert("RGB")
-        final_res = process_receipt_task(img, main.mongo_client)
-        return final_res
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-mouse = Controller()
 mpHands = mp.solutions.hands
 hands = mpHands.Hands(
     static_image_mode=False,
@@ -49,12 +17,6 @@ hands = mpHands.Hands(
 )
 
 screen_width, screen_height = pyautogui.size()
-# def move_mouse(idx_finger):
-#     if idx_finger:
-#         x = int(idx_finger.x * screen_width)
-#         y = int(idx_finger.y * screen_height)
-#         pyautogui.moveTo(x, y)
-
 
 # 4 fingers for left arrow
 def left_arrow(landmark_list):
@@ -113,11 +75,8 @@ def detect_gestures(frame, landmark_list, processed):
             # mouse.release(Button.left)
             # return "left-click"
 
-@cross_origin()
-
-@main.route("/virtual-mouse", methods=["POST"])
-def virtual_mouse():
-    image = request.files["image"].read()
+def virtual_mouse(image):
+    image = base64.b64decode(image)
     img = Image.open(BytesIO(image))
     frame = np.array(img)
     frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
@@ -131,4 +90,4 @@ def virtual_mouse():
             landmark_list.append((lm.x, lm.y))
     action = detect_gestures(frame, landmark_list, processed)
     print("action", action)
-    return jsonify({"status": "success", "action": action})
+    return ({"status": "success", "action": action})

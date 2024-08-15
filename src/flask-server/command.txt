@@ -1,0 +1,2 @@
+ celery -A tasks.app worker --loglevel=info
+ ps aux | grep 'celery worker'

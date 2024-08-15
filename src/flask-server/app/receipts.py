@@ -3,6 +3,9 @@ import torch
 from transformers import DonutProcessor, VisionEncoderDecoderModel
 from app.utils import post_process, match_ingredients
 from flask import jsonify
+from PIL import Image
+import requests
+from io import BytesIO
 
 def process_receipt_task(img, mongo_client):
     try:
@@ -33,4 +36,23 @@ def process_receipt_task(img, mongo_client):
         matched_items = match_ingredients(structured_receipts['items'], mongo_client)
         return matched_items
     except Exception as e:
-        return jsonify(str(e))
+        raise e
+    
+def scan_receipt(img_url, mongo_client):
+
+    if img_url == "":
+        return ({"error": "No selected file"})
+    try:
+        # fetch img data from url, stream=True allows writing even when the download is not done
+        response = requests.get(img_url, stream=True)
+
+        # if error occur, return httperror object
+        response.raise_for_status()
+
+        # response.content is in bytes
+        img = Image.open(BytesIO(response.content)).convert("RGB")
+        final_res = process_receipt_task(img, mongo_client)
+        return final_res
+
+    except Exception as e:
+        return ({"error": str(e)})

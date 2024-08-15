@@ -2,13 +2,11 @@ import os
 import string
 import fasttext
 import fasttext.util
-from flask import jsonify
 import nltk
 from annoy import AnnoyIndex
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from scipy.spatial.distance import cdist
-from bson import ObjectId
 import numpy as np
 
 # nltk.download('punkt')

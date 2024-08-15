@@ -5,24 +5,17 @@ import NotificationModel from "../models/NotificationModel.ts";
 import { cloudinary } from "../services/cloudinary/cloudinaryServices.ts";
 import { groceryGenerating } from "../services/puppeteer/connecting.ts";
 import redisClient from "../services/redisClient/index.ts";
-
-const FLASK_SERVICE_URL = "http://127.0.0.1:5000/scan-receipts";
-
 const redisStreamKey = "server:receipts_stream";
 
 export const notificationHandler = (socket: Socket) => {
   socket.on("submitReceipt", async data => {
     const { base64, filename } = data;
     try {
-      // upload to Cloudinary
       const uploadResponse = await cloudinary.uploader.upload(base64, {
         folder: process.env.CLOUDINARY_FOLDER || "",
         public_id: filename,
         overwrite: true,
       });
-
-      // const form = new FormData();
-      // form.append("receipt2", uploadResponse.secure_url);
       console.log("adding to redis stream in receipts handler");
 
       await redisClient.xadd(
@@ -46,9 +39,6 @@ export const notificationHandler = (socket: Socket) => {
       // const response = await axios.post(FLASK_SERVICE_URL, form, {
       //   headers: form.getHeaders(),
       //
-      // const response = await axios.post(FLASK_SERVICE_URL, form, {
-      //   headers: form.getHeaders(),
-      // });
 
       // socket.emit("processReceipt", response.data);
       // const notification = new NotificationModel({
