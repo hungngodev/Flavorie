@@ -4,6 +4,7 @@ import { ServerError } from "../errors/customErrors.ts";
 import MealModel from "../models/MealModel.ts";
 import User from "../models/UserModel.ts";
 import { createMeal } from "../services/mealServices.ts";
+import { getAndStoreInRedis } from "../services/redisClient/index.ts";
 import {
   analyzeInstruction,
   getAllMealsByIngredientsAPI,
@@ -97,29 +98,47 @@ export const getRandomMealsUnauthenticated = async (
         : null;
       return res.json(mealReturns).status(StatusCodes.OK);
     } else {
-      const uniqueCheck = new Set<string>([]);
-      const randomMeals = [];
+      const mealRedis = await getAndStoreInRedis(
+        "mealsUnauthenticated",
+        60 * 60 * 5,
+        async () => {
+          const uniqueCheck = new Set<string>([]);
+          const randomMeals = [];
+          for (let i = 0; i < queryRange; i++) {
+            let randomMeal = await getRandomMeal();
+            // check for duplicate meals
+            while (randomMeal.strMeal && uniqueCheck.has(randomMeal.strMeal)) {
+              randomMeal = await getRandomMeal();
+            }
+            uniqueCheck.add(randomMeal.strMeal);
+            randomMeals.push(randomMeal);
+          }
+          const sideMeals = await getMealByFilter(
+            "category",
+            "Side",
+            sideRange,
+          );
+          const mainMeals = await getMealByFilter(
+            "category",
+            getRandomKey(MainCategories),
+            mainRange,
+          );
+          const dessertMeals = await getMealByFilter(
+            "category",
+            "Dessert",
+            dessertRange,
+          );
+          console.log("Random Meals", randomMeals);
+          return {
+            "Random Meals": await processingMeals(randomMeals),
+            "Side Meals": await processingMeals(sideMeals),
+            "Main Meals": await processingMeals(mainMeals),
+            "Dessert Meals": await processingMeals(dessertMeals),
+          };
+        },
+      );
+
       const suggestedMeals = [];
-      for (let i = 0; i < queryRange; i++) {
-        let randomMeal = await getRandomMeal();
-        // check for duplicate meals
-        while (randomMeal.strMeal && uniqueCheck.has(randomMeal.strMeal)) {
-          randomMeal = await getRandomMeal();
-        }
-        uniqueCheck.add(randomMeal.strMeal);
-        randomMeals.push(randomMeal);
-      }
-      const sideMeals = await getMealByFilter("category", "Side", sideRange);
-      const mainMeals = await getMealByFilter(
-        "category",
-        getRandomKey(MainCategories),
-        mainRange,
-      );
-      const dessertMeals = await getMealByFilter(
-        "category",
-        "Dessert",
-        dessertRange,
-      );
       if (ingredients && Array.isArray(ingredients)) {
         for (const ingredient of ingredients) {
           const mealList = await getMealByFilter(
@@ -129,11 +148,9 @@ export const getRandomMealsUnauthenticated = async (
           suggestedMeals.push(mealList);
         }
       }
+
       const mealsReturn = {
-        "Random Meals": await processingMeals(randomMeals),
-        "Side Meals": await processingMeals(sideMeals),
-        "Main Meals": await processingMeals(mainMeals),
-        "Dessert Meals": await processingMeals(dessertMeals),
+        ...mealRedis,
         "Suggested Meals": await processingMeals(suggestedMeals),
       };
       return res.json(mealsReturn).status(StatusCodes.OK);
@@ -154,7 +171,7 @@ type spoonacularDB = {
 export const getRanDomMealsAuthenticated = async (
   req: Request,
   res: Response,
-) => {
+): Promise<Response<any, Record<string, any>>> => {
   try {
     const allergy = [];
     const diet = [];
@@ -244,22 +261,38 @@ export const getRanDomMealsAuthenticated = async (
 
       return res.json(mealReturns).status(StatusCodes.OK);
     }
+    const mealRedis = await getAndStoreInRedis(
+      "mealsAuthenticated",
+      60 * 60 * 24,
+      async () => {
+        const randomMeals = await getRandomMealsAPI(
+          queryDiet,
+          queryAllergy,
+          30,
+        );
+        const mainMeals = await getRandomMealsAPI(
+          queryDiet + ",main course",
+          queryAllergy,
+          30,
+        );
+        const sideMeals = await getRandomMealsAPI(
+          queryDiet + ",side dish",
+          queryAllergy,
+          15,
+        );
+        const dessertMeals = await getRandomMealsAPI(
+          queryDiet + ",dessert",
+          queryAllergy,
+          15,
+        );
 
-    const randomMeals = await getRandomMealsAPI(queryDiet, queryAllergy, 30);
-    const mainMeals = await getRandomMealsAPI(
-      queryDiet + ",main course",
-      queryAllergy,
-      30,
-    );
-    const sideMeals = await getRandomMealsAPI(
-      queryDiet + ",side dish",
-      queryAllergy,
-      15,
-    );
-    const dessertMeals = await getRandomMealsAPI(
-      queryDiet + ",dessert",
-      queryAllergy,
-      15,
+        return {
+          "Random Meals": await processingMeals(randomMeals.recipes),
+          "Side Meals": await processingMeals(sideMeals.recipes),
+          "Main Meals": await processingMeals(mainMeals.recipes),
+          "Dessert Meals": await processingMeals(dessertMeals.recipes),
+        };
+      },
     );
     const suggestedMeals =
       leftOver.length !== 0 && req.user
@@ -293,11 +326,8 @@ export const getRanDomMealsAuthenticated = async (
           )
         : [];
     const mealsReturn = {
-      "Main Meals": await processingMeals(mainMeals.recipes),
-      "Random Meals": await processingMeals(randomMeals.recipes),
       "Suggested for you": suggestedMeals,
-      "Side Meals": await processingMeals(sideMeals.recipes),
-      "Dessert Meals": await processingMeals(dessertMeals.recipes),
+      ...mealRedis,
     };
     return res.json(mealsReturn).status(StatusCodes.OK);
   } catch (error) {

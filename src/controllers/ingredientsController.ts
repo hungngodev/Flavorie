@@ -25,7 +25,7 @@ export const getAllIngredients = async (req: Request, res: Response) => {
     const redisKey = "ingredients " + category;
     const classifiedIngredients: CategoryResults = (await getAndStoreInRedis(
       redisKey,
-      3600,
+      3600 * 24,
       async () => await classifyIngredient(category?.toString() || ""),
     )) as CategoryResults;
     if (sideBar)
@@ -100,9 +100,12 @@ export const searchIngredients = async (req: Request, res: Response) => {
         missingIngredients: missingIngredients,
       });
     }
-    const randomIngredients = await IngredientModel.aggregate([
-      { $sample: { size: 40 } },
-    ]);
+    const randomIngredients = (await getAndStoreInRedis(
+      "ingredient random",
+      3600 * 24,
+      async () => await IngredientModel.aggregate([{ $sample: { size: 40 } }]),
+    )) as [];
+
     // console.log("randomIngredients", randomIngredients);
     return res
       .json({

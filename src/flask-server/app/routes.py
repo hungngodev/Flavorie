@@ -11,8 +11,6 @@ import mediapipe as mp
 from pynput.mouse import Controller
 from .utils import get_angle, get_distance
 
-
-
 main = Blueprint("main", __name__)
 
 @main.route("/scan-receipts", methods=["POST"])
