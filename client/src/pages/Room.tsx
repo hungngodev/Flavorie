@@ -14,6 +14,7 @@ import {
 import { FilesetResolver, GestureRecognizer } from '@mediapipe/tasks-vision';
 import { Select, SelectItem } from '@nextui-org/select';
 import { motion } from 'framer-motion';
+import Lottie from 'lottie-react';
 import {
     Clipboard,
     MessageSquare,
@@ -28,6 +29,7 @@ import {
 import { createContext, useEffect, useRef, useState } from 'react';
 import ProgressiveImage from 'react-progressive-graceful-image';
 import { Link, useParams } from 'react-router-dom';
+import { NoMeal } from '../assets/animations';
 import ImageSlide, { BackendData } from '../components/meals/ImageSlide';
 import { Chat, NameInput, VideoPlayer } from '../components/meeting';
 import { useRoom, useUser } from '../hooks';
@@ -136,9 +138,9 @@ const Room = () => {
                     },
                     numHands: 1,
                     runningMode: 'VIDEO',
-                    minHandDetectionConfidence: 0.8,
-                    minHandPresenceConfidence: 0.8,
-                    minTrackingConfidence: 0.5,
+                    minHandDetectionConfidence: 0.9,
+                    minHandPresenceConfidence: 0.9,
+                    minTrackingConfidence: 0.9,
                 });
                 detectHands();
             } catch (error) {
@@ -151,6 +153,7 @@ const Room = () => {
                 const detections = gestureRecognizer.recognizeForVideo(myVideoRef.current, performance.now());
                 if (detections.gestures.length > 0) {
                     const gesture = detections.gestures[0][0];
+                    console.log(detections.gestures);
                     if (gesture.categoryName === 'Thumb_Down') {
                         setDirection('left');
                     } else if (gesture.categoryName === 'Thumb_Up') {
@@ -277,42 +280,56 @@ const Room = () => {
                                 ))}
                             <GridItem colSpan={1} rowSpan={1} padding={2}>
                                 <VStack height="full" width="100%" justifyContent={'end'}>
-                                    <ProgressiveImage
-                                        src={
-                                            mealDatas.find((meal: { title: string }) => meal.title === mealChoice)
-                                                ?.imageUrl ||
-                                            'https://cdn.shopify.com/s/files/1/0078/2503/1204/files/c.jpg?v=1582371638'
-                                        }
-                                        placeholder={''}
-                                    >
-                                        {(src, loading) => (
-                                            <Image
-                                                style={{
-                                                    filter: loading ? 'blur(5px)' : 'blur(0)',
-                                                    transition: 'filter 2s',
-                                                }}
-                                                maxH={'26vh'}
-                                                src={src}
-                                                borderRadius={'lg'}
-                                                objectFit="fill"
-                                                onLoad={() => console.log('loaded')}
+                                    {mealOptions.length > 0 ? (
+                                        <>
+                                            <ProgressiveImage
+                                                src={
+                                                    mealDatas.find(
+                                                        (meal: { title: string }) => meal.title === mealChoice,
+                                                    )?.imageUrl ||
+                                                    'https://cdn.shopify.com/s/files/1/0078/2503/1204/files/c.jpg?v=1582371638'
+                                                }
+                                                placeholder={''}
+                                            >
+                                                {(src, loading) => (
+                                                    <Image
+                                                        style={{
+                                                            filter: loading ? 'blur(5px)' : 'blur(0)',
+                                                            transition: 'filter 2s',
+                                                        }}
+                                                        maxH={'26vh'}
+                                                        src={src}
+                                                        borderRadius={'lg'}
+                                                        objectFit="fill"
+                                                        onLoad={() => console.log('loaded')}
+                                                    />
+                                                )}
+                                            </ProgressiveImage>
+                                            <Select
+                                                items={mealOptions}
+                                                variant="bordered"
+                                                label="Meal Choice"
+                                                className="w-full"
+                                                selectedKeys={[mealChoice]}
+                                                onChange={(e) => setMealChoice(e.target.value)}
+                                            >
+                                                {(meal: { key: string; label: string }) => (
+                                                    <SelectItem className="w-full rounded-none bg-white" key={meal.key}>
+                                                        {meal.label}
+                                                    </SelectItem>
+                                                )}
+                                            </Select>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Lottie
+                                                animationData={NoMeal}
+                                                style={{ width: '100%', height: '100%' }}
+                                                loop={false}
                                             />
-                                        )}
-                                    </ProgressiveImage>
-                                    <Select
-                                        items={mealOptions}
-                                        variant="bordered"
-                                        label="Meal Choice"
-                                        className="w-full"
-                                        selectedKeys={[mealChoice]}
-                                        onChange={(e) => setMealChoice(e.target.value)}
-                                    >
-                                        {(meal: { key: string; label: string }) => (
-                                            <SelectItem className="w-full rounded-none bg-white" key={meal.key}>
-                                                {meal.label}
-                                            </SelectItem>
-                                        )}
-                                    </Select>
+                                            <div>No meal options available</div>
+                                        </>
+                                    )}
                                 </VStack>
                             </GridItem>
                         </Grid>

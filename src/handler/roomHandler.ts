@@ -47,6 +47,13 @@ export const roomHandler = (socket: Socket) => {
   const joinRoom = ({ roomId, peerId, userName, userId }: IJoinRoomParams) => {
     if (!rooms[roomId]) rooms[roomId] = {};
     if (!chats[roomId]) chats[roomId] = [];
+    if (!roomsInfo[roomId])
+      roomsInfo[roomId] = {
+        currentMeal: "",
+        currentShareId: "",
+        currentMealInfo: {},
+      };
+    console.log("user joined the room", userName);
     socket.emit("get-messages", chats[roomId]);
     rooms[roomId][userId] = { userId, userName, peerId };
     socket.join(roomId);
@@ -55,11 +62,13 @@ export const roomHandler = (socket: Socket) => {
       roomId,
       participants: rooms[roomId],
     });
-    console.log("current room info", roomsInfo[roomId]);
+    console.log("current room info", rooms[roomId]);
+
     socket.emit("meal-changed", {
       currentMeal: roomsInfo[roomId].currentMeal,
       mealInfo: roomsInfo[roomId].currentMealInfo,
     });
+
     if (
       roomsInfo[roomId].currentShareId &&
       roomsInfo[roomId].currentShareId !== ""

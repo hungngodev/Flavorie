@@ -1,0 +1,5 @@
+docker build -t peer-server .
+docker run -d -p 9001:9001 --name peer-run peer-server
+
+docker stop peer-run
+docker rm peer-run

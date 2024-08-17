@@ -1,5 +1,5 @@
-import Peer from 'peerjs';
 import { useQuery } from '@tanstack/react-query';
+import Peer from 'peerjs';
 import { useEffect, useReducer, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BackendData } from '../components/meals/ImageSlide';
@@ -187,7 +187,11 @@ const RoomProvider = ({ children }: { children: React.ReactNode }) => {
     }, [userName, userId, roomId]);
 
     useEffect(() => {
-        const peer = new Peer('');
+        const peer = new Peer('', {
+            host: 'localhost',
+            port: 9001,
+            path: '/',
+        });
         setMe(peer);
         try {
             navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
@@ -207,6 +211,7 @@ const RoomProvider = ({ children }: { children: React.ReactNode }) => {
         ws.on('meal-changed', mealChange);
 
         return () => {
+            console.log('clean up');
             ws.off('room-created');
             ws.off('get-users');
             ws.off('user-disconnected');
@@ -215,6 +220,11 @@ const RoomProvider = ({ children }: { children: React.ReactNode }) => {
             ws.off('user-joined');
             ws.off('name-changed');
             ws.off('user-toggle-video');
+            if (stream) {
+                stream.getTracks().forEach((track) => {
+                    track.stop();
+                });
+            }
             me?.disconnect();
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
