@@ -13,7 +13,6 @@ import numpy as np
 # nltk.download('stopwords')
 # nltk.download('wordnet')
 
-
 # Extract related information from receipts
 def post_process(data):
     structured_receipts = {"items": [], "total": None}
@@ -106,6 +105,7 @@ def match_ingredients(items, mongo_client):
         cosine_similarities = (
             1 - cdist([item_embedding], candidate_vectors, "cosine")[0]
         )
+        
         similar_items = [
             (
                 cosine_similarities[i],

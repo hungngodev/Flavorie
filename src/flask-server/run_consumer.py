@@ -1,7 +1,7 @@
-from tasks import consume_stream
+from tasks import handle_receipts_stream
 
 if __name__ == '__main__':
     # Start multiple consumers with different names
-    consume_stream.delay('consumer1')
-    consume_stream.delay('consumer2')
-    consume_stream.delay('consumer3')
+    handle_receipts_stream.delay('consumer1')
+    handle_receipts_stream.delay('consumer2')
+    handle_receipts_stream.delay('consumer3')

@@ -15,7 +15,6 @@ hands = mpHands.Hands(
     min_tracking_confidence=0.7,
     max_num_hands=1,
 )
-
 screen_width, screen_height = pyautogui.size()
 
 # 4 fingers for left arrow
