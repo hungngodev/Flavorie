@@ -11,6 +11,7 @@ import {
     VStack,
     useDisclosure,
 } from '@chakra-ui/react';
+import { FilesetResolver, GestureRecognizer } from '@mediapipe/tasks-vision';
 import { Select, SelectItem } from '@nextui-org/select';
 import { motion } from 'framer-motion';
 import {
@@ -119,19 +120,74 @@ const Room = () => {
         };
     }, []);
 
-    const sendFrameToServer = async () => {
-        const canvas = canvasRef.current;
-        const context = canvas?.getContext('2d');
-        if (context && myVideoRef.current && canvas) {
-            context.drawImage(myVideoRef.current, 0, 0, canvas.width, canvas.height);
-            const dataUrl = canvas.toDataURL('image/jpeg');
-            const blob = await (await fetch(dataUrl)).blob();
-            const file = new File([blob], 'frame.jpg', { type: 'image/jpeg' });
-            socket?.emit('sendFrame', {
-                image: file,
-            });
-        }
-    };
+    useEffect(() => {
+        let gestureRecognizer: GestureRecognizer;
+        let animationFrameId: number;
+
+        const initializeHandDetection = async () => {
+            try {
+                const vision = await FilesetResolver.forVisionTasks(
+                    'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm',
+                );
+                gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
+                    baseOptions: {
+                        modelAssetPath:
+                            'https://storage.googleapis.com/mediapipe-tasks/gesture_recognizer/gesture_recognizer.task',
+                    },
+                    numHands: 1,
+                    runningMode: 'VIDEO',
+                    minHandDetectionConfidence: 0.8,
+                    minHandPresenceConfidence: 0.8,
+                    minTrackingConfidence: 0.5,
+                });
+                detectHands();
+            } catch (error) {
+                console.error('Error initializing hand detection:', error);
+            }
+        };
+
+        const detectHands = () => {
+            if (myVideoRef.current && myVideoRef.current.readyState >= 2) {
+                const detections = gestureRecognizer.recognizeForVideo(myVideoRef.current, performance.now());
+                if (detections.gestures.length > 0) {
+                    const gesture = detections.gestures[0][0];
+                    if (gesture.categoryName === 'Thumb_Down') {
+                        setDirection('left');
+                    }
+                    if (gesture.categoryName === 'Thumb_Up') {
+                        setDirection('right');
+                    }
+                } else {
+                    setDirection('');
+                }
+            }
+            requestAnimationFrame(detectHands);
+        };
+        initializeHandDetection();
+
+        return () => {
+            if (gestureRecognizer) {
+                gestureRecognizer.close();
+            }
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+        };
+    }, []);
+
+    // const sendFrameToServer = async () => {
+    //     const canvas = canvasRef.current;
+    //     const context = canvas?.getContext('2d');
+    //     if (context && myVideoRef.current && canvas) {
+    //         context.drawImage(myVideoRef.current, 0, 0, canvas.width, canvas.height);
+    //         const dataUrl = canvas.toDataURL('image/jpeg');
+    //         const blob = await (await fetch(dataUrl)).blob();
+    //         const file = new File([blob], 'frame.jpg', { type: 'image/jpeg' });
+    //         socket?.emit('sendFrame', {
+    //             image: file,
+    //         });
+    //     }
+    // };
 
     // useEffect(() => {
     //     const interval = setInterval(sendFrameToServer, 200);

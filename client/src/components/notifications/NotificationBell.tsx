@@ -1,5 +1,5 @@
 import { DeleteIcon } from '@chakra-ui/icons';
-import { Box, Button, Heading, HStack, IconButton, Link, Text, VStack } from '@chakra-ui/react';
+import { Box, Heading, HStack, IconButton, Link, Text, VStack } from '@chakra-ui/react';
 import { formatDistanceToNow } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -51,7 +51,7 @@ const NotificationBell = () => {
             <VStack spacing={2} align="stretch" w="100%">
                 {isAuthenticated && notifications.length > 0 ? (
                     notifications.map((noti) => (
-                        <Button
+                        <Box
                             key={noti._id}
                             p={2}
                             py="8"
@@ -84,7 +84,7 @@ const NotificationBell = () => {
                                     bg={theme.colors.palette_indigo}
                                 />
                             </HStack>
-                        </Button>
+                        </Box>
                     ))
                 ) : (
                     <Text textAlign="center" color="gray">
