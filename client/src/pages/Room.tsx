@@ -153,9 +153,10 @@ const Room = () => {
                     const gesture = detections.gestures[0][0];
                     if (gesture.categoryName === 'Thumb_Down') {
                         setDirection('left');
-                    }
-                    if (gesture.categoryName === 'Thumb_Up') {
+                    } else if (gesture.categoryName === 'Thumb_Up') {
                         setDirection('right');
+                    } else {
+                        setDirection('');
                     }
                 } else {
                     setDirection('');
