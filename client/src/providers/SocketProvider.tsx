@@ -23,15 +23,20 @@ const SocketProvider: React.FC<SocketContextProviderProps> = ({ children }) => {
             }
         }
 
-        socket.on('processReceipt', (data) => {
-            console.log('Process receipt successfully', data);
-            notifySuccess('Process your receipts successfully');
+        socket.on('processingDone', (data) => {
+            console.log('Processing done', data);
+            notifySuccess('Processing done');
         });
 
-        socket.on('processInstacart', (data) => {
-            console.log('Process instacart successfully', data);
-            notifySuccess('Connect with Instacart successfully');
-        });
+        // socket.on('processReceipt', (data) => {
+        //     console.log('Process receipt successfully', data);
+        //     notifySuccess('Process your receipts successfully');
+        // });
+
+        // socket.on('processInstacart', (data) => {
+        //     console.log('Process instacart successfully', data);
+        //     notifySuccess('Connect with Instacart successfully');
+        // });
 
         socket.on('error', (error) => {
             console.log(error);
@@ -39,8 +44,9 @@ const SocketProvider: React.FC<SocketContextProviderProps> = ({ children }) => {
         });
 
         return () => {
-            socket.off('processReceipt');
-            socket.off('processInstacart');
+            socket.off('processingDone');
+            // socket.off('processReceipt');
+            // socket.off('processInstacart');
             socket.off('error');
         };
     }, [auth.currentUser.status, notifyError, notifySuccess]);

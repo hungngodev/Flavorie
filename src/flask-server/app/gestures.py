@@ -54,26 +54,11 @@ def find_finger(processed):
     return None, None
 def detect_gestures(frame, landmark_list, processed):
     if (len(landmark_list)) >= 21:
-        idx_finger = find_finger(processed)
-
-        thumb_distance = get_distance([landmark_list[4], landmark_list[5]])
-        # if (
-        #     thumb_distance < 50
-        #     and get_angle(landmark_list[5], landmark_list[6], landmark_list[8]) > 90
-        # ):
-        #     # move_mouse(idx_finger)
-        #     return "move-mouse"
         if right_arrow(landmark_list):
             return "right-arrow"
         elif left_arrow(landmark_list):
-            # pyautogui.press("left")
-            # pyautogui.press("b")
             return "left-arrow"
-        # elif left_click(landmark_list, thumb_distance):
-            # mouse.press(Button.left)
-            # mouse.release(Button.left)
-            # return "left-click"
-
+        
 def virtual_mouse(image):
     image = base64.b64decode(image)
     img = Image.open(BytesIO(image))

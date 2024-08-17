@@ -6,7 +6,6 @@ import { cloudinary } from "../services/cloudinary/cloudinaryServices.ts";
 import { groceryGenerating } from "../services/puppeteer/connecting.ts";
 import redisClient from "../services/redisClient/index.ts";
 const redisStreamKey = "server:receipts_stream";
-
 export const notificationHandler = (socket: Socket) => {
   socket.on("submitReceipt", async data => {
     const { base64, filename } = data;
@@ -23,35 +22,14 @@ export const notificationHandler = (socket: Socket) => {
         "*",
         "receipt",
         uploadResponse.secure_url,
+        "userId",
+        socket.data.user.userId,
+        "timestamp",
+        new Date().toISOString(),
+        "type",
+        "scan-receipt",
       );
       console.log("added to redis stream in receipts handler");
-      // const result = await redisClient.xread(
-      //   "COUNT",
-      //   1,
-      //   "BLOCK",
-      //   0,
-      //   "STREAMS",
-      //   redisStreamKey,
-      //   "$",
-      // );
-      // console.log("result", result);
-
-      // const response = await axios.post(FLASK_SERVICE_URL, form, {
-      //   headers: form.getHeaders(),
-      //
-
-      // socket.emit("processReceipt", response.data);
-      // const notification = new NotificationModel({
-      //   userId: socket.data.user.userId,
-      //   status: false,
-      //   message: {
-      //     title: "Process receipt successfully",
-      //     data: response.data,
-      //     notificationType: "receipt",
-      //   },
-      //   timestamp: new Date(),
-      // });
-      // await notification.save();
     } catch (error) {
       console.log("Error processing receipt", error);
       socket.emit("error", "Failed to process receipt");
@@ -88,6 +66,10 @@ export const notificationHandler = (socket: Socket) => {
         userId: new mongoose.Types.ObjectId(userId),
       }).sort({ timestamp: -1 });
 
+      socket.emit(
+        "processingDone",
+        allNotifications[0].message.notificationType,
+      );
       socket.emit("displayNotifications", allNotifications);
     }
   });
