@@ -1,5 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import dotenv from "dotenv";
+import { ServerError } from "../../errors/customErrors.ts";
+import ApiTrack from "../../models/ApiTrack.ts";
 import { MainCategories } from "./data.ts";
 import {
   areaType,
@@ -8,8 +10,6 @@ import {
   ingredientType,
 } from "./type.ts";
 import { getDataFromParam, getQueryParameter, getRandomKey } from "./utils.ts";
-import { ServerError } from "../../errors/customErrors.ts";
-import ApiTrack from "../../models/ApiTrack.ts";
 
 dotenv.config();
 
@@ -21,19 +21,29 @@ export const Endpoint = {
 };
 
 export const baseCall = async () => {
-  let TheMealDBTrack = await ApiTrack.findOne({ serviceName: 'themealdb' });
+  let TheMealDBTrack = await ApiTrack.findOne({ serviceName: "themealdb" });
   if (!TheMealDBTrack) {
-    TheMealDBTrack = new ApiTrack({ serviceName: 'themealdb', usageCount: 0, currentKey: 0, callPerMin: 0, updatedAt: new Date(), lastMinute: new Date() });
+    TheMealDBTrack = new ApiTrack({
+      serviceName: "themealdb",
+      usageCount: 0,
+      currentKey: 0,
+      callPerMin: 0,
+      updatedAt: new Date(),
+      lastMinute: new Date(),
+    });
   }
   let { usageCount, callPerMin, lastMinute } = TheMealDBTrack;
 
-  const rate = process.env.themealdb_rate || 60;
+  const rate = process.env.THEMEALDB_RATE || 60;
 
   if (Math.abs(Number(new Date().getTime()) - Number(lastMinute)) > 10000) {
     callPerMin = 0;
     lastMinute = new Date();
   }
-  if (callPerMin > Number(rate) && Math.abs(Number(new Date().getTime()) - Number(lastMinute)) < 10000) {
+  if (
+    callPerMin > Number(rate) &&
+    Math.abs(Number(new Date().getTime()) - Number(lastMinute)) < 10000
+  ) {
     await new Promise(resolve => setTimeout(resolve, 10000));
   }
 
@@ -43,10 +53,10 @@ export const baseCall = async () => {
   await TheMealDBTrack.save();
 
   return axios.create({
-    baseURL: process.env.themealDB_API_ENDPOINT || "",
+    baseURL: process.env.THEMEALDB_API_ENDPOINT || "",
     timeout: 9000,
   });
-}
+};
 
 export const getRandomMeal = async () => {
   try {
@@ -105,7 +115,9 @@ export const getMealByFilter = async (
       return [];
     }
     for (let i = 0; i < mealFilterRequest.data.meals.length; i++) {
-      mealFilterRequest.data.meals[i] = await getMealById(mealFilterRequest.data.meals[i].idMeal.toString());
+      mealFilterRequest.data.meals[i] = await getMealById(
+        mealFilterRequest.data.meals[i].idMeal.toString(),
+      );
     }
     if (size && size > mealFilterRequest.data.meals.length) {
       return mealFilterRequest.data.meals;
@@ -128,7 +140,7 @@ export const getMealById = async (id: string) => {
     console.log(error);
     throw new ServerError("API call for meal by id error");
   }
-}
+};
 
 export const getMealByName = async (name: string) => {
   try {
@@ -139,4 +151,4 @@ export const getMealByName = async (name: string) => {
   } catch (error) {
     throw new ServerError("API call for meal by name error");
   }
-}
+};

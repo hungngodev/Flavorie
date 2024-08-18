@@ -1,0 +1,87 @@
+name: EC2 CD Pipeline on AWS
+
+on:
+  workflow_run:
+    workflows: ["Docker CI for Docker Hub Pipeline"]
+    types:
+      - completed
+
+jobs:
+  ec2-cd:
+    runs-on: ubuntu-latest
+    env:
+      MONGODB_URL: ${{ secrets.MONGODB_URL }}
+      REDIS_URL: ${{ secrets.REDIS_URL }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
+      SPOONACULAR_API_ENDPOINT: ${{ secrets.SPOONACULAR_API_ENDPOINT }}
+      THEMEALDB_API_ENDPOINT: ${{ secrets.THEMEALDB_API_ENDPOINT }}
+      SPOONACULAR_API_KEY: ${{ secrets.SPOONACULAR_API_KEY }}
+      SPOONACULAR_API_KEY_2: ${{ secrets.SPOONACULAR_API_KEY_2 }}
+      SPOONACULAR_API_KEY_3: ${{ secrets.SPOONACULAR_API_KEY_3 }}
+      SPOONACULAR_API_KEY_4: ${{ secrets.SPOONACULAR_API_KEY_4 }}
+      SPOONACULAR_API_KEY_5: ${{ secrets.SPOONACULAR_API_KEY_5 }}
+      SPOONACULAR_API_KEY_6: ${{ secrets.SPOONACULAR_API_KEY_6 }}
+      SPOONACULAR_API_KEY_7: ${{ secrets.SPOONACULAR_API_KEY_7 }}
+      SPOONACULAR_API_KEY_8: ${{ secrets.SPOONACULAR_API_KEY_8 }}
+      SPOONACULAR_API_KEY_9: ${{ secrets.SPOONACULAR_API_KEY_9 }}
+      SPOONACULAR_API_KEY_10: ${{ secrets.SPOONACULAR_API_KEY_10 }}
+      SPOONACULAR_API_KEY_11: ${{ secrets.SPOONACULAR_API_KEY_11 }}
+      SPOONACULAR_API_KEY_12: ${{ secrets.SPOONACULAR_API_KEY_12 }}
+      SPOONACULAR_MAX_CALL: ${{ secrets.SPOONACULAR_MAX_CALL }}
+      SPOONACULAR_RATE: ${{ secrets.SPOONACULAR_RATE }}
+      SPOONACULAR_TOTAL_KEY: ${{ secrets.SPOONACULAR_TOTAL_KEY }}
+      THEMEALDB_MAX_CALL: ${{ secrets.THEMEALDB_MAX_CALL }}
+      THEMEALDB_RATE: ${{ secrets.THEMEALDB_RATE }}
+      CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+      CLOUDINARY_KEY: ${{ secrets.CLOUDINARY_KEY }}
+      CLOUDINARY_SECRET: ${{ secrets.CLOUDINARY_SECRET }}
+      CLOUDINARY_FOLDER: ${{ secrets.CLOUDINARY_FOLDER }}
+      UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
+
+    steps:
+      - name: SSH into EC2 instance
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd Flavorie
+            git pull origin main
+            export MONGODB_URL=${MONGODB_URL}
+            export REDIS_URL=${REDIS_URL}
+            export JWT_SECRET=${JWT_SECRET}
+            export JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+            export SPOONACULAR_API_ENDPOINT=${SPOONACULAR_API_ENDPOINT}
+            export THEMEALDB_API_ENDPOINT=${THEMEALDB_API_ENDPOINT}
+            export SPOONACULAR_API_KEY=${SPOONACULAR_API_KEY}
+            export SPOONACULAR_API_KEY_2=${SPOONACULAR_API_KEY_2}
+            export SPOONACULAR_API_KEY_3=${SPOONACULAR_API_KEY_3}
+            export SPOONACULAR_API_KEY_4=${SPOONACULAR_API_KEY_4}
+            export SPOONACULAR_API_KEY_5=${SPOONACULAR_API_KEY_5}
+            export SPOONACULAR_API_KEY_6=${SPOONACULAR_API_KEY_6}
+            export SPOONACULAR_API_KEY_7=${SPOONACULAR_API_KEY_7}
+            export SPOONACULAR_API_KEY_8=${SPOONACULAR_API_KEY_8}
+            export SPOONACULAR_API_KEY_9=${SPOONACULAR_API_KEY_9}
+            export SPOONACULAR_API_KEY_10=${SPOONACULAR_API_KEY_10}
+            export SPOONACULAR_API_KEY_11=${SPOONACULAR_API_KEY_11}
+            export SPOONACULAR_API_KEY_12=${SPOONACULAR_API_KEY_12}
+            export SPOONACULAR_MAX_CALL=${SPOONACULAR_MAX_CALL}
+            export SPOONACULAR_RATE=${SPOONACULAR_RATE}
+            export SPOONACULAR_TOTAL_KEY=${SPOONACULAR_TOTAL_KEY}
+            export THEMEALDB_MAX_CALL=${THEMEALDB_MAX_CALL}
+            export THEMEALDB_RATE=${THEMEALDB_RATE}
+            export CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+            export CLOUDINARY_KEY=${CLOUDINARY_KEY}
+            export CLOUDINARY_SECRET=${CLOUDINARY_SECRET}
+            export CLOUDINARY_FOLDER=${CLOUDINARY_FOLDER}
+            export UNSPLASH_ACCESS_KEY=${UNSPLASH_ACCESS_KEY}
+
+            sudo IMAGE_TAG=$((${{github.run_number }}+1)) docker-compose up -d --scale frontend=2 --scale backend=2 --scale peerjs=2 --no-recreate
+            sudo docker rm -f $(sudo docker ps -q | xargs sudo docker inspect --format='{{.Name}}' | grep frontend | tail -n 1) 
+            sudo docker rm -f $(sudo docker ps -q | xargs sudo docker inspect --format='{{.Name}}' | grep backend | tail -n 1)
+            sudo docker rm -f $(sudo docker ps -q | xargs sudo docker inspect --format='{{.Name}}' | grep peerjs | tail -n 1)
+
+            sudo docker exec $(sudo docker ps -q | xargs sudo docker inspect --format='{{.Name}}' | grep nginx) nginx -s reload

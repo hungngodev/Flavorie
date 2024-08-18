@@ -1,30 +1,29 @@
-'use client';
 import {
+    Box,
+    Button,
     ChakraProvider,
     Flex,
     FormControl,
     FormErrorMessage,
     Heading,
+    Image,
     Input,
     Link,
-    VStack,
-    Box,
-    Image,
     Text,
-    Button,
     useTheme,
+    VStack,
 } from '@chakra-ui/react';
 import { AxiosError } from 'axios';
+import { ChefHat } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { RiUserFollowLine } from 'react-icons/ri';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
+import foodBackground from '../../public/images/food-background.jpg';
 import { useAuth } from '../hooks';
 import customFetch from '../utils/customFetch';
-import foodBackground from '../../public/images/food-background.jpg';
-import { ChefHat } from 'lucide-react';
 const UserRegister = z
     .object({
         username: z.string().min(4, { message: 'Username must be at least 4 characters' }),

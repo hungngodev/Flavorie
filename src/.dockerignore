@@ -1,0 +1,11 @@
+node_modules
+npm-debug.log
+.package-lock.json
+.DS_Store
+node_modules
+Dockerfile
+.dockerignore
+.git
+.gitignore
+npm-debug.log
+.env

@@ -20,22 +20,22 @@ export const EndPoint = {
 };
 
 const baseURL = axios.create({
-  baseURL: process.env.spoonacular_API_ENDPOINT || "",
+  baseURL: process.env.SPOONACULAR_API_ENDPOINT || "",
 });
 
 const arrKey = [
-  process.env.spoonacular_API_KEY,
-  process.env.spoonacular_API_KEY_2,
-  process.env.spoonacular_API_KEY_3,
-  process.env.spoonacular_API_KEY_4,
-  process.env.spoonacular_API_KEY_5,
-  process.env.spoonacular_API_KEY_6,
-  process.env.spoonacular_API_KEY_7,
-  process.env.spoonacular_API_KEY_8,
-  process.env.spoonacular_API_KEY_9,
-  process.env.spoonacular_API_KEY_10,
-  process.env.spoonacular_API_KEY_11,
-  process.env.spoonacular_API_KEY_12,
+  process.env.SPOONACULAR_API_KEY,
+  process.env.SPOONACULAR_API_KEY_2,
+  process.env.SPOONACULAR_API_KEY_3,
+  process.env.SPOONACULAR_API_KEY_4,
+  process.env.SPOONACULAR_API_KEY_5,
+  process.env.SPOONACULAR_API_KEY_6,
+  process.env.SPOONACULAR_API_KEY_7,
+  process.env.SPOONACULAR_API_KEY_8,
+  process.env.SPOONACULAR_API_KEY_9,
+  process.env.SPOONACULAR_API_KEY_10,
+  process.env.SPOONACULAR_API_KEY_11,
+  process.env.SPOONACULAR_API_KEY_12,
 ];
 
 export const baseCall = async (
@@ -58,15 +58,15 @@ export const baseCall = async (
   let { usageCount, currentKey, callPerMin, lastMinute } = SpoonacularTrack;
 
   const maxCall =
-    (process.env.spoonacular_max_call
-      ? parseInt(process.env.spoonacular_max_call)
+    (process.env.SPOONACULAR_MAX_CALL
+      ? parseInt(process.env.SPOONACULAR_MAX_CALL)
       : 130) - 1;
-  const numberOfKey = process.env.spoonacular_total_key
-    ? parseInt(process.env.spoonacular_total_key)
+  const numberOfKey = process.env.SPOONACULAR_TOTAL_KEY
+    ? parseInt(process.env.SPOONACULAR_TOTAL_KEY)
     : 5;
   const rate =
-    (process.env.spoonacular_rate
-      ? parseInt(process.env.spoonacular_rate)
+    (process.env.SPOONACULAR_RATE
+      ? parseInt(process.env.SPOONACULAR_RATE)
       : 50) - 1;
 
   if (SpoonacularTrack.updatedAt.getDay() != new Date().getDay()) {
