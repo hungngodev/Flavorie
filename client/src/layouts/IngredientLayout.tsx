@@ -13,38 +13,6 @@ import socket from '../socket/socketio.tsx';
 import theme from '../style/theme.tsx';
 import customFetch from '../utils/customFetch.ts';
 
-const allIngredientsQuery = (category: string) => {
-    return {
-        queryKey: ['ingredients', category],
-        queryFn: async () => {
-            if (category === '/') {
-                return null;
-            }
-            const data = await customFetch('/ingredient', {
-                params: {
-                    category: category,
-                },
-            });
-            return data;
-        },
-    };
-};
-
-const searchIngredientQuery = (queries: { [key: string]: string }) => {
-    const search = queries.search;
-    return {
-        queryKey: search ? ['ingredients', search] : ['ingredients'],
-        queryFn: async () => {
-            const data = await customFetch('/ingredient/search', {
-                params: {
-                    search: search,
-                },
-            });
-            return data;
-        },
-    };
-};
-
 const leftOverQuery = {
     queryKey: ['leftOver'],
     queryFn: async () => {
@@ -112,7 +80,7 @@ export default function Ingredient() {
     currentCategory = currentCategory === undefined ? '/' : currentCategory;
 
     const { data: cartData, status: cartStatus } = useQuery(cartQuery);
-    const { data: leftOverData, status: leftOverStatus, refetch: refetchLeftOver } = useQuery(leftOverQuery);
+    const { data: leftOverData, status: leftOverStatus } = useQuery(leftOverQuery);
     const queryClient = useQueryClient();
     console.log(cartData, leftOverData);
     const fridgeWidth = '500';
