@@ -1,9 +1,5 @@
 import { StatusCodes } from "http-status-codes";
 
-interface CustomError extends Error {
-  statusCode: number;
-}
-
 export class NotFoundError extends Error {
   statusCode: number; // Add the statusCode property
   constructor(message: string) {

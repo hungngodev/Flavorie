@@ -1,16 +1,12 @@
+import { Types } from "mongoose";
 import {
   NotFoundError,
   UnauthenticatedError,
   UserCreationError,
 } from "../errors/customErrors.ts";
-import { Ingredient } from "../models/IngredientModel.ts";
-import ItemModel, { Item, typeItem } from "../models/ItemModel.ts";
+import ItemModel, { Item } from "../models/ItemModel.ts";
 import UserModel, { User } from "../models/UserModel.ts";
 import { comparePassword, hashPassword } from "../utils/passwordUtils.ts";
-
-interface UserItem extends Omit<Item, "itemId"> {
-  itemId: Ingredient;
-}
 
 export async function createUser(userDocument: User): Promise<string> {
   const { email, name } = userDocument;
@@ -19,10 +15,11 @@ export async function createUser(userDocument: User): Promise<string> {
 
   const isEmailExist = await UserModel.findOne({ email: email });
   const isNameExist = await UserModel.findOne({ name: name });
-  if (isEmailExist) throw new UserCreationError("User already exists");
+  if (isEmailExist || isNameExist)
+    throw new UserCreationError("User already exists");
 
   const user = await UserModel.create(userDocument);
-  return user._id.toString();
+  return (user._id as Types.ObjectId).toString();
 }
 
 export async function authenticateCheck(userDocument: User): Promise<string> {
@@ -37,14 +34,14 @@ export async function authenticateCheck(userDocument: User): Promise<string> {
 
   if (!isValidPassword) throw new UnauthenticatedError("invalid credentials");
 
-  return user._id.toString();
+  return (user._id as Types.ObjectId).toString();
 }
 
 export async function modifyOrdinaryInfo(
   userId: string,
   reqInfo: User,
 ): Promise<void> {
-  let user = await UserModel.findById(userId);
+  const user = await UserModel.findById(userId);
   if (!user) throw new UnauthenticatedError("User not found");
   // if (reqInfo.role !== "admin") throw new UnauthenticatedError("Not Allowed");
   if ("name" in reqInfo) user.name = reqInfo.name;
@@ -57,7 +54,7 @@ export async function modifyOrdinaryInfo(
   if ("description" in reqInfo) user.description = reqInfo.description;
 
   if ("role" in reqInfo) user.role = reqInfo.role;
-  if ("avatar" in reqInfo) user.avatar = reqInfo.avatar
+  if ("avatar" in reqInfo) user.avatar = reqInfo.avatar;
   if ("avatarPublicId" in reqInfo) user.avatarPublicId = reqInfo.avatarPublicId;
   if ("preferences" in reqInfo) user.preferences = reqInfo.preferences;
   if ("allergy" in reqInfo) user.allergy = reqInfo.allergy;

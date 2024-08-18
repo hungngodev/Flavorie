@@ -1,12 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
-import { string, string, default as z, default as z } from "zod";
-import {
-  BadRequestError,
-  BadRequestError,
-  ExpressError,
-} from "../errors/customErrors.ts";
-import ExpressError from "../utils/ExpressError.ts";
+import { default as z } from "zod";
+import { BadRequestError, ExpressError } from "../errors/customErrors.ts";
 
 // login
 export const logInData = z.object({

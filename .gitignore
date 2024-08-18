@@ -37,3 +37,6 @@ src/scan-receipts/app/__pycache__/*
 src/scan-receipts/__pycache__
 venv/
 __pycache__/
+
+deploy.txt
+Flavorie.pem

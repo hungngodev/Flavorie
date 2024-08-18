@@ -1,0 +1,36 @@
+version: "3"
+services:
+  frontend:
+    build: ./client
+    container_name: flavorie-frontend-container
+    ports:
+      - "5173:5173"
+    stdin_open: true
+    tty: true
+    depends_on:
+      - backend
+    networks:
+      - flavorie-networks
+
+  backend:
+    build: ./src
+    container_name: flavorie-backend-container
+    restart: always
+    env_file:
+      - ./src/.env
+    ports:
+      - "5100:5100"
+    networks:
+      - flavorie-networks
+
+  peerjs:
+    build: ./peerjs]
+    container_name: flavorie-peerjs-container
+    ports:
+      - "9001:9001"
+    networks:
+      - flavorie-networks
+
+networks:
+  flavorie-networks:
+    driver: bridge

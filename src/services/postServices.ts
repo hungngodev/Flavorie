@@ -1,5 +1,4 @@
 import { Document, Types } from "mongoose";
-import { StringDecoder } from "string_decoder";
 import {
   BadRequestError,
   PostError,
@@ -62,8 +61,8 @@ export const getPostDocumentById = async (
 };
 
 export const getFeedDocument = async (
-  page: number = 1,
-  limit: number = 20,
+  page = 1,
+  limit = 20,
 ): Promise<Document[]> => {
   console.log(`page number is ${page}`);
   const postLists = await PostModel.find()
@@ -137,16 +136,7 @@ export const updatePostDocument = async (
   postBody: Partial<Post> & { remainingMedia: string[] | string },
   postFiles: any,
 ): Promise<Document> => {
-  const {
-    author,
-    header,
-    body,
-    privacy,
-    location,
-    react,
-    review,
-    remainingMedia,
-  } = postBody;
+  const { author, header, body, privacy, location, remainingMedia } = postBody;
 
   try {
     // console.log(postBody);
@@ -271,7 +261,7 @@ export const deletePostDocument = async (postId: string, userId: string) => {
         const review = reviews.shift();
         const reviewDoc = await ReviewModel.findById(review);
         if (reviewDoc) {
-          deleteQueue.push(reviewDoc._id);
+          deleteQueue.push(reviewDoc._id as Types.ObjectId);
           if (reviewDoc.childrenReview.length > 0) {
             reviews.push(...reviewDoc.childrenReview);
           }
