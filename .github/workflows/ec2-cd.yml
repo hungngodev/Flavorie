@@ -41,7 +41,7 @@ jobs:
 
     steps:
       - name: SSH into EC2 instance
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
