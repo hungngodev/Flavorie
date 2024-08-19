@@ -2,7 +2,7 @@
 FROM  node:latest AS builder
 
 # Create a directory  and go to directory 
-WORKDIR /app
+WORKDIR /myapp
 
 # Copy the package.json file to my current directory for install necessary dependence  
 COPY package.json .
@@ -20,7 +20,7 @@ RUN npm run build
 FROM nginx:1.25.2-alpine-slim
 
 # Copy static file to my nignx folder for serve static contain
-COPY --from=builder /app/build /usr/share/nginx/html
+COPY --from=builder /myapp/dist /usr/share/nginx/html
 
 # Open the port for react
 EXPOSE 80
