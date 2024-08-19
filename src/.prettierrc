@@ -1,0 +1,14 @@
+{
+  "plugins": ["prettier-plugin-organize-imports"],
+  "organizeImports": true,
+  "arrowParens": "avoid",
+  "overrides": [
+    {
+      "files": ["./**/*.ts", "include/**/*.ts"],
+      "options": {
+        "parser": "typescript"
+      }
+    }
+  ],
+  "organizeImportsSkipDestructiveCodeActions": true
+}

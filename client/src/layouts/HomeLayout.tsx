@@ -12,13 +12,13 @@ const HomeLayout: React.FC = () => {
     <main>
       <AuthProvider>
         <SocketProvider>
-        <NotificationProvider>
-        <Navbar />
-        
-        <Box as={'section'} width="100%" height="90vh">
-          <Outlet />
-        </Box>
-        </NotificationProvider>
+          <NotificationProvider>
+            <Navbar />
+
+            <Box as={'section'} width="100%" height="90vh">
+              <Outlet />
+            </Box>
+          </NotificationProvider>
         </SocketProvider>
       </AuthProvider>
     </main>

@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
-import { Server } from "http";
-import { Types, model } from "mongoose";
+import { Types } from "mongoose";
 import { ServerError } from "../errors/customErrors.ts";
 import PostModel from "../models/Post.ts";
 import ReviewModel from "../models/Review.ts";
@@ -42,6 +41,10 @@ export const createReview = async (req: Request, res: Response) => {
   }
   const user = await UserModel.findById(userId);
 
+  if (!user) {
+    console.log("error no user");
+    return res.status(404).send({ error: "User not found" });
+  }
   if (!user) {
     console.log("error no user");
     return res.status(404).send({ error: "User not found" });
@@ -161,7 +164,7 @@ export const deleteReview = async (req: Request, res: Response) => {
         const review = childrenReview.shift();
         const reviewDoc = await ReviewModel.findById(review);
         if (reviewDoc) {
-          deleteQueue.push(reviewDoc._id);
+          deleteQueue.push(reviewDoc._id as Types.ObjectId);
           if (reviewDoc.childrenReview.length > 0) {
             childrenReview.push(...reviewDoc.childrenReview);
           }

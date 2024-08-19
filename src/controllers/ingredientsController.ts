@@ -1,66 +1,174 @@
-import { Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
-import { ServerError } from '../errors/customErrors.ts';
-import User from '../models/UserModel.ts';
-import { classifyIngredient, findIngredients } from '../services/ingredientServices.ts';
-import { findIngredientById, getAllIngredientsAPI } from '../services/spoonacular/spoonacularServices.ts';
+import { Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
+import { ServerError } from "../errors/customErrors.ts";
+import IngredientModel from "../models/IngredientModel.ts";
+import User from "../models/UserModel.ts";
+import {
+  CategoryResults,
+  classifyIngredient,
+  findIngredients,
+} from "../services/ingredientServices.ts";
+import { getAndStoreInRedis } from "../services/redisClient/index.ts";
+import {
+  getAllIngredientsAPI,
+  getIngredientsAutoCompleteAPI,
+} from "../services/spoonacular/spoonacularServices.ts";
+import { getUserItems } from "../services/userServices.ts";
+import { IngredientBank } from "../utils/queryBank.ts";
 
 export const getAllIngredients = async (req: Request, res: Response) => {
-    const { category } = req.query;
-    const allergy = [];
-    const diet = [];
-    if (req.user) {
-        const thisUser = await User.findOne({ _id: req.user.userId });
-        if (thisUser) {
-            allergy.push(...thisUser.allergy);
-            diet.push(thisUser.diet);
-        }
-    }
-    try {
-        const classifiedIngredients = await classifyIngredient()
-        res.status(StatusCodes.OK).json({
-            category: category !== '/' ? classifiedIngredients.filter((SubCategory) => SubCategory.categoryName === category) : classifiedIngredients,
-            allergy,
-            diet,
-        })
-    }
-    catch (e) {
-        console.error('Error classifying ingredients:', e)
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new ServerError('Failed to classify ingredients'))
-    }
+  const { category, sideBar } = req.query;
+  // console.log("category querying", category);
+  const categories = Object.keys(IngredientBank);
+  try {
+    console.log("Checking from Redis for ingredients");
+    const redisKey = "ingredients " + category;
+    const classifiedIngredients: CategoryResults = (await getAndStoreInRedis(
+      redisKey,
+      3600 * 24,
+      async () => await classifyIngredient(category?.toString() || ""),
+    )) as CategoryResults;
+    if (sideBar)
+      return res.status(StatusCodes.OK).json({
+        categories,
+      });
+    return res.status(StatusCodes.OK).json({
+      category: classifiedIngredients,
+      categories,
+    });
+  } catch (e) {
+    console.error("Error classifying ingredients:", e);
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json(new ServerError("Failed to classify ingredients"));
+  }
 
-    // res.json({ ingredients, allergy, diet, leftOver }).status(StatusCodes.OK);
-}
+  // res.json({ ingredients, allergy, diet, leftOver }).status(StatusCodes.OK);
+};
 
 export const searchIngredients = async (req: Request, res: Response) => {
-    const ingredientName = req.query.ingredientName as string;
-    let { allergy, diet } = req.body;
-    if (!allergy || !diet) allergy = diet = [];
-    const ingredients = await getAllIngredientsAPI(allergy, diet, ingredientName, 50);
-    res.json({ ingredients }).status(StatusCodes.OK);
-}
+  console.log("recevived request");
+  const ingredientName = req.query.search as string;
+  const allergy: string[] = [];
+  if (req.user) {
+    const thisUser = await User.findOne({ _id: req.user.userId });
+    if (thisUser) {
+      allergy.push(...thisUser.allergy);
+    }
+  }
+  const queryAllergy = allergy
+    .reduce(
+      (acc: string, curr: string) => `${curr.toString().toLowerCase()},${acc}`,
+      "",
+    )
+    .slice(0, -1);
+
+  if (!ingredientName || ingredientName === "") {
+    const result = [];
+    const myLeftOver = await getUserItems(req.user.userId, "leftOver");
+    const likedMeals = JSON.parse(
+      JSON.stringify(await getUserItems(req.user.userId, "likedMeal")),
+    );
+    for (const meal of likedMeals) {
+      const missingIngredients = [];
+      for (const mealIngredient of meal.likedMeal.allIngredients) {
+        if (
+          !myLeftOver.some(
+            ingredient =>
+              ingredient.itemId.toString() === mealIngredient.toString(),
+          )
+        ) {
+          const missingIngredient =
+            await IngredientModel.findById(mealIngredient);
+          if (missingIngredient) {
+            const repIngredient = {
+              id: missingIngredient._id.toString(),
+              name: missingIngredient.name,
+              image: missingIngredient.image,
+              category: missingIngredient.categoryPath,
+              amount: missingIngredient.amount,
+              unit: missingIngredient.unit,
+              unitShort: missingIngredient.unitShort,
+              nutrition: missingIngredient.nutrition,
+            };
+            missingIngredients.push(repIngredient);
+          }
+        }
+      }
+      result.push({
+        meal: meal.likedMeal,
+        missingIngredients: missingIngredients,
+      });
+    }
+    const randomIngredients = (await getAndStoreInRedis(
+      "ingredient random",
+      3600 * 24,
+      async () => await IngredientModel.aggregate([{ $sample: { size: 40 } }]),
+    )) as [];
+
+    // console.log("randomIngredients", randomIngredients);
+    return res
+      .json({
+        result,
+        numberOfIngredients: randomIngredients.length,
+        ingredients: randomIngredients,
+      })
+      .status(StatusCodes.OK);
+  } else {
+    const ingredients = await findIngredients(
+      ingredientName.toLowerCase().trim(),
+      100,
+    );
+    const newResultsWithPopulate = [...ingredients];
+    for (const ingredient of newResultsWithPopulate) {
+      console.log("relevance", ingredient.relevance);
+      ingredients.push(...ingredient.relevance);
+    }
+    if (ingredients.length < 100) {
+      const spoonacularIngredients = await getAllIngredientsAPI(
+        queryAllergy,
+        ingredientName.toLowerCase().trim(),
+        10,
+      );
+      ingredients.push(...spoonacularIngredients);
+      // console.log("spoonacularIngredients", spoonacularIngredients);
+    }
+
+    return res
+      .json({ ingredients, numberOfIngredients: ingredients.length })
+      .status(StatusCodes.OK);
+  }
+};
 
 export const getIndividualIngredient = async (req: Request, res: Response) => {
-    const ingredientId = req.params.ingredientId;
-    const ingredient = await findIngredientById('', parseInt(ingredientId));
-    res.json({ ingredient }).status(StatusCodes.OK);
-}
+  const { id: ingredientId } = req.params;
+  const ingredient = await IngredientModel.findById(ingredientId);
+  res.json({ ingredient }).status(StatusCodes.OK);
+};
 export const getSuggestionIngredients = async (req: Request, res: Response) => {
-    try {
-        const query = req.query.name as string
-        const formatedQuery = query.toLowerCase().trim()
-        const ingredientSuggestions = await findIngredients(formatedQuery)
-        const filterSuggestions = ingredientSuggestions.map((ingredient) => ({
-            name: ingredient.name,
-            img: ingredient.image
-        }))
-        res.json({filterSuggestions}).status(StatusCodes.OK)
-}
-catch(error){
-    console.log("Error when searching ingredients", error)
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new ServerError('Failed to search ingredients'))
-
-}
-}
-
-
+  try {
+    console.log(req.query);
+    const query = req.query.query as string;
+    const formatedQuery = query.toLowerCase().trim();
+    const ingredientSuggestions = await findIngredients(formatedQuery, 10);
+    const filterSuggestions =
+      ingredientSuggestions && ingredientSuggestions.length > 0
+        ? ingredientSuggestions.map(ingredient => ({
+            title: ingredient.name,
+          }))
+        : [];
+    if (filterSuggestions.length < 10) {
+      const spoonacularSuggestions = await getIngredientsAutoCompleteAPI(
+        formatedQuery,
+        10 - filterSuggestions.length,
+      );
+      filterSuggestions.unshift(...spoonacularSuggestions);
+    }
+    res.json(filterSuggestions).status(StatusCodes.OK);
+  } catch (error) {
+    console.log("Error when searching ingredients", error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json(new ServerError("Failed to search ingredients"));
+  }
+};

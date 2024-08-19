@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import fs from "fs";
 import { PostError } from "../errors/customErrors.ts";
 import PostModel from "../models/Post.ts";
 import UserModel from "../models/UserModel.ts";

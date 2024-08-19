@@ -1,0 +1,48 @@
+# name: Docker CI for Docker Hub Pipeline
+# on:
+#   push:
+#     branches:
+#       - feature/finishing-core-features
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout Source
+#         uses: actions/checkout@v4
+#       - name: Login to docker hub
+#         uses: docker/login-action@v1
+#         with:
+#           username: ${{ secrets.DOCKER_USERNAME }}
+#           password: ${{ secrets.DOCKER_PASSWORD }}
+#       - name: Build FrontEnd
+#         run: docker build -t hungngodev/flavorie-frontend  ./client
+#       - name: Publish FrontEnd Image to docker hub
+#         run: docker push hungngodev/flavorie-frontend:latest
+#       - name: Build BackEnd
+#         run: docker build -t hungngodev/flavorie-backend ./src
+#       - name: Publish BackEnd Image to docker hub
+#         run: docker push hungngodev/flavorie-backend:latest
+#       - name: Build Peer Server
+#         run: docker build -t hungngodev/flavorie-peerjs ./peerjs
+#       - name: Publish Peer Server Image to docker hub
+#         run: docker push hungngodev/flavorie-peerjs:latest
+
+#   deploy:
+#     needs: build
+#     runs-on: self-hosted
+#     steps:
+#       - name: Pull frontend image from docker hub
+#         run: docker pull hungngodev/flavorie-frontend:latest
+#       - name: Delete old frontend container
+#         run: docker rm -f flavorie-frontend-container
+#       - name: Pull backend image from docker hub
+#         run: docker pull hungngodev/flavorie-backend:latest
+#       - name: Delete old backend container
+#         run: docker rm -f flavorie-backend-container
+#       - name: Pull peerjs image from docker hub
+#         run: docker pull hungngodev/flavorie-peerjs:latest
+#       - name: Delete old peerjs container
+#         run: docker rm -f flavorie-peerjs-container
+#       - name: Run the whole thing
+#         run: docker-compose -f docker-compose.yml up -d

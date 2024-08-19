@@ -24,7 +24,8 @@ export const authenticateUser = (
   res: Response,
   next: NextFunction,
 ) => {
-  const { token } = req.cookies;
+  const { flavorie_session_token } = req.cookies;
+  const token = flavorie_session_token;
   if (!token) throw new UnauthenticatedError("authentication invalid");
 
   try {
@@ -38,7 +39,8 @@ export const authenticateUser = (
 };
 
 export const checkUser = (req: Request, res: Response, next: NextFunction) => {
-  const { token } = req.cookies;
+  const { flavorie_session_token } = req.cookies;
+  const token = flavorie_session_token;
   if (token) {
     try {
       const { userId, role, ...res } = verifyJWT(token);
@@ -46,6 +48,7 @@ export const checkUser = (req: Request, res: Response, next: NextFunction) => {
       req.user = { userId, role, testUser };
     } catch (error) {}
   }
+
   next();
 };
 

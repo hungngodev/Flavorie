@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
-import z, { string } from "zod";
+import { default as z } from "zod";
 import { BadRequestError, ExpressError } from "../errors/customErrors.ts";
 
 // login
@@ -90,3 +90,26 @@ export const validateReview = (
     }
   }
 };
+
+// mock data for register
+// const sampleRegis = {
+//     username: "Sophie",
+//     email: "sophie.abc@gmail.com",
+//     password: "12345678",
+//     reEnterPassword: "12345678",
+// };
+
+// console.log(sampleRegis);
+// const mockRequest = { body: sampleRegis } as Request;
+// const mockResponse = {} as Response;
+// const mockNext: NextFunction = (error?: any) => {
+//     if (error) {
+//         console.error("Error caught in validateRegisterInput:", error);
+//         return;
+//         return;
+//     }
+//     console.log('Registration successful');
+//     console.log('Registration successful');
+// };
+
+// validateRegisterInput(mockRequest, mockResponse, mockNext);
