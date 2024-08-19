@@ -48,8 +48,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            cd Flavorie
-            git pull origin main
+            cd Flavorie 
             export MONGODB_URL=${MONGODB_URL}
             export REDIS_URL=${REDIS_URL}
             export JWT_SECRET=${JWT_SECRET}
