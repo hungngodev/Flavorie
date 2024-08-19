@@ -1,6 +1,6 @@
 
 tag:=v1.0.${TAG}
-images_name:=flavorie-backend	
+images_name:=flavorie-backend
 repository:=hungngodev
 
 all: build push
