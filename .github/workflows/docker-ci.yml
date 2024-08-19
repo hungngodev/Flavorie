@@ -19,8 +19,12 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push Docker image
+      - name: FrontEnd-Build and push Docker images
         run: |
           cd client && make all TAG=${{ github.run_number }}
-          cd ../src && make all TAG=${{ github.run_number }}
-          cd ../src && make all TAG=${{ github.run_number }}
+      - name: Backend-Build and push Docker images
+        run: |
+          cd src && make all TAG=${{ github.run_number }}
+      - name: Peerjs-Build and push Docker images
+        run: |
+          cd peerjs && make all TAG=${{ github.run_number }}
