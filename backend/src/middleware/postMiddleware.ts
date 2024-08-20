@@ -9,12 +9,12 @@ export const checkAuthor = async (
   res: Response,
   next: NextFunction,
 ) => {
-  if (req.user) {
+  if ((req as any).user) {
     const post = await PostModel.findOne({ _id: req.params.postid });
     if (!post) {
       throw new PostError("Post not found");
     }
-    if (post.author.toString() !== req.user.userId) {
+    if (post.author.toString() !== (req as any).user.userId) {
       throw new PostError("Author does not match");
     }
   } else {
@@ -28,12 +28,12 @@ export const bindAuthor = async (
   res: Response,
   next: NextFunction,
 ) => {
-  if (req.user) {
-    const author = await UserModel.findById(req.user.userId);
+  if ((req as any).user) {
+    const author = await UserModel.findById((req as any).user.userId);
     if (!author) {
       throw new PostError("Author not found");
     }
-    req.body.author = req.user.userId;
+    req.body.author = (req as any).user.userId;
   }
   next();
 };

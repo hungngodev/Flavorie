@@ -30,7 +30,6 @@ const ReceiptScan: React.FC = () => {
         reader.onload = function (e) {
             const base64 = e.target?.result as string;
             const filename = file.name;
-            console.log('submitting receipt');
             socket.emit('submitReceipt', { base64, filename });
             notifySuccess('Submit receipt successfully');
         };

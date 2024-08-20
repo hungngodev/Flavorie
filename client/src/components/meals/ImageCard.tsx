@@ -43,7 +43,6 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageProps }) => {
                 mealId: imageProps.id,
                 infoLink: imageProps.infoLink,
             });
-            console.log(returnLiked);
             setLiked(returnLiked.data.liked);
             setNumberOfLiked(returnLiked.data.numberOfLiked);
             // setLiked(returnLiked.data.liked);

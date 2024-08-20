@@ -10,8 +10,8 @@ export async function getDietAndAllergy(
 ) {
   const allergy = [];
   const diet = [];
-  if (req.user) {
-    const thisUser = await UserModel.findOne({ _id: req.user.userId });
+  if ((req as any).user) {
+    const thisUser = await UserModel.findOne({ _id: (req as any).user.userId });
     if (thisUser) {
       allergy.push(...thisUser.allergy);
       diet.push(...thisUser.diet);
@@ -28,7 +28,7 @@ export async function getLeftOver(
   next: NextFunction,
 ) {
   try {
-    const userId = req.user?.userId ?? "";
+    const userId = (req as any).user?.userId ?? "";
     const items = await ItemModel.find({
       userId: userId,
       type: "leftover",
@@ -44,7 +44,7 @@ export async function calculatePoint(
   res: Response,
   next: NextFunction,
 ) {
-  const userId = req.user?.userId || "";
+  const userId = (req as any).user?.userId || "";
   const user = await UserModel.findById(userId);
   if (!user) {
     throw new ServerError("User not found");

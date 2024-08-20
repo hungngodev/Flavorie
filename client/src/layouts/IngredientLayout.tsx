@@ -82,7 +82,6 @@ export default function Ingredient() {
     const { data: cartData, status: cartStatus } = useQuery(cartQuery);
     const { data: leftOverData, status: leftOverStatus } = useQuery(leftOverQuery);
     const queryClient = useQueryClient();
-    console.log(cartData, leftOverData);
     const fridgeWidth = '500';
     const { getButtonProps, getDisclosureProps, isOpen } = useDisclosure();
     const [hidden, setHidden] = useState(!isOpen);
@@ -248,7 +247,6 @@ export default function Ingredient() {
                     type: 'leftOver',
                 };
             });
-            console.log(results);
             await customFetch.patch(
                 '/user/leftOver',
                 {

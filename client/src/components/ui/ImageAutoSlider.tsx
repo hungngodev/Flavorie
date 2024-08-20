@@ -24,8 +24,6 @@ const AutoSlider = ({
     autoplay?: boolean;
     direction?: 'up' | 'down';
 }) => {
-    // const theme = useTheme();
-    console.log(theme);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [loadedImages, setLoadedImages] = useState<string[]>([]);
 

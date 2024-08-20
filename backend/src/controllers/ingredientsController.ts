@@ -51,8 +51,8 @@ export const searchIngredients = async (req: Request, res: Response) => {
   console.log("recevived request");
   const ingredientName = req.query.search as string;
   const allergy: string[] = [];
-  if (req.user) {
-    const thisUser = await User.findOne({ _id: req.user.userId });
+  if ((req as any).user) {
+    const thisUser = await User.findOne({ _id: (req as any).user.userId });
     if (thisUser) {
       allergy.push(...thisUser.allergy);
     }
@@ -64,11 +64,11 @@ export const searchIngredients = async (req: Request, res: Response) => {
     )
     .slice(0, -1);
 
-  if ((!ingredientName || ingredientName === "") && req.user) {
+  if ((!ingredientName || ingredientName === "") && (req as any).user) {
     const result = [];
-    const myLeftOver = await getUserItems(req.user.userId, "leftOver");
+    const myLeftOver = await getUserItems((req as any).user.userId, "leftOver");
     const likedMeals = JSON.parse(
-      JSON.stringify(await getUserItems(req.user.userId, "likedMeal")),
+      JSON.stringify(await getUserItems((req as any).user.userId, "likedMeal")),
     );
     for (const meal of likedMeals) {
       const missingIngredients = [];

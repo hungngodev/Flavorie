@@ -3,7 +3,7 @@
     "lib": ["es2018", "dom"], // Specify a list of libraries the project will use
     "target": "es2018", // Set the JavaScript version for output files
     "module": "commonjs", // Set the module system (Node.js uses CommonJS)
-    "strict": true, // Enable all strict type-checking options
+    // "strict": true, // Enable all strict type-checking options
     "baseUrl": ".", // Base directory to resolve non-relative module names
     "outDir": "dist", // Redirect output structure to the 'dist' folder
     "rootDir": ".", // Specify the root directory of source files
@@ -16,7 +16,7 @@
     "paths": {
       "@src/*": ["src/*"] // absolute paths
     },
-    "typeRoots": ["./src/types", "./node_modules/@types"]
+    "typeRoots": ["./node_modules/@types", "./src/types"]
 
     // "strictNullChecks": true, // Enable strict null checks
     // "strictFunctionTypes": true, // Enable strict checking of function types

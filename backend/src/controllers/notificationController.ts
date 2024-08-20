@@ -2,7 +2,7 @@ import NotificationModel from "@src/models/NotificationModel";
 import { Request, Response } from "express";
 
 const getNotificationCount = async (req: Request, res: Response) => {
-  const userId = req.user?.userId;
+  const userId = (req as any).user?.userId;
   if (!userId) {
     return res.status(400).json({ error: "User not found" });
   }
@@ -18,7 +18,7 @@ const getNotificationCount = async (req: Request, res: Response) => {
 };
 
 const getAllNotifications = async (req: Request, res: Response) => {
-  const userId = req.user?.userId;
+  const userId = (req as any).user?.userId;
   if (!userId) {
     return res.status(400).json({ error: "User not found" });
   }
@@ -33,7 +33,7 @@ const getAllNotifications = async (req: Request, res: Response) => {
 };
 
 const getNotificationById = async (req: Request, res: Response) => {
-  const userId = req.user?.userId;
+  const userId = (req as any).user?.userId;
   if (!userId) {
     return res.status(400).json({ error: "User not found" });
   }

@@ -45,10 +45,8 @@ const NotificationProvider: React.FC<NotificationContextProviderProps> = ({
             const response = await customFetch.get(`/user/notifications/${id}`, {
                 withCredentials: true,
             });
-            console.log(response.data.currNotification);
 
             const parsedData = NotificationSchema.safeParse(response.data.currNotification);
-            console.log(parsedData);
             if (parsedData.success) {
                 setNotificationDetail(parsedData.data);
                 localStorage.setItem('notificationDetail', JSON.stringify(parsedData.data.message.data));

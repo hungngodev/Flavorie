@@ -21,7 +21,7 @@ export const authenticateUser = (
   try {
     const { userId, role } = verifyJWT(token);
     const testUser = userId === "64b2c07ccac2efc972ab0eca";
-    req.user = { userId, role, testUser };
+    (req as any).user = { userId, role, testUser };
     return next();
   } catch (error) {
     throw new UnauthenticatedError("Authentication invalid");
@@ -35,7 +35,7 @@ export const checkUser = (req: Request, res: Response, next: NextFunction) => {
     try {
       const { userId, role, ...res } = verifyJWT(token);
       const testUser = userId === "64b2c07ccac2efc972ab0eca";
-      req.user = { userId, role, testUser };
+      (req as any).user = { userId, role, testUser };
     } catch (error) {}
   }
 
@@ -72,7 +72,7 @@ export const authorizeReviewOwner = async (
   next: NextFunction,
 ) => {
   const { reviewId } = req.params;
-  const userId = req.user?.userId;
+  const userId = (req as any).user?.userId;
 
   if (!userId) {
     return res.status(401).send("Authentication invalid"); // Use 401 for unauthorized access

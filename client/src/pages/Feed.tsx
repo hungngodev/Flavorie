@@ -123,8 +123,7 @@ const Feed = () => {
             return undefined;
         },
     });
-    console.log(isFetchingNextPage);
-    console.log(hasNextPage);
+
     const scrollVirtualizer = useVirtualizer({
         count: posts.length,
         getScrollElement: () => parentRef.current,
@@ -146,7 +145,6 @@ const Feed = () => {
 
     useEffect(() => {
         const [lastItem] = [...scrollVirtualizer.getVirtualItems()].reverse();
-        console.log(lastItem);
         if (!lastItem) {
             return;
         }

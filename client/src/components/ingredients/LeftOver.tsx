@@ -12,7 +12,6 @@ import {
     VStack,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import { useEffect } from 'react';
 import { Control, Controller, FieldArrayWithId } from 'react-hook-form';
 import { leftOverData } from '../../layouts/IngredientLayout';
 import theme from '../../style/theme';
@@ -24,9 +23,6 @@ interface LeftOverProps {
     control: Control<leftOverData>;
 }
 export default function LeftOver({ height, removeItem, onSubmit, fields, control }: LeftOverProps) {
-    useEffect(() => {
-        console.log('fields', fields);
-    }, [fields]);
     return (
         <Flex
             marginTop={'4vh'}

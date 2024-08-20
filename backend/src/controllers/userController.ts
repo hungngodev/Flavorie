@@ -14,7 +14,7 @@ import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 
 export const updateUser = async (req: Request, res: Response) => {
-  const updatedUser = await UserModel.findById(req.user?.userId);
+  const updatedUser = await UserModel.findById((req as any).user?.userId);
   if (!updatedUser) {
     throw new NotFoundError("User not found");
   }
@@ -23,12 +23,12 @@ export const updateUser = async (req: Request, res: Response) => {
     updatedUser.avatar = files[0].path;
     updatedUser.avatarFileName = files[0].filename;
   }
-  await modifyOrdinaryInfo(req.user?.userId || "", req.body);
+  await modifyOrdinaryInfo((req as any).user?.userId || "", req.body);
   await updatedUser.save();
   res.status(StatusCodes.OK).send({ msg: "update user" });
 };
 export const getPersonalInfo = async (req: Request, res: Response) => {
-  const currUser = await UserModel.findById(req.user?.userId);
+  const currUser = await UserModel.findById((req as any).user?.userId);
   if (!currUser) {
     throw new NotFoundError("User not found");
   }
@@ -36,20 +36,20 @@ export const getPersonalInfo = async (req: Request, res: Response) => {
 };
 
 export const getCart = async (req: Request, res: Response) => {
-  if (!req.user) {
+  if (!(req as any).user) {
     return res.status(StatusCodes.OK).send({ msg: "Unauthorized", cart: [] });
   }
-  const cart = await getUserItems(req.user.userId, "cart");
+  const cart = await getUserItems((req as any).user.userId, "cart");
   return res.status(StatusCodes.OK).send({ cart });
 };
 
 export const getLeftOver = async (req: Request, res: Response) => {
-  if (!req.user) {
+  if (!(req as any).user) {
     return res
       .status(StatusCodes.OK)
       .send({ msg: "Unauthorized", leftOver: [] });
   }
-  const leftOver = await getUserItems(req.user.userId, "leftOver");
+  const leftOver = await getUserItems((req as any).user.userId, "leftOver");
   return res.status(StatusCodes.OK).send({ leftOver: leftOver });
 };
 
@@ -58,13 +58,17 @@ export const updateCart = async (req: Request, res: Response) => {
 
   if (req.body.transfer === "true") {
     await changeItemTypes(
-      req.user?.userId || "",
+      (req as any).user?.userId || "",
       req.body.cart,
       "cart",
       "leftOver",
     );
   } else {
-    await modifyUserItems(req.user?.userId || "", req.body.cart, "cart");
+    await modifyUserItems(
+      (req as any).user?.userId || "",
+      req.body.cart,
+      "cart",
+    );
   }
 
   res.status(StatusCodes.OK).send({ msg: "update cart" });
@@ -72,13 +76,20 @@ export const updateCart = async (req: Request, res: Response) => {
 
 export const updateLeftOver = async (req: Request, res: Response) => {
   console.log("leftOver", req.body);
-  await modifyUserItems(req.user?.userId || "", req.body.leftOver, "leftOver");
+  await modifyUserItems(
+    (req as any).user?.userId || "",
+    req.body.leftOver,
+    "leftOver",
+  );
 
   res.status(StatusCodes.OK).send({ msg: "update leftOver" });
 };
 
 export const getLikedMeals = async (req: Request, res: Response) => {
-  const likedMeals = await getUserItems(req.user?.userId || "", "likedMeal");
+  const likedMeals = await getUserItems(
+    (req as any).user?.userId || "",
+    "likedMeal",
+  );
   res.status(StatusCodes.OK).send({ likedMeals });
 };
 
@@ -94,7 +105,7 @@ export const updateLikedMeals = async (req: Request, res: Response) => {
   }
 
   const liked = await toggleLikedItem(
-    req.user?.userId || "",
+    (req as any).user?.userId || "",
     mealId,
     "likedMeal",
   );
@@ -114,14 +125,21 @@ export const updateLikedMeals = async (req: Request, res: Response) => {
 };
 
 export const getCookedMeals = async (req: Request, res: Response) => {
-  const cookedMeals = await getUserItems(req.user?.userId || "", "cookedMeal");
+  const cookedMeals = await getUserItems(
+    (req as any).user?.userId || "",
+    "cookedMeal",
+  );
   res.status(StatusCodes.OK).send({ cookedMeals });
 };
 
 export const updateCookedMeals = async (req: Request, res: Response) => {
   console.log(req.body);
-  await toggleLikedItem(req.user?.userId || "", req.body.mealId, "cookedMeal");
-  const user = await UserModel.findById(req.user?.userId || "");
+  await toggleLikedItem(
+    (req as any).user?.userId || "",
+    req.body.mealId,
+    "cookedMeal",
+  );
+  const user = await UserModel.findById((req as any).user?.userId || "");
   if (user) {
     user.points += 10;
     await user.save();

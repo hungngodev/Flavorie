@@ -29,7 +29,6 @@ const CustomWebcam: React.FC = () => {
 
     // submit photo
     const submit = () => {
-        console.log(message);
         if (auth.currentUser.status === 'unauthenticated') {
             notifyError('Please log in or sign up to submit receipt');
             return;

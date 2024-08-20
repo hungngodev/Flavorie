@@ -97,7 +97,6 @@ export const peersReducer = (state: PeerState, action: PeerAction) => {
             return { ...state, ...action.payload.peers };
 
         case TOGGLE_VIDEO:
-            console.log(state[action.payload.userId].videoStatus);
             return {
                 ...state,
                 [action.payload.userId]: {

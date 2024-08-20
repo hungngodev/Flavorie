@@ -53,7 +53,6 @@ const ReviewExpand: React.FC<ReviewExpandProps> = ({ onClose, isOpen, postId, re
     //     });
     // };
     useEffect(() => {
-        console.log(createReviewStatus);
         if (createReviewStatus === 'loading') {
             setLoading(() => true);
         }

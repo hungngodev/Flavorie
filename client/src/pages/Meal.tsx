@@ -40,7 +40,6 @@ export const loader =
     (queryClient: QueryClient) =>
     async ({ request }: { params: Params; request: Request }) => {
         const queries: { [key: string]: string } = Object.fromEntries(new URL(request.url).searchParams.entries());
-        console.log(queries);
         queryClient.ensureQueryData(allMealsQuery(queries));
         return queries;
     };
@@ -48,9 +47,7 @@ export const loader =
 function Meal() {
     const params = useLoaderData();
     const { data: queryData, status } = useQuery(allMealsQuery(params as { [key: string]: string }));
-    console.log(queryData);
     const mealData = queryData?.data;
-    console.log(mealData);
 
     return (
         <Flex flexDir={'column'} width={'100%'} height={'100%'} alignItems={'center'}>

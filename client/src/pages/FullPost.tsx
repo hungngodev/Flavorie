@@ -26,7 +26,6 @@ const postQuery = (postId: string) => {
         queryKey: ['community-post', postId],
         queryFn: async () => {
             const request = await customFetch.get(`/community/post/${postId}`);
-            console.log(request);
             return request.data;
         },
     };

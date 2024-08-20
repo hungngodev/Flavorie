@@ -1,20 +1,21 @@
 import {
+    Box,
     Button,
     ChakraProvider,
     Flex,
     FormControl,
     FormErrorMessage,
     Heading,
+    Image,
     Input,
     Link,
-    VStack,
-    Box,
-    Image,
-    useTheme,
     Text,
+    useTheme,
+    VStack,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AxiosError } from 'axios';
+import { ChefHat } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { CiCircleCheck } from 'react-icons/ci';
@@ -22,12 +23,11 @@ import { FaUserXmark } from 'react-icons/fa6';
 import { RiUserFollowLine } from 'react-icons/ri';
 import { TbFaceIdError } from 'react-icons/tb';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ChefHat } from 'lucide-react';
 import { toast } from 'react-toastify';
 import * as z from 'zod';
+import foodBackground from '../../public/images/food-background.jpg';
 import { useAuth } from '../hooks';
 import customFetch from '../utils/customFetch';
-import foodBackground from '../../public/images/food-background.jpg';
 
 const UserLogin = z
     .object({
@@ -64,7 +64,6 @@ const Login: React.FC = () => {
             const LoginRequest = await customFetch.post('/auth/login', userResponse, {
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             });
-            console.log(LoginRequest);
             if (LoginRequest.status === 200) {
                 toast.success('You have successfully logged in !'), { position: 'top-right', icon: <CiCircleCheck /> };
                 setUserNotFounded(false);

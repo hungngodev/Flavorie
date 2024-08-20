@@ -7,7 +7,6 @@ export const createReview = async (postId: string, content: string, parentReview
             { content, parentReview: parentReviewId },
             { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
         );
-        console.log(response);
         return response.data;
     } catch (error) {
         throw new Error(`Failed to create reply: ${error}`);

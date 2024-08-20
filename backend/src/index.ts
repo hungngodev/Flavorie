@@ -15,7 +15,6 @@ import mongoSanitize from "express-mongo-sanitize";
 import helmet from "helmet";
 import mongoose from "mongoose";
 import morgan from "morgan";
-
 // import reviewRouter from "@src/routes/reviewRouter";
 
 import { setUpSocketIO } from "@src/socketio/socketio";
@@ -37,7 +36,7 @@ app.use(express.urlencoded({ limit: "5mb", extended: true }));
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.CLIENT_URL,
     credentials: true,
   }),
 );

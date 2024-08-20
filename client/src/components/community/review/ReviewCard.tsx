@@ -45,7 +45,6 @@ import { parseDate } from '../../../utils/index';
 import { ReviewCardProps } from './types';
 
 const ReviewCard: React.FC<ReviewCardProps> = ({ review, postId }) => {
-    console.log(postId);
     const auth = useAuth(); //
     const { status, id } = auth.currentUser;
     const [showReplies, setShowReplies] = useState(false);
@@ -68,7 +67,6 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, postId }) => {
 
     const handleReply = async (content: string, parentReviewId: string) => {
         try {
-            console.log(review.postId, content);
             // const response = await createReview(review.postId, content, parentReviewId);
             dispatch(createReviewRequest({ postId: review.postId, content, parentReview: parentReviewId })).then(() => {
                 setReply(false);
@@ -80,7 +78,6 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, postId }) => {
 
     const handleEdit = async ({ postId, reviewId, content }: { postId: string; reviewId: string; content: string }) => {
         if (!postId || !reviewId || status !== 'authenticated') return;
-        console.log('here');
         if (isEditing) {
             try {
                 dispatch(editReviewRequest({ postId, reviewId, content })).then(() => {
@@ -104,7 +101,6 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, postId }) => {
     };
 
     const handleKeyDownReply = (event: React.KeyboardEvent) => {
-        console.log('clicked');
         if (editedContent === '') {
             return;
         }
@@ -172,7 +168,6 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, postId }) => {
                                         color={theme.colors.palette_purple}
                                         icon={<IoIosSend />}
                                         onClick={() => {
-                                            console.log('here');
                                             handleEdit({ postId: postId, reviewId: review.id, content: editedContent });
                                         }}
                                         isDisabled={editedContent.length === 0}

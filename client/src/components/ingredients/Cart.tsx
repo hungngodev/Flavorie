@@ -17,7 +17,7 @@ import {
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import Lottie, { LottieRefCurrentProps } from 'lottie-react';
-import { RefObject, useEffect } from 'react';
+import { RefObject } from 'react';
 import { Control, Controller, FieldArrayWithId } from 'react-hook-form';
 import { Cart } from '../../assets/animations';
 import { CartData } from '../../layouts/IngredientLayout';
@@ -35,10 +35,6 @@ type CartProps = {
 };
 
 export default function CartToBuy({ removeFunction, onSubmit, fields, control, lottieCartRef, height }: CartProps) {
-    useEffect(() => {
-        console.log('fields', fields);
-    }, [fields]);
-
     const handleMenuItemClick = (action: string) => {
         onSubmit(action);
         lottieCartRef.current?.playSegments([0, 135]);

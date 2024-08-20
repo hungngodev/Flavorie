@@ -110,7 +110,6 @@ const Receipt = () => {
         handleSubmit,
         watch,
         // reset,
-        formState: { errors },
     } = useForm<ReceiptFieldType>({
         resolver: zodResolver(ReceiptFieldObject),
         defaultValues: {
@@ -145,10 +144,6 @@ const Receipt = () => {
         },
     });
 
-    useEffect(() => {
-        console.log(errors);
-    }, [errors]);
-
     const { fields, append, remove, update } = useFieldArray({
         control: control,
         name: 'receipts',
@@ -165,15 +160,12 @@ const Receipt = () => {
 
     // this function handles the submission of the form
     const submitReceipts: SubmitHandler<ReceiptFieldType> = async (receiptResponse) => {
-        console.log(receiptResponse);
         localStorage.removeItem('notificationDetail');
         const transformData = transformResponse(receiptResponse);
-        console.log('Data will be sent: ', transformData);
         try {
             const response = await customFetch.patch('/user/leftOver', {
                 leftOver: transformData,
             });
-            console.log(response.data);
             if (response.status === 200) {
                 toast.success('Receipt submitted successfully');
             } else {

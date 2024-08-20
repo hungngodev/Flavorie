@@ -12,7 +12,6 @@ import { NameInput } from './Name';
 const Join: React.FC = () => {
     const [input, setInput] = useState('');
     const createRoom = () => {
-        console.log('create room');
         ws.emit('create-room');
     };
     return (

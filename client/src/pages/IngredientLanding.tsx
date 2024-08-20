@@ -42,7 +42,6 @@ function IngredientLanding() {
     const [mealChoice, setMealChoice] = useState(0);
     const [page, setPage] = useState(1);
     const size = currentSearchQuery && currentSearchQuery !== '' ? 20 : 15;
-    console.log(searchData);
 
     return (
         <VStack width={'full'} height={'full'} justifyContent={'start'} alignItems={'center'}>

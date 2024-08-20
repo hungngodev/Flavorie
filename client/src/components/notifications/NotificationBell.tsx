@@ -23,7 +23,6 @@ const NotificationBell = () => {
         }
         const data = await fetchNotificationById(notificationId);
         if (data && data.message?.data && data.message.notificationType === 'instacart') {
-            console.log('data', data.message.data);
             window.open(data.message.data, '_blank');
         }
         if (data && data.message?.data && data.message.notificationType !== 'instacart') {

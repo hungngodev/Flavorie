@@ -17,11 +17,11 @@ function createCookie(token: string, res: Response) {
 }
 
 export const checkAuth = async (req: Request, res: Response) => {
-  if (!req.user) {
+  if ("user" in req === false) {
     res.status(StatusCodes.OK).send({ msg: "Unauthorized" });
     return;
   }
-  const user = await UserModel.findById(req.user.userId);
+  const user = await UserModel.findById((req.user as any).userId);
   if (user) {
     res.status(StatusCodes.OK).send({ user });
   } else {

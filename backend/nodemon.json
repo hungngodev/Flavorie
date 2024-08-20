@@ -2,7 +2,7 @@
   "watch": ["./**/*"],
   "ext": "ts,js,json",
   "ignore": ["node_modules", "./**/*.spec.ts", "coverage", "dist"],
-  "exec": "ts-node -r tsconfig-paths/register ./index.ts",
+  "exec": "ts-node -r tsconfig-paths/register ./src/index.ts",
   "env": {
     "NODE_ENV": "dev"
   },

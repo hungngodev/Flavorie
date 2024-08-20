@@ -61,7 +61,6 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, action
     const dispatch = useDispatch<AppDispatch>();
 
     const submitPost: SubmitHandler<PostRequestType> = async (data) => {
-        console.log(data);
         try {
             switch (action) {
                 case 'create':
@@ -87,11 +86,8 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, action
                             }
                         });
 
-                        console.log(newFormData);
-
                         await dispatch(updateRequest({ postId, newFormData }))
                             .then((res: any) => {
-                                console.log(res);
                                 dispatch(updatePost({ post: parsePost([res.payload.post]) }));
                             })
                             .then(() => onClose());
@@ -104,7 +100,6 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, action
     };
     useEffect(() => {
         if (updateStatus === 'loading' && setLoading) {
-            console.log('Loading...');
             setLoading(() => true);
         }
     }, [updateStatus, dispatch]);
@@ -140,10 +135,6 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, action
         name: 'media',
     });
 
-    useEffect(() => {
-        console.log(errors);
-    }, [errors]);
-
     // add file to the useField and update the state for preview
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target || !e.target.files) {
@@ -162,7 +153,6 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, action
                 },
             ]);
             append({ file: file });
-            console.log(previewMedia);
         }
     };
 
@@ -180,7 +170,6 @@ const PostFormExpand: React.FC<PostFormExpandProps> = ({ isOpen, onClose, action
                 }
                 const blob = new Blob([ab], { type: mimeString });
                 const file = new File([blob], 'webcam-image.jpg', { type: mimeString });
-                console.log(file);
                 setPreviewMedia((prev) => [
                     ...prev,
                     {

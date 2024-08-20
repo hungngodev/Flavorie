@@ -58,7 +58,7 @@ export const updatePostController = PostErorHandler(async (req, res) => {
 
 export const deletePostController = PostErorHandler(async (req, res) => {
   const { postid } = req.params;
-  const { userId } = req.user ? req.user : { userId: "" };
+  const { userId } = (req as any).user ? (req as any).user : { userId: "" };
   await deletePostDocument(postid, userId);
   return res.status(StatusCodes.OK).json({ message: "Post deleted" });
 });
@@ -84,7 +84,7 @@ export const newFeedController = async (req: Request, res: Response) => {
 export const reactPostController = PostErorHandler(
   async (req: Request, res: Response) => {
     const { postid } = req.params;
-    const userId = req.user?.userId || "";
+    const userId = (req as any).user?.userId || "";
     const post = await reactPostDocument(userId, postid);
     if (!post) {
       throw new ServerError("Failed to like post");
@@ -97,7 +97,7 @@ export const reactPostController = PostErorHandler(
 
 export const savePostController = PostErorHandler(async (req, res) => {
   const { postid } = req.params;
-  const userId = req.user?.userId || "";
+  const userId = (req as any).user?.userId || "";
   const post = await savePostDocument(postid, userId);
   if (!post) {
     throw new ServerError("Post not found");
@@ -108,7 +108,7 @@ export const savePostController = PostErorHandler(async (req, res) => {
 });
 
 export const getUserPostController = PostErorHandler(async (req, res) => {
-  const userId = req.user?.userId || "";
+  const userId = (req as any).user?.userId || "";
   const { limit } = req.params;
   const posts = await getUserPostDocument(userId, parseInt(limit));
   if (!posts) {
@@ -123,7 +123,7 @@ export const getUserPostController = PostErorHandler(async (req, res) => {
 
 export const hidePostController = PostErorHandler(async (req, res) => {
   const { postid } = req.params;
-  const userId = req.user?.userId || "";
+  const userId = (req as any).user?.userId || "";
   const post = await hidePostDocument(postid, userId);
   if (!post) {
     throw new ServerError("Post not found");

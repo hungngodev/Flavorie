@@ -24,12 +24,6 @@ interface PostProps extends StackProps, BasePostProps {
 
 const Post = forwardRef<HTMLDivElement, PostProps>(
     ({ postData, headerProps, bodyProps, footerProps, postId, ...containerProps }, ref) => {
-        // console.log(postData);
-        // const theme = useTheme();
-
-        // const auth = useAuth();
-        // const posts = useSelector(selectPosts);
-        // const post = postIndex ? posts[postIndex] : null; // Get post data from redux state
         const [loading, setLoading] = useState(false);
 
         return (

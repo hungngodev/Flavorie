@@ -153,7 +153,6 @@ const Room = () => {
                 const detections = gestureRecognizer.recognizeForVideo(myVideoRef.current, performance.now());
                 if (detections.gestures.length > 0) {
                     const gesture = detections.gestures[0][0];
-                    console.log(detections.gestures);
                     if (gesture.categoryName === 'Thumb_Down') {
                         setDirection('left');
                     } else if (gesture.categoryName === 'Thumb_Up') {
@@ -197,10 +196,6 @@ const Room = () => {
     //     const interval = setInterval(sendFrameToServer, 200);
     //     return () => clearInterval(interval);
     // }, []);
-
-    useEffect(() => {
-        console.log('direction', direction);
-    }, [direction]);
 
     return (
         <SlideContext.Provider value={{ direction }}>

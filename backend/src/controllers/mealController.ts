@@ -177,13 +177,15 @@ export const getRanDomMealsAuthenticated = async (
     const allergy = [];
     const diet = [];
     let leftOver: string[] = [];
-    if (req.user) {
-      const thisUser = await User.findOne({ _id: req.user.userId });
+    if ((req as any).user) {
+      const thisUser = await User.findOne({ _id: (req as any).user.userId });
       if (thisUser) {
         allergy.push(...thisUser.allergy);
         diet.push(...thisUser.diet);
         const myLeftOver = JSON.parse(
-          JSON.stringify(await getUserItems(req.user.userId, "leftOver")),
+          JSON.stringify(
+            await getUserItems((req as any).user.userId, "leftOver"),
+          ),
         );
         leftOver = myLeftOver.map((item: any) =>
           item.leftOver.name.toString().toLowerCase(),
@@ -206,7 +208,10 @@ export const getRanDomMealsAuthenticated = async (
       )
       .slice(0, -1);
 
-    const likedMeals = await getUserItems(req.user?.userId || "", "likedMeal");
+    const likedMeals = await getUserItems(
+      (req as any).user?.userId || "",
+      "likedMeal",
+    );
 
     async function processingMeals(meals: spoonacularDB[]) {
       const results: any = await Promise.all(
@@ -296,7 +301,7 @@ export const getRanDomMealsAuthenticated = async (
       },
     );
     const suggestedMeals =
-      leftOver.length !== 0 && req.user
+      leftOver.length !== 0 && (req as any).user
         ? await Promise.all(
             (await getAllMealsByIngredientsAPI(leftOver.join(","), 20)).map(
               async (meal: any) => {
@@ -337,7 +342,7 @@ export const getRanDomMealsAuthenticated = async (
 };
 
 export const getAllMeals = async (req: Request, res: Response) => {
-  if (req.user) {
+  if ((req as any).user) {
     return getRanDomMealsAuthenticated(req, res);
   }
   return getRandomMealsUnauthenticated(req, res);
@@ -350,7 +355,7 @@ export const getAutoComplete = async (req: Request, res: Response) => {
   }
   query = query.toString().toLowerCase().trim();
   const numsAutoComplete = 7;
-  if (!req.user) {
+  if (!(req as any).user) {
     const results: { title: string }[] = [];
     const adding = (value: string) =>
       results.length < numsAutoComplete &&
@@ -383,7 +388,7 @@ export const getAutoComplete = async (req: Request, res: Response) => {
 
 export const getIndividualMeal = async (req: Request, res: Response) => {
   try {
-    if (req.user) {
+    if ((req as any).user) {
       const { mealId } = req.params;
       const meal = await MealModel.findOne({
         id: mealId,

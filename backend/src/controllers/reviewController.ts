@@ -29,7 +29,7 @@ PostModel.schema.pre("findOne", function (next) {
 export const createReview = async (req: Request, res: Response) => {
   const { content, parentReview } = req.body;
   const postId = req.params.postId;
-  const userId = req.user?.userId;
+  const userId = (req as any).user?.userId;
 
   if (!userId) {
     console.log("error no userid");
@@ -117,7 +117,7 @@ export const createReview = async (req: Request, res: Response) => {
 export const updateReview = async (req: Request, res: Response) => {
   const { reviewId } = req.params;
   const { content } = req.body;
-  const userId = req.user?.userId;
+  const userId = (req as any).user?.userId;
 
   if (!userId) {
     return res.status(401).send({ error: "Unauthorized" });
@@ -206,7 +206,7 @@ export const deleteReview = async (req: Request, res: Response) => {
 };
 
 export const getReviews = async (req: Request, res: Response) => {
-  const userId = req.user?.userId;
+  const userId = (req as any).user?.userId;
   const postId = req.params.postId;
   const user = await UserModel.findById(userId);
   const post = await PostModel.findById(postId).populate([

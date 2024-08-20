@@ -45,8 +45,6 @@ export const PostSlice = createSlice({
             if (postIndex !== -1) {
                 // Check if the post was found
                 const updatedPosts = [...state.posts];
-                console.log('updated posts: ');
-                console.log(updatedPosts);
                 updatedPosts[postIndex] = post[0];
                 return { posts: [...updatedPosts] };
             }
