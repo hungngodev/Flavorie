@@ -8,7 +8,7 @@ import socket from '../../socket/socketio';
 const CustomWebcam: React.FC = () => {
     const webcamRef = useRef<Webcam>(null);
     const [imgSrc, setImgSrc] = useState<string | null>(null);
-    const [message, setMessage] = useState<string | null>(null);
+
     const { notifyError, notifySuccess } = useToast();
     const auth = useAuth();
 
@@ -17,14 +17,12 @@ const CustomWebcam: React.FC = () => {
         if (webcamRef.current) {
             const imageSrc = webcamRef.current.getScreenshot();
             setImgSrc(imageSrc);
-            setMessage(null);
         }
     }, [webcamRef]);
 
     // retake photo
     const retake = () => {
         setImgSrc(null);
-        setMessage(null);
     };
 
     // submit photo
