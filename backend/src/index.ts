@@ -12,6 +12,7 @@ import dotenv from "dotenv";
 import express from "express";
 import "express-async-errors";
 import mongoSanitize from "express-mongo-sanitize";
+import rateLimiter from "express-rate-limit";
 import helmet from "helmet";
 import mongoose from "mongoose";
 import morgan from "morgan";
@@ -55,6 +56,13 @@ app.use(mongoSanitize());
 const server = createServer(app);
 setUpSocketIO(server);
 
+app.set("trust proxy", ["loopback", "linklocal", "uniquelocal"]);
+const apiLimiter = rateLimiter({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20,
+  message: { msg: "IP rate limit exceeded, retry in 15 minutes." },
+});
+app.use(apiLimiter);
 // app.get("/api/test", (req: Request, res: Response) => {
 //   res.json({ msg: "test route" });
 // });
