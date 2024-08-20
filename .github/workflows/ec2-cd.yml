@@ -82,3 +82,4 @@ jobs:
           sudo docker rm -f $(sudo docker ps -q | xargs sudo docker inspect --format='{{.Name}}' | grep peerjs | tail -n 1)
 
           sudo docker exec $(sudo docker ps -q | xargs sudo docker inspect --format='{{.Name}}' | grep nginx) nginx -s reload
+        working-directory: /home/ubuntu
