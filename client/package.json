@@ -28,7 +28,7 @@
         "@reduxjs/toolkit": "^2.2.6",
         "@tanstack/react-query": "^5.37.1",
         "@tanstack/react-query-devtools": "^5.37.1",
-        "@tanstack/react-virtual": "^3.5.0",
+        "@tanstack/react-virtual": "3.9.0",
         "@uidotdev/usehooks": "^2.4.1",
         "axios": "^1.6.8",
         "base64-arraybuffer": "^1.0.2",
@@ -87,5 +87,8 @@
         "tailwindcss": "^3.4.3",
         "typescript": "^5.2.2",
         "vite": "^5.2.11"
+    },
+    "overrides": {
+        "@tanstack/react-virtual": "3.9.0"
     }
 }
