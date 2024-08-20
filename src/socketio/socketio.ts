@@ -1,8 +1,8 @@
 import { Server, Socket } from "socket.io";
-import { gestureHandler } from "../handler/gestureHandler.ts";
-import { notificationHandler } from "../handler/notificationHandler.ts";
-import { roomHandler } from "../handler/roomHandler.ts";
-import { verifyJWT } from "../utils/tokenUtils.ts";
+import { gestureHandler } from "../handler/gestureHandler";
+import { notificationHandler } from "../handler/notificationHandler";
+import { roomHandler } from "../handler/roomHandler";
+import { verifyJWT } from "../utils/tokenUtils";
 interface Cookies {
   [key: string]: string;
 }

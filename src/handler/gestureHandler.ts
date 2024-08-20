@@ -1,7 +1,7 @@
 // import axios from "axios";
 // import FormData from "form-data";
 import { Socket } from "socket.io";
-import redisClient from "../services/redisClient/index.ts";
+import redisClient from "../services/redisClient/index";
 
 // const FLASK_GESTURE_URL = "http://127.0.0.1:5000/virtual-mouse";
 export const gestureHandler = (socket: Socket) => {

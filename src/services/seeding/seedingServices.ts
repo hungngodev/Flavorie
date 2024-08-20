@@ -1,12 +1,12 @@
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import { NotFoundError, ServerError } from "../../errors/customErrors.ts";
-import Progress from "../../models/ProgressSeed.ts";
-import { IngredientBank } from "../../utils/queryBank.ts";
+import { NotFoundError, ServerError } from "../../errors/customErrors";
+import Progress from "../../models/ProgressSeed";
+import { IngredientBank } from "../../utils/queryBank";
 import {
   findIngredientById,
   getAllIngredientsAPI,
-} from "../spoonacular/spoonacularServices.ts";
+} from "../spoonacular/spoonacularServices";
 
 dotenv.config();
 

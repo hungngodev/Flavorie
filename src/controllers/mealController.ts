@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { ServerError } from "../errors/customErrors.ts";
-import MealModel from "../models/MealModel.ts";
-import User from "../models/UserModel.ts";
-import { createMeal } from "../services/mealServices.ts";
-import { getAndStoreInRedis } from "../services/redisClient/index.ts";
+import { ServerError } from "../errors/customErrors";
+import MealModel from "../models/MealModel";
+import User from "../models/UserModel";
+import { createMeal } from "../services/mealServices";
+import { getAndStoreInRedis } from "../services/redisClient/index";
 import {
   analyzeInstruction,
   getAllMealsByIngredientsAPI,
@@ -12,21 +12,21 @@ import {
   getMealByIdAPI,
   getMealsAutoCompleteAPI,
   getRandomMealsAPI,
-} from "../services/spoonacular/spoonacularServices.ts";
+} from "../services/spoonacular/spoonacularServices";
 import {
   Areas,
   Categories,
   Ingredients,
   MainCategories,
-} from "../services/themealdb/data.ts";
+} from "../services/themealdb/data";
 import {
   getMealByFilter,
   getMealById,
   getMealByName,
   getRandomMeal,
-} from "../services/themealdb/themealdbServices.ts";
-import { getRandomKey } from "../services/themealdb/utils.ts";
-import { getUserItems } from "../services/userServices.ts";
+} from "../services/themealdb/themealdbServices";
+import { getRandomKey } from "../services/themealdb/utils";
+import { getUserItems } from "../services/userServices";
 
 type theMealDB = {
   strMeal: string;

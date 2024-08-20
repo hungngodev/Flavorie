@@ -3,11 +3,10 @@ services:
   nginx:
     image: nginx
     restart: unless-stopped
-    container_name: nginx
-    ports: -80:80
-      -443:443
-      -5100:5100
-      -9100:9100
+    ports:
+      - "80:80"
+      - "443:443"
+
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
 
@@ -18,7 +17,6 @@ services:
 
   frontend:
     image: hungngodev/flavorie-frontend:v1.0.${IMAGE_TAG}
-    container_name: flavorie-frontend-container
     stdin_open: true
     tty: true
     depends_on:
@@ -28,43 +26,13 @@ services:
 
   backend:
     image: hungngodev/flavorie-backend:v1.0.${IMAGE_TAG}
-    container_name: flavorie-backend-container
     restart: always
     networks:
       - net
-    environment:
-      - MONGODB_URL=${MONGODB_URL}
-      - REDIS_URL=${REDIS_URL}
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
-      - SPOONACULAR_API_ENDPOINT=${SPOONACULAR_API_ENDPOINT}
-      - THEMEALDB_API_ENDPOINT=${THEMEALDB_API_ENDPOINT}
-      - SPOONACULAR_API_KEY=${SPOONACULAR_API_KEY}
-      - SPOONACULAR_API_KEY_2=${SPOONACULAR_API_KEY_2}
-      - SPOONACULAR_API_KEY_3=${SPOONACULAR_API_KEY_3}
-      - SPOONACULAR_API_KEY_4=${SPOONACULAR_API_KEY_4}
-      - SPOONACULAR_API_KEY_5=${SPOONACULAR_API_KEY_5}
-      - SPOONACULAR_API_KEY_6=${SPOONACULAR_API_KEY_6}
-      - SPOONACULAR_API_KEY_7=${SPOONACULAR_API_KEY_7}
-      - SPOONACULAR_API_KEY_8=${SPOONACULAR_API_KEY_8}
-      - SPOONACULAR_API_KEY_9=${SPOONACULAR_API_KEY_9}
-      - SPOONACULAR_API_KEY_10=${SPOONACULAR_API_KEY_10}
-      - SPOONACULAR_API_KEY_11=${SPOONACULAR_API_KEY_11}
-      - SPOONACULAR_API_KEY_12=${SPOONACULAR_API_KEY_12}
-      - SPOONACULAR_MAX_CALL=${SPOONACULAR_MAX_CALL}
-      - SPOONACULAR_RATE=${SPOONACULAR_RATE}
-      - SPOONACULAR_TOTAL_KEY=${SPOONACULAR_TOTAL_KEY}
-      - THEMEALDB_MAX_CALL=${THEMEALDB_MAX_CALL}
-      - THEMEALDB_RATE=${THEMEALDB_RATE}
-      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
-      - CLOUDINARY_KEY=${CLOUDINARY_KEY}
-      - CLOUDINARY_SECRET=${CLOUDINARY_SECRET}
-      - CLOUDINARY_FOLDER=${CLOUDINARY_FOLDER}
-      - UNSPLASH_ACCESS_KEY=${UNSPLASH_ACCESS_KEY}
+    env_file: ./.env
 
   peerjs:
     image: hungngodev/flavorie-peerjs:v1.0.${IMAGE_TAG}
-    container_name: flavorie-peerjs-container
     ports:
       - "9001:9001"
     networks:

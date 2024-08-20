@@ -3,17 +3,17 @@ import {
   BadRequestError,
   PostError,
   ServerError,
-} from "../errors/customErrors.ts";
-import PostModel, { Post } from "../models/Post.ts";
-import ReviewModel from "../models/Review.ts";
-import UserModel from "../models/UserModel.ts";
+} from "../errors/customErrors";
+import PostModel, { Post } from "../models/Post";
+import ReviewModel from "../models/Review";
+import UserModel from "../models/UserModel";
 import {
   parseMedia,
   parsePublicId,
   recursivePopulate,
   updateFieldArray,
-} from "../utils/index.ts";
-import { cloudinary } from "./cloudinary/cloudinaryServices.ts";
+} from "../utils/index";
+import { cloudinary } from "./cloudinary/cloudinaryServices";
 
 PostModel.schema.pre("findOne", function (next) {
   this.populate([

@@ -1,8 +1,5 @@
 import { Redis } from "ioredis";
-import {
-  convertToGzipFormat,
-  decompressFromGzipFormat,
-} from "../../utils/zip.ts";
+import { convertToGzipFormat, decompressFromGzipFormat } from "../../utils/zip";
 
 const redisClient = new Redis(process.env.REDIS_URL || "");
 

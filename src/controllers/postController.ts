@@ -1,7 +1,7 @@
-// postController.ts
+// postController
 import { NextFunction, Request, RequestHandler, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { ServerError } from "../errors/customErrors.ts";
+import { ServerError } from "../errors/customErrors";
 import {
   buildPostDocument,
   deletePostDocument,
@@ -12,7 +12,7 @@ import {
   reactPostDocument,
   savePostDocument,
   updatePostDocument,
-} from "../services/postServices.ts";
+} from "../services/postServices";
 
 const PostErorHandler = (fn: RequestHandler): RequestHandler => {
   return async (req: Request, res: Response, next: NextFunction) => {

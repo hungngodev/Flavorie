@@ -1,8 +1,8 @@
 import axios, { AxiosError } from "axios";
 import qs from "qs";
-import { NotFoundError, ServerError } from "../../errors/customErrors.ts";
-import ApiTrack from "../../models/ApiTrack.ts";
-import Ingredients from "../../models/IngredientModel.ts";
+import { NotFoundError, ServerError } from "../../errors/customErrors";
+import ApiTrack from "../../models/ApiTrack";
+import Ingredients from "../../models/IngredientModel";
 
 import dotenv from "dotenv";
 dotenv.config();

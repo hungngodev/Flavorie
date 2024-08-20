@@ -1,14 +1,14 @@
 import { input } from "@inquirer/prompts";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import { NotFoundError, ServerError } from "../../errors/customErrors.ts";
-import IngredientModel from "../../models/IngredientModel.ts";
-import MatchingModel from "../../models/MatchingModel.ts";
+import { NotFoundError, ServerError } from "../../errors/customErrors";
+import IngredientModel from "../../models/IngredientModel";
+import MatchingModel from "../../models/MatchingModel";
 import {
   getAllIngredientsAPI,
   getIngredientByIdAPI,
-} from "../spoonacular/spoonacularServices.ts";
-import newIngredients from "./new-ingredient.js";
+} from "../spoonacular/spoonacularServices";
+import newIngredients from "./new-ingredient";
 
 dotenv.config();
 const listOfIngredients = newIngredients;

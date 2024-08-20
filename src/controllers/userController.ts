@@ -1,17 +1,17 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { NotFoundError } from "../errors/customErrors.ts";
-import MealModel from "../models/MealModel.ts";
-import UserModel from "../models/UserModel.ts";
-import { createMeal } from "../services/mealServices.ts";
-import { getMealByIdAPI } from "../services/spoonacular/spoonacularServices.ts";
+import { NotFoundError } from "../errors/customErrors";
+import MealModel from "../models/MealModel";
+import UserModel from "../models/UserModel";
+import { createMeal } from "../services/mealServices";
+import { getMealByIdAPI } from "../services/spoonacular/spoonacularServices";
 import {
   changeItemTypes,
   getUserItems,
   modifyOrdinaryInfo,
   modifyUserItems,
   toggleLikedItem,
-} from "../services/userServices.ts";
+} from "../services/userServices";
 
 export const updateUser = async (req: Request, res: Response) => {
   const updatedUser = await UserModel.findById(req.user.userId);

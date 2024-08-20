@@ -1,5 +1,5 @@
-import Ingredients, { Ingredient } from "../models/IngredientModel.ts";
-import { IngredientBank } from "../utils/queryBank.ts";
+import Ingredients, { Ingredient } from "../models/IngredientModel";
+import { IngredientBank } from "../utils/queryBank";
 
 export async function getIngredientWithName(ingredientName: string) {
   return await Ingredients.find({

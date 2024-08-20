@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { ServerError } from "../errors/customErrors.ts";
-import ItemModel from "../models/ItemModel.ts";
-import UserModel from "../models/UserModel.ts";
+import { ServerError } from "../errors/customErrors";
+import ItemModel from "../models/ItemModel";
+import UserModel from "../models/UserModel";
 
 export async function getDietAndAllergy(
   req: Request,

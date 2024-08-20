@@ -4,15 +4,15 @@ import {
   deleteReview,
   getReviews,
   updateReview,
-} from "../controllers/reviewController.ts";
+} from "../controllers/reviewController";
 import {
   authenticateUser,
   authorizeReviewOwner,
   checkUser,
-} from "../middleware/authMiddleware.ts";
-import { validateReview } from "../middleware/validateMiddleware.ts";
-import { default as Review } from "../models/Review.ts";
-import { catchAsync } from "../utils/catchAsync.ts";
+} from "../middleware/authMiddleware";
+import { validateReview } from "../middleware/validateMiddleware";
+import { default as Review } from "../models/Review";
+import { catchAsync } from "../utils/catchAsync";
 
 const router = Router();
 

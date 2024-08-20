@@ -1,12 +1,11 @@
 import { NextFunction, Request, Response } from "express";
+import Review from "../models/Review";
+import { verifyJWT } from "../utils/tokenUtils";
 import {
   BadRequestError,
   UnauthenticatedError,
   UnauthorizedError,
-} from "../errors/customErrors.js";
-import Review from "../models/Review.js";
-import { verifyJWT } from "../utils/tokenUtils.js";
-
+} from "./../errors/customErrors";
 declare global {
   namespace Express {
     interface Request {

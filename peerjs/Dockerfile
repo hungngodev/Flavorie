@@ -3,11 +3,11 @@ WORKDIR /peerjs
 
 COPY package.json ./
 
-RUN yarn install --frozen-lockfile 
+RUN npm install --frozen-lockfile 
 
 COPY . .
 
-RUN yarn build
+RUN npm run build
 
 CMD ["node", "."]
 

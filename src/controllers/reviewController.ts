@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
-import { ServerError } from "../errors/customErrors.ts";
-import PostModel from "../models/Post.ts";
-import ReviewModel from "../models/Review.ts";
-import UserModel from "../models/UserModel.ts";
-import { recursivePopulate } from "../utils/index.ts";
+import { ServerError } from "../errors/customErrors";
+import PostModel from "../models/Post";
+import ReviewModel from "../models/Review";
+import UserModel from "../models/UserModel";
+import { recursivePopulate } from "../utils/index";
 // import { isDataView } from "util/types";
 
 PostModel.schema.pre("findOne", function (next) {

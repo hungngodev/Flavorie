@@ -11,16 +11,16 @@ import {
   reactPostController,
   savePostController,
   updatePostController,
-} from "../controllers/postController.ts";
-import { PostError } from "../errors/customErrors.ts";
-import { checkUser } from "../middleware/authMiddleware.ts";
+} from "../controllers/postController";
+import { PostError } from "../errors/customErrors";
+import { checkUser } from "../middleware/authMiddleware";
 import {
   bindAuthor,
   checkAuthor,
   handleMediaFiles,
-} from "../middleware/postMiddleware.ts";
-import { storage } from "../services/cloudinary/cloudinaryServices.ts";
-import { catchAsync } from "../utils/catchAsync.ts";
+} from "../middleware/postMiddleware";
+import { storage } from "../services/cloudinary/cloudinaryServices";
+import { catchAsync } from "../utils/catchAsync";
 
 const upload = multer({
   storage,

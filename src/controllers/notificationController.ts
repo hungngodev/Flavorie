@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import NotificationModel from "../models/NotificationModel.ts";
+import NotificationModel from "../models/NotificationModel";
 
 const getNotificationCount = async (req: Request, res: Response) => {
   const userId = req.user.userId;

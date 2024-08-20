@@ -76,7 +76,8 @@ jobs:
           export CLOUDINARY_FOLDER=${CLOUDINARY_FOLDER}
           export UNSPLASH_ACCESS_KEY=${UNSPLASH_ACCESS_KEY}
 
-          sudo IMAGE_TAG=$((${{github.run_number }}+1)) docker-compose up -d --scale frontend=2 --scale backend=2 --scale peerjs=2 --no-recreate
+          sudo IMAGE_TAG=$((${{github.run_number }}+1)) docker compose down
+          sudo IMAGE_TAG=$((${{github.run_number }}+1)) docker compose up -d --scale frontend=2 --scale backend=2 --scale peerjs=2 --no-recreate
           sudo docker rm -f $(sudo docker ps -q | xargs sudo docker inspect --format='{{.Name}}' | grep frontend | tail -n 1) 
           sudo docker rm -f $(sudo docker ps -q | xargs sudo docker inspect --format='{{.Name}}' | grep backend | tail -n 1)
           sudo docker rm -f $(sudo docker ps -q | xargs sudo docker inspect --format='{{.Name}}' | grep peerjs | tail -n 1)

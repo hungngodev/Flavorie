@@ -1,9 +1,9 @@
 import { Types } from "mongoose";
-import { ServerError } from "../errors/customErrors.ts";
-import IngredientModel from "../models/IngredientModel.ts";
-import MatchingModel from "../models/MatchingModel.ts";
-import MealModel from "../models/MealModel.ts";
-import { findIngredientById } from "../services/spoonacular/spoonacularServices.ts";
+import { ServerError } from "../errors/customErrors";
+import IngredientModel from "../models/IngredientModel";
+import MatchingModel from "../models/MatchingModel";
+import MealModel from "../models/MealModel";
+import { findIngredientById } from "../services/spoonacular/spoonacularServices";
 
 export const createMeal = async (
   data: any,

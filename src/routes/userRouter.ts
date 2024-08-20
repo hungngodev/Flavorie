@@ -1,11 +1,11 @@
 import { Router } from "express";
 import multer from "multer";
-import { getSuggestionIngredients } from "../controllers/ingredientsController.ts";
+import { getSuggestionIngredients } from "../controllers/ingredientsController";
 import {
   getAllNotifications,
   getNotificationById,
   getNotificationCount,
-} from "../controllers/notificationController.ts";
+} from "../controllers/notificationController";
 import {
   getCart,
   getCookedMeals,
@@ -17,10 +17,10 @@ import {
   updateLeftOver,
   updateLikedMeals,
   updateUser,
-} from "../controllers/userController.js";
-import { authenticateUser, checkUser } from "../middleware/authMiddleware.js";
-import { storage } from "../services/cloudinary/cloudinaryServices.ts";
-import { catchAsync } from "../utils/catchAsync.js";
+} from "../controllers/userController";
+import { authenticateUser, checkUser } from "../middleware/authMiddleware";
+import { storage } from "../services/cloudinary/cloudinaryServices";
+import { catchAsync } from "../utils/catchAsync";
 const upload = multer({ storage });
 
 const router = Router();

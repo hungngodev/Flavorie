@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
 import { Socket } from "socket.io";
-import IngredientModel from "../models/IngredientModel.ts";
-import NotificationModel from "../models/NotificationModel.ts";
-import { cloudinary } from "../services/cloudinary/cloudinaryServices.ts";
-import { groceryGenerating } from "../services/puppeteer/connecting.ts";
-import redisClient from "../services/redisClient/index.ts";
+import IngredientModel from "../models/IngredientModel";
+import NotificationModel from "../models/NotificationModel";
+import { cloudinary } from "../services/cloudinary/cloudinaryServices";
+import { groceryGenerating } from "../services/puppeteer/connecting";
+import redisClient from "../services/redisClient/index";
 const redisStreamKey = "server:receipts_stream";
 export const notificationHandler = (socket: Socket) => {
   socket.on("submitReceipt", async data => {

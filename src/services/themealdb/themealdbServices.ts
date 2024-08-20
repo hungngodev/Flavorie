@@ -1,15 +1,15 @@
 import axios, { AxiosResponse } from "axios";
 import dotenv from "dotenv";
-import { ServerError } from "../../errors/customErrors.ts";
-import ApiTrack from "../../models/ApiTrack.ts";
-import { MainCategories } from "./data.ts";
+import { ServerError } from "../../errors/customErrors";
+import ApiTrack from "../../models/ApiTrack";
+import { MainCategories } from "./data";
 import {
   areaType,
   categoryType,
   filterParamType,
   ingredientType,
-} from "./type.ts";
-import { getDataFromParam, getQueryParameter, getRandomKey } from "./utils.ts";
+} from "./type";
+import { getDataFromParam, getQueryParameter, getRandomKey } from "./utils";
 
 dotenv.config();
 

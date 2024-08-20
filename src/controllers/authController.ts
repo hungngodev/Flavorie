@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { NotFoundError } from "../errors/customErrors.ts";
-import UserModel from "../models/UserModel.ts";
-import { authenticateCheck, createUser } from "../services/userServices.ts";
-import { createJWT } from "../utils/tokenUtils.ts";
+import { NotFoundError } from "../errors/customErrors";
+import UserModel from "../models/UserModel";
+import { authenticateCheck, createUser } from "../services/userServices";
+import { createJWT } from "../utils/tokenUtils";
 
 function createCookie(token: string, res: Response) {
   const oneDay = 1000 * 60 * 60 * 24;

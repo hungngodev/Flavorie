@@ -1,4 +1,4 @@
-import { Areas, Categories, Ingredients } from "./data.ts";
+import { Areas, Categories, Ingredients } from "./data";
 import { filterParamType } from "./type";
 // get a random key from a data array
 export const getRandomKey = (givenData: string[]): string => {

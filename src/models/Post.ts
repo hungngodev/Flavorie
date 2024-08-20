@@ -1,6 +1,6 @@
 import mongoose, { Types } from "mongoose";
-import { Review } from "./Review.ts";
-import { User } from "./UserModel.ts";
+import { Review } from "./Review";
+import { User } from "./UserModel";
 
 export interface Media {
   type: "image" | "video" | "file";

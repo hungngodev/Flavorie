@@ -4,10 +4,10 @@ import {
   getIndividualIngredient,
   getSuggestionIngredients,
   searchIngredients,
-} from "../controllers/ingredientsController.ts";
-import { checkUser } from "../middleware/authMiddleware.ts";
-import { getDietAndAllergy } from "../middleware/userMiddleware.ts";
-import { catchAsync } from "../utils/catchAsync.ts";
+} from "../controllers/ingredientsController";
+import { checkUser } from "../middleware/authMiddleware";
+import { getDietAndAllergy } from "../middleware/userMiddleware";
+import { catchAsync } from "../utils/catchAsync";
 const router = Router();
 
 router.get(

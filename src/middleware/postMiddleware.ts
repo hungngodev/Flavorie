@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { PostError } from "../errors/customErrors.ts";
-import PostModel from "../models/Post.ts";
-import UserModel from "../models/UserModel.ts";
-import { cloudinary } from "../services/cloudinary/cloudinaryServices.ts";
+import { PostError } from "../errors/customErrors";
+import PostModel from "../models/Post";
+import UserModel from "../models/UserModel";
+import { cloudinary } from "../services/cloudinary/cloudinaryServices";
 export const checkAuthor = async (
   req: Request,
   res: Response,

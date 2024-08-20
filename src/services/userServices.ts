@@ -3,10 +3,10 @@ import {
   NotFoundError,
   UnauthenticatedError,
   UserCreationError,
-} from "../errors/customErrors.ts";
-import ItemModel, { Item } from "../models/ItemModel.ts";
-import UserModel, { User } from "../models/UserModel.ts";
-import { comparePassword, hashPassword } from "../utils/passwordUtils.ts";
+} from "../errors/customErrors";
+import ItemModel, { Item } from "../models/ItemModel";
+import UserModel, { User } from "../models/UserModel";
+import { comparePassword, hashPassword } from "../utils/passwordUtils";
 
 export async function createUser(userDocument: User): Promise<string> {
   const { email, name } = userDocument;

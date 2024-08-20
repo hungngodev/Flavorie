@@ -1,20 +1,20 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { ServerError } from "../errors/customErrors.ts";
-import IngredientModel from "../models/IngredientModel.ts";
-import User from "../models/UserModel.ts";
+import { ServerError } from "../errors/customErrors";
+import IngredientModel from "../models/IngredientModel";
+import User from "../models/UserModel";
 import {
   CategoryResults,
   classifyIngredient,
   findIngredients,
-} from "../services/ingredientServices.ts";
-import { getAndStoreInRedis } from "../services/redisClient/index.ts";
+} from "../services/ingredientServices";
+import { getAndStoreInRedis } from "../services/redisClient/index";
 import {
   getAllIngredientsAPI,
   getIngredientsAutoCompleteAPI,
-} from "../services/spoonacular/spoonacularServices.ts";
-import { getUserItems } from "../services/userServices.ts";
-import { IngredientBank } from "../utils/queryBank.ts";
+} from "../services/spoonacular/spoonacularServices";
+import { getUserItems } from "../services/userServices";
+import { IngredientBank } from "../utils/queryBank";
 
 export const getAllIngredients = async (req: Request, res: Response) => {
   const { category, sideBar } = req.query;
