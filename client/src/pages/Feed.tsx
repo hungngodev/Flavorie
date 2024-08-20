@@ -21,8 +21,8 @@ import { SendHorizontal } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import errorIllustration from '../../public/images/404-error-removebg-preview.png';
 import dumbCatLoaderAnimation from '../assets/animations/dumb-cat-loader.json';
+import errorIllustration from '../assets/images/404-error-removebg-preview.png';
 import Post from '../components/community/post/Post';
 import PostFormCard from '../components/community/post/form/PostFormCard';
 import { PostObjectType, PostResponseObjectType, parsePost } from '../components/community/post/types';
@@ -51,13 +51,19 @@ const fetchFeed = async ({
     pageParam = 1,
 }: {
     pageParam: number;
-}): Promise<{ data: PostResponseObjectType[]; currentPage: number; nextPage: number | null } | null> => {
+}): Promise<{
+    data: PostResponseObjectType[];
+    currentPage: number;
+    nextPage: number | null;
+    total: number | null;
+} | null> => {
     try {
         const fetch = await customFetch.get(`/community/feed?page=${pageParam}&limit=5`);
         return {
             data: fetch.data.posts,
             currentPage: pageParam,
             nextPage: pageParam + 1,
+            total: fetch.data.totalPosts,
         };
     } catch (error) {
         console.error(error);
@@ -106,23 +112,20 @@ const Feed = () => {
         }
     }, [saveStatus, deleteStatus, createStatus, editStatus]);
 
-    const { data, error, status, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-        queryKey: ['newsfeed'],
-        queryFn: fetchFeed,
-        initialPageParam: 1,
-        getNextPageParam: (lastPage) => {
-            if (lastPage === null) {
-                return undefined;
-            }
-            if (lastPage.nextPage === null) {
-                return undefined;
-            }
-            if (lastPage.currentPage < lastPage.nextPage) {
-                return lastPage.nextPage;
-            }
-            return undefined;
-        },
-    });
+    const { data, error, status, isError, fetchNextPage, isFetching, hasNextPage, isFetchingNextPage } =
+        useInfiniteQuery({
+            queryKey: ['newsfeed'],
+            queryFn: fetchFeed,
+            initialPageParam: 1,
+            getNextPageParam: (lastPage) => {
+                if (lastPage === null) {
+                    return undefined;
+                }
+                if (lastPage.currentPage * 5 < lastPage.total!) {
+                    return lastPage.nextPage;
+                }
+            },
+        });
 
     const scrollVirtualizer = useVirtualizer({
         count: posts.length,
@@ -148,11 +151,10 @@ const Feed = () => {
         if (!lastItem) {
             return;
         }
-
-        if (lastItem.index >= posts.length - 1 && hasNextPage && !isFetchingNextPage) {
+        if (lastItem.index >= posts.length - 1 && hasNextPage && !isFetchingNextPage && !isFetching) {
             fetchNextPage();
         }
-    }, [hasNextPage, fetchNextPage, posts, isFetchingNextPage, scrollVirtualizer.getVirtualItems()]);
+    }, [hasNextPage, fetchNextPage, isFetchingNextPage, scrollVirtualizer.getVirtualItems()]);
 
     useEffect(() => {
         const updateFeed = async () => {
@@ -168,17 +170,19 @@ const Feed = () => {
         };
 
         updateFeed();
-    }, [data, fetchNextPage, status, fetchNextPage, dispatch]);
+    }, [data, status, dispatch]);
 
     useEffect(() => {
+        if (!animationRef.current) {
+            return;
+        }
         lottie.loadAnimation({
             animationData: dumbCatLoaderAnimation,
             autoplay: true,
-            container: animationRef.current!,
+            container: animationRef.current,
             loop: true,
-            renderer: 'svg',
         });
-    }, [isFetchingNextPage]);
+    }, [isFetching]);
 
     return (
         <HStack w="100%" h="100%" alignItems="start" backgroundColor="blackAlpha.50" gap={2} px={4}>
@@ -329,16 +333,22 @@ const Feed = () => {
                         ) : null;
                     })}
                 </Box>
-                {isFetchingNextPage && !isError && hasNextPage && !error && (
+                {hasNextPage && isFetching && !isError && (
                     <Box
                         marginInline="auto"
-                        maxWidth={{ base: '50dvw', md: '40dvw', lg: '30dvw' }}
+                        width="100%"
+                        height="100%"
                         marginBlock={4}
                         ref={animationRef}
                         id="animation-container"
                     />
                 )}
-                {(error || isError || !hasNextPage) && !isFetchingNextPage && (
+                {!hasNextPage && !isFetching && (
+                    <Text textAlign="center" marginBlock={4}>
+                        No more posts to show
+                    </Text>
+                )}
+                {(error || isError) && !isFetchingNextPage && (
                     <AspectRatio marginInline="auto" maxWidth={{ base: '100%', md: '90%', lg: '85%' }} ratio={4 / 3}>
                         <Image src={errorIllustration} alt="error-image" />
                     </AspectRatio>

@@ -21,7 +21,7 @@ import { RiUserFollowLine } from 'react-icons/ri';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
-import foodBackground from '../../public/images/food-background.jpg';
+import foodBackground from '..//assets/images/food-background.jpg';
 import { useAuth } from '../hooks';
 import customFetch from '../utils/customFetch';
 const UserRegister = z
@@ -83,7 +83,6 @@ const Register: React.FC = () => {
                 });
                 setExistedUserError(false);
                 navigate(redirect ? redirect : '/');
-                auth.setUser();
             }
         } catch (error) {
             if (error instanceof AxiosError && error.response && error.response.status === 409) {

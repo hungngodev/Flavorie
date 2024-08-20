@@ -27,7 +27,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import cooking from '../../../../public/images/let-him-cook.jpg';
+import cooking from '../../..//assets/images/let-him-cook.jpg';
 import useAuth from '../../../hooks/useAuth';
 import { deletePostRequest, selectDeleteStatus } from '../../../slices/posts/DeletePost';
 import { selectHideStatus } from '../../../slices/posts/HidePost';

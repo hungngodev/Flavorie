@@ -261,7 +261,7 @@ export default UserCard;
 // copy this prop to function App in App.tsx
 // const userInfoProps = {
 //     avatar: {
-//             src: "../public/images/1989-Taylors-Version.webp",
+//             src: "/assets/images/1989-Taylors-Version.webp",
 //             username: "Taylor Swift",
 //         },
 //         email: "taylorswift@gmail.com",

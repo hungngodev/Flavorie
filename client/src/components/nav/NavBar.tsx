@@ -20,12 +20,12 @@ const NAV_ITEMS: Array<NavItem> = [
     },
     {
         label: 'Community',
-        href: '/community',
+        href: '/',
         children: [
             {
                 label: 'Browse',
                 subLabel: 'Look what others are cooking',
-                href: '/',
+                href: '/community',
             },
             { label: 'Meeting', subLabel: 'Cook with friends', href: '/meeting' },
         ],

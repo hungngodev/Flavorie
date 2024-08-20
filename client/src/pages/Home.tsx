@@ -2,7 +2,7 @@ import { Box, Button, Flex, HStack, Image, Link, Stack, Text, useTheme } from '@
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import Lottie from 'lottie-react';
 import React from 'react';
-import HerroIllustration from '../../public/images/hero-ilustration.jpg';
+import HerroIllustration from '..//assets/images/hero-ilustration.jpg';
 import { Cooking, Ingredient, LiveVideo, Scanning, Sharing } from '../assets/animations';
 import { ContainerScroll, Hero, StickyScrollReveal, Testimonials, WavyBackground } from '../components';
 import Footer from '../components/nav/Footer';

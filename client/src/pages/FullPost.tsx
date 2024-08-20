@@ -10,11 +10,11 @@ import {
     Text,
     VStack,
 } from '@chakra-ui/react';
-import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
+import { QueryClient, useQuery } from '@tanstack/react-query';
 import lottie from 'lottie-web';
 import { useEffect, useRef, useState } from 'react';
 import { Params, useParams } from 'react-router-dom';
-import errorIllustration from '../../public/images/404-error-removebg-preview.png';
+import errorIllustration from '..//assets/images/404-error-removebg-preview.png';
 import dumbCatLoaderAnimation from '../assets/animations/dumb-cat-loader.json';
 import { ImageSlider, PostFooter, PostHeader } from '../components/community/post/index';
 import { PostObjectType, parsePost } from '../components/community/post/types';
@@ -39,7 +39,6 @@ export const loader =
     };
 
 const FullPost = () => {
-    const queryClient = useQueryClient();
     const [loading, setLoading] = useState(false);
     const [post, setPost] = useState<PostObjectType | null>(null);
 
@@ -51,7 +50,6 @@ const FullPost = () => {
     useEffect(() => {
         if (status === 'success') {
             setPost(parsePost([queryData?.post])[0]);
-            queryClient.invalidateQueries();
         }
     }, [queryData, status, fetchStatus]);
 

@@ -25,7 +25,7 @@ import { TbFaceIdError } from 'react-icons/tb';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import * as z from 'zod';
-import foodBackground from '../../public/images/food-background.jpg';
+import foodBackground from '..//assets/images/food-background.jpg';
 import { useAuth } from '../hooks';
 import customFetch from '../utils/customFetch';
 
@@ -68,7 +68,6 @@ const Login: React.FC = () => {
                 toast.success('You have successfully logged in !'), { position: 'top-right', icon: <CiCircleCheck /> };
                 setUserNotFounded(false);
                 navigate(redirect ? redirect : '/');
-                auth.setUser();
             } else if (LoginRequest.status === 500) {
                 toast.error('Oops! Something went wrong, please try again!', {
                     position: 'top-right',

@@ -23,7 +23,7 @@ import {
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { FaEllipsis } from 'react-icons/fa6';
-import cooking from '../../../../public/images/let-him-cook.jpg';
+import cooking from '../../..//assets/images/let-him-cook.jpg';
 import theme from '../../../style/theme';
 import ReviewForm from './ReviewForm';
 // import axios from "axios";

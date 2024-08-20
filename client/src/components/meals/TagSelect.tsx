@@ -19,7 +19,7 @@ import { GiSesame } from 'react-icons/gi';
 import { PiFishSimple, PiGrainsBold, PiShrimp } from 'react-icons/pi';
 import { SlChemistry } from 'react-icons/sl';
 import { TbBrandPeanut, TbMeatOff } from 'react-icons/tb';
-import DietInfographic from '../../../public/images/diet-infographic.png';
+import DietInfographic from '../..//assets/images/diet-infographic.png';
 import useToast from '../../hooks/useToast';
 import customFetch from '../../utils/customFetch';
 import CustomTag from './CustomTag';

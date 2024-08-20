@@ -2,7 +2,7 @@ import { Box, Flex, Heading, Input, VStack } from '@chakra-ui/react';
 import Lottie from 'lottie-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import BackgroundImage from '../../../public/images/BackgroundImage.png';
+import BackgroundImage from '../..//assets/images/BackgroundImage.png';
 import Connect from '../../assets/animations/Connect.json';
 import { ws } from '../../providers/RoomProvider';
 import theme from '../../style/theme';

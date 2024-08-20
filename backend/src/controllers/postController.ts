@@ -1,5 +1,6 @@
 // postController
 import { ServerError } from "@src/errors/customErrors";
+import Post from "@src/models/Post";
 import {
   buildPostDocument,
   deletePostDocument,
@@ -67,9 +68,10 @@ export const newFeedController = async (req: Request, res: Response) => {
   try {
     const { page, limit } = req.query;
     const feed = await getFeedDocument(Number(page), Number(limit));
+    const totalPosts = await Post.estimatedDocumentCount();
     return res
       .status(StatusCodes.OK)
-      .json({ message: "Feed retrieved", posts: feed });
+      .json({ message: "Feed retrieved", posts: feed, totalPosts });
   } catch (err) {
     if (err instanceof Error) {
       return res.status(StatusCodes.CONFLICT).json({ error: err.message });
