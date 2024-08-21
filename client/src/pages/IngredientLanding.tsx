@@ -62,6 +62,7 @@ function IngredientLanding() {
             ) : (
                 <VStack spacing={0} width={'95%'} height={'150%'} justifyContent={'start'}>
                     {page === 1 &&
+                        searchData?.data.result &&
                         searchData?.data.result.length > 0 &&
                         !(currentSearchQuery && currentSearchQuery !== '') && (
                             <VStack width={'100%'} height={'50%'} alignItems={'start'}>

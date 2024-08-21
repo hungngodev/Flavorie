@@ -129,19 +129,17 @@ export const searchIngredients = async (req: Request, res: Response) => {
     );
     const newResultsWithPopulate = [...ingredients];
     for (const ingredient of newResultsWithPopulate) {
-      console.log("relevance", ingredient.relevance);
       ingredients.push(...ingredient.relevance);
     }
     if (ingredients.length < 100) {
       const spoonacularIngredients = await getAllIngredientsAPI(
         queryAllergy,
         ingredientName.toLowerCase().trim(),
-        10,
+        20,
       );
-      ingredients.push(...spoonacularIngredients);
+      ingredients.push(...spoonacularIngredients.results);
       // console.log("spoonacularIngredients", spoonacularIngredients);
     }
-
     return res
       .json({ ingredients, numberOfIngredients: ingredients.length })
       .status(StatusCodes.OK);
