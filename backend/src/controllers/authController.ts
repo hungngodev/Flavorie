@@ -8,12 +8,17 @@ import { StatusCodes } from "http-status-codes";
 function createCookie(token: string, res: Response) {
   const oneDay = 1000 * 60 * 60 * 24;
 
+  // res.cookie("flavorie_session_token", token, {
+  //   httpOnly: true,
+  //   expires: new Date(Date.now() + oneDay),
+  //   secure: true,
+  //   sameSite: false,
+  //   domain: process.env.DOMAIN,
+  // });
   res.cookie("flavorie_session_token", token, {
     httpOnly: true,
     expires: new Date(Date.now() + oneDay),
-    secure: true,
-    sameSite: false,
-    domain: process.env.DOMAIN,
+    sameSite: "lax",
   });
 }
 
