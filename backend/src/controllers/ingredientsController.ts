@@ -64,7 +64,7 @@ export const searchIngredients = async (req: Request, res: Response) => {
     )
     .slice(0, -1);
 
-  if (!ingredientName || ingredientName === "") {
+  if (!ingredientName || ingredientName === "" || ingredientName.length === 0) {
     const result = [];
     if ((req as any).user) {
       const myLeftOver = await getUserItems(

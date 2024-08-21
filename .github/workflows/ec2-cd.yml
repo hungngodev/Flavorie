@@ -12,10 +12,6 @@ jobs:
     steps:
       - name: Export env and docker compose
         run: |
-          echo "The current directory is:"
-          pwd
-          echo "Listing contents of the current directory:"
-          ls -la
           cd Flavorie
 
         working-directory: /home/ubuntu
