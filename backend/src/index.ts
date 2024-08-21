@@ -58,9 +58,9 @@ setUpSocketIO(server);
 
 app.set("trust proxy", ["loopback", "linklocal", "uniquelocal"]);
 const apiLimiter = rateLimiter({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 20,
-  message: { msg: "IP rate limit exceeded, retry in 15 minutes." },
+  windowMs: 1 * 60 * 1000, // 5 minutes
+  max: 100,
+  message: { msg: "IP rate limit exceeded, retry in 5 minutes." },
 });
 app.use(apiLimiter);
 // app.get("/api/test", (req: Request, res: Response) => {
