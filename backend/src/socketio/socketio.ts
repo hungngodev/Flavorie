@@ -46,7 +46,7 @@ const setUpSocketIO = (server: any) => {
 
   io.use(authenticateSocketIO);
   io.on("connection", (socket: Socket) => {
-    console.log("connected");
+    console.log("Socket has been connected");
     roomHandler(socket);
     notificationHandler(socket);
     gestureHandler(socket);
