@@ -16,16 +16,6 @@ jobs:
           pwd
           echo "Listing contents of the current directory:"
           ls -la
-          cd Flavorie 
-          sudo IMAGE_TAG=$((${{github.run_number }})) docker compose down --volumes --remove-orphans
-          sudo docker stop $(sudo docker ps -q) || true
-          sudo docker rm $(sudo docker ps -aq) || true
-          sudo docker system prune -a --volumes -f
-          sudo docker network create net
-          sudo IMAGE_TAG=$((${{github.run_number }} -1)) docker compose up -d --scale frontend=2 --scale backend=2 --scale peerjs=2 --no-recreate
-          sudo docker rm -f $(sudo docker ps -q | xargs sudo docker inspect --format='{{.Name}}' | grep frontend | tail -n 1) 
-          sudo docker rm -f $(sudo docker ps -q | xargs sudo docker inspect --format='{{.Name}}' | grep backend | tail -n 1)
-          sudo docker rm -f $(sudo docker ps -q | xargs sudo docker inspect --format='{{.Name}}' | grep peerjs | tail -n 1)
+          cd Flavorie
 
-          sudo docker exec $(sudo docker ps -q | xargs sudo docker inspect --format='{{.Name}}' | grep nginx) nginx -s reload
         working-directory: /home/ubuntu

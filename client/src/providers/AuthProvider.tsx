@@ -27,6 +27,7 @@ const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ children }: A
         try {
             const logOutRequest = await customFetch.get('/auth/logout', {
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                withCredentials: true,
             });
             if (logOutRequest.status === 200) {
                 toast.success('Logged out successfully!', { position: 'top-right', icon: <CiCircleCheck /> });

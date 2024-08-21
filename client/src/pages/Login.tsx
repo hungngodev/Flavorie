@@ -62,7 +62,8 @@ const Login: React.FC = () => {
                 password: data.password,
             };
             const LoginRequest = await customFetch.post('/auth/login', userResponse, {
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
+                withCredentials: true,
             });
             if (LoginRequest.status === 200) {
                 toast.success('You have successfully logged in !'), { position: 'top-right', icon: <CiCircleCheck /> };

@@ -74,7 +74,8 @@ const Register: React.FC = () => {
                 password: FormData.password,
             };
             const NewUserRequest = await customFetch.post('/auth/register', newUserData, {
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
+                withCredentials: true,
             });
             if (NewUserRequest.status === 201) {
                 toast.success(`Welcome to Flavorie ${newUserData.name}!`, {
