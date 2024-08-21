@@ -230,7 +230,7 @@ const Register: React.FC = () => {
                             </form>
                         </Box>
                         <Link textAlign="center" href="/login">
-                            Already have an account? <span style={{ color: 'teal' }}>Sign up now!</span>
+                            Already have an account? <span style={{ color: 'teal' }}>Sign in now!</span>
                         </Link>
                     </VStack>
                 </VStack>

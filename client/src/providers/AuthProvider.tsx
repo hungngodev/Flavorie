@@ -48,7 +48,9 @@ const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ children }: A
 
     const setUser = async (path: string) => {
         try {
-            const getUser = await customFetch.get('/auth');
+            const getUser = await customFetch.get('/auth', {
+                withCredentials: true,
+            });
             if (getUser.data.msg === 'Unauthorized') {
                 setCurrentUser({
                     id: '',
@@ -62,7 +64,7 @@ const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ children }: A
                     toast.error('Please login to access this page!', { position: 'top-right' });
                     navigate('/meeting');
                 } else if (path.includes('profile')) {
-                    toast.error('Please login to view your profile!', { position: 'top-right' });
+                    toast.error('Please login to view your profiled!', { position: 'top-right' });
                     navigate('/');
                 }
                 return;

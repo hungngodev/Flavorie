@@ -64,42 +64,49 @@ export const searchIngredients = async (req: Request, res: Response) => {
     )
     .slice(0, -1);
 
-  if ((!ingredientName || ingredientName === "") && (req as any).user) {
+  if (!ingredientName || ingredientName === "") {
     const result = [];
-    const myLeftOver = await getUserItems((req as any).user.userId, "leftOver");
-    const likedMeals = JSON.parse(
-      JSON.stringify(await getUserItems((req as any).user.userId, "likedMeal")),
-    );
-    for (const meal of likedMeals) {
-      const missingIngredients = [];
-      for (const mealIngredient of meal.likedMeal.allIngredients) {
-        if (
-          !myLeftOver.some(
-            ingredient =>
-              ingredient.itemId.toString() === mealIngredient.toString(),
-          )
-        ) {
-          const missingIngredient =
-            await IngredientModel.findById(mealIngredient);
-          if (missingIngredient) {
-            const repIngredient = {
-              id: missingIngredient._id.toString(),
-              name: missingIngredient.name,
-              image: missingIngredient.image,
-              category: missingIngredient.categoryPath,
-              amount: missingIngredient.amount,
-              unit: missingIngredient.unit,
-              unitShort: missingIngredient.unitShort,
-              nutrition: missingIngredient.nutrition,
-            };
-            missingIngredients.push(repIngredient);
+    if ((req as any).user) {
+      const myLeftOver = await getUserItems(
+        (req as any).user.userId,
+        "leftOver",
+      );
+      const likedMeals = JSON.parse(
+        JSON.stringify(
+          await getUserItems((req as any).user.userId, "likedMeal"),
+        ),
+      );
+      for (const meal of likedMeals) {
+        const missingIngredients = [];
+        for (const mealIngredient of meal.likedMeal.allIngredients) {
+          if (
+            !myLeftOver.some(
+              ingredient =>
+                ingredient.itemId.toString() === mealIngredient.toString(),
+            )
+          ) {
+            const missingIngredient =
+              await IngredientModel.findById(mealIngredient);
+            if (missingIngredient) {
+              const repIngredient = {
+                id: missingIngredient._id.toString(),
+                name: missingIngredient.name,
+                image: missingIngredient.image,
+                category: missingIngredient.categoryPath,
+                amount: missingIngredient.amount,
+                unit: missingIngredient.unit,
+                unitShort: missingIngredient.unitShort,
+                nutrition: missingIngredient.nutrition,
+              };
+              missingIngredients.push(repIngredient);
+            }
           }
         }
+        result.push({
+          meal: meal.likedMeal,
+          missingIngredients: missingIngredients,
+        });
       }
-      result.push({
-        meal: meal.likedMeal,
-        missingIngredients: missingIngredients,
-      });
     }
     const randomIngredients = (await getAndStoreInRedis(
       "ingredient random",

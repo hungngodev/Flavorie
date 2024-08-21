@@ -12,7 +12,8 @@ function createCookie(token: string, res: Response) {
     httpOnly: true,
     expires: new Date(Date.now() + oneDay),
     secure: true,
-    sameSite: "lax",
+    sameSite: false,
+    domain: process.env.DOMAIN,
   });
 }
 
@@ -39,6 +40,7 @@ export const register = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   const userId = await authenticateCheck(req.body);
+  console.log("good");
   const token = createJWT({ userId, role: "user" });
   createCookie(token, res);
   res.status(StatusCodes.OK).json({ msg: "user logged in" });

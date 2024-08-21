@@ -12,29 +12,34 @@ services:
 
     depends_on:
       - frontend
+      - backend
     networks:
       - net
 
   frontend:
     image: hungngodev/flavorie-frontend:v1.0.${IMAGE_TAG}
     stdin_open: true
+    init: true
     tty: true
     depends_on:
       - backend
+    environment:
+      VITE_SOCKET_SERVER: flavorie.xyz
+
     networks:
       - net
 
   backend:
     image: hungngodev/flavorie-backend:v1.0.${IMAGE_TAG}
     restart: always
+    init: true
     networks:
       - net
     env_file: ./.env
 
   peerjs:
     image: hungngodev/flavorie-peerjs:v1.0.${IMAGE_TAG}
-    ports:
-      - "9001:9001"
+    init: true
     networks:
       - net
 

@@ -76,7 +76,11 @@ const Login: React.FC = () => {
                 setUserNotFounded(true);
             }
         } catch (error) {
-            if (error instanceof AxiosError && error.response && error.response.status === 404) {
+            if (
+                error instanceof AxiosError &&
+                error.response &&
+                (error.response.status === 404 || error.response.status === 401)
+            ) {
                 toast.error('Make sure your email and password is correct!', {
                     position: 'top-right',
                     icon: <FaUserXmark />,

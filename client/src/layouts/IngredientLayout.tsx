@@ -9,6 +9,7 @@ import { Outlet, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Cart, CategorySidebar, LeftOver } from '../components/index.ts';
 import { Nutrition } from '../components/ingredients/NutritionCard.tsx';
+import { useAuth } from '../hooks';
 import socket from '../socket/socketio.tsx';
 import theme from '../style/theme.tsx';
 import customFetch from '../utils/customFetch.ts';
@@ -87,6 +88,7 @@ export default function Ingredient() {
     const [hidden, setHidden] = useState(!isOpen);
     const [expanded, setExpanded] = useState(false);
     const lottieCartRef = useRef<LottieRefCurrentProps>(null);
+    const auth = useAuth();
 
     const { control, handleSubmit, watch, setValue } = useForm<CartData>({
         defaultValues: {
@@ -135,6 +137,10 @@ export default function Ingredient() {
     const currentCart = watch('cart');
 
     const addFunction = (ingredientData: Ingredient) => {
+        if (auth.currentUser.status === 'unauthenticated') {
+            toast.error('Please log in or sign up to add ingredients to your cart');
+            return;
+        }
         if (currentCart.some((item) => item.id === ingredientData.id)) {
             const index = currentCart.findIndex((item) => item.id === ingredientData.id);
             const currentQuantity = parseInt(currentCart[index].quantity);
@@ -150,6 +156,10 @@ export default function Ingredient() {
     };
 
     const onSubmit = (operation: string) => {
+        if (auth.currentUser.status === 'unauthenticated') {
+            toast.error('Please log in or sign up to save');
+            return;
+        }
         handleSubmit(async (data: CartData) => {
             const results =
                 operation === 'deleteAll'
@@ -392,7 +402,12 @@ export default function Ingredient() {
                                 className={'absolute left-0 top-0 h-full w-full'}
                             >
                                 {isOpen &&
-                                    (tab.value === 'cart' ? (
+                                    (auth.currentUser.status === 'unauthenticated' ? (
+                                        <div className="flex h-full w-full flex-col items-center justify-center">
+                                            <h1 className="text-2xl font-bold">Please log in or sign up</h1>
+                                            <h1 className="text-2xl font-bold">to view your cart and left over</h1>
+                                        </div>
+                                    ) : tab.value === 'cart' ? (
                                         <Cart
                                             fields={fields}
                                             removeFunction={remove}
