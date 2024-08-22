@@ -27,7 +27,7 @@ services:
     environment:
       VITE_SOCKET_SERVER: flavorie.xyz
     volumes:
-      - frontend_static:/usr/share/nginx/html
+      - frontend_static:/frontend
 
     networks:
       - net
