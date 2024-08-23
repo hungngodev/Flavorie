@@ -19,7 +19,6 @@ import socket from '../socket/socketio';
 import { IPeer } from '../types/peer';
 import customFetch from '../utils/customFetch';
 
-export const WS = 'http://localhost:5100';
 export const ws = socket;
 
 const likedMealQuery = {
@@ -188,8 +187,8 @@ const RoomProvider = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         const peer = new Peer('', {
-            host: 'localhost',
-            port: 9001,
+            host: import.meta.env.VITE_PEER_JS_HOST,
+            port: parseInt(import.meta.env.VITE_PEER_JS_PORT),
             path: '/',
         });
         setMe(peer);

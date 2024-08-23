@@ -6,8 +6,9 @@ services:
     ports:
       - "80:80"
       - "443:443"
+
     volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/default.conf:/etc/nginx/nginx.conf
     depends_on:
       - frontend
       - backend
@@ -23,6 +24,8 @@ services:
       - backend
     environment:
       VITE_SOCKET_SERVER: flavorie.xyz
+      VITE_PEER_JS_HOST: flavorie.xyz
+      VITE_PEER_JS_PORT: 9001
 
     networks:
       - net
@@ -37,6 +40,8 @@ services:
 
   peerjs:
     image: hungngodev/flavorie-peerjs:v1.0.${IMAGE_TAG}
+    ports:
+      - "9001:9001"
     init: true
     networks:
       - net
