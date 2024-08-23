@@ -9,7 +9,7 @@ services:
 
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - frontend_static:/usr/share/nginx/html
+      - ./frontend_static:/usr/share/nginx/html
 
     depends_on:
       - frontend
@@ -26,8 +26,6 @@ services:
       - backend
     environment:
       VITE_SOCKET_SERVER: flavorie.xyz
-    volumes:
-      - frontend_static:/frontend
 
     networks:
       - net
@@ -49,6 +47,3 @@ services:
 networks:
   net:
     external: true
-
-volumes:
-  frontend_static:
