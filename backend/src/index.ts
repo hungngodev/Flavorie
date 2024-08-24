@@ -30,6 +30,10 @@ const app = express();
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
+app.use((req, res, next) => {
+  console.log("Request URL:", req.url);
+  next();
+});
 
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "5mb", extended: true }));
@@ -90,7 +94,7 @@ const peerServer = ExpressPeerServer(server, {
 app.use(
   "/peer-server",
   (req, res, next) => {
-    console.log("peer-server");
+    console.log("using peer-server");
     next();
   },
   peerServer,

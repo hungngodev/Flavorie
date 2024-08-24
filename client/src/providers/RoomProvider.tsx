@@ -192,12 +192,57 @@ const RoomProvider = ({ children }: { children: React.ReactNode }) => {
         //     path: '/',
         // });
         // const peer = new Peer("")
+        console.log('peerjs host', import.meta.env.VITE_PEER_JS_HOST);
+        console.log('peerjs port', import.meta.env.VITE_PEER_JS);
+
+        // const peer = new Peer('', {
+        //     host: import.meta.env.VITE_PEER_JS_HOST,
+        //     port: parseInt(import.meta.env.VITE_PEER_JS_PORT),
+        //     path: '/peer-server',
+        //     // secure: true // this doesn't work locally (http), may be needed when deployed (for https)
+        // });
         const peer = new Peer('', {
-            key: 'peerjs',
             host: import.meta.env.VITE_PEER_JS_HOST,
             port: parseInt(import.meta.env.VITE_PEER_JS_PORT),
-            path: '/peer-server', // here GET request will map to /peer-server/peerjs/id?ts=....
-            // secure: true // this doesn't work locally (http), may be needed when deployed (for https)
+            secure: parseInt(import.meta.env.VITE_PEER_JS_PORT) === 443,
+            path: '/peer-server',
+            config: {
+                iceServers: [
+                    {
+                        url: 'turn:relay1.expressturn.com:3478',
+                        credential: 'n249CgDuYqr0b4Sc',
+                        username: 'efBOWWM4SVBB1JE5CO',
+                    },
+                    {
+                        urls: 'turn:13.250.13.83:3478?transport=udp',
+                        username: 'YzYNCouZM1mhqhmseWk6',
+                        credential: 'YzYNCouZM1mhqhmseWk6',
+                    },
+                    {
+                        urls: 'stun:stun.relay.metered.ca:80',
+                    },
+                    {
+                        urls: 'turn:global.relay.metered.ca:80',
+                        username: 'fe645f487d27702ca414216a',
+                        credential: '1RgQIEt3W2JcGbLL',
+                    },
+                    {
+                        urls: 'turn:global.relay.metered.ca:80?transport=tcp',
+                        username: 'fe645f487d27702ca414216a',
+                        credential: '1RgQIEt3W2JcGbLL',
+                    },
+                    {
+                        urls: 'turn:global.relay.metered.ca:443',
+                        username: 'fe645f487d27702ca414216a',
+                        credential: '1RgQIEt3W2JcGbLL',
+                    },
+                    {
+                        urls: 'turns:global.relay.metered.ca:443?transport=tcp',
+                        username: 'fe645f487d27702ca414216a',
+                        credential: '1RgQIEt3W2JcGbLL',
+                    },
+                ],
+            },
         });
         setMe(peer);
         try {
