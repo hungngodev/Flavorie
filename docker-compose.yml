@@ -35,7 +35,7 @@ services:
     environment:
       VITE_SOCKET_SERVER: flavorie.xyz
       VITE_PEER_JS_HOST: flavorie.xyz
-      VITE_PEER_JS_PORT: 5100
+      VITE_PEER_JS_PORT: 443
     networks:
       - net
 
@@ -47,13 +47,13 @@ services:
       - net
     env_file: ./.env
 
-  peerjs:
-    image: peerjs/peerjs-server
-    ports:
-      - "9000:9000"
-    init: true
-    networks:
-      - net
+  # peerjs:
+  #   image: peerjs/peerjs-server
+  #   ports:
+  #     - "9000:9000"
+  #   init: true
+  #   networks:
+  #     - net
 
 networks:
   net:
