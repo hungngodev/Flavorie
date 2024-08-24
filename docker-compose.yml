@@ -8,12 +8,22 @@ services:
       - "443:443"
 
     volumes:
-      - ./nginx/default.conf:/etc/nginx/nginx.conf
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
     depends_on:
       - frontend
       - backend
     networks:
       - net
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    command: certonly --webroot -w /var/www/certbot --force-renewal --email hungngo1607@gmail.com -d flavorie.xyz --agree-tos
 
   frontend:
     image: hungngodev/flavorie-frontend:v1.0.${IMAGE_TAG}
@@ -25,8 +35,7 @@ services:
     environment:
       VITE_SOCKET_SERVER: flavorie.xyz
       VITE_PEER_JS_HOST: flavorie.xyz
-      VITE_PEER_JS_PORT: 9001
-
+      VITE_PEER_JS_PORT: 9000
     networks:
       - net
 
@@ -39,9 +48,9 @@ services:
     env_file: ./.env
 
   peerjs:
-    image: hungngodev/flavorie-peerjs:v1.0.${IMAGE_TAG}
+    image: peerjs/peerjs-server
     ports:
-      - "9001:9001"
+      - "9000:9000"
     init: true
     networks:
       - net

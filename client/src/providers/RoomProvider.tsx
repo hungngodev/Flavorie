@@ -186,11 +186,12 @@ const RoomProvider = ({ children }: { children: React.ReactNode }) => {
     }, [userName, userId, roomId]);
 
     useEffect(() => {
-        const peer = new Peer('', {
-            host: import.meta.env.VITE_PEER_JS_HOST,
-            port: parseInt(import.meta.env.VITE_PEER_JS_PORT),
-            path: '/',
-        });
+        // const peer = new Peer('', {
+        //     host: import.meta.env.VITE_PEER_JS_HOST,
+        //     port: parseInt(import.meta.env.VITE_PEER_JS_PORT),
+        //     path: '/',
+        // });
+        const peer = new Peer('');
         setMe(peer);
         try {
             navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
