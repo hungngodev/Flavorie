@@ -35,7 +35,7 @@ services:
     environment:
       VITE_SOCKET_SERVER: flavorie.xyz
       VITE_PEER_JS_HOST: flavorie.xyz
-      VITE_PEER_JS_PORT: 9000
+      VITE_PEER_JS_PORT: 5100
     networks:
       - net
 

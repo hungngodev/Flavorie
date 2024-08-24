@@ -191,7 +191,14 @@ const RoomProvider = ({ children }: { children: React.ReactNode }) => {
         //     port: parseInt(import.meta.env.VITE_PEER_JS_PORT),
         //     path: '/',
         // });
-        const peer = new Peer('');
+        // const peer = new Peer("")
+        const peer = new Peer('', {
+            key: 'peerjs',
+            host: import.meta.env.VITE_PEER_JS_HOST,
+            port: parseInt(import.meta.env.VITE_PEER_JS_PORT),
+            path: '/peer-server', // here GET request will map to /peer-server/peerjs/id?ts=....
+            // secure: true // this doesn't work locally (http), may be needed when deployed (for https)
+        });
         setMe(peer);
         try {
             navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {

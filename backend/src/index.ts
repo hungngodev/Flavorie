@@ -6,6 +6,7 @@ import postRouter from "@src/routes/postRouter";
 import reviewRouter from "@src/routes/reviewRouter";
 import userRouter from "@src/routes/userRouter";
 import redisClient from "@src/services/redisClient/index";
+import { setUpSocketIO } from "@src/socketio/socketio";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -14,12 +15,10 @@ import "express-async-errors";
 import mongoSanitize from "express-mongo-sanitize";
 import rateLimiter from "express-rate-limit";
 import helmet from "helmet";
+import { createServer } from "http";
 import mongoose from "mongoose";
 import morgan from "morgan";
-// import reviewRouter from "@src/routes/reviewRouter";
-
-import { setUpSocketIO } from "@src/socketio/socketio";
-import { createServer } from "http";
+import { ExpressPeerServer } from "peer";
 
 dotenv.config();
 redisClient.on("connect", () => {
@@ -84,6 +83,18 @@ app.use("/api/community", postRouter);
 app.use("/api/community", reviewRouter);
 app.use("/api/bug", bugRouter);
 
+const peerServer = ExpressPeerServer(server, {
+  allow_discovery: true,
+});
+
+app.use(
+  "/peer-server",
+  (req, res, next) => {
+    console.log("peer-server");
+    next();
+  },
+  peerServer,
+);
 // app.get("*", (req, res) => {
 //   res.sendFile(path.resolve(__dirname, "../client/dist", "index.html"));
 // });
