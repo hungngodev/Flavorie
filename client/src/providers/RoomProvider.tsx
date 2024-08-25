@@ -55,7 +55,7 @@ const RoomProvider = ({ children }: { children: React.ReactNode }) => {
             mealInfo: mealDatas.find((mealData: any) => mealData.title === currentMealChoice),
         });
     };
-
+    ``;
     const enterRoom = ({ roomId }: { roomId: 'string' }) => {
         navigate(`/meeting/room/${roomId}`);
         window.location.reload();
@@ -202,9 +202,12 @@ const RoomProvider = ({ children }: { children: React.ReactNode }) => {
         //     // secure: true // this doesn't work locally (http), may be needed when deployed (for https)
         // });
         const peer = new Peer('', {
-            host: import.meta.env.VITE_PEER_JS_HOST,
-            port: parseInt(import.meta.env.VITE_PEER_JS_PORT),
-            secure: parseInt(import.meta.env.VITE_PEER_JS_PORT) === 443,
+            // host: import.meta.env.VITE_PEER_JS_HOST,
+            // port: parseInt(import.meta.env.VITE_PEER_JS_PORT),
+            // secure: parseInt(import.meta.env.VITE_PEER_JS_PORT) === 443,
+            host: 'flavorie.xyz',
+            port: 443,
+            secure: true,
             path: '/peer-server',
             config: {
                 iceServers: [
