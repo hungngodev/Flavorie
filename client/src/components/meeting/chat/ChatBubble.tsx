@@ -1,4 +1,4 @@
-import { HStack, VStack } from '@chakra-ui/react';
+import { VStack } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { useRoom, useUser } from '../../../hooks';
 import { IMessage } from '../../../types/chat';
@@ -24,7 +24,15 @@ export const ChatBubble: React.FC<{ message: IMessage }> = ({ message }) => {
             })}
         >
             <VStack alignItems={isSelf ? 'flex-end' : 'flex-start'}>
-                <HStack width="min-content" flexDirection={!isSelf ? 'row-reverse' : 'row'}>
+                <VStack width="min-content">
+                    <div
+                        className={cn('text-md', {
+                            'text-right': isSelf,
+                            'text-left': !isSelf,
+                        })}
+                    >
+                        {isSelf ? 'You' : userName.slice(0, 4)}
+                    </div>
                     <div
                         className={cn(`flex w-full max-w-xl py-2 text-white`, {
                             'rounded-bl-xl rounded-tl-xl rounded-tr-2xl bg-gradient-to-r from-purple-500 to-blue-600 pl-3 pr-2 text-right':
@@ -39,15 +47,7 @@ export const ChatBubble: React.FC<{ message: IMessage }> = ({ message }) => {
                     >
                         {message.content}
                     </div>
-                    <div
-                        className={cn('text-md', {
-                            'text-right': isSelf,
-                            'text-left': !isSelf,
-                        })}
-                    >
-                        {isSelf ? 'You' : userName.slice(0, 4)}
-                    </div>
-                </HStack>
+                </VStack>
                 <div
                     className={cn('text-xs opacity-50', {
                         'text-right': isSelf,

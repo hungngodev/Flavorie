@@ -1,4 +1,9 @@
 import {
+    Accordion,
+    AccordionButton,
+    AccordionIcon,
+    AccordionItem,
+    AccordionPanel,
     Box,
     Button,
     Card,
@@ -8,6 +13,7 @@ import {
     HStack,
     IconButton,
     Image,
+    Tooltip,
     VStack,
     useDisclosure,
 } from '@chakra-ui/react';
@@ -21,8 +27,10 @@ import {
     Mic,
     MicOff,
     MonitorUp,
+    Move,
     PhoneMissed,
     ScreenShareOff,
+    Settings,
     Video,
     VideoOff,
 } from 'lucide-react';
@@ -63,9 +71,10 @@ const Room = () => {
     const { userName, userId } = useUser();
     const [focus, setFocus] = useState(screenSharingId);
     const [direction, setDirection] = useState('');
+    const containerRef = useRef<HTMLDivElement>(null);
 
     const mealOptions = mealDatas.map((meal: BackendData) => ({ key: meal.title, label: meal.title }));
-
+    mealOptions.unshift({ key: 'none', label: 'None' });
     useEffect(() => {
         setFocus(screenSharingId);
     }, [screenSharingId]);
@@ -178,35 +187,16 @@ const Room = () => {
         };
     }, []);
 
-    // const sendFrameToServer = async () => {
-    //     const canvas = canvasRef.current;
-    //     const context = canvas?.getContext('2d');
-    //     if (context && myVideoRef.current && canvas) {
-    //         context.drawImage(myVideoRef.current, 0, 0, canvas.width, canvas.height);
-    //         const dataUrl = canvas.toDataURL('image/jpeg');
-    //         const blob = await (await fetch(dataUrl)).blob();
-    //         const file = new File([blob], 'frame.jpg', { type: 'image/jpeg' });
-    //         socket?.emit('sendFrame', {
-    //             image: file,
-    //         });
-    //     }
-    // };
-
-    // useEffect(() => {
-    //     const interval = setInterval(sendFrameToServer, 200);
-    //     return () => clearInterval(interval);
-    // }, []);
-
     return (
         <SlideContext.Provider value={{ direction }}>
-            <Box height="full" width="100%" position="relative">
+            <Box height="100%" width="100%" position="relative" ref={containerRef}>
                 <HStack height="100%" width="100%" padding={'5px'}>
                     <VStack width="full" height="full" gap={2}>
                         <Grid
-                            height={'60vh'}
+                            height={'50vh'}
                             width="100%"
-                            templateColumns={`repeat(5,1fr)`}
-                            templateRows={`repeat(2,1fr)`}
+                            templateColumns={`repeat(6,1fr)`}
+                            templateRows={`repeat(1,1fr)`}
                         >
                             {focusingVideo && (
                                 <GridItem rowSpan={3} colSpan={3} padding={'8px'} onClick={() => setFocus('')}>
@@ -216,6 +206,7 @@ const Room = () => {
                                         display={'flex'}
                                         justify={'center'}
                                         align={'center'}
+                                        bgColor={'#BDE0FE'}
                                     >
                                         <VideoPlayer stream={focusingVideo} />
                                     </Card>
@@ -230,6 +221,7 @@ const Room = () => {
                                         display={'flex'}
                                         justify={'center'}
                                         align={'center'}
+                                        bgColor={'#BDE0FE'}
                                     >
                                         <CardBody>
                                             <video
@@ -265,7 +257,7 @@ const Room = () => {
                                         padding={'8px'}
                                         onClick={() => setFocus(peer.userId)}
                                     >
-                                        <Card width={'full'} height="full">
+                                        <Card bgColor={'#BDE0FE'} width={'full'} height="full">
                                             <CardBody>
                                                 <VideoPlayer stream={peer.stream} />
                                                 <div>{peer.userName}</div>
@@ -273,8 +265,8 @@ const Room = () => {
                                         </Card>
                                     </GridItem>
                                 ))}
-                            <GridItem colSpan={1} rowSpan={1} padding={2}>
-                                <VStack height="full" width="100%" justifyContent={'end'}>
+                            <GridItem colStart={6} rowStart={0} padding={2}>
+                                <VStack height="100%" width="100%" justifyContent={'start'}>
                                     {mealOptions.length > 0 ? (
                                         <>
                                             <ProgressiveImage
@@ -292,7 +284,8 @@ const Room = () => {
                                                             filter: loading ? 'blur(5px)' : 'blur(0)',
                                                             transition: 'filter 2s',
                                                         }}
-                                                        maxH={'26vh'}
+                                                        width="100%"
+                                                        height="50%"
                                                         src={src}
                                                         borderRadius={'lg'}
                                                         objectFit="fill"
@@ -305,11 +298,16 @@ const Room = () => {
                                                 variant="bordered"
                                                 label="Meal Choice"
                                                 className="w-full"
+                                                listboxProps={{
+                                                    style: {
+                                                        maxHeight: '18vh',
+                                                    },
+                                                }}
                                                 selectedKeys={[mealChoice]}
                                                 onChange={(e) => setMealChoice(e.target.value)}
                                             >
                                                 {(meal: { key: string; label: string }) => (
-                                                    <SelectItem className="w-full rounded-none bg-white" key={meal.key}>
+                                                    <SelectItem className="w-full rounded-none" key={meal.key}>
                                                         {meal.label}
                                                     </SelectItem>
                                                 )}
@@ -329,10 +327,126 @@ const Room = () => {
                             </GridItem>
                         </Grid>
                         {currentMealInfo && Object.keys(currentMealInfo).length > 0 && (
-                            <HStack width={'100%'} height="40vh">
+                            <HStack
+                                width={'100%'}
+                                borderRadius={'xl'}
+                                bgColor={'#9F9FED'}
+                                justifyContent={'center'}
+                                alignItems={'center'}
+                            >
                                 <ImageSlide backendData={currentMealInfo} />
                             </HStack>
                         )}
+                        <motion.div
+                            drag
+                            dragConstraints={containerRef}
+                            dragElastic={0.8}
+                            dragTransition={{ bounceDamping: 10 }}
+                            // dragMomentum={false}
+                            style={{
+                                position: 'absolute',
+                                top: 0,
+                                right: 400,
+                                zIndex: 1000,
+                                background: 'transparent',
+                            }}
+                        >
+                            <Accordion allowToggle bg="transparent">
+                                <AccordionItem bg="transparent" border={'none'}>
+                                    <HStack bg="transparent" border={'none'} gap={0}>
+                                        <Move />
+                                        <AccordionButton bg={'transparent'}>
+                                            <Button leftIcon={<Settings />} rightIcon={<AccordionIcon />}></Button>
+                                        </AccordionButton>
+                                    </HStack>
+                                    <AccordionPanel pb={4}>
+                                        <VStack justifyContent="center" alignItems="center">
+                                            <Tooltip
+                                                hasArrow
+                                                bg="gray.300"
+                                                color="black"
+                                                label={'Copy Room ID'}
+                                                placement="left"
+                                            >
+                                                <IconButton
+                                                    icon={<Clipboard />}
+                                                    variant="solid"
+                                                    onClick={() => navigator.clipboard.writeText(id || '')}
+                                                    aria-label="Copy room Id"
+                                                />
+                                            </Tooltip>
+                                            <Tooltip
+                                                hasArrow
+                                                bg="gray.300"
+                                                color="black"
+                                                label="Share Screen"
+                                                placement="left"
+                                            >
+                                                <IconButton
+                                                    onClick={shareScreen}
+                                                    isDisabled={screenSharingId !== userId && screenSharingId !== ''}
+                                                    padding={0}
+                                                    icon={
+                                                        screenSharingId === userId ? <ScreenShareOff /> : <MonitorUp />
+                                                    }
+                                                    aria-label="Share screen"
+                                                />
+                                            </Tooltip>
+                                            <Tooltip
+                                                hasArrow
+                                                bg="gray.300"
+                                                color="black"
+                                                label="Toggle Video"
+                                                placement="left"
+                                            >
+                                                <IconButton
+                                                    icon={videoStatus ? <Video /> : <VideoOff />}
+                                                    aria-label="Toggle video"
+                                                    onClick={toggleVideo}
+                                                />
+                                            </Tooltip>
+                                            <Tooltip
+                                                hasArrow
+                                                bg="gray.300"
+                                                color="black"
+                                                label="Toggle Mic"
+                                                placement="left"
+                                            >
+                                                <IconButton
+                                                    icon={micStatus ? <Mic /> : <MicOff />}
+                                                    aria-label="Toggle mic"
+                                                    onClick={toggleMic}
+                                                />
+                                            </Tooltip>
+                                            <Tooltip
+                                                hasArrow
+                                                bg="gray.300"
+                                                color="black"
+                                                label="Toggle Chat"
+                                                placement="left"
+                                            >
+                                                <IconButton
+                                                    {...getButtonProps()}
+                                                    icon={<MessageSquare />}
+                                                    aria-label="Toggle chat"
+                                                />
+                                            </Tooltip>
+                                            <Tooltip
+                                                hasArrow
+                                                bg="gray.300"
+                                                color="black"
+                                                label="Leave Room"
+                                                placement="left"
+                                            >
+                                                <Link to="/meeting">
+                                                    <IconButton icon={<PhoneMissed />} aria-label="Leave room" />
+                                                </Link>
+                                            </Tooltip>
+                                        </VStack>
+                                    </AccordionPanel>
+                                </AccordionItem>
+                            </Accordion>
+                        </motion.div>
                     </VStack>
                     <motion.div
                         {...getDisclosureProps()}
@@ -349,48 +463,15 @@ const Room = () => {
                             overflow: 'hidden',
                             whiteSpace: 'nowrap',
                             height: '100%',
+                            position:
+                                currentMealInfo && Object.keys(currentMealInfo).length > 0 ? 'absolute' : 'relative',
+                            background: 'white',
+                            right: 0,
+                            zIndex: 1200,
                         }}
                     >
                         <Chat />
                     </motion.div>
-                </HStack>
-
-                <HStack
-                    justifyContent="center"
-                    alignItems="center"
-                    position="absolute"
-                    top={0}
-                    zIndex={2000}
-                    right={0}
-                    transform={'translateX(-50%)'}
-                >
-                    <Button
-                        leftIcon={<Clipboard />}
-                        variant="solid"
-                        onClick={() => navigator.clipboard.writeText(id || '')}
-                    >
-                        Copy room Id
-                    </Button>
-
-                    <Button
-                        onClick={shareScreen}
-                        isDisabled={screenSharingId !== userId && screenSharingId !== ''}
-                        padding={0}
-                        leftIcon={screenSharingId === userId ? <ScreenShareOff /> : <MonitorUp />}
-                        aria-label="Share screen"
-                    />
-                    <IconButton
-                        icon={videoStatus ? <Video /> : <VideoOff />}
-                        aria-label="Toggle video"
-                        onClick={toggleVideo}
-                    />
-                    <IconButton icon={micStatus ? <Mic /> : <MicOff />} aria-label="Toggle mic" onClick={toggleMic} />
-
-                    <IconButton {...getButtonProps()} icon={<MessageSquare />} aria-label="Toggle chat" />
-
-                    <Link to="/meeting">
-                        <IconButton icon={<PhoneMissed />} aria-label="Leave room" />
-                    </Link>
                 </HStack>
             </Box>
         </SlideContext.Provider>
