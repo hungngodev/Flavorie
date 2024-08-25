@@ -25,6 +25,6 @@ jobs:
       - name: Backend-Build and push Docker images
         run: |
           cd backend && make all TAG=${{ github.run_number }}
-      - name: Peerjs-Build and push Docker images
-        run: |
-          cd peerjs && make all TAG=${{ github.run_number }}
+      # - name: Peerjs-Build and push Docker images
+      #   run: |
+      #     cd peerjs && make all TAG=${{ github.run_number }}
