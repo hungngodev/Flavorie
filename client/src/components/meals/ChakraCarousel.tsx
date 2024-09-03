@@ -1,10 +1,7 @@
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-
-import { Box, Button, Flex, Progress, VStack, useMediaQuery, useTheme } from '@chakra-ui/react';
-
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
+import { Box, Button, Flex, Progress, VStack, useMediaQuery, useTheme } from '@chakra-ui/react';
 import { motion, useAnimation, useMotionValue } from 'framer-motion';
-import { useContext } from 'react';
+import React, { useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import useBoundingRect from '../../hooks/useBoundingRect';
 import { SlideContext } from '../../pages/Room';
 import { percentage } from '../../utils';
@@ -388,7 +385,7 @@ const Track: React.FC<TrackProps> = ({
                         onDragStart={handleDragStart}
                         onDragEnd={handleDragEnd}
                         // animate={controls}
-                        style={{ x }}
+                        style={{ x: x }}
                         drag="x"
                         _active={{ cursor: 'grabbing' }}
                         minWidth="min-content"
