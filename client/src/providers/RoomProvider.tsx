@@ -284,6 +284,14 @@ const RoomProvider = ({ children }: { children: React.ReactNode }) => {
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+    window.onbeforeunload = () => {
+        if (stream) {
+            stream.getTracks().forEach((track) => {
+                track.stop();
+            });
+        }
+        me?.destroy();
+    };
 
     useEffect(() => {
         if (!me) return;

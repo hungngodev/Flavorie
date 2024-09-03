@@ -40,10 +40,6 @@ export const ChatBubble: React.FC<{ message: IMessage }> = ({ message }) => {
                             'rounded-br-xl rounded-tl-2xl rounded-tr-xl bg-gradient-to-r from-blue-500 to-purple-600 pl-2 pr-3 text-left':
                                 !isSelf,
                         })}
-                        // className={cn('inline-block  px-4 py-2', {
-                        //     'bg-red-200': isSelf,
-                        //     'bg-red-300': !isSelf,
-                        // })}
                     >
                         {message.content}
                     </div>

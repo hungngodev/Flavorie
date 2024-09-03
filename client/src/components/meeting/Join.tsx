@@ -1,7 +1,8 @@
 import { Box, Flex, Heading, Input, VStack } from '@chakra-ui/react';
 import Lottie from 'lottie-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import BackgroundImage from '../..//assets/images/BackgroundImage.png';
 import Connect from '../../assets/animations/Connect.json';
 import { ws } from '../../providers/RoomProvider';
@@ -14,6 +15,9 @@ const Join: React.FC = () => {
     const createRoom = () => {
         ws.emit('create-room');
     };
+    useEffect(() => {
+        toast.info('Please turn on your camera and microphone to join the meeting');
+    }, []);
     return (
         <Flex
             flex="1"
@@ -28,7 +32,7 @@ const Join: React.FC = () => {
         >
             <Flex w="50%" h="100%" justifyContent="center" alignItems="center">
                 <Box borderRadius="25px" overflow="hidden">
-                    <Lottie animationData={Connect} loop={true} style={{ height: '70vh', maxWidth: '100%' }} />
+                    <Lottie animationData={Connect} loop={false} style={{ height: '70vh', maxWidth: '100%' }} />
                 </Box>
             </Flex>
             <VStack
