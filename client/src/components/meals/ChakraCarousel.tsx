@@ -279,7 +279,7 @@ const Track: React.FC<TrackProps> = ({
     const handleDragStart = () => setDragStartPosition(positions[activeItem]);
 
     const handleDragEnd = (
-        _: React.MouseEvent,
+        event: React.MouseEvent,
         info: {
             offset: { x: number; y: number };
             velocity: { x: number; y: number };

@@ -3,7 +3,10 @@
 Want to try a new way to cook? Flavorie got you covered! We help you manage your digital inventory of ingredients and instant ingredient acquisition with receipt scanning and Instacart checkout, build personalized lists of meals, cook with others live and effortlessly, and share your moments with the community!
 
 <p align="center">
-  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/jennydo/PeacePod-Frontend/assets/126405175/3b21d1b5-4686-4dca-8da9-bcf836b34bb8">
+  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/hungngodev/Flavorie/blob/main/pictures/Screenshot%202024-09-03%20at%207.39.17%E2%80%AFPM%20(3).png?raw=true">
+</p>
+<p align="center">
+  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/hungngodev/Flavorie/blob/main/pictures/Screenshot%202024-09-03%20at%207.40.12%E2%80%AFPM%20(3).png?raw=true">
 </p>
 
 ---
