@@ -40,7 +40,7 @@ Thu Anh: [Github](https://github.com/Taenerys)
 - Database: MongoDB, Cloudinary, Redis
 - APIs: Spoonacular API, ThemealDB, Unsplash API, WebSocket
 - Microservices: Python, Puppeteer, Facebook FastText, Spotify ANNOY, Celery
-- Deployment: AWS EC2, Docker, Nginx, Github CI/CD
+- Deployment: AWS EC2, Docker, Nginx, Github Actions, Google Cloud
 
 **_<span style="text-decoration:underline;">System design flows</span>_**
 
