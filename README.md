@@ -104,7 +104,7 @@ Get the full description of the meal and step-by-step instructions:
 - Don’t let cooking be boring and a single-player game! Create virtual cooking rooms and share the experience with friends and your beloved ones.
 
 <p align="center">
-  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/hungngodev/Flavorie/blob/main/pictures/Screenshot%202024-09-03%20at%207.42.49%E2%80%AFPM%20(3).png?raw=true>
+  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/hungngodev/Flavorie/blob/main/pictures/Screenshot%202024-09-03%20at%207.42.49%E2%80%AFPM%20(3).png?raw=true">
 </p>
 
 Live chat video calling with your friends:
