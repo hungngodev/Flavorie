@@ -1,3 +1,4 @@
+// @ts-ignore
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { Box, Button, Flex, Progress, VStack, useMediaQuery, useTheme } from '@chakra-ui/react';
 import { motion, useAnimation, useMotionValue } from 'framer-motion';
@@ -6,7 +7,7 @@ import useBoundingRect from '../../hooks/useBoundingRect';
 import { SlideContext } from '../../pages/Room';
 import { percentage } from '../../utils';
 
-const MotionFlex = motion<any>(Flex);
+const MotionFlex = motion(Flex);
 
 const transitionProps = {
     stiffness: 400,
