@@ -62,7 +62,7 @@ Thu Anh: [Github](https://github.com/Taenerys)
 - Create and login to your account with our JWT authentication system
 
 <p align="center">
-  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/jennydo/PeacePod-Frontend/assets/126405175/3b21d1b5-4686-4dca-8da9-bcf836b34bb8">
+  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/hungngodev/Flavorie/blob/main/pictures/Screenshot%202024-09-03%20at%209.15.39%E2%80%AFPM.png?raw=true">
 </p>
 
 - **Upload/ scan receipt:**
@@ -70,50 +70,53 @@ Thu Anh: [Github](https://github.com/Taenerys)
 - Our machine-learning model will extract the ingredients and the necessary information from your receipt to populate your inventory!
 
 <p align="center">
-  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/jennydo/PeacePod-Frontend/assets/126405175/3b21d1b5-4686-4dca-8da9-bcf836b34bb8">
+  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/hungngodev/Flavorie/blob/main/pictures/Screenshot%202024-09-03%20at%207.41.43%E2%80%AFPM%20(3).png?raw=true">
 </p>
 
 - **Ingredients management:**
 - You can browse for necessary ingredients and our app will help you add them to your cart and then directly check out in Instacart.
 
 <p align="center">
-  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/jennydo/PeacePod-Frontend/assets/126405175/3b21d1b5-4686-4dca-8da9-bcf836b34bb8">
+  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/hungngodev/Flavorie/blob/main/pictures/Screenshot%202024-09-03%20at%207.40.55%E2%80%AFPM%20(3).png?raw=true">
 </p>
 
 <p align="center">
-  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/jennydo/PeacePod-Frontend/assets/126405175/3b21d1b5-4686-4dca-8da9-bcf836b34bb8">
+  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/hungngodev/Flavorie/blob/main/pictures/Screenshot%202024-09-03%20at%207.41.02%E2%80%AFPM%20(3).png?raw=true">
 </p>
 
 - **Meal suggestion and instruction**
 - We help you find meals relevant to your preferences/ diets and leftovers from your profile! Learn how to cook new nutritious meals every single day, with detailed instructions and interactive instructions.
 
 <p align="center">
-  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/jennydo/PeacePod-Frontend/assets/126405175/3b21d1b5-4686-4dca-8da9-bcf836b34bb8">
+  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/hungngodev/Flavorie/blob/main/pictures/Screenshot%202024-09-03%20at%207.41.15%E2%80%AFPM%20(3).png?raw=true">
 </p>
 
+<p align="center">
+  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/hungngodev/Flavorie/blob/main/pictures/Screenshot%202024-09-03%20at%207.41.27%E2%80%AFPM%20(3).png?raw=true">
+</p>
 Get the full description of the meal and step-by-step instructions:
 
 <p align="center">
-  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/jennydo/PeacePod-Frontend/assets/126405175/3b21d1b5-4686-4dca-8da9-bcf836b34bb8">
+  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/hungngodev/Flavorie/blob/main/pictures/Screenshot%202024-09-03%20at%2010.04.17%E2%80%AFPM.png?raw=true">
 </p>
 
 - **Cooking room**
 - Don’t let cooking be boring and a single-player game! Create virtual cooking rooms and share the experience with friends and your beloved ones.
 
 <p align="center">
-  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/jennydo/PeacePod-Frontend/assets/126405175/3b21d1b5-4686-4dca-8da9-bcf836b34bb8">
+  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/hungngodev/Flavorie/blob/main/pictures/Screenshot%202024-09-03%20at%207.42.49%E2%80%AFPM%20(3).png?raw=true>
 </p>
 
 Live chat video calling with your friends:
 
 <p align="center">
-  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/jennydo/PeacePod-Frontend/assets/126405175/3b21d1b5-4686-4dca-8da9-bcf836b34bb8">
+  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/hungngodev/Flavorie/blob/main/pictures/Screenshot%202024-09-03%20at%207.43.56%E2%80%AFPM%20(3).png?raw=true">
 </p>
 
 Choose your favorite meal to share and control the slide with your hands: Thumbs Up to continue and Thumbs Down to go back
 
 <p align="center">
-  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/jennydo/PeacePod-Frontend/assets/126405175/3b21d1b5-4686-4dca-8da9-bcf836b34bb8">
+  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/hungngodev/Flavorie/blob/main/pictures/Screenshot%202024-09-03%20at%207.44.06%E2%80%AFPM%20(3).png?raw=true">
 </p>
 
 - **Community Board**
@@ -121,24 +124,23 @@ Choose your favorite meal to share and control the slide with your hands: Thumbs
 - Our news feed is similar to your SNS’s newsfeed. You can create post(s), add picture(s) and emojis to make your post more interesting. Also, you make a review or reply to those of others as our reviews are recursively.
 
 <p align="center">
-  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/jennydo/PeacePod-Frontend/assets/126405175/3b21d1b5-4686-4dca-8da9-bcf836b34bb8">
+  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/hungngodev/Flavorie/blob/main/pictures/Screenshot%202024-09-03%20at%207.42.05%E2%80%AFPM%20(3).png?raw=true">
 </p>
-
 Create your posts with options to add emojis upload pictures or even take a picture right away
 
 <p align="center">
-  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/jennydo/PeacePod-Frontend/assets/126405175/3b21d1b5-4686-4dca-8da9-bcf836b34bb8">
+  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/hungngodev/Flavorie/blob/main/pictures/Screenshot%202024-09-03%20at%207.42.34%E2%80%AFPM%20(3).png?raw=true">
 </p>
 
 Add your comments:
 
 <p align="center">
-  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/jennydo/PeacePod-Frontend/assets/126405175/3b21d1b5-4686-4dca-8da9-bcf836b34bb8">
+  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/hungngodev/Flavorie/blob/main/pictures/Screenshot%202024-09-03%20at%207.42.09%E2%80%AFPM%20(3).png?raw=true">
 </p>
 
 - **User profile**
 - Update your information, and preferences and see how we personalized your meal statistics and data!
 
 <p align="center">
-  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/jennydo/PeacePod-Frontend/assets/126405175/3b21d1b5-4686-4dca-8da9-bcf836b34bb8">
+  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/hungngodev/Flavorie/blob/main/pictures/Screenshot%202024-09-03%20at%207.44.36%E2%80%AFPM%20(3).png?raw=true">
 </p>
