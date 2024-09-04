@@ -1,4 +1,3 @@
-// @ts-ignore
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { Box, Button, Flex, Progress, VStack, useMediaQuery, useTheme } from '@chakra-ui/react';
 import { motion, useAnimation, useMotionValue } from 'framer-motion';
@@ -7,7 +6,7 @@ import useBoundingRect from '../../hooks/useBoundingRect';
 import { SlideContext } from '../../pages/Room';
 import { percentage } from '../../utils';
 
-const MotionFlex = motion(Flex);
+const MotionFlex = motion(Flex as any);
 
 const transitionProps = {
     stiffness: 400,
@@ -389,12 +388,9 @@ const Track: React.FC<TrackProps> = ({
                         onDragStart={handleDragStart}
                         onDragEnd={handleDragEnd}
                         // animate={controls}
-                        style={{ x: x }}
+                        style={{ x: x, minWidth: 'min-content', flexWrap: 'nowrap', cursor: 'grab' }}
                         drag="x"
-                        _active={{ cursor: 'grabbing' }}
-                        minWidth="min-content"
-                        flexWrap="nowrap"
-                        cursor="grab"
+                        whileTap={{ cursor: 'grabbing' }}
                     >
                         {children}
                     </MotionFlex>
