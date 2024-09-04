@@ -6,7 +6,7 @@ import useBoundingRect from '../../hooks/useBoundingRect';
 import { SlideContext } from '../../pages/Room';
 import { percentage } from '../../utils';
 
-const MotionFlex = motion(Flex);
+const MotionFlex = motion<any>(Flex);
 
 const transitionProps = {
     stiffness: 400,
@@ -279,7 +279,7 @@ const Track: React.FC<TrackProps> = ({
     const handleDragStart = () => setDragStartPosition(positions[activeItem]);
 
     const handleDragEnd = (
-        event: React.MouseEvent,
+        _: any,
         info: {
             offset: { x: number; y: number };
             velocity: { x: number; y: number };
@@ -375,12 +375,15 @@ const Track: React.FC<TrackProps> = ({
                         animate={{
                             x: positions[activeItem],
                         }}
-                        transition={{
-                            type: 'spring',
-                            stiffness: 400,
-                            damping: 60,
-                            mass: 3,
-                        }}
+                        transition={
+                            {
+                                type: 'spring',
+                                stiffness: 400,
+                                damping: 60,
+                                mass: 3,
+                            } as const
+                        }
+                        // transition='spring 400 60 3'
                         dragConstraints={node}
                         onDragStart={handleDragStart}
                         onDragEnd={handleDragEnd}
