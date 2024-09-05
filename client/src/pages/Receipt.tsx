@@ -15,14 +15,12 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { QueryClient } from '@tanstack/react-query';
 import { Focus } from 'lucide-react';
-import { useEffect } from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
-import { Params, useParams } from 'react-router-dom';
+import { Params } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
 import ReceiptField from '../components/ingredients/ReceiptField';
 import ReceiptForm from '../components/ingredients/ReceiptForm';
-import useNotification from '../hooks/useNotification';
 import useToast from '../hooks/useToast';
 import customFetch from '../utils/customFetch';
 
@@ -88,22 +86,22 @@ export type ReceiptFieldType = z.infer<typeof ReceiptFieldObject>;
 export type ReceiptRequest = z.infer<typeof ReceiptRequest>;
 
 const Receipt = () => {
-    const { id } = useParams();
-    const { notificationDetail, fetchNotificationById } = useNotification();
+    // const { id } = useParams();
+    // const { notificationDetail, fetchNotificationById } = useNotification();
 
     const { notifyError } = useToast();
 
-    useEffect(() => {
-        if (id) {
-            fetchNotificationById(id);
-        }
-    }, [id, fetchNotificationById]);
+    // useEffect(() => {
+    //     if (id) {
+    //         fetchNotificationById(id);
+    //     }
+    // }, [id, fetchNotificationById]);
 
-    useEffect(() => {
-        if (notificationDetail) {
-            localStorage.setItem('notificationDetail', JSON.stringify(notificationDetail.message.data));
-        }
-    }, [notificationDetail]);
+    // useEffect(() => {
+    //     if (notificationDetail) {
+    //         localStorage.setItem('notificationDetail', JSON.stringify(notificationDetail.message.data));
+    //     }
+    // }, [notificationDetail]);
 
     const {
         control,
