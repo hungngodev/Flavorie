@@ -1,4 +1,4 @@
-import { getSuggestionIngredients } from "@src/controllers/ingredientsController";
+import { getReceiptsSuggestionIngredients } from "@src/controllers/ingredientsController";
 import {
   getAllNotifications,
   getNotificationById,
@@ -61,5 +61,5 @@ router
   .get(authenticateUser, catchAsync(getNotificationById));
 router
   .route("/ingredients/suggestions")
-  .get(authenticateUser, catchAsync(getSuggestionIngredients));
+  .get(authenticateUser, catchAsync(getReceiptsSuggestionIngredients));
 export default router;

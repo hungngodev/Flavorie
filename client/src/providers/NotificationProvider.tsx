@@ -16,7 +16,7 @@ const NotificationProvider: React.FC<NotificationContextProviderProps> = ({
     const auth = useAuth();
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [numberOfNotifications, setCntNotifications] = useState(0);
-    const [notificationDetail, setNotificationDetail] = useState<Notification | null>(null);
+    // const [notificationDetail, setNotificationDetail] = useState<Notification | null>(null);
     const { notifyError, notifyWarning } = useToast();
 
     // const [unreadNotifications, setUnreadNotifications] = useState<Notification[]>([])
@@ -48,8 +48,8 @@ const NotificationProvider: React.FC<NotificationContextProviderProps> = ({
 
             const parsedData = NotificationSchema.safeParse(response.data.currNotification);
             if (parsedData.success) {
-                setNotificationDetail(parsedData.data);
-                localStorage.setItem('notificationDetail', JSON.stringify(parsedData.data.message.data));
+                // setNotificationDetail(parsedData.data);
+                // localStorage.setItem('notificationDetail', JSON.stringify(parsedData.data.message.data));
                 return parsedData.data;
             } else {
                 return null;
@@ -116,7 +116,7 @@ const NotificationProvider: React.FC<NotificationContextProviderProps> = ({
                 fetchNotifications,
                 deleteNotification,
                 fetchNotificationById,
-                notificationDetail,
+                notificationDetail: null,
             }}
         >
             {children}

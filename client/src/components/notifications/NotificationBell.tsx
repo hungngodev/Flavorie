@@ -17,15 +17,39 @@ const NotificationBell = () => {
 
     const handleClick = async (notification: Notification) => {
         const notificationId = notification._id;
+        console.log('clicked notification', notificationId);
         setShowData(showData === notificationId ? null : notificationId);
         if (!notification.status) {
             markAsRead(notificationId);
         }
         const data = await fetchNotificationById(notificationId);
+
         if (data && data.message?.data && data.message.notificationType === 'instacart') {
             window.open(data.message.data, '_blank');
         }
         if (data && data.message?.data && data.message.notificationType !== 'instacart') {
+            localStorage.setItem(
+                'receipts' + notificationId,
+                JSON.stringify(
+                    data.message.data.map((receipt: any) => {
+                        return {
+                            id: receipt['potential_matches'][0]['potential_id'],
+                            name: receipt.name.toLowerCase(),
+                            quantity: receipt.quantity,
+                            image: receipt['potential_matches'][0]['potential_image'],
+                            price: receipt.price,
+                            suggested: {
+                                display: false,
+                                items: receipt['potential_matches'].map((item: any) => ({
+                                    name: item['potential_name'],
+                                    img: item['potential_image'],
+                                    oid: item['potential_id'],
+                                })),
+                            },
+                        };
+                    }),
+                ),
+            );
             navigate(`/receipts/${notificationId}`);
         }
     };

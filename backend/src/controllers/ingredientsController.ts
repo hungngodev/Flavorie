@@ -178,3 +178,25 @@ export const getSuggestionIngredients = async (req: Request, res: Response) => {
       .json(new ServerError("Failed to search ingredients"));
   }
 };
+
+export const getReceiptsSuggestionIngredients = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    const query = req.query.name as string;
+    const formatedQuery = query.toLowerCase().trim();
+    const ingredientSuggestions = await findIngredients(formatedQuery, 100);
+    const filterSuggestions = ingredientSuggestions.map(ingredient => ({
+      name: ingredient.name,
+      img: ingredient.image,
+      id: ingredient._id,
+    }));
+    res.json({ filterSuggestions }).status(StatusCodes.OK);
+  } catch (error) {
+    console.log("Error when searching ingredients", error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json(new ServerError("Failed to search ingredients"));
+  }
+};

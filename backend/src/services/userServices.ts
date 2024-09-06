@@ -139,7 +139,9 @@ export async function modifyUserItems(
         await ItemModel.findByIdAndDelete(existingItem._id);
       }
     }
-  } catch (e) {}
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 export async function changeItemTypes(

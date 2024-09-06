@@ -16,10 +16,12 @@ import {
 } from '@chakra-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { ChakraStylesConfig, Select } from 'chakra-react-select';
+import { ring2 } from 'ldrs';
 import { Check, MoveRight, Pencil, Trash } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { Controller, FieldPath, Path } from 'react-hook-form';
 import { Params } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { ZodType, z } from 'zod';
 import { default as CustomFetch, default as customFetch } from '../../utils/customFetch';
 import parseOption, { OptionMenuType } from '../../utils/parseOption';
@@ -27,6 +29,9 @@ import CustomNumberInput from '../form/CustomNumberInput';
 import CustomTextInput from '../form/CustomTextInput';
 import { ReceiptFormProps } from './ReceiptForm';
 
+ring2.register();
+
+// Default values shown
 // ! to be updated later
 export const updateSuggestionQuery = (id?: any) => {
     return {
@@ -87,7 +92,7 @@ function ReceiptField<T extends ZodType<any, any, any>>({
     field,
     watch,
 }: ReceiptFieldProps<T>) {
-    const [isEditing, setIsEditing] = useState<{ [key: number]: boolean }>({});
+    const [isEditing, setIsEditing] = useState<boolean[]>(Array(field.suggested.items.length).fill(false));
 
     const [menuSuggestion, setMenuSuggestion] = useState<OptionMenuType>({
         label: `${field.suggested.items.length} suggestions for ${watch(`receipts.${index}.name` as Path<z.infer<T>>)}:` as string,
@@ -116,49 +121,58 @@ function ReceiptField<T extends ZodType<any, any, any>>({
             if (val === '') {
                 return;
             }
-
-            CustomFetch.get(`http://localhost:5100/api/user/ingredients/suggestions?name=${val}`)
+            // console.log('val', val);
+            CustomFetch.get(`/user/ingredients/suggestions?name=${val}`)
                 .then((response) => {
+                    // console.log('response', response);
                     const updateData = response.data.filterSuggestions.map((item: any) => ({
                         name: item.name,
                         img: 'https://img.spoonacular.com/ingredients_250x250/' + item.img,
+                        oid: item.id,
                     }));
-
                     setMenuSuggestion({
                         label: `${updateData.length} suggestions for ${val}:`,
                         options: parseOption(updateData),
                     });
-
-                    update(index, fields, {
-                        name: val,
-                        suggested: {
-                            display: true,
-                            items: updateData,
-                        },
-                    });
+                    if (updateData.length === 0) {
+                        toast.error('No suggestions found for this ingredient');
+                    } else {
+                        update(index, fields, {
+                            id: updateData[0].oid,
+                            name: val,
+                            image: updateData[0].img,
+                            suggested: {
+                                display: false,
+                                items: updateData,
+                            },
+                        });
+                    }
                 })
                 .catch((error) => console.log(error));
         },
         [index, fields, update],
     );
-
     const toggleChange = useCallback(() => {
         const currentDisplay = watch(`receipts.${index}.suggested.display` as Path<z.infer<T>>);
         const inputValue = watch(`receipts.${index}.name` as Path<z.infer<T>>);
-
-        if (currentDisplay && isEditing[index]) {
+        // console.log('currentDisplay', currentDisplay);
+        // console.log('isEditing', isEditing);
+        if (currentDisplay) {
+            // console.log('inputValue', inputValue);
             updateReceipt(inputValue);
-            setIsEditing((prev) => ({ ...prev, [index]: false }));
+            // setIsEditing((prev) => prev.map((val, i) => (i === index ? false : val)));
         } else {
-            setIsEditing((prev) => ({ ...prev, [index]: true }));
+            // console.log('Index', index);
+            update(index, fields, {
+                suggested: {
+                    ...watch(`receipts.${index}.suggested` as Path<z.infer<T>>),
+                    display: true,
+                },
+            });
+            // setIsEditing((prev) => prev.map((val, i) => (i === index ? true : val)));
         }
-        update(index, fields, {
-            suggested: {
-                ...watch(`receipts.${index}.suggested` as Path<z.infer<T>>),
-                display: !currentDisplay,
-            },
-        });
-    }, [watch, index, update, fields, updateReceipt, isEditing]);
+        setIsEditing((prev) => prev.map((val, i) => (i === index ? !val : val)));
+    }, [watch, index, update, fields, updateReceipt]);
 
     return (
         <Grid
@@ -202,11 +216,12 @@ function ReceiptField<T extends ZodType<any, any, any>>({
                                 paddingInline={field.suggested.display ? '0.95em' : '0'}
                                 paddingBlock={field.suggested.display ? '0.75em' : '0'}
                                 fontSize="xl"
-                                variant="ghost"
-                                onChange={(e) => {
-                                    update(index, fields, { name: e.target.value });
-                                    updateReceipt(e.target.value);
-                                }}
+                                variant="outline"
+                                // onChange={(e) => {
+                                //     console.log('e.target.value', e.target.value);
+                                //     update(index, fields, { name: e.target.value });
+                                //     // updateReceipt(e.target.value);
+                                // }}
                                 onBlur={() => {
                                     toggleChange();
                                 }}
@@ -222,10 +237,22 @@ function ReceiptField<T extends ZodType<any, any, any>>({
                                     >
                                         <IconButton
                                             aria-label="edit-name"
-                                            backgroundColor="transparent"
+                                            backgroundColor="blueviolet"
+                                            disabled={isEditing[index]}
                                             icon={
                                                 watch(`receipts.${index}.suggested.display` as Path<z.infer<T>>) ? (
-                                                    <Check />
+                                                    !isEditing[index] ? (
+                                                        <Check />
+                                                    ) : (
+                                                        <l-ring-2
+                                                            size="25"
+                                                            stroke="5"
+                                                            stroke-length="0.25"
+                                                            bg-opacity="0.1"
+                                                            speed="0.8"
+                                                            color="white"
+                                                        ></l-ring-2>
+                                                    )
                                                 ) : (
                                                     <Pencil />
                                                 )
@@ -327,8 +354,10 @@ function ReceiptField<T extends ZodType<any, any, any>>({
                     <StatNumber>
                         $
                         {(
-                            parseFloat(watch(`receipts.${index}.price` as Path<z.infer<T>>).replace('$', '')) *
-                            parseFloat(watch(`receipts.${index}.quantity` as Path<z.infer<T>>))
+                            parseFloat(
+                                String(watch(`receipts.${index}.price` as Path<z.infer<T>>) ?? '').replace('$', '') ||
+                                    '0',
+                            ) * parseFloat(watch(`receipts.${index}.quantity` as Path<z.infer<T>>))
                         ).toFixed(2)}
                     </StatNumber>
                 </Stat>

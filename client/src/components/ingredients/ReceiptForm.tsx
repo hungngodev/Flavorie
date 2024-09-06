@@ -56,7 +56,7 @@ function ReceiptForm<T extends ZodType<any, any, any>>({
                             watch={watch}
                         />
                     ))}
-                    <Button type="submit">Submit</Button>
+                    {/* <Button type="submit">Submit</Button> */}
                 </form>
             </CardBody>
             <CardFooter>

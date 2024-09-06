@@ -13,31 +13,60 @@ import {
     VStack,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { QueryClient } from '@tanstack/react-query';
+import { QueryClient, useQuery } from '@tanstack/react-query';
+import Lottie from 'lottie-react';
 import { Focus } from 'lucide-react';
+import { useEffect } from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
-import { Params } from 'react-router-dom';
+import { Params, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
+import scanning from '../assets/animations/scanning.json';
 import ReceiptField from '../components/ingredients/ReceiptField';
 import ReceiptForm from '../components/ingredients/ReceiptForm';
+import { NotificationSchema } from '../contexts/NotificationContext';
 import useToast from '../hooks/useToast';
 import customFetch from '../utils/customFetch';
 
-export const scannedReceiptQuery = (id?: any) => {
+const receiptDetailQuery = (id: any) => {
     return {
-        queryKey: ['scanned-receipt', id],
+        queryKey: ['receipt', id],
         queryFn: async () => {
-            const receiptResponse = await customFetch.post('/scan-receipt', { id });
-            return receiptResponse;
+            try {
+                const response = await customFetch.get(`/user/notifications/${id}`, {
+                    withCredentials: true,
+                });
+
+                const parsedData = NotificationSchema.safeParse(response.data.currNotification);
+                if (parsedData.success) {
+                    // setNotificationDetail(parsedData.data);
+                    // localStorage.setItem('notificationDetail', JSON.stringify(parsedData.data.message.data));
+                    return parsedData.data;
+                } else {
+                    return null;
+                }
+            } catch (error) {
+                toast.error('Cannot find notification');
+                console.log(error);
+                return null;
+            }
         },
     };
 };
+// export const scannedReceiptQuery = (id?: any) => {
+//     return {
+//         queryKey: ['scanned-receipt', id],
+//         queryFn: async () => {
+//             const receiptResponse = await customFetch.post('/scan-receipt', { id });
+//             return receiptResponse;
+//         },
+//     };
+// };
 
 export const loader =
     (queryClient: QueryClient) =>
     async ({ param }: { param: Params }) => {
-        queryClient.ensureQueryData(scannedReceiptQuery(param));
+        queryClient.ensureQueryData(receiptDetailQuery(param));
     };
 
 export const defaultImg =
@@ -86,8 +115,9 @@ export type ReceiptFieldType = z.infer<typeof ReceiptFieldObject>;
 export type ReceiptRequest = z.infer<typeof ReceiptRequest>;
 
 const Receipt = () => {
-    // const { id } = useParams();
-    // const { notificationDetail, fetchNotificationById } = useNotification();
+    const { id } = useParams();
+
+    const { data: notificationDetail, status } = useQuery(receiptDetailQuery(id));
 
     const { notifyError } = useToast();
 
@@ -95,50 +125,61 @@ const Receipt = () => {
     //     if (id) {
     //         fetchNotificationById(id);
     //     }
-    // }, [id, fetchNotificationById]);
+    // }, [id]);
 
     // useEffect(() => {
     //     if (notificationDetail) {
     //         localStorage.setItem('notificationDetail', JSON.stringify(notificationDetail.message.data));
     //     }
     // }, [notificationDetail]);
-
+    // console.log(notificationDetail);
+    // console.log(status);
     const {
         control,
         handleSubmit,
         watch,
+        setValue,
         // reset,
     } = useForm<ReceiptFieldType>({
         resolver: zodResolver(ReceiptFieldObject),
         defaultValues: {
-            receipts: localStorage.getItem('notificationDetail')
-                ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  JSON.parse(localStorage.getItem('notificationDetail') ?? '[]').map((receipt: any) => {
-                      return {
-                          id: receipt['potential_matches'][0]['potential_id'],
-                          name: receipt.name.toLowerCase(),
-                          quantity: receipt.quantity,
-                          image: receipt['potential_matches'][0]['potential_image'],
-                          price: receipt.price,
-                          suggested: {
-                              display: false,
-                              items: receipt['potential_matches'].map((item: any) => ({
-                                  name: item['potential_name'],
-                                  img: item['potential_image'],
-                                  oid: item['potential_id'],
-                              })),
-                          },
-                      };
-                  })
-                : [
-                      {
-                          name: '',
-                          image: defaultImg,
-                          quantity: '0',
-                          price: '0.0',
-                          suggested: { display: false, items: [] },
-                      },
-                  ],
+            receipts: [
+                {
+                    name: '',
+                    image: defaultImg,
+                    quantity: '0',
+                    price: '0.0',
+                    suggested: { display: false, items: [] },
+                },
+            ],
+            //   notificationDetail
+            // ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            //   notificationDetail.message.data.map((receipt: any) => {
+            //       return {
+            //           id: receipt['potential_matches'][0]['potential_id'],
+            //           name: receipt.name.toLowerCase(),
+            //           quantity: receipt.quantity,
+            //           image: receipt['potential_matches'][0]['potential_image'],
+            //           price: receipt.price,
+            //           suggested: {
+            //               display: false,
+            //               items: receipt['potential_matches'].map((item: any) => ({
+            //                   name: item['potential_name'],
+            //                   img: item['potential_image'],
+            //                   oid: item['potential_id'],
+            //               })),
+            //           },
+            //       };
+            //   })
+            // : [
+            //       {
+            //           name: '',
+            //           image: defaultImg,
+            //           quantity: '0',
+            //           price: '0.0',
+            //           suggested: { display: false, items: [] },
+            //       },
+            //   ],
         },
     });
 
@@ -147,6 +188,43 @@ const Receipt = () => {
         name: 'receipts',
     });
 
+    window.onbeforeunload = () => {
+        localStorage.setItem('receipts' + id, JSON.stringify(watch('receipts')));
+    };
+    useEffect(() => {
+        if (status === 'success' && notificationDetail) {
+            setValue(
+                'receipts',
+                localStorage.getItem('receipts' + id)
+                    ? JSON.parse(localStorage.getItem('receipts' + id) || '')
+                    : notificationDetail.message.data.map((receipt: any) => {
+                          return {
+                              id: receipt['potential_matches'][0]['potential_id'],
+                              name: receipt.name.toLowerCase(),
+                              quantity: receipt.quantity,
+                              image: receipt['potential_matches'][0]['potential_image'],
+                              price: receipt.price,
+                              suggested: {
+                                  display: false,
+                                  items: receipt['potential_matches'].map((item: any) => ({
+                                      name: item['potential_name'],
+                                      img: item['potential_image'],
+                                      oid: item['potential_id'],
+                                  })),
+                              },
+                          };
+                      }),
+            );
+        }
+    }, [notificationDetail, status]);
+
+    if (status !== 'success') {
+        return (
+            <div className="flex h-full w-full items-center justify-center">
+                <Lottie animationData={scanning} style={{ width: '50%', height: '50%' }} />
+            </div>
+        );
+    }
     const transformResponse = (data: ReceiptFieldType) => {
         return data.receipts.map((item) => ({
             itemId: item.id,
@@ -158,7 +236,9 @@ const Receipt = () => {
 
     // this function handles the submission of the form
     const submitReceipts: SubmitHandler<ReceiptFieldType> = async (receiptResponse) => {
-        localStorage.removeItem('notificationDetail');
+        // localStorage.removeItem('notificationDetail');
+        localStorage.removeItem('receipts' + id);
+        console.log(receiptResponse);
         const transformData = transformResponse(receiptResponse);
         try {
             const response = await customFetch.patch('/user/leftOver', {
@@ -191,8 +271,8 @@ const Receipt = () => {
         append({
             name: '',
             image: defaultImg,
-            quantity: '0',
-            price: '0.0',
+            quantity: '1',
+            price: '1.0',
             suggested: { display: true, items: [] },
         });
     };
