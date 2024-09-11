@@ -122,6 +122,11 @@ Live chat video calling with your friends:
   <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/hungngodev/Flavorie/blob/main/pictures/Screenshot%202024-09-03%20at%207.43.56%E2%80%AFPM%20(3).png?raw=true">
 </p>
 
+Chat With your friends
+
+<p align="center">
+  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/hungngodev/Flavorie/blob/main/pictures/Screenshot%202024-09-11%20at%202.05.46%E2%80%AFPM%20(3).png?raw=true">
+</p>
 Choose your favorite meal to share and control the slide with your hands: Thumbs Up to continue and Thumbs Down to go back
 
 <p align="center">
@@ -152,4 +157,15 @@ Add your comments:
 
 <p align="center">
   <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/hungngodev/Flavorie/blob/main/pictures/Screenshot%202024-09-03%20at%207.44.36%E2%80%AFPM%20(3).png?raw=true">
+</p>
+
+- **Send to Instacart**
+Finalise your choice and send it to your Instacart
+<p align="center">
+  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/hungngodev/Flavorie/blob/main/pictures/Screenshot%202024-09-11%20at%201.37.51%E2%80%AFPM.png?raw=true
+  ">
+</p>
+Use the list that we generate and just one click, it will be in your Instacart
+<p align="center">
+  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/hungngodev/Flavorie/blob/main/pictures/Screenshot%202024-09-11%20at%202.13.50%E2%80%AFPM.png?raw=true">
 </p>
