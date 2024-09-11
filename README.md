@@ -81,6 +81,7 @@ Thu Anh: [Github](https://github.com/Taenerys)
 <p align="center">
   <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/hungngodev/Flavorie/blob/main/pictures/Screenshot%202024-09-11%20at%201.37.51%E2%80%AFPM.png?raw=true">
 </p>
+
 - **Ingredients management:**
 - You can browse for necessary ingredients and our app will help you add them to your cart and then directly check out in Instacart.
 
