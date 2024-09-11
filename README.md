@@ -72,7 +72,15 @@ Thu Anh: [Github](https://github.com/Taenerys)
 <p align="center">
   <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/hungngodev/Flavorie/blob/main/pictures/Screenshot%202024-09-03%20at%207.41.43%E2%80%AFPM%20(3).png?raw=true">
 </p>
-
+- After that, you can see some notification pops up
+- Click it to adjust your grocery and change any wrong mapping or even change the name to find something in our database
+<p align="center">
+  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/hungngodev/Flavorie/blob/main/pictures/Screenshot%202024-09-11%20at%201.37.27%E2%80%AFPM.png?raw=true">
+</p>
+- Checking to see if there is anything missing and submit it for it to be updated in your leftovers
+<p align="center">
+  <img width="60%" alt="Screenshot 2024-06-26 at 10 19 28 AM" src="https://github.com/hungngodev/Flavorie/blob/main/pictures/Screenshot%202024-09-11%20at%201.37.51%E2%80%AFPM.png?raw=true">
+</p>
 - **Ingredients management:**
 - You can browse for necessary ingredients and our app will help you add them to your cart and then directly check out in Instacart.
 
