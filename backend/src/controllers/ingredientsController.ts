@@ -111,7 +111,12 @@ export const searchIngredients = async (req: Request, res: Response) => {
     const randomIngredients = (await getAndStoreInRedis(
       "ingredient random",
       3600 * 24,
-      async () => await IngredientModel.aggregate([{ $sample: { size: 40 } }]),
+      async () =>
+        await IngredientModel.aggregate([
+          { $sample: { size: 40 } }, // Sample 40 random ingredients
+          { $addFields: { id: "$_id" } }, // Add a new 'id' field with the value of '_id'
+          { $unset: "_id" }, // Optional: remove the '_id' field if you don't want it
+        ]),
     )) as [];
 
     // console.log("randomIngredients", randomIngredients);

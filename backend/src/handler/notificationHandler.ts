@@ -1,12 +1,12 @@
 import IngredientModel from "@src/models/IngredientModel";
 import NotificationModel from "@src/models/NotificationModel";
 import { cloudinary } from "@src/services/cloudinary/cloudinaryServices";
-import { groceryGenerating } from "@src/services/puppeteer/connecting";
 import redisClient from "@src/services/redisClient/index";
 import mongoose from "mongoose";
 import { Socket } from "socket.io";
 
-const redisStreamKey = "server:receipts_stream";
+const receiptStreamKey = "server:receipts_stream";
+const instacartStreamKey = "server:instacart_stream";
 
 export const notificationHandler = (socket: Socket) => {
   socket.on("submitReceipt", async data => {
@@ -20,7 +20,7 @@ export const notificationHandler = (socket: Socket) => {
       console.log("adding to redis stream in receipts handler");
 
       await redisClient.xadd(
-        redisStreamKey,
+        receiptStreamKey,
         "*",
         "receipt",
         uploadResponse.secure_url,
@@ -115,34 +115,18 @@ export const notificationHandler = (socket: Socket) => {
       "ingredients",
       ingredients.map(ingredient => ingredient.name),
     );
-
-    try {
-      const response = await groceryGenerating(listOfNames);
-      socket.emit("processReceipt", "Let's go to Instacart!");
-      const notification = new NotificationModel({
-        userId: socket.data.user.userId,
-        status: false,
-        message: {
-          title: "Connecting With Instacart Successfully!",
-          data: response,
-          notificationType: "instacart",
-        },
-        timestamp: new Date(),
-      });
-      await notification.save();
-    } catch (error) {
-      console.log("Error connecting to Instacart", error);
-      socket.emit("error", "Failed to connect to Instacart");
-      const notification = new NotificationModel({
-        userId: socket.data.user.userId,
-        status: false,
-        message: {
-          title:
-            "Cannot connect to Instacart because the system is overloading. Please try again!",
-        },
-        timestamp: new Date(),
-      });
-      await notification.save();
-    }
+    await redisClient.xadd(
+      instacartStreamKey,
+      "*",
+      "listOfNames",
+      JSON.stringify(listOfNames),
+      "userId",
+      socket.data.user.userId,
+      "timestamp",
+      new Date().toISOString(),
+      "type",
+      "instacart",
+    );
+    // Add to redis stream
   });
 };
