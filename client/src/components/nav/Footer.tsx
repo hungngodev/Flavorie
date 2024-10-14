@@ -1,8 +1,7 @@
-
-import { Box, Container, Flex, Icon, Image, IconButton, HStack, Link, Spacer, Stack, Text } from '@chakra-ui/react';
+import { Box, Container, Flex, HStack, Icon, IconButton, Image, Link, Spacer, Stack, Text } from '@chakra-ui/react';
 import { FaEnvelope, FaFacebook, FaInstagram } from 'react-icons/fa';
+import FullLogo from '../../assets/Full-logo.svg';
 import theme from '../../style/theme';
-
 const Footer = () => {
     return (
         <Box bg={theme.colors.palette_indigo} color="white">
@@ -16,7 +15,7 @@ const Footer = () => {
                         alignItems="center"
                         borderRadius="full"
                     >
-                        <Image boxSize="150px" objectFit="cover" src="../src/assets/Full-logo.svg" />
+                        <Image boxSize="150px" objectFit="cover" src={FullLogo} />
                     </Box>
                     <Spacer />
                     <Stack direction="column" justifyContent="center" h="150px">
@@ -34,7 +33,9 @@ const Footer = () => {
                     </Stack>
                     <Spacer />
                     <Stack direction="column" justifyContent="center" h="150px">
-                        <Text ml="2" fontWeight="bold">Contact us</Text>
+                        <Text ml="2" fontWeight="bold">
+                            Contact us
+                        </Text>
                         <HStack justifyContent="center" spacing="2" fontWeight="bold">
                             <IconButton
                                 as={Link}

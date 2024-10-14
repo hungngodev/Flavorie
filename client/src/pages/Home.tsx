@@ -4,7 +4,7 @@ import Lottie from 'lottie-react';
 import React from 'react';
 import HerroIllustration from '..//assets/images/hero-ilustration.jpg';
 import { Cooking, Ingredient, LiveVideo, Scanning, Sharing } from '../assets/animations';
-import { ContainerScroll, Hero, StickyScrollReveal, Testimonials, WavyBackground } from '../components';
+import { ContainerScroll, Hero, InfiniteMovingCards, StickyScrollReveal, WavyBackground } from '../components';
 import Footer from '../components/nav/Footer';
 
 const content = [
@@ -75,7 +75,7 @@ const Main: React.FC = () => {
     const theme = useTheme();
     const translate = useTransform(scrollYProgress, [0, 1], [-50, -300]);
     return (
-        <div className="flex flex-col overflow-hidden">
+        <div className="flex flex-col gap-10 overflow-hidden pt-10">
             <Box as={motion.div} style={{ translateY: translate }}>
                 <WavyBackground backgroundFill="white" id="here" width="100%">
                     <Box width="100%">
@@ -122,27 +122,6 @@ const Main: React.FC = () => {
                                     >
                                         <Link href="/ingredients">Get Started</Link>
                                     </Button>
-
-                                    {/* <Box>
-                                        <Icon
-                                            as={Arrow}
-                                            color={useColorModeValue('gray.800', 'gray.300')}
-                                            w={71}
-                                            position={'absolute'}
-                                            right={-71}
-                                            top={'10px'}
-                                        />
-                                        <Text
-                                            fontSize={'lg'}
-                                            fontFamily={'Caveat'}
-                                            position={'absolute'}
-                                            right={'-5px'}
-                                            top={'-15px'}
-                                            transform={'rotate(10deg)'}
-                                        >
-                                            It's 100% free
-                                        </Text>
-                                    </Box> */}
                                 </Stack>
                             </Box>
                             <Box height="auto">
@@ -164,8 +143,11 @@ const Main: React.FC = () => {
                 </ContainerScroll>
             </div>
             <Box as={motion.div} style={{ translateY: translate }}>
+                <Stack align={'center'} py={16} as={Stack} spacing={12}>
+                    <Hero title="" boldTitle="Our Client Speak" />
+                </Stack>
                 <Flex justifyContent={'center'} alignItems={'center'}>
-                    <Testimonials />
+                    <InfiniteMovingCards items={testimonials} direction="right" speed="fast" className="w-full" />
                 </Flex>
             </Box>
             <Box>
@@ -176,3 +158,29 @@ const Main: React.FC = () => {
 };
 
 export default Main;
+const testimonials = [
+    {
+        quote: 'The design of Flavorie really satisfied my OCD, this treatment is better my therapy.',
+        name: 'Jennifer Quach',
+        avatar: 'https://wallpapers-clan.com/wp-content/uploads/2022/07/funny-cat-9.jpg',
+        title: 'CEO @ OCD Corporation',
+    },
+    {
+        quote: "I'm thrilled watching the Flavorie team in total chaos. However, they always deliver the best results.",
+        name: 'Khoa Thien Le',
+        title: 'Angel Investor @ RisingStars',
+        avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGVJiKcTzUq_vQE6L5DtlpdWA_dEd6ApyVVA&s',
+    },
+    {
+        quote: 'Flavorie saves my wallet from dying of DoorDash orders and unknown expiring ingredients.',
+        name: 'Phuong Cao',
+        title: 'CTO @ One Member Corporation',
+        avatar: 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/c2047868-eb3f-45a9-84ac-a12510bfedd9/dffyhn4-46435934-6190-41c1-af0d-8a3f01d36e1a.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2MyMDQ3ODY4LWViM2YtNDVhOS04NGFjLWExMjUxMGJmZWRkOVwvZGZmeWhuNC00NjQzNTkzNC02MTkwLTQxYzEtYWYwZC04YTNmMDFkMzZlMWEucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.aITSRWznS7RYgbZJ3iAv6WEmR02Ypc_rRgt4gbyKv6U',
+    },
+    {
+        quote: 'What an amazing time to go to the market and buy some fresh ingredients through Flavorie.',
+        name: 'Hung Ngo',
+        title: 'Lead Developer @ Flavorie',
+        avatar: 'https://lh3.googleusercontent.com/a/ACg8ocJVnfcMhqVA5LInxdEgbrUctiXdhk_v5KJI0tZh08bzxevVX8k5=s576-c-no',
+    },
+];

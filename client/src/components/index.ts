@@ -13,6 +13,7 @@ export { default as Navbar } from './nav/NavBar';
 export { default as ContainerScroll } from './ui/ContainerScrollAnimation';
 export { default as Hero } from './ui/Hero';
 export { default as AutoSlider } from './ui/ImageAutoSlider';
+export { default as InfiniteMovingCards } from './ui/InfiniteMovingCards';
 export { default as StickyScrollReveal } from './ui/StickyScrollReveal';
 export { default as Tabs } from './ui/Tabs';
 export { default as Testimonials } from './ui/Testimonials';
