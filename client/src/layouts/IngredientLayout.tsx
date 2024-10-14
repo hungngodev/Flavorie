@@ -84,7 +84,7 @@ export default function Ingredient() {
     const { data: leftOverData, status: leftOverStatus } = useQuery(leftOverQuery);
     const queryClient = useQueryClient();
     const fridgeWidth = '500';
-    const { getButtonProps, getDisclosureProps, isOpen } = useDisclosure();
+    const { getButtonProps, isOpen } = useDisclosure();
     const [hidden, setHidden] = useState(!isOpen);
     const [expanded, setExpanded] = useState(false);
     const lottieCartRef = useRef<LottieRefCurrentProps>(null);

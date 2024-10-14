@@ -98,7 +98,7 @@ const Room = () => {
     const { [focus]: focusing, ...peersToShow } = peers;
     const focusingVideo = focus === userId ? (screenSharingId !== '' ? screenStream : stream) : focusing?.stream;
 
-    const { getButtonProps, getDisclosureProps, isOpen } = useDisclosure();
+    const { getButtonProps, isOpen } = useDisclosure();
     const chatWidth = '500';
     const [hidden, setHidden] = useState(!isOpen);
 
@@ -195,7 +195,7 @@ const Room = () => {
                         <Grid
                             height={'50vh'}
                             width="100%"
-                            templateColumns={`repeat(6,1fr)`}
+                            templateColumns={`repeat(7,1fr)`}
                             templateRows={`repeat(1,1fr)`}
                         >
                             {focusingVideo && (
@@ -214,7 +214,7 @@ const Room = () => {
                             )}
 
                             {focus !== userId && (
-                                <GridItem rowSpan={1} colSpan={1} padding={'8px'}>
+                                <GridItem rowSpan={1} colSpan={2} padding={'8px'}>
                                     <Card
                                         width={'full'}
                                         height="full"
@@ -265,7 +265,7 @@ const Room = () => {
                                         </Card>
                                     </GridItem>
                                 ))}
-                            <GridItem colStart={6} rowStart={0} padding={2}>
+                            <GridItem colStart={7} rowStart={0} padding={2}>
                                 <VStack height="100%" width="100%" justifyContent={'start'}>
                                     {mealOptions.length > 0 ? (
                                         <>
@@ -449,7 +449,6 @@ const Room = () => {
                         </motion.div>
                     </VStack>
                     <motion.div
-                        {...getDisclosureProps()}
                         hidden={hidden}
                         initial={false}
                         onAnimationStart={() => {
