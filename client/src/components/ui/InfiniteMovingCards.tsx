@@ -80,7 +80,7 @@ const InfiniteMovingCards = ({
             >
                 {items.map((item) => (
                     <li
-                        className="relative w-[20vw] max-w-full flex-shrink-0 rounded-2xl border border-b-0 border-slate-700 px-8 py-6"
+                        className="relative w-[22vw] max-w-full flex-shrink-0 rounded-2xl border border-b-0 border-slate-700 px-8 py-6"
                         style={{
                             background: 'linear-gradient(180deg, var(--slate-800), var(--slate-900)',
                         }}
@@ -101,7 +101,10 @@ const InfiniteMovingCards = ({
                                         {item.name}
                                     </span>
                                     <span className=" text-2xl font-normal leading-[1.6] text-gray-400">
-                                        {item.title}
+                                        {item.title.split('@')[0]}
+                                    </span>
+                                    <span className=" text-2xl font-normal leading-[1.6] text-gray-400">
+                                        @ {item.title.split('@')[1]}
                                     </span>
                                 </span>
                                 <img src={item.avatar} alt={item.name} className="ml-4 h-12 w-12 rounded-full" />
