@@ -1,6 +1,6 @@
 import { Box, Flex, IconButton, useDisclosure } from '@chakra-ui/react';
 import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, MotionProps } from 'framer-motion';
 import { LottieRefCurrentProps } from 'lottie-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
@@ -332,7 +332,7 @@ export default function Ingredient() {
                 </Flex>
             </div>
             <motion.div
-                {...getDisclosureProps()}
+                {...(getDisclosureProps() as Partial<MotionProps>)}
                 hidden={hidden}
                 initial={false}
                 onAnimationStart={() => {
