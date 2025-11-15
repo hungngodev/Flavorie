@@ -1,0 +1,63 @@
+version: "3"
+services:
+  nginx:
+    image: nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - net
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+  
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    command: certonly --webroot -w /var/www/certbot --force-renewal --email hungngo1607@gmail.com -d flavorie.xyz --agree-tos
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+  frontend:
+    image: hungngodev/flavorie-frontend:v1.0.${IMAGE_TAG}
+    stdin_open: true
+    init: true
+    tty: true
+    depends_on:
+      - backend
+    environment:
+      VITE_SOCKET_SERVER: flavorie.xyz
+      VITE_PEER_JS_HOST: flavorie.xyz
+      VITE_PEER_JS_PORT: 443
+    networks:
+      - net
+
+  backend:
+    image: hungngodev/flavorie-backend:v1.0.${IMAGE_TAG}
+    restart: always
+    init: true
+    networks:
+      - net
+    env_file: ./.env
+
+  # peerjs:
+  #   image: peerjs/peerjs-server
+  #   ports:
+  #     - "9000:9000"
+  #   init: true
+  #   networks:
+  #     - net
+
+networks:
+  net:
+    external: true
+
